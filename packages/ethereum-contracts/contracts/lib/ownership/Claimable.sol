@@ -6,6 +6,7 @@ import "./Ownable.sol";
  * @title Claimable
  * @dev Extension for the Ownable contract, where the ownership needs to be claimed.
  * This allows the new owner to accept the transfer.
+ *
  * Contract taken from https://github.com/OpenZeppelin/openzeppelin-solidity
  */
 contract Claimable is Ownable {
