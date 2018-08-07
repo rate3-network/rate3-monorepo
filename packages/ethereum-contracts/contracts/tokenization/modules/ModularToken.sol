@@ -2,11 +2,12 @@ pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
+import "../../lib/lifecycle/Ownable.sol";
 import "./ERC20.sol";
 import "./AllowanceModule.sol";
 import "./BalanceModule.sol";
 
-contract ModularToken is ERC20, Claimable {
+contract ModularToken is ERC20, Claimable, Pausable {
     using SafeMath for uint256;
 
     BalanceModule public balanceModule;
@@ -16,6 +17,9 @@ contract ModularToken is ERC20, Claimable {
 
     event BalanceModuleSet(address indexed moduleAddress);
     event AllowanceModuleSet(address indexed moduleAddress);
+    event Burn(address indexed burner, uint256 value, string note);
+    event Mint(address indexed to, uint256 value);
+
 
     /**
      * @dev Set the BalanceModule.
@@ -32,7 +36,7 @@ contract ModularToken is ERC20, Claimable {
      * @dev Set the AllowanceModule.
      * @param _moduleAddress The address of the AllowanceModule.
      */
-    function setAllowanceModule(address _moduleAddress) public onlyOwner returns (bool){
+    function setAllowanceModule(address _moduleAddress) public onlyOwner returns (bool) {
         allowanceModule = AllowanceModule(_moduleAddress);
         allowanceModule.claimOwnership();
         emit AllowanceModuleSet(_moduleAddress);
@@ -70,7 +74,7 @@ contract ModularToken is ERC20, Claimable {
      * @param _to The address to transfer to.
      * @param _value The amount to be transferred.
      */
-    function transfer(address _to, uint256 _value) public returns (bool) {
+    function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_value <= balanceModule.balanceOf(msg.sender), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
 
@@ -92,7 +96,7 @@ contract ModularToken is ERC20, Claimable {
      * @param _spender The address which will spend the funds.
      * @param _value The amount of tokens to be spent.
      */
-    function approve(address _spender, uint256 _value) public returns (bool) {
+    function approve(address _spender, uint256 _value) public whenNotPaused returns (bool) {
         allowanceModule.setAllowance(msg.sender, _spender, _value);
 
         emit Approval(msg.sender, _spender, _value);
@@ -105,7 +109,7 @@ contract ModularToken is ERC20, Claimable {
      * @param _to address The address which you want to transfer to.
      * @param _value uint256 the amount of tokens to be transferred.
      */
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
+    function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_value <= balanceModule.balanceOf(_from), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
         require(_value <= allowanceModule.allowanceOf(_from, msg.sender),"Insufficient allowance");
@@ -128,7 +132,7 @@ contract ModularToken is ERC20, Claimable {
      * @param _spender The address which will spend the funds.
      * @param _addedValue The amount of tokens to increase the allowance by.
      */
-    function increaseApproval(address _spender, uint _addedValue) public returns (bool) {
+    function increaseApproval(address _spender, uint _addedValue) public whenNotPaused returns (bool) {
         allowanceModule.addAllowance(msg.sender, _spender, _addedValue);
 
         emit Approval(msg.sender, _spender, allowanceModule.allowanceOf(msg.sender, _spender));
@@ -145,7 +149,7 @@ contract ModularToken is ERC20, Claimable {
      * @param _spender The address which will spend the funds.
      * @param _subtractedValue The amount of tokens to decrease the allowance by.
      */
-    function decreaseApproval(address _spender, uint _subtractedValue) public returns (bool) {
+    function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool) {
         uint256 oldValue = allowanceModule.allowanceOf(msg.sender, _spender);
         if (_subtractedValue >= oldValue) {
             allowanceModule.setAllowance(msg.sender, _spender, 0);
@@ -154,6 +158,37 @@ contract ModularToken is ERC20, Claimable {
         }
 
         emit Approval(msg.sender, _spender, allowanceModule.allowanceOf(msg.sender, _spender));
+        return true;
+    }
+
+    /**
+     * @dev Burns a specific amount of tokens.
+     * @param _value The amount of token to be burned.
+     * @param _note A note that burner can attach.
+     */
+    function burn(uint256 _value, string _note) public whenNotPaused returns (bool) {
+        require(_value <= balanceModule.balanceOf(msg.sender),"Insufficient balance");
+
+        balanceModule.subBalance(msg.sender, _value);
+        totalSupply_ = totalSupply_.sub(_value);
+
+        emit Burn(msg.sender, _value, _note);
+        emit Transfer(msg.sener, address(0), _value);
+        return true;
+    }
+
+    /**
+     * @dev Function to mint tokens.
+     * @param _to The address that will receive the minted tokens.
+     * @param _value The amount of tokens to mint.
+     * @return A boolean that indicates if the operation was successful.
+     */
+    function mint(address _to, uint256 _value) onlyOwner public returns (bool) {
+        totalSupply_ = totalSupply_.add(_value);
+        balanceModule.addBalance(_to, _value);
+
+        emit Mint(_to, _value);
+        emit Transfer(address(0), _to, _value);
         return true;
     }
 }
