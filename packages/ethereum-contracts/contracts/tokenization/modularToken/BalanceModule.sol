@@ -4,7 +4,7 @@ import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
 
 // A wrapper around the balanceOf mapping.
-contract BalanceSheet is Claimable {
+contract BalanceModule is Claimable {
     using SafeMath for uint256;
 
     mapping (address => uint256) public balanceOf;

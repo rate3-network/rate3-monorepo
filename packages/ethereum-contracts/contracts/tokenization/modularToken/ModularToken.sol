@@ -1,11 +1,12 @@
 pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
+import "../../lib/ownership/Claimable.sol";
 import "./ERC20.sol";
 import "./AllowanceModule.sol";
 import "./BalanceModule.sol";
 
-contract ModularToken is ERC20 {
+contract ModularToken is ERC20, Claimable {
     using SafeMath for uint256;
 
     BalanceModule public balanceModule;
@@ -13,13 +14,16 @@ contract ModularToken is ERC20 {
 
     uint256 totalSupply_;
 
+    event BalanceModuleSet(address indexed moduleAddress);
+    event AllowanceModuleSet(address indexed moduleAddress);
+
     /**
      * @dev Set the BalanceModule.
      * @param _moduleAddress The address of the BalanceModule.
      */
     function setBalanceModule(address _moduleAddress) public onlyOwner returns (bool) {
         balanceModule = BalanceModule(_moduleAddress);
-        
+        balanceModule.claimOwnership();
         emit BalanceModuleSet(_moduleAddress);
         return true;
     }
@@ -30,7 +34,7 @@ contract ModularToken is ERC20 {
      */
     function setAllowanceModule(address _moduleAddress) public onlyOwner returns (bool){
         allowanceModule = AllowanceModule(_moduleAddress);
-        
+        allowanceModule.claimOwnership();
         emit AllowanceModuleSet(_moduleAddress);
         return true;
     }
@@ -70,7 +74,7 @@ contract ModularToken is ERC20 {
         require(_value <= balanceModule.balanceOf(msg.sender), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
 
-        balanceModule.subBalance(_from, _value);
+        balanceModule.subBalance(msg.sender, _value);
         balanceModule.addBalance(_to, _value);
 
         emit Transfer(msg.sender, _to, _value);
@@ -106,7 +110,7 @@ contract ModularToken is ERC20 {
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
         require(_value <= allowanceModule.allowanceOf(_from, msg.sender),"Insufficient allowance");
 
-        allowances.subAllowance(_from, msg.sender, _value);
+        allowanceModule.subAllowance(_from, msg.sender, _value);
         balanceModule.subBalance(_from, _value);
         balanceModule.addBalance(_to, _value);
 
@@ -146,9 +150,9 @@ contract ModularToken is ERC20 {
         if (_subtractedValue >= oldValue) {
             allowanceModule.setAllowance(msg.sender, _spender, 0);
         } else {
-            allowances.subAllowance(msg.sender, _spender, _subtractedValue);
+            allowanceModule.subAllowance(msg.sender, _spender, _subtractedValue);
         }
-        
+
         emit Approval(msg.sender, _spender, allowanceModule.allowanceOf(msg.sender, _spender));
         return true;
     }
