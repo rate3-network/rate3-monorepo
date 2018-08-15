@@ -1,7 +1,9 @@
 {
-  "tokenizationDemo": "Tokenization Demo",
+  "user": "User",
+  "issuer": "Issuer",
   "walletSettings": "Wallet settings",
-  "activities": "Activities",
   "tokenize": "Tokenize",
-  "withdraw": "Withdraw"
+  "withdraw": "Withdraw",
+  "approval" : "Approval",
+  "transactions": "Transactions"
 }

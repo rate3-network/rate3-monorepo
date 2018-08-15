@@ -2,6 +2,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 
 import network from './reducers/Network';
+import wallet from './reducers/Wallet';
 import sagas from './effects';
 
 const middlewares = [];
@@ -17,6 +18,7 @@ middlewares.push(sagaMiddleware);
 const store = createStore(
   combineReducers({
     network,
+    wallet,
   }),
   applyMiddleware(...middlewares),
 );
