@@ -2,12 +2,25 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 
 import network from './reducers/Network';
+import sagas from './effects';
+
+const middlewares = [];
+
+if (process.env.NODE_ENV !== 'production') {
+  const { logger } = require('redux-logger');
+  middlewares.push(logger);
+}
 
 const sagaMiddleware = createSagaMiddleware();
+middlewares.push(sagaMiddleware);
 
-export default createStore(
+const store = createStore(
   combineReducers({
     network,
   }),
-  applyMiddleware(sagaMiddleware),
+  applyMiddleware(...middlewares),
 );
+
+sagaMiddleware.run(sagas);
+
+export default store;

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import { Switch, Route, Link } from 'react-router-dom';
 import { translate } from 'react-i18next';
 
@@ -27,6 +28,11 @@ import {
 } from '../constants/colors';
 import ListChildLinkItem from '../components/sidebar/ListChildLinkItem';
 import ListParentItem from '../components/sidebar/ListParentItem';
+
+import {
+  init as initAction,
+} from '../actions/Network';
+import { compose } from '../utils';
 
 const drawerWidth = 320;
 
@@ -95,6 +101,11 @@ class App extends React.Component {
     mobileOpen: false,
     activitiesOpen: false,
   };
+
+  componentDidMount() {
+    const { networkInit } = this.props;
+    networkInit();
+  }
 
   handleDrawerToggle = () => {
     this.setState(state => ({ mobileOpen: !state.mobileOpen }));
@@ -206,6 +217,18 @@ App.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
+  networkInit: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(translate('navigator')(App));
+const enhance = compose(
+  withStyles(styles, { withTheme: true }),
+  translate('navigator'),
+  connect(
+    null,
+    {
+      networkInit: initAction,
+    },
+  ),
+);
+
+export default enhance(App);
