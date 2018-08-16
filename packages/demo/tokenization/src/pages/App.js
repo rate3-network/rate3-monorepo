@@ -16,9 +16,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Hidden from '@material-ui/core/Hidden';
 import MenuIcon from '@material-ui/icons/Menu';
-import {
-  List,
-} from '@material-ui/core';
+import List from '@material-ui/core/List';
 
 import Wallet from './wallet';
 import Tokenization from './tokenization';
@@ -37,6 +35,8 @@ import {
   userNavPrimary,
   navBoxShadow,
 } from '../constants/colors';
+import AccountsSummary from '../components/sidebar/AccountsSummary';
+import AccountBalance from '../components/sidebar/AccountBalance';
 import ListLinkItem from '../components/sidebar/ListLinkItem';
 import Switch from '../components/sidebar/Switch';
 
@@ -83,15 +83,15 @@ const styles = theme => ({
     backgroundColor: isUser ? userNavBg : issuerNavBg,
     color: isUser ? userNavPrimary : issuerNavPrimary,
     borderRight: 'none',
+    textAlign: 'center',
     boxShadow: isUser ? `1px 0 5px ${navBoxShadow}` : 'none',
   })),
   drawerLink: {
     textDecoration: 'none',
     color: 'inherit',
   },
-  drawerNav: {
-    width: '100%',
-    textAlign: 'center',
+  drawerPadding: {
+    flexGrow: 1,
   },
   ...genStyle('drawerCircularProfile', isUser => ({
     width: `${drawerWidth / 2}px`,
@@ -109,9 +109,8 @@ const styles = theme => ({
     fontWeight: 'bold',
   })),
   ...genStyle('drawerFooter', isUser => ({
-    position: 'absolute',
     width: '100%',
-    bottom: 0,
+    boxSizing: 'border-box',
     padding: theme.spacing.unit * 2,
     textAlign: 'left',
     textTransform: 'uppercase',
@@ -171,52 +170,69 @@ class App extends React.Component {
 
     return (
       <React.Fragment>
-        <div className={classes.drawerNav}>
-          <div>
-            <div className={getClass(classes, 'drawerCircularProfile', isUser)} />
-          </div>
-          <h1 className={getClass(classes, 'drawerRole', isUser)}>
-            { isUser ? t('user') : t('issuer') }
-          </h1>
-          <Switch
-            onChange={this.handleRoleSwitch}
-            isUser={isUser}
-            leftText={t('user')}
-            rightText={t('issuer')}
+        <div>
+          <div className={getClass(classes, 'drawerCircularProfile', isUser)} />
+        </div>
+        <h1 className={getClass(classes, 'drawerRole', isUser)}>
+          { isUser ? t('user') : t('issuer') }
+        </h1>
+        <Switch
+          onChange={this.handleRoleSwitch}
+          isUser={isUser}
+          leftText={t('user')}
+          rightText={t('issuer')}
+        />
+        <AccountsSummary>
+          <AccountBalance
+            currencySymbol="$"
+            currency="SGD"
+            name={t('bankAccount')}
+            amount={100}
           />
-          <List component="div">
-            { isUser && (
-              <ListLinkItem
-                to={{ pathname: '/user/tokenization', state: { isUser: true } }}
-                primary={t('tokenize')}
-                isUser
-              />
-            )}
-            { isUser && (
-              <ListLinkItem
-                to={{ pathname: '/user/withdrawal', state: { isUser: true } }}
-                primary={t('withdraw')}
-                isUser
-              />
-            )}
-            { !isUser && (
-              <ListLinkItem
-                to={{ pathname: '/issuer/approval', state: { isUser: false } }}
-                primary={t('approval')}
-                isUser={false}
-              />
-            )}
+          <AccountBalance
+            currency="ETH"
+            name={t('ethWallet')}
+            amount={10}
+          />
+          <AccountBalance
+            currency="SGDR"
+            name={t('ethWallet')}
+            amount={10}
+          />
+        </AccountsSummary>
+        <List component="div">
+          { isUser && (
             <ListLinkItem
-              to={{ pathname: '/transactions', state: { isUser } }}
-              primary={t('transactions')}
-              isUser={isUser}
+              to={{ pathname: '/user/tokenization', state: { isUser: true } }}
+              primary={t('tokenize')}
+              isUser
             />
-          </List>
-          <div className={getClass(classes, 'drawerFooter', isUser)}>
-            <Link to="/" className={classes.drawerLink}>
-              {t('walletSettings')}
-            </Link>
-          </div>
+          )}
+          { isUser && (
+            <ListLinkItem
+              to={{ pathname: '/user/withdrawal', state: { isUser: true } }}
+              primary={t('withdraw')}
+              isUser
+            />
+          )}
+          { !isUser && (
+            <ListLinkItem
+              to={{ pathname: '/issuer/approval', state: { isUser: false } }}
+              primary={t('approval')}
+              isUser={false}
+            />
+          )}
+          <ListLinkItem
+            to={{ pathname: '/transactions', state: { isUser } }}
+            primary={t('transactions')}
+            isUser={isUser}
+          />
+        </List>
+        <div className={classes.drawerPadding} />
+        <div className={getClass(classes, 'drawerFooter', isUser)}>
+          <Link to="/" className={classes.drawerLink}>
+            {t('walletSettings')}
+          </Link>
         </div>
       </React.Fragment>
     );

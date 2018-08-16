@@ -5,5 +5,7 @@
   "tokenize": "Tokenize",
   "withdraw": "Withdraw",
   "approval" : "Approval",
-  "transactions": "Transactions"
+  "transactions": "Transactions",
+  "bankAccount": "Bank\naccount",
+  "ethWallet": "ETH\nwallet"
 }
