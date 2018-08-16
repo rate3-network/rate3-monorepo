@@ -2,14 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { translate } from 'react-i18next';
 
-const Withdrawal = ({ t }) => (
+const Transactions = ({ t }) => (
   <React.Fragment>
-    Withdraw Component
+    Transactions Component
   </React.Fragment>
 );
 
-Withdrawal.propTypes = {
+Transactions.propTypes = {
   t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
 };
 
-export default translate('withdrawal')(Withdrawal);
+export default translate('transactions')(Transactions);

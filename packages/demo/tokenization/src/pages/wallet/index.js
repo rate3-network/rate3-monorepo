@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import { translate } from 'react-i18next';
 
 const Wallet = ({ t }) => (
-  <h1>{t('walletSettings')}</h1>
+  <React.Fragment>
+    Wallet Component
+  </React.Fragment>
 );
 
 Wallet.propTypes = {

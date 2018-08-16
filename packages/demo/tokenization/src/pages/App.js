@@ -9,43 +9,56 @@ import {
 } from 'react-router-dom';
 import { translate } from 'react-i18next';
 
+// Material UI
 import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
+import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
-import MenuIcon from '@material-ui/icons/Menu';
+import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
+import MenuIcon from '@material-ui/icons/Menu';
+import Toolbar from '@material-ui/core/Toolbar';
 
-import Wallet from './wallet';
+// Pages
+import Approval from './approval';
 import Tokenization from './tokenization';
+import Transactions from './transactions';
+import Wallet from './wallet';
 import Withdrawal from './withdrawal';
 
+// Constants
 import {
+  issuerMainBg,
   issuerNavBg,
   issuerNavEmphasisPrimary,
   issuerNavFooterBg,
   issuerNavFooterText,
   issuerNavPrimary,
+  navBoxShadow,
+  userMainBg,
   userNavBg,
   userNavEmphasisPrimary,
   userNavFooterBg,
   userNavFooterText,
   userNavPrimary,
-  navBoxShadow,
 } from '../constants/colors';
-import AccountsSummary from '../components/sidebar/AccountsSummary';
+
+// Components
 import AccountBalance from '../components/sidebar/AccountBalance';
+import AccountsSummary from '../components/sidebar/AccountsSummary';
 import ListLinkItem from '../components/sidebar/ListLinkItem';
+import MainContent from '../components/MainContent';
 import Switch from '../components/sidebar/Switch';
 
+// Actions
 import {
   init as initAction,
 } from '../actions/Network';
 import {
   switchRole as switchRoleAction,
 } from '../actions/Wallet';
+
+// Utilities
 import { compose, genStyle, getClass } from '../utils';
 
 const drawerWidth = 320;
@@ -118,12 +131,17 @@ const styles = theme => ({
     color: isUser ? userNavFooterText : issuerNavFooterText,
     backgroundColor: isUser ? userNavFooterBg : issuerNavFooterBg,
   })),
-  main: {
+  ...genStyle('main', isUser => ({
     flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-  },
+    backgroundColor: isUser ? userMainBg : issuerMainBg,
+  })),
   content: {
-    padding: theme.spacing.unit * 2,
+    padding: theme.spacing.unit * 8,
+  },
+  '@media (max-width: 959.95px)': {
+    content: {
+      padding: theme.spacing.unit * 2,
+    },
   },
 });
 
@@ -239,7 +257,12 @@ class App extends React.Component {
   }
 
   render() {
-    const { classes, theme, isUser } = this.props;
+    const {
+      classes,
+      theme,
+      t,
+      isUser,
+    } = this.props;
     const { mobileOpen } = this.state;
 
     return (
@@ -286,15 +309,58 @@ class App extends React.Component {
             {this.renderDrawer()}
           </Drawer>
         </Hidden>
-        <main className={classes.main}>
+        <main className={getClass(classes, 'main', isUser)}>
           <Hidden mdUp implementation="css">
             <div className={classes.toolbar} />
           </Hidden>
           <div className={classes.content}>
             <RouterSwitch>
-              <Route exact path="/" component={Wallet} />
-              <Route path="/user/tokenization" component={Tokenization} />
-              <Route path="/user/withdrawal" component={Withdrawal} />
+              <Route
+                exact
+                path="/"
+                component={() => (
+                  <MainContent
+                    title={t('walletSettings')}
+                    component={Wallet}
+                  />
+                )}
+              />
+              <Route
+                path="/user/tokenization"
+                component={() => (
+                  <MainContent
+                    title={t('tokenize')}
+                    component={Tokenization}
+                  />
+                )}
+              />
+              <Route
+                path="/user/withdrawal"
+                component={() => (
+                  <MainContent
+                    title={t('withdraw')}
+                    component={Withdrawal}
+                  />
+                )}
+              />
+              <Route
+                path="/issuer/approval"
+                component={() => (
+                  <MainContent
+                    title={t('approval')}
+                    component={Approval}
+                  />
+                )}
+              />
+              <Route
+                path="/transactions"
+                component={() => (
+                  <MainContent
+                    title={t('transactions')}
+                    component={Transactions}
+                  />
+                )}
+              />
             </RouterSwitch>
           </div>
         </main>

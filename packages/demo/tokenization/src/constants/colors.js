@@ -26,3 +26,8 @@ export const issuerNavTogglePrimary = '#FFFFFF';
 export const issuerNavToggleSecondary = '#C4C4C4';
 export const issuerNavToggleEmphasis = '#63727B';
 export const issuerNavToggleBg = '#F1F5F7';
+
+
+// Main panel
+export const userMainBg = '#F1F5F7';
+export const issuerMainBg = '#FFFFFF';
