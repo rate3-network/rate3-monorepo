@@ -35,14 +35,14 @@ const AccountBalance = ({
 
 AccountBalance.propTypes = {
   classes: PropTypes.object.isRequired,
-  currencySymbol: PropTypes.string,
-  currency: PropTypes.string.isRequired,
+  currencySymbol: PropTypes.node,
+  currency: PropTypes.node.isRequired,
   name: PropTypes.string.isRequired,
   amount: PropTypes.number.isRequired,
 };
 
 AccountBalance.defaultProps = {
-  currencySymbol: '',
+  currencySymbol: null,
 };
 
 export default withStyles(styles)(AccountBalance);

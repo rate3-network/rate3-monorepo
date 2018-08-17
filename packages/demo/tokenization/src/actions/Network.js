@@ -1,6 +1,6 @@
-import { genActionTypes } from '../utils';
+import { keyMirror } from '../utils';
 
-export const networkActions = genActionTypes(
+export const networkActions = keyMirror(
   {
     INIT: null,
 

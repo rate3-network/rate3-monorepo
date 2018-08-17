@@ -31,3 +31,50 @@ export const issuerNavToggleBg = '#F1F5F7';
 // Main panel
 export const userMainBg = '#F1F5F7';
 export const issuerMainBg = '#FFFFFF';
+
+
+// Stepper
+export const userStepperIcon = '#DDE2E5';
+export const issuerStepperIcon = '#F1F5F7';
+export const stepperIconActive = '#203542';
+export const stepperIconCompleted = stepperIconActive;
+
+export const userStepperText = '#C4C4C4';
+export const issuerStepperText = '#E5E5E5';
+export const userStepperActiveText = '#203542';
+export const issuerStepperActiveText = '#494848';
+export const userStepperCompletedText = '#979797';
+export const issuerStepperCompletedText = issuerStepperActiveText;
+
+export const stepperConnector = '#EBF0F3';
+
+
+// TextField
+export const textFieldBg = '#FFFFFF';
+export const textFieldBgDisabled = '#F9F9F9';
+export const textFieldBorder = '#979797';
+export const textFieldFocused = '#203542';
+export const textFieldLabel = '#494848';
+export const textFieldInput = '#494848';
+export const textFieldShadow = 'rgba(0, 0, 0, 0.25)';
+
+
+// Button
+export const userbuttonText = '#54656F';
+export const issuerButtonText = ' rgba(32, 53, 66, 0.75)';
+export const buttonTextPrimary = '#FFFFFF';
+export const buttonBg = 'inherit';
+export const buttonBgPrimary = '#203542';
+
+
+// Confirmation
+export const userConfirmationLabel = '#494848';
+export const issuerConfirmationLabel = '#494848';
+export const userConfirmationValue = '#494848';
+export const issuerConfirmationValue = '#000000';
+
+
+// Currency
+export const sgdColor = '#FEBCBE';
+export const sgdrColor = '#CD5076';
+export const currencyPillText = '#FFFFFF';

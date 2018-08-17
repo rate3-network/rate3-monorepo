@@ -1,6 +1,6 @@
-import { genActionTypes } from '../utils';
+import { keyMirror } from '../utils';
 
-export const walletActions = genActionTypes(
+export const walletActions = keyMirror(
   {
     SWITCH_ROLE: null,
   },

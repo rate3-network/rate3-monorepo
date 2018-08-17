@@ -41,6 +41,8 @@ import {
   userNavFooterBg,
   userNavFooterText,
   userNavPrimary,
+  sgdrColor,
+  sgdColor,
 } from '../constants/colors';
 
 // Components
@@ -74,14 +76,14 @@ const styles = theme => ({
     width: '100%',
     minHeight: '100vh',
   },
-  appBar: {
+  ...genStyle('appBar', isUser => ({
     position: 'absolute',
     marginLeft: drawerWidth,
     [theme.breakpoints.up('md')]: {
       width: `calc(100% - ${drawerWidth}px)`,
     },
-    backgroundColor: 'transparent',
-  },
+    backgroundColor: isUser ? userMainBg : issuerMainBg,
+  })),
   navIconHide: {
     [theme.breakpoints.up('md')]: {
       display: 'none',
@@ -134,6 +136,7 @@ const styles = theme => ({
   ...genStyle('main', isUser => ({
     flexGrow: 1,
     backgroundColor: isUser ? userMainBg : issuerMainBg,
+    overflowY: 'auto',
   })),
   content: {
     padding: theme.spacing.unit * 8,
@@ -202,20 +205,15 @@ class App extends React.Component {
         />
         <AccountsSummary>
           <AccountBalance
+            currency={<span style={{ color: sgdrColor }}>SGDR</span>}
+            name={t('ethWallet')}
+            amount={10}
+          />
+          <AccountBalance
             currencySymbol="$"
-            currency="SGD"
+            currency={<span style={{ color: sgdColor }}>SGD</span>}
             name={t('bankAccount')}
             amount={100}
-          />
-          <AccountBalance
-            currency="ETH"
-            name={t('ethWallet')}
-            amount={10}
-          />
-          <AccountBalance
-            currency="SGDR"
-            name={t('ethWallet')}
-            amount={10}
           />
         </AccountsSummary>
         <List component="div">
@@ -269,7 +267,7 @@ class App extends React.Component {
       <div className={classes.root}>
         <Hidden mdUp implementation="css">
           <AppBar
-            className={classes.appBar}
+            className={getClass(classes, 'appBar', isUser)}
             elevation={0}
           >
             <Toolbar disableGutters>

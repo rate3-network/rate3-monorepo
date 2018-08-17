@@ -1,3 +1,25 @@
 {
-  "tokenize": "Tokenize"
+  "amountToTokenize": "Amount to tokenize",
+  "wireTransferDetails": "Wire transfer details",
+  "gasLimitAndPrice": "Gas limit and price",
+  "confirmation": "Confirmation",
+
+  "next": "Next",
+  "back": "Back",
+  "submit": "Submit",
+  "seeTransactions": "See transactions",
+  "backToTokenize": "Back to tokenize",
+
+  "amountFieldLabel": "Enter amount to tokenize",
+  "amountLabel": "Amount to tokenize",
+  "trustBankFieldLabel": "Trust Bank",
+  "trustBankLabel": "Trust Bank",
+  "trustSwiftCodeFieldLabel": "Trust Swiftcode",
+  "trustSwiftCodeLabel": "Trust Swiftcode",
+  "trustAccountFieldLabel": "Trust Account",
+  "trustAccountLabel": "Trust Account",
+  "gasLimitFieldLabel": "Gas Limit",
+  "gasLimitLabel": "Gas Limit",
+  "gasPriceFieldLabel": "Gas Price",
+  "gasPriceLabel": "Gas Price"
 }

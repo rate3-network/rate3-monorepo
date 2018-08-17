@@ -22,7 +22,7 @@ const AccountsSummary = ({
     <Grid container>
       {children.map((child, idx) => (
         // eslint-disable-next-line react/no-array-index-key
-        <Grid item xs={4} key={idx}>
+        <Grid item xs={6} key={idx}>
           <Paper className={classes.paper} elevation={0}>
             {child}
           </Paper>
