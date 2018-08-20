@@ -5,7 +5,7 @@ import { translate } from 'react-i18next';
 
 import Grid from '@material-ui/core/Grid';
 
-import { SgdPill } from '../../components/CurrencyPill';
+import { SgdrPill, SgdPill } from '../../components/CurrencyPill';
 import styles from '../_common/confirmationStyles';
 import { compose } from '../../utils';
 
@@ -13,9 +13,6 @@ const Confirmation = ({
   classes,
   t,
   amount,
-  trustBank,
-  trustSwiftCode,
-  trustAccount,
   gasLimit,
   gasPrice,
 }) => (
@@ -24,16 +21,21 @@ const Confirmation = ({
       {
         [
           {
-            label: t('amountLabel'),
+            label: t('amountToWithdrawLabel'),
+            value: amount && (
+              <React.Fragment>
+                {amount} <SgdrPill />
+              </React.Fragment>
+            ),
+          },
+          {
+            label: t('amountToReceiveLabel'),
             value: amount && (
               <React.Fragment>
                 {amount} <SgdPill />
               </React.Fragment>
             ),
           },
-          { label: t('trustBankLabel'), value: trustBank },
-          { label: t('trustSwiftCodeLabel'), value: trustSwiftCode },
-          { label: t('trustAccountLabel'), value: trustAccount },
           { label: t('gasLimitLabel'), value: gasLimit && `${gasLimit} UNITS` },
           { label: t('gasPriceLabel'), value: gasPrice && `${gasPrice} GWEI` },
         ].map(row => (
@@ -55,14 +57,11 @@ Confirmation.propTypes = {
   classes: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
   amount: PropTypes.string.isRequired,
-  trustBank: PropTypes.string.isRequired,
-  trustSwiftCode: PropTypes.string.isRequired,
-  trustAccount: PropTypes.string.isRequired,
   gasLimit: PropTypes.string.isRequired,
   gasPrice: PropTypes.string.isRequired,
 };
 
 export default compose(
   withStyles(styles, { withTheme: true }),
-  translate('tokenization'),
+  translate('withdrawal'),
 )(Confirmation);

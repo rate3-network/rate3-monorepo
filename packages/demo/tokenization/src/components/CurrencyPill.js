@@ -3,23 +3,25 @@ import PropTypes from 'prop-types';
 import { sgdColor, currencyPillText, sgdrColor } from '../constants/colors';
 
 const CurrencyPill = ({ text, backgroundColor, color }) => (
-  <div
-    style={{
-      backgroundColor,
-      color,
-      height: '1.2rem',
-      width: '2.4rem',
-      textAlign: 'center',
-      letterSpacing: 0,
-      fontSize: '0.6em',
-      fontWeight: 'bold',
-      borderRadius: '0.6rem',
-      display: 'table-cell',
-      verticalAlign: 'middle',
-    }}
-  >
-    {text}
-  </div>
+  <span>
+    <div
+      style={{
+        backgroundColor,
+        color,
+        height: '1.2rem',
+        width: '2.4rem',
+        textAlign: 'center',
+        letterSpacing: 0,
+        fontSize: '0.6em',
+        fontWeight: 'bold',
+        borderRadius: '0.6rem',
+        display: 'table-cell',
+        verticalAlign: 'middle',
+      }}
+    >
+      {text}
+    </div>
+  </span>
 );
 
 CurrencyPill.propTypes = {

@@ -47,7 +47,7 @@ const Completion = ({
             error: transactionError,
           },
           {
-            text: t('issuerApproval'),
+            text: t('wireTransferCompleted'),
             completed: issuerApproved,
             error: transactionError,
           },
@@ -69,5 +69,5 @@ Completion.propTypes = {
 
 export default compose(
   withStyles(styles, { withTheme: true }),
-  translate('tokenization'),
+  translate('withdrawal'),
 )(Completion);

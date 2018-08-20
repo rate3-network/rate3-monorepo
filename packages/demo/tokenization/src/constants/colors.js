@@ -89,3 +89,7 @@ export const transactionProgressStepperIconError = '#F95454';
 export const sgdColor = '#FEBCBE';
 export const sgdrColor = '#CD5076';
 export const currencyPillText = '#FFFFFF';
+
+
+// Withdrawal
+export const withdrawalInfoText = '#8A8A8A';

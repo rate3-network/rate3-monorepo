@@ -3,6 +3,7 @@ import createSagaMiddleware from 'redux-saga';
 
 import network from './reducers/Network';
 import tokenize from './reducers/Tokenize';
+import withdraw from './reducers/Withdraw';
 import wallet from './reducers/Wallet';
 import sagas from './effects';
 
@@ -20,6 +21,7 @@ const store = createStore(
   combineReducers({
     network,
     tokenize,
+    withdraw,
     wallet,
   }),
   applyMiddleware(...middlewares),

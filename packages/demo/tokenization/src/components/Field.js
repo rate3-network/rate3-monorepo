@@ -18,6 +18,11 @@ import { genStyle, getClass } from '../utils';
 
 
 const styles = theme => ({
+  root: {
+    '&:last-child $inputRoot': {
+      marginBottom: 0,
+    },
+  },
   inputRoot: {
     padding: 0,
     marginBottom: theme.spacing.unit * 3,
@@ -105,6 +110,9 @@ const Field = ({
         FormLabelClasses: {
           focused: classes.inputLabelFocused,
         },
+      }}
+      classes={{
+        root: classes.root,
       }}
       {...props}
     />
