@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
-import "../../lib/lifecycle/Ownable.sol";
+import "../../lib/lifecycle/Pausable.sol";
 import "./ERC20.sol";
 import "./AllowanceModule.sol";
 import "./BalanceModule.sol";
@@ -112,7 +112,7 @@ contract ModularToken is ERC20, Claimable, Pausable {
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         require(_value <= balanceModule.balanceOf(_from), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
-        require(_value <= allowanceModule.allowanceOf(_from, msg.sender),"Insufficient allowance");
+        require(_value <= allowanceModule.allowanceOf(_from, msg.sender), "Insufficient allowance");
 
         allowanceModule.subAllowance(_from, msg.sender, _value);
         balanceModule.subBalance(_from, _value);
@@ -167,7 +167,7 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _note A note that burner can attach.
      */
     function burn(uint256 _value, string _note) public whenNotPaused returns (bool) {
-        require(_value <= balanceModule.balanceOf(msg.sender),"Insufficient balance");
+        require(_value <= balanceModule.balanceOf(msg.sender), "Insufficient balance");
 
         balanceModule.subBalance(msg.sender, _value);
         totalSupply_ = totalSupply_.sub(_value);

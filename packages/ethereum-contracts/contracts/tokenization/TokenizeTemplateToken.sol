@@ -6,8 +6,8 @@ import "./modules/ModularToken.sol";
 contract TokenizeTemplateToken is ModularToken {
     using SafeMath for uint256;
 
-    string public name = "";
-    string public symbol = "TUSD";
+    string public name = "Tokenized Template Token";
+    string public symbol = "TTT";
     uint8 public constant decimals = 18;
 
     constructor() public {
