@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
-import "../modules/ModularToken.sol";
+import "../TokenizeTemplateToken.sol";
 
 contract OperationsInteractor is Claimable {
     using SafeMath for uint256;
@@ -30,7 +30,7 @@ contract OperationsInteractor is Claimable {
     }
 
     address public admin;
-    ModularToken public token;
+    TokenizeTemplateToken public token;
     uint256 public operationDelay;
 
     mapping (address => MintRequestOperation[]) public mintRequestOperations;
@@ -44,18 +44,19 @@ contract OperationsInteractor is Claimable {
     event MintOperationRequested(address indexed by, address indexed to, uint256 value, uint256 requestTimestamp, uint256 index);
     event BurnOperationRequested(address indexed by, address indexed from, uint256 value, uint256 requestTimestamp, uint256 index);
 
-    event MintOperationApproved();
-    event BurnOperationApproved();
+    event MintOperationApproved(address indexed by, address indexed approvedBy, uint256 approvalTimestamp, uint256 finalizeTimestamp, uint256 index);
+    event BurnOperationApproved(address indexed by, address indexed approvedBy, uint256 approvalTimestamp, uint256 finalizeTimestamp, uint256 index);
 
-    event MintOperationFinalized();
-    event BurnOperationFinalized();
+    event MintOperationFinalized(address indexed by, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
+    event BurnOperationFinalized(address indexed by, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
 
-    event MintOperationRevoked();
-    event BurnOperationRevoked();
+    event MintOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index));
+    event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index));
 
-    constructor() public {
+    constructor(TokenizeTemplateToken _token) public {
         admin = msg.sender;
         operationDelay = 6 hours;
+        token = _token;
     }
 
     function requestMint(address _to, uint256 _value) public {
@@ -80,6 +81,8 @@ contract OperationsInteractor is Claimable {
         mintRequestOperation.approved = true;
         mintRequestOperation.approvalTimestamp = block.timestamp;
         mintRequestOperation.finalizeTimestamp = finalizeTimestamp;
+
+        emit MintOperationApproved(_requestor, msg.sender, block.timestamp, finalizeTimestamp, _index);
     }
 
     function finalizeMint(address _requestor, uint256 _index) public onlyAdminOrOwner {
@@ -89,10 +92,13 @@ contract OperationsInteractor is Claimable {
         uint256 value = mintRequestOperation.value;
         delete mintRequestOperations[_requestor][_index];
         token.mint(mintAddress, value);
+
+        emit MintOperationFinalized(_requestor, msg.sender, block.timestamp, _index);
     }
 
     function revokeMint(address _requestor, uint256 _index) public onlyAdminOrOwner {
         delete mintRequestOperations[_requestor][_index];
+        emit MintOperationRevoked(_requestor, msg.sender, block.timestamp, _index);
     }
 
     function requestBurn(address _from, uint256 _value) public {
@@ -117,6 +123,8 @@ contract OperationsInteractor is Claimable {
         burnRequestOperation.approved = true;
         burnRequestOperation.approvalTimestamp = block.timestamp;
         burnRequestOperation.finalizeTimestamp = finalizeTimestamp;
+
+        emit BurnOperationApproved(_requestor, msg.sender, block.timestamp, finalizeTimestamp, _index);
     }
 
     function finalizeBurn(address _requestor, uint256 _index) public onlyAdminOrOwner {
@@ -126,10 +134,13 @@ contract OperationsInteractor is Claimable {
         uint256 value = burnRequestOperation.value;
         delete burnRequestOperations[_requestor][_index];
         token.burn(burnAddress, value);
+
+        emit BurnOperationFinalized(_requestor, msg.sender, block.timestamp, _index);
     }
 
     function revokeBurn(address _requestor, uint256 _index) public onlyAdminOrOwner {
         delete burnRequestOperations[_requestor][_index];
+        emit BurnOperationRevoked(_requestor, msg.sender, block.timestamp, _index);
     }
 
 }
