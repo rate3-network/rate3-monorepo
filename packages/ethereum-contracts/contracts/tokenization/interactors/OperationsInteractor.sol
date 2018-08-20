@@ -34,7 +34,7 @@ contract OperationsInteractor is Claimable {
     uint256 public operationDelay;
 
     mapping (address => MintRequestOperation[]) public mintRequestOperations;
-    mapping (address => BurnRequestOperation[]) public BurnRequestOperations;
+    mapping (address => BurnRequestOperation[]) public burnRequestOperations;
 
     modifier onlyAdminOrOwner() {
         require(msg.sender == admin || msg.sender == owner, "Only allowed for Admin or Owner");
@@ -93,6 +93,43 @@ contract OperationsInteractor is Claimable {
 
     function revokeMint(address _requestor, uint256 _index) public onlyAdminOrOwner {
         delete mintRequestOperations[_requestor][_index];
+    }
+
+    function requestBurn(address _from, uint256 _value) public {
+        uint256 requestTimestamp = block.timestamp;
+        BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(msg.sender, _from, _value, requestTimestamp);
+
+        emit BurnOperationRequested(msg.sender, _from, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
+        burnRequestOperations[msg.sender].push(burnRequestOperation);
+    }
+
+    function approveBurn(address _requestor, uint256 _index) public onlyAdminOrOwner {
+        BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
+
+        require(!burnRequestOperation.approved, "BurnRequestOperation is already approved");
+
+        uint256 finalizeTimestamp = block.timestamp;
+        if (msg.sender != owner) {
+            finalizeTimestamp = finalizeTimestamp.add(operationDelay);
+        }
+
+        burnRequestOperation.approvedBy = msg.sender;
+        burnRequestOperation.approved = true;
+        burnRequestOperation.approvalTimestamp = block.timestamp;
+        burnRequestOperation.finalizeTimestamp = finalizeTimestamp;
+    }
+
+    function finalizeBurn(address _requestor, uint256 _index) public onlyAdminOrOwner {
+        BurnRequestOperation memory burnRequestOperation = burnRequestOperations[_requestor][_index];
+        require(burnRequestOperation.finalizeTimestamp <= block.timestamp, "Action is still timelocked");
+        address burnAddress = burnRequestOperation.from;
+        uint256 value = burnRequestOperation.value;
+        delete burnRequestOperations[_requestor][_index];
+        token.burn(burnAddress, value);
+    }
+
+    function revokeBurn(address _requestor, uint256 _index) public onlyAdminOrOwner {
+        delete burnRequestOperations[_requestor][_index];
     }
 
 }
