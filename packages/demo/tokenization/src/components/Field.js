@@ -122,6 +122,6 @@ Field.propTypes = {
 Field.defaultProps = {
   adornment: null,
   type: 'text',
-}
+};
 
 export default withStyles(styles, { withTheme: true })(Field);

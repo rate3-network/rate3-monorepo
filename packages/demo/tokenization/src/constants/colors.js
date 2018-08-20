@@ -1,3 +1,6 @@
+// Text
+export const textDefault = '#494848';
+
 // Nav bar
 export const navBoxShadow = 'rgba(0, 0, 0, 0.2)';
 export const userNavBg = '#FFFFFF';
@@ -48,14 +51,13 @@ export const issuerStepperCompletedText = issuerStepperActiveText;
 
 export const stepperConnector = '#EBF0F3';
 
-
 // TextField
 export const textFieldBg = '#FFFFFF';
 export const textFieldBgDisabled = '#F9F9F9';
 export const textFieldBorder = '#979797';
 export const textFieldFocused = '#203542';
-export const textFieldLabel = '#494848';
-export const textFieldInput = '#494848';
+export const textFieldLabel = textDefault;
+export const textFieldInput = textDefault;
 export const textFieldShadow = 'rgba(0, 0, 0, 0.25)';
 
 
@@ -68,10 +70,19 @@ export const buttonBgPrimary = '#203542';
 
 
 // Confirmation
-export const userConfirmationLabel = '#494848';
-export const issuerConfirmationLabel = '#494848';
-export const userConfirmationValue = '#494848';
-export const issuerConfirmationValue = '#000000';
+export const userConfirmationLabel = textDefault;
+export const issuerConfirmationLabel = textDefault;
+export const userConfirmationValue = textDefault;
+export const issuerConfirmationValue = textDefault;
+
+
+// Transaction Progress
+export const transactionProgressHeader = textDefault;
+export const transactionProgressSubHeader = textDefault;
+export const transactionProgressText = textDefault;
+export const transactionProgressStepperIcon = '#F9AD54';
+export const transactionProgressStepperIconCompleted = '#1EAE60';
+export const transactionProgressStepperIconError = '#F95454';
 
 
 // Currency

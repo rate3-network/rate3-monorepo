@@ -21,5 +21,13 @@
   "gasLimitFieldLabel": "Gas Limit",
   "gasLimitLabel": "Gas Limit",
   "gasPriceFieldLabel": "Gas Price",
-  "gasPriceLabel": "Gas Price"
+  "gasPriceLabel": "Gas Price",
+
+  "transactionSubmitted": "The transaction is submitted.",
+  "transactionFailed": "The transaction failed.",
+  "pleaseTryAgainLater": "Please try again later",
+  "txHash": "TxHash:",
+  "transactionSubmission": "Transaction Submission",
+  "networkConfirmation": "Network Confirmation",
+  "issuerApproval": "Issuer Approval"
 }

@@ -16,6 +16,8 @@ export const tokenizeActions = keyMirror(
     RESET: null,
 
     SET_FIELD: null,
+
+    SUBMIT_TOKENIZE_REQUEST: null,
   },
   'TOKENIZE',
 );
@@ -36,4 +38,15 @@ export const setField = (field, value) => ({
   type: tokenizeActions.SET_FIELD,
   field,
   value,
+});
+
+export const submitTokenizeRequest = (
+  amount,
+  gasLimit,
+  gasPrice,
+) => ({
+  type: tokenizeActions.SUBMIT_TOKENIZE_REQUEST,
+  amount,
+  gasLimit,
+  gasPrice,
 });

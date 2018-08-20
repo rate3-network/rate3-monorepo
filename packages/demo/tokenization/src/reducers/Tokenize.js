@@ -5,6 +5,12 @@ const initialState = {
   step: 0,
   loadingNextStep: false,
 
+  currentTransactionHash: '',
+  submissionConfirmed: false,
+  networkConfirmed: false,
+  issuerApproved: false,
+  transactionError: false,
+
   [tokenizeFields.amount]: '',
   [tokenizeFields.trustBank]: '',
   [tokenizeFields.trustSwiftCode]: '',
@@ -14,8 +20,7 @@ const initialState = {
 };
 
 /**
- * Reducer for wallet state, which consists of:
- * - The current role
+ * Reducer for tokenize state
  *
  * @param {Object} [state=initialState] Previous state
  * @param {Object} [action={}] Current action
@@ -50,6 +55,33 @@ export default function (state = initialState, action = {}) {
     }
     case tokenizeActions.RESET: {
       return initialState;
+    }
+    case tokenizeActions.SUBMIT_TOKENIZE_REQUEST: {
+      return {
+        ...state,
+        loadingNextStep: true,
+      };
+    }
+    case `${tokenizeActions.SUBMIT_TOKENIZE_REQUEST}_HASH`: {
+      const { hash } = action;
+      return {
+        ...state,
+        loadingNextStep: false,
+        step: state.step + 1,
+        currentTransactionHash: hash,
+      };
+    }
+    case `${tokenizeActions.SUBMIT_TOKENIZE_REQUEST}_RECEIPT`: {
+      return {
+        ...state,
+        submissionConfirmed: true,
+      };
+    }
+    case `${tokenizeActions.SUBMIT_TOKENIZE_REQUEST}_CONFIRMATION`: {
+      return {
+        ...state,
+        networkConfirmed: true,
+      };
     }
     default: {
       return state;

@@ -45,6 +45,7 @@ const styles = theme => ({
     boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
     backgroundColor: buttonBgPrimary,
     color: buttonTextPrimary,
+    padding: '0 30px',
     minWidth: '120px',
     '&:hover': {
       backgroundColor: buttonBgPrimary,

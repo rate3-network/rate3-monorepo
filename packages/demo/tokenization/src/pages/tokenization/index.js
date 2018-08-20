@@ -19,6 +19,7 @@ import {
   prevStep as prevStepAction,
   reset as resetAction,
   setField as setFieldAction,
+  submitTokenizeRequest as submitTokenizeRequestAction,
   tokenizeFields,
 } from '../../actions/Tokenize';
 import { compose, genStyle, getClass } from '../../utils';
@@ -76,11 +77,22 @@ class Tokenization extends React.Component {
   }
 
   handleNextStep = () => {
-    const { currentStep, nextStep } = this.props;
+    const {
+      amount,
+      gasLimit,
+      gasPrice,
+      currentStep,
+      nextStep,
+      submitTokenizeRequest,
+    } = this.props;
     if (!this.canProceedNextStep(currentStep)) {
       return;
     }
     if (currentStep >= this.getSteps().length) {
+      return;
+    }
+    if (currentStep === 3) {
+      submitTokenizeRequest(amount, gasLimit, gasPrice);
       return;
     }
     nextStep();
@@ -137,6 +149,11 @@ class Tokenization extends React.Component {
       gasLimit,
       gasPrice,
       setField,
+      currentTransactionHash,
+      submissionConfirmed,
+      networkConfirmed,
+      issuerApproved,
+      transactionError,
     } = this.props;
 
     switch (currentStep) {
@@ -186,7 +203,13 @@ class Tokenization extends React.Component {
       }
       case 4: {
         return (
-          <Completion />
+          <Completion
+            txHash={currentTransactionHash}
+            submissionConfirmed={submissionConfirmed}
+            networkConfirmed={networkConfirmed}
+            issuerApproved={issuerApproved}
+            transactionError={transactionError}
+          />
         );
       }
       default: {
@@ -310,12 +333,18 @@ Tokenization.propTypes = {
   trustAccount: PropTypes.string.isRequired,
   gasLimit: PropTypes.string.isRequired,
   gasPrice: PropTypes.string.isRequired,
+  currentTransactionHash: PropTypes.string.isRequired,
+  submissionConfirmed: PropTypes.bool.isRequired,
+  networkConfirmed: PropTypes.bool.isRequired,
+  issuerApproved: PropTypes.bool.isRequired,
+  transactionError: PropTypes.bool.isRequired,
 
   // Actions
   nextStep: PropTypes.func.isRequired,
   prevStep: PropTypes.func.isRequired,
   reset: PropTypes.func.isRequired,
   setField: PropTypes.func.isRequired,
+  submitTokenizeRequest: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -328,6 +357,11 @@ const mapStateToProps = state => ({
   trustAccount: state.tokenize[tokenizeFields.trustAccount],
   gasLimit: state.tokenize[tokenizeFields.gasLimit],
   gasPrice: state.tokenize[tokenizeFields.gasPrice],
+  currentTransactionHash: state.tokenize.currentTransactionHash,
+  submissionConfirmed: state.tokenize.submissionConfirmed,
+  networkConfirmed: state.tokenize.networkConfirmed,
+  issuerApproved: state.tokenize.issuerApproved,
+  transactionError: state.tokenize.transactionError,
 });
 
 const enhance = compose(
@@ -340,6 +374,7 @@ const enhance = compose(
       prevStep: prevStepAction,
       reset: resetAction,
       setField: setFieldAction,
+      submitTokenizeRequest: submitTokenizeRequestAction,
     },
   ),
 );
