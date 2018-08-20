@@ -1,10 +1,10 @@
 pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
-import "../../lib/ownership/Claimable.sol";
+import "./BaseAdminInteractor.sol";
 import "../TokenizeTemplateToken.sol";
 
-contract OperationsInteractor is Claimable {
+contract OperationsInteractor is BaseAdminInteractor {
     using SafeMath for uint256;
 
     struct MintRequestOperation {
@@ -29,8 +29,6 @@ contract OperationsInteractor is Claimable {
         uint256 finalizeTimestamp;
     }
 
-    address public admin;
-    TokenizeTemplateToken public token;
     uint256 public operationDelay;
 
     mapping (address => MintRequestOperation[]) public mintRequestOperations;
@@ -53,10 +51,8 @@ contract OperationsInteractor is Claimable {
     event MintOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index));
     event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index));
 
-    constructor(TokenizeTemplateToken _token) public {
-        admin = msg.sender;
+    constructor() public {
         operationDelay = 6 hours;
-        token = _token;
     }
 
     function requestMint(address _to, uint256 _value) public {
