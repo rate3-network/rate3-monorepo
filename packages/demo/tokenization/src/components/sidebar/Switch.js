@@ -4,10 +4,10 @@ import { withStyles } from '@material-ui/core/styles';
 import Switch from '@material-ui/core/Switch';
 import { genStyle, getClass } from '../../utils';
 import {
-  issuerNavToggleBg,
-  issuerNavToggleEmphasis,
-  issuerNavTogglePrimary,
-  issuerNavToggleSecondary,
+  trusteeNavToggleBg,
+  trusteeNavToggleEmphasis,
+  trusteeNavTogglePrimary,
+  trusteeNavToggleSecondary,
   navToggleBoxShadow,
   userNavToggleBg,
   userNavToggleEmphasis,
@@ -33,16 +33,16 @@ const styles = theme => ({
   ...genStyle('leftText', isUser => ({
     position: 'absolute',
     left: 0,
-    width: switchWidth * 0.55,
+    width: switchWidth * 0.53,
     zIndex: 999,
-    color: isUser ? userNavTogglePrimary : issuerNavToggleSecondary,
+    color: isUser ? userNavTogglePrimary : trusteeNavToggleSecondary,
   })),
   ...genStyle('rightText', isUser => ({
     position: 'absolute',
     right: 0,
-    width: switchWidth * 0.55,
+    width: switchWidth * 0.53,
     zIndex: 999,
-    color: isUser ? userNavToggleSecondary : issuerNavTogglePrimary,
+    color: isUser ? userNavToggleSecondary : trusteeNavTogglePrimary,
   })),
   ...genStyle('root', isUser => ({
     width: switchWidth,
@@ -60,26 +60,26 @@ const styles = theme => ({
         backgroundColor: userNavToggleBg,
       },
     },
-    '&$issuerChecked': {
-      color: issuerNavTogglePrimary,
-      '& + $issuerBar': {
-        backgroundColor: issuerNavToggleBg,
+    '&$trusteeChecked': {
+      color: trusteeNavTogglePrimary,
+      '& + $trusteeBar': {
+        backgroundColor: trusteeNavToggleBg,
       },
     },
   })),
   ...genStyle('checked', isUser => ({
     transform: 'translateX(0)',
     '& $userIcon': {
-      transform: `translateX(${switchWidth * 0.45 - 1}px)`,
+      transform: `translateX(${switchWidth * 0.47 - 1}px)`,
     },
-    '& $issuerIcon': {
-      transform: `translateX(${switchWidth * 0.45 - 1}px)`,
+    '& $trusteeIcon': {
+      transform: `translateX(${switchWidth * 0.47 - 1}px)`,
     },
     '& + $userBar': {
       opacity: 1,
       border: 'none',
     },
-    '& + $issuerBar': {
+    '& + $trusteeBar': {
       opacity: 1,
       border: 'none',
     },
@@ -93,18 +93,18 @@ const styles = theme => ({
     border: 'none',
     boxSizing: 'border-box',
     boxShadow: `inset 3px 3px 8px ${navToggleBoxShadow}`,
-    backgroundColor: isUser ? userNavToggleBg : issuerNavToggleBg,
+    backgroundColor: isUser ? userNavToggleBg : trusteeNavToggleBg,
     opacity: 1,
     transition: theme.transitions.create(['background-color', 'border']),
   })),
   ...genStyle('icon', isUser => ({
-    width: switchWidth * 0.55,
+    width: switchWidth * 0.53,
     height: switchHeight - 2,
     borderRadius: switchHeight / 2 - 1,
     border: 'none',
     boxSizing: 'border-box',
     boxShadow: `2px 0px 4px ${navToggleBoxShadow}`,
-    backgroundColor: isUser ? userNavToggleEmphasis : issuerNavToggleEmphasis,
+    backgroundColor: isUser ? userNavToggleEmphasis : trusteeNavToggleEmphasis,
     transition: theme.transitions.create('transform', {
       duration: theme.transitions.duration.shortest,
       easing: theme.transitions.easing.sharp,

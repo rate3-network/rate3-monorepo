@@ -1,6 +1,6 @@
 {
   "user": "User",
-  "issuer": "Issuer",
+  "trustee": "Trustee",
   "walletSettings": "Wallet settings",
   "tokenize": "Tokenize",
   "withdraw": "Withdraw",

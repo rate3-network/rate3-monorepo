@@ -28,12 +28,12 @@ import Withdrawal from './withdrawal';
 
 // Constants
 import {
-  issuerMainBg,
-  issuerNavBg,
-  issuerNavEmphasisPrimary,
-  issuerNavFooterBg,
-  issuerNavFooterText,
-  issuerNavPrimary,
+  trusteeMainBg,
+  trusteeNavBg,
+  trusteeNavEmphasisPrimary,
+  trusteeNavFooterBg,
+  trusteeNavFooterText,
+  trusteeNavPrimary,
   navBoxShadow,
   userMainBg,
   userNavBg,
@@ -82,7 +82,7 @@ const styles = theme => ({
     [theme.breakpoints.up('md')]: {
       width: `calc(100% - ${drawerWidth}px)`,
     },
-    backgroundColor: isUser ? userMainBg : issuerMainBg,
+    backgroundColor: isUser ? userMainBg : trusteeMainBg,
   })),
   navIconHide: {
     [theme.breakpoints.up('md')]: {
@@ -95,8 +95,8 @@ const styles = theme => ({
     [theme.breakpoints.up('md')]: {
       position: 'relative',
     },
-    backgroundColor: isUser ? userNavBg : issuerNavBg,
-    color: isUser ? userNavPrimary : issuerNavPrimary,
+    backgroundColor: isUser ? userNavBg : trusteeNavBg,
+    color: isUser ? userNavPrimary : trusteeNavPrimary,
     borderRight: 'none',
     textAlign: 'center',
     boxShadow: isUser ? `1px 0 5px ${navBoxShadow}` : 'none',
@@ -116,7 +116,7 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit * 3,
     marginLeft: 'auto',
     marginRight: 'auto',
-    backgroundColor: isUser ? userNavEmphasisPrimary : issuerNavEmphasisPrimary,
+    backgroundColor: isUser ? userNavEmphasisPrimary : trusteeNavEmphasisPrimary,
   })),
   ...genStyle('drawerRole', isUser => ({
     textTransform: 'uppercase',
@@ -130,12 +130,12 @@ const styles = theme => ({
     textAlign: 'left',
     textTransform: 'uppercase',
     fontSize: '0.8em',
-    color: isUser ? userNavFooterText : issuerNavFooterText,
-    backgroundColor: isUser ? userNavFooterBg : issuerNavFooterBg,
+    color: isUser ? userNavFooterText : trusteeNavFooterText,
+    backgroundColor: isUser ? userNavFooterBg : trusteeNavFooterBg,
   })),
   ...genStyle('main', isUser => ({
     flexGrow: 1,
-    backgroundColor: isUser ? userMainBg : issuerMainBg,
+    backgroundColor: isUser ? userMainBg : trusteeMainBg,
     overflowY: 'auto',
   })),
   content: {
@@ -157,7 +157,7 @@ class App extends React.Component {
     const { networkInit } = this.props;
     networkInit();
     const { location: { pathname }, switchRole } = this.props;
-    if (pathname === '/issuer/approval') {
+    if (pathname === '/trustee/approval') {
       switchRole();
     }
   }
@@ -190,7 +190,7 @@ class App extends React.Component {
 
     if (isUser) {
       history.push({
-        pathname: '/issuer/approval',
+        pathname: '/trustee/approval',
         state: { isUser: false },
       });
     } else {
@@ -211,13 +211,13 @@ class App extends React.Component {
           <div className={getClass(classes, 'drawerCircularProfile', isUser)} />
         </div>
         <h1 className={getClass(classes, 'drawerRole', isUser)}>
-          { isUser ? t('user') : t('issuer') }
+          { isUser ? t('user') : t('trustee') }
         </h1>
         <Switch
           onChange={this.handleRoleSwitch}
           isUser={isUser}
           leftText={t('user')}
-          rightText={t('issuer')}
+          rightText={t('trustee')}
         />
         <AccountsSummary>
           <AccountBalance
@@ -249,7 +249,7 @@ class App extends React.Component {
           )}
           { !isUser && (
             <ListLinkItem
-              to={{ pathname: '/issuer/approval', state: { isUser: false } }}
+              to={{ pathname: '/trustee/approval', state: { isUser: false } }}
               primary={t('approval')}
               isUser={false}
             />
@@ -358,7 +358,7 @@ class App extends React.Component {
                 )}
               />
               <Route
-                path="/issuer/approval"
+                path="/trustee/approval"
                 component={() => (
                   <MainContent
                     title={t('approval')}

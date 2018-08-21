@@ -29,5 +29,5 @@
   "txHash": "TxHash:",
   "transactionSubmission": "Transaction Submission",
   "networkConfirmation": "Network Confirmation",
-  "issuerApproval": "Issuer Approval"
+  "trusteeApproval": "Trustee Approval"
 }

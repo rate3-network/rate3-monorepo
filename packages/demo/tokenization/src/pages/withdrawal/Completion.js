@@ -13,7 +13,7 @@ const Completion = ({
   txHash,
   submissionConfirmed,
   networkConfirmed,
-  issuerApproved,
+  trusteeApproved,
   transactionError,
 }) => (
   <React.Fragment>
@@ -48,7 +48,7 @@ const Completion = ({
           },
           {
             text: t('wireTransferCompleted'),
-            completed: issuerApproved,
+            completed: trusteeApproved,
             error: transactionError,
           },
         ]}
@@ -63,7 +63,7 @@ Completion.propTypes = {
   txHash: PropTypes.string.isRequired,
   submissionConfirmed: PropTypes.bool.isRequired,
   networkConfirmed: PropTypes.bool.isRequired,
-  issuerApproved: PropTypes.bool.isRequired,
+  trusteeApproved: PropTypes.bool.isRequired,
   transactionError: PropTypes.bool.isRequired,
 };
 

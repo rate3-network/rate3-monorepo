@@ -4,9 +4,9 @@ import { NavLink } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { ListItem, ListItemText } from '@material-ui/core';
 import {
-  issuerNavEmphasisPrimary,
-  issuerNavEmphasisSecondary,
-  issuerNavPrimary,
+  trusteeNavEmphasisPrimary,
+  trusteeNavEmphasisSecondary,
+  trusteeNavPrimary,
   userNavEmphasisPrimary,
   userNavEmphasisSecondary,
   userNavPrimary,
@@ -16,16 +16,16 @@ import { genStyle } from '../../utils';
 const styles = theme => ({
   ...genStyle('link', isUser => ({
     textDecoration: 'none',
-    color: isUser ? userNavPrimary : issuerNavPrimary,
+    color: isUser ? userNavPrimary : trusteeNavPrimary,
   })),
   ...genStyle('activeLink', isUser => ({
-    backgroundColor: isUser ? userNavEmphasisPrimary : issuerNavEmphasisPrimary,
+    backgroundColor: isUser ? userNavEmphasisPrimary : trusteeNavEmphasisPrimary,
     '& .nav-highlight': {
       display: 'block !important',
     },
   })),
   ...genStyle('highlight', isUser => ({
-    backgroundColor: isUser ? userNavEmphasisSecondary : issuerNavEmphasisSecondary,
+    backgroundColor: isUser ? userNavEmphasisSecondary : trusteeNavEmphasisSecondary,
     position: 'absolute',
     left: 0,
     width: '8px',
@@ -57,12 +57,12 @@ const ListLinkItem = ({
 }) => (
   <NavLink
     to={to}
-    className={isUser ? classes.userLink : classes.issuerLink}
-    activeClassName={isUser ? classes.userActiveLink : classes.issuerActiveLink}
+    className={isUser ? classes.userLink : classes.trusteeLink}
+    activeClassName={isUser ? classes.userActiveLink : classes.trusteeActiveLink}
   >
-    <ListItem classes={{ button: isUser ? classes.userItem : classes.issuerItem }} button>
+    <ListItem classes={{ button: isUser ? classes.userItem : classes.trusteeItem }} button>
       <div className={
-        `nav-highlight ${isUser ? classes.userHighlight : classes.issuerHighlight}`
+        `nav-highlight ${isUser ? classes.userHighlight : classes.trusteeHighlight}`
       }
       />
       <ListItemText

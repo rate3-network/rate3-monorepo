@@ -8,7 +8,7 @@ const initialState = {
   currentTransactionHash: '',
   submissionConfirmed: false,
   networkConfirmed: false,
-  issuerApproved: false,
+  trusteeApproved: false,
   transactionError: false,
 
   [tokenizeFields.amount]: '',

@@ -10,15 +10,15 @@ import StepConnector from '@material-ui/core/StepConnector';
 import { genStyle, getClass } from '../utils';
 import {
   userStepperIcon,
-  issuerStepperIcon,
+  trusteeStepperIcon,
   stepperIconActive,
   stepperIconCompleted,
   userStepperText,
-  issuerStepperText,
+  trusteeStepperText,
   userStepperActiveText,
-  issuerStepperActiveText,
+  trusteeStepperActiveText,
   userStepperCompletedText,
-  issuerStepperCompletedText,
+  trusteeStepperCompletedText,
 } from '../constants/colors';
 
 
@@ -35,18 +35,18 @@ const styles = theme => ({
     position: 'relative',
   })),
   ...genStyle('labelText', isUser => ({
-    color: isUser ? userStepperText : issuerStepperText,
+    color: isUser ? userStepperText : trusteeStepperText,
     wordBreak: 'break-word',
     letterSpacing: 0,
   })),
   ...genStyle('labelActive', isUser => ({
-    color: isUser ? userStepperActiveText : issuerStepperActiveText,
+    color: isUser ? userStepperActiveText : trusteeStepperActiveText,
   })),
   ...genStyle('labelCompleted', isUser => ({
-    color: `${isUser ? userStepperCompletedText : issuerStepperCompletedText} !important`,
+    color: `${isUser ? userStepperCompletedText : trusteeStepperCompletedText} !important`,
   })),
   ...genStyle('iconRoot', isUser => ({
-    color: `${isUser ? userStepperIcon : issuerStepperIcon} !important`,
+    color: `${isUser ? userStepperIcon : trusteeStepperIcon} !important`,
     borderRadius: '50%',
     border: '0.4em solid transparent',
     width: '2em',

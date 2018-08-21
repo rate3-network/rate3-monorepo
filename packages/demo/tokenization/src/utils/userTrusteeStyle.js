@@ -5,9 +5,9 @@ const capitalize = (s) => {
 
 export const genStyle = (name, styleFn) => ({
   [`user${capitalize(name)}`]: styleFn(true),
-  [`issuer${capitalize(name)}`]: styleFn(false),
+  [`trustee${capitalize(name)}`]: styleFn(false),
 });
 
 export const getClass = (classes, name, isUser) => (
-  classes[`${isUser ? 'user' : 'issuer'}${capitalize(name)}`]
+  classes[`${isUser ? 'user' : 'trustee'}${capitalize(name)}`]
 );

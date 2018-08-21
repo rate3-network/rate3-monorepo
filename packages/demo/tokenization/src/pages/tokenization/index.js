@@ -152,7 +152,7 @@ class Tokenization extends React.Component {
       currentTransactionHash,
       submissionConfirmed,
       networkConfirmed,
-      issuerApproved,
+      trusteeApproved,
       transactionError,
     } = this.props;
 
@@ -207,7 +207,7 @@ class Tokenization extends React.Component {
             txHash={currentTransactionHash}
             submissionConfirmed={submissionConfirmed}
             networkConfirmed={networkConfirmed}
-            issuerApproved={issuerApproved}
+            trusteeApproved={trusteeApproved}
             transactionError={transactionError}
           />
         );
@@ -336,7 +336,7 @@ Tokenization.propTypes = {
   currentTransactionHash: PropTypes.string.isRequired,
   submissionConfirmed: PropTypes.bool.isRequired,
   networkConfirmed: PropTypes.bool.isRequired,
-  issuerApproved: PropTypes.bool.isRequired,
+  trusteeApproved: PropTypes.bool.isRequired,
   transactionError: PropTypes.bool.isRequired,
 
   // Actions
@@ -360,7 +360,7 @@ const mapStateToProps = state => ({
   currentTransactionHash: state.tokenize.currentTransactionHash,
   submissionConfirmed: state.tokenize.submissionConfirmed,
   networkConfirmed: state.tokenize.networkConfirmed,
-  issuerApproved: state.tokenize.issuerApproved,
+  trusteeApproved: state.tokenize.trusteeApproved,
   transactionError: state.tokenize.transactionError,
 });
 

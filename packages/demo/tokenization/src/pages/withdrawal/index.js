@@ -142,7 +142,7 @@ class Withdrawal extends React.Component {
       currentTransactionHash,
       submissionConfirmed,
       networkConfirmed,
-      issuerApproved,
+      trusteeApproved,
       transactionError,
     } = this.props;
 
@@ -182,7 +182,7 @@ class Withdrawal extends React.Component {
             txHash={currentTransactionHash}
             submissionConfirmed={submissionConfirmed}
             networkConfirmed={networkConfirmed}
-            issuerApproved={issuerApproved}
+            trusteeApproved={trusteeApproved}
             transactionError={transactionError}
           />
         );
@@ -307,7 +307,7 @@ Withdrawal.propTypes = {
   currentTransactionHash: PropTypes.string.isRequired,
   submissionConfirmed: PropTypes.bool.isRequired,
   networkConfirmed: PropTypes.bool.isRequired,
-  issuerApproved: PropTypes.bool.isRequired,
+  trusteeApproved: PropTypes.bool.isRequired,
   transactionError: PropTypes.bool.isRequired,
 
   // Actions
@@ -328,7 +328,7 @@ const mapStateToProps = state => ({
   currentTransactionHash: state.withdraw.currentTransactionHash,
   submissionConfirmed: state.withdraw.submissionConfirmed,
   networkConfirmed: state.withdraw.networkConfirmed,
-  issuerApproved: state.withdraw.issuerApproved,
+  trusteeApproved: state.withdraw.trusteeApproved,
   transactionError: state.withdraw.transactionError,
 });
 

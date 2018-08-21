@@ -16,7 +16,7 @@ const wallet = (db) => {
       case walletActions.INIT:
       case walletActions.SWITCH_ROLE: {
         const walletState = yield select(state => state.wallet);
-        const { isUser, userDefaultAccount, issuerDefaultAccount } = walletState;
+        const { isUser, userDefaultAccount, trusteeDefaultAccount } = walletState;
 
         // Use `isUser` only for init, switch role should use the opposite case
         if (isUser && type === walletActions.INIT) {
@@ -32,7 +32,7 @@ const wallet = (db) => {
           yield put({
             type: transactionsActions.SET_CURRENT_TRANSACTIONS,
             transactions: db.select('transactions', {
-              to: issuerDefaultAccount,
+              to: trusteeDefaultAccount,
             }),
             filterType: null,
             filterStatus: null,
@@ -40,7 +40,7 @@ const wallet = (db) => {
           yield put({
             type: transactionsActions.SET_PENDING_APPROVAL_TRANSACTIONS,
             transactions: db.select('transactions', {
-              to: issuerDefaultAccount,
+              to: trusteeDefaultAccount,
               status: txStatus.PENDING_APPROVAL,
             }),
           });

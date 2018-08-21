@@ -9,7 +9,7 @@ const initialState = {
   currentFilterType: null,
   currentFilterStatus: null,
 
-  // pending transactions for the current issuer account
+  // pending transactions for the current trustee account
   pendingApproval: [],
   pendingApprovalPage: 0,
   pendingApprovalRowsPerPage: 5,

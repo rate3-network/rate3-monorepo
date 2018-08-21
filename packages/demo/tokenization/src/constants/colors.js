@@ -10,13 +10,13 @@ export const userNavPrimary = '#494848';
 export const userNavSecondary = '#A5A5A5';
 export const userNavEmphasisPrimary = '#F1F5F7';
 export const userNavEmphasisSecondary = '#203542';
-export const issuerNavBg = '#203542';
-export const issuerNavFooterBg = '#203542';
-export const issuerNavFooterText = '#FFFFFF';
-export const issuerNavPrimary = '#FFFFFF';
-export const issuerNavSecondary = '#C4C4C4';
-export const issuerNavEmphasisPrimary = 'rgba(253, 254, 255, 0.3)';
-export const issuerNavEmphasisSecondary = '#FFFFFF';
+export const trusteeNavBg = '#203542';
+export const trusteeNavFooterBg = '#203542';
+export const trusteeNavFooterText = '#FFFFFF';
+export const trusteeNavPrimary = '#FFFFFF';
+export const trusteeNavSecondary = '#C4C4C4';
+export const trusteeNavEmphasisPrimary = 'rgba(253, 254, 255, 0.3)';
+export const trusteeNavEmphasisSecondary = '#FFFFFF';
 
 
 // Nav bar Toggle
@@ -25,29 +25,29 @@ export const userNavTogglePrimary = '#FFFFFF';
 export const userNavToggleSecondary = '#BEBEBE';
 export const userNavToggleEmphasis = '#203542';
 export const userNavToggleBg = '#FFFFFF';
-export const issuerNavTogglePrimary = '#FFFFFF';
-export const issuerNavToggleSecondary = '#C4C4C4';
-export const issuerNavToggleEmphasis = '#63727B';
-export const issuerNavToggleBg = '#F1F5F7';
+export const trusteeNavTogglePrimary = '#FFFFFF';
+export const trusteeNavToggleSecondary = '#C4C4C4';
+export const trusteeNavToggleEmphasis = '#63727B';
+export const trusteeNavToggleBg = '#F1F5F7';
 
 
 // Main panel
 export const userMainBg = '#F1F5F7';
-export const issuerMainBg = '#FFFFFF';
+export const trusteeMainBg = '#FFFFFF';
 
 
 // Stepper
 export const userStepperIcon = '#DDE2E5';
-export const issuerStepperIcon = '#F1F5F7';
+export const trusteeStepperIcon = '#F1F5F7';
 export const stepperIconActive = '#203542';
 export const stepperIconCompleted = stepperIconActive;
 
 export const userStepperText = '#C4C4C4';
-export const issuerStepperText = '#E5E5E5';
+export const trusteeStepperText = '#E5E5E5';
 export const userStepperActiveText = '#203542';
-export const issuerStepperActiveText = '#494848';
+export const trusteeStepperActiveText = '#494848';
 export const userStepperCompletedText = '#979797';
-export const issuerStepperCompletedText = issuerStepperActiveText;
+export const trusteeStepperCompletedText = trusteeStepperActiveText;
 
 export const stepperConnector = '#EBF0F3';
 
@@ -63,7 +63,7 @@ export const textFieldShadow = 'rgba(0, 0, 0, 0.25)';
 
 // Button
 export const userbuttonText = '#54656F';
-export const issuerButtonText = ' rgba(32, 53, 66, 0.75)';
+export const trusteeButtonText = ' rgba(32, 53, 66, 0.75)';
 export const buttonTextPrimary = '#FFFFFF';
 export const buttonBg = 'inherit';
 export const buttonBgPrimary = '#203542';
@@ -71,9 +71,9 @@ export const buttonBgPrimary = '#203542';
 
 // Confirmation
 export const userConfirmationLabel = textDefault;
-export const issuerConfirmationLabel = textDefault;
+export const trusteeConfirmationLabel = textDefault;
 export const userConfirmationValue = textDefault;
-export const issuerConfirmationValue = textDefault;
+export const trusteeConfirmationValue = textDefault;
 
 
 // Transaction Status

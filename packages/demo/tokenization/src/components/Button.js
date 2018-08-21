@@ -8,7 +8,7 @@ import {
   buttonBgPrimary,
   buttonTextPrimary,
   userbuttonText,
-  issuerButtonText,
+  trusteeButtonText,
   buttonBg,
 } from '../constants/colors';
 import { genStyle, getClass } from '../utils';
@@ -26,7 +26,7 @@ const styles = theme => ({
   },
   ...genStyle('contained', isUser => ({
     boxShadow: 'none',
-    border: isUser ? userbuttonText : issuerButtonText,
+    border: isUser ? userbuttonText : trusteeButtonText,
     backgroundColor: buttonBg,
     borderRadius: '1.2em',
     height: '2.4em',
