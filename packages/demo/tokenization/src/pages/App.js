@@ -9,6 +9,8 @@ import {
 } from 'react-router-dom';
 import { translate } from 'react-i18next';
 
+import blockies from 'ethereum-blockies';
+
 // Material UI
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -101,6 +103,10 @@ const styles = theme => ({
     textAlign: 'center',
     boxShadow: isUser ? `1px 0 5px ${navBoxShadow}` : 'none',
   })),
+  faq: {
+    textAlign: 'left',
+    padding: theme.spacing.unit * 2,
+  },
   drawerLink: {
     textDecoration: 'none',
     color: 'inherit',
@@ -109,9 +115,9 @@ const styles = theme => ({
     flexGrow: 1,
   },
   ...genStyle('drawerCircularProfile', isUser => ({
-    width: `${drawerWidth / 2}px`,
-    height: `${drawerWidth / 2}px`,
-    borderRadius: `${drawerWidth / 4}px`,
+    width: `${drawerWidth / 3}px`,
+    height: `${drawerWidth / 3}px`,
+    borderRadius: `${drawerWidth / 3}px`,
     marginTop: theme.spacing.unit * 3,
     marginBottom: theme.spacing.unit * 3,
     marginLeft: 'auto',
@@ -203,12 +209,32 @@ class App extends React.Component {
   };
 
   renderDrawer() {
-    const { classes, t, isUser } = this.props;
+    const {
+      classes,
+      t,
+      isUser,
+      currentDefaultAccount,
+    } = this.props;
 
     return (
       <React.Fragment>
+        <div className={classes.faq}>
+          <Link to="/faq" className={classes.drawerLink}>
+            {t('faq')}
+          </Link>
+        </div>
         <div>
-          <div className={getClass(classes, 'drawerCircularProfile', isUser)} />
+          <img
+            className={getClass(classes, 'drawerCircularProfile', isUser)}
+            src={
+              blockies.create({
+                seed: currentDefaultAccount,
+                size: 8,
+                scale: Math.ceil(drawerWidth / (3 * 8)),
+              }).toDataURL()
+            }
+            alt=""
+          />
         </div>
         <h1 className={getClass(classes, 'drawerRole', isUser)}>
           { isUser ? t('user') : t('trustee') }
@@ -395,12 +421,14 @@ App.propTypes = {
     state: PropTypes.object,
   }).isRequired,
   isUser: PropTypes.bool.isRequired,
+  currentDefaultAccount: PropTypes.string.isRequired,
   networkInit: PropTypes.func.isRequired,
   switchRole: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  currentDefaultAccount: state.wallet.currentDefaultAccount,
 });
 
 const enhance = compose(

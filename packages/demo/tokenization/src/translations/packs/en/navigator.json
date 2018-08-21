@@ -1,6 +1,7 @@
 {
   "user": "User",
   "trustee": "Trustee",
+  "faq": "FAQ",
   "walletSettings": "Wallet settings",
   "tokenize": "Tokenize",
   "withdraw": "Withdraw",
