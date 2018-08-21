@@ -60,7 +60,7 @@ class Trust extends React.Component {
       <React.Fragment>
         <div className={classes.amountRoot}>
           <div className={classes.amountText}>
-            {t('amountLabel')}:
+            {t('amountToTokenizeLabel')}:
             <span className={classes.amountNumber}> {amount}</span>
             &nbsp;
             <SgdPill />
@@ -74,6 +74,7 @@ class Trust extends React.Component {
           value={trustBank}
           onChange={this.handleBankChange}
           onKeyPress={this.handleKeyPress}
+          disabled
           autoFocus
         />
         <Field
@@ -84,6 +85,7 @@ class Trust extends React.Component {
           value={trustSwiftCode}
           onChange={this.handleSwiftCodeChange}
           onKeyPress={this.handleKeyPress}
+          disabled
         />
         <Field
           isUser
@@ -93,6 +95,7 @@ class Trust extends React.Component {
           value={trustAccount}
           onChange={this.handleAccountChange}
           onKeyPress={this.handleKeyPress}
+          disabled
         />
       </React.Fragment>
     );
@@ -115,6 +118,6 @@ Trust.defaultProps = {
 };
 
 export default compose(
-  translate('tokenization'),
+  translate('fields'),
   withStyles(styles, { withTheme: true }),
 )(Trust);

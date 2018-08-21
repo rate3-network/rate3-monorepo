@@ -6,13 +6,14 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { ClipLoader } from 'react-spinners';
 
-import Gas from './Gas';
-import Confirmation from './Confirmation';
-import Completion from './Completion';
+import Gas from '../_common/Gas';
+import Confirmation from '../_common/Confirmation';
+import Completion from '../_common/Completion';
 
 import Stepper from '../../components/Stepper';
 import Button from '../../components/Button';
 import Table from '../../components/transactions/Table';
+import { SgdPill, SgdrPill } from '../../components/CurrencyPill';
 
 import {
   renderTxHash,
@@ -82,8 +83,8 @@ class Approval extends React.Component {
     const { t } = this.props;
 
     return [
-      t('gasLimitAndPrice'),
-      t('confirmation'),
+      t('stepper:gasLimitAndPrice'),
+      t('stepper:confirmation'),
     ];
   }
 
@@ -132,6 +133,11 @@ class Approval extends React.Component {
     reset();
   }
 
+  handleFieldChange = field => (newValue) => {
+    const { setField } = this.props;
+    setField(field, newValue);
+  }
+
   handleApproveClick = txn => () => {
     const { selectTransactionToApprove } = this.props;
     selectTransactionToApprove(txn);
@@ -172,11 +178,11 @@ class Approval extends React.Component {
 
   renderSteps() {
     const {
+      t,
       currentStep,
       transactionToApprove,
       gasLimit,
       gasPrice,
-      setField,
       currentTransactionHash,
       submissionConfirmed,
       networkConfirmed,
@@ -188,9 +194,13 @@ class Approval extends React.Component {
       case 1: {
         return (
           <Gas
+            isUser={false}
             gasLimit={gasLimit}
+            gasLimitLabel={t('fields:gasLimitFieldLabel')}
+            onGasLimitChange={this.handleFieldChange(approveFields.gasLimit)}
             gasPrice={gasPrice}
-            setField={setField}
+            gasPriceLabel={t('fields:gasPriceFieldLabel')}
+            onGasPriceChange={this.handleFieldChange(approveFields.gasPrice)}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -198,9 +208,40 @@ class Approval extends React.Component {
       case 2: {
         return (
           <Confirmation
-            transactionToApprove={transactionToApprove}
-            gasLimit={gasLimit}
-            gasPrice={gasPrice}
+            fields={[
+              {
+                label: t('fields:addressLabel'),
+                value: transactionToApprove.from,
+              },
+              {
+                label: t('fields:txHashLabel'),
+                value: transactionToApprove.tx_hash,
+              },
+              {
+                label: t('fields:amountToTokenizeLabel'),
+                value: transactionToApprove && (
+                  <React.Fragment>
+                    {transactionToApprove.amount} <SgdPill />
+                  </React.Fragment>
+                ),
+              },
+              {
+                label: t('fields:amountToIssueLabel'),
+                value: transactionToApprove && (
+                  <React.Fragment>
+                    {transactionToApprove.amount} <SgdrPill />
+                  </React.Fragment>
+                ),
+              },
+              {
+                label: t('fields:gasLimitLabel'),
+                value: gasLimit && `${gasLimit} UNITS`,
+              },
+              {
+                label: t('fields:gasPriceLabel'),
+                value: gasPrice && `${gasPrice} GWEI`,
+              },
+            ]}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -208,11 +249,35 @@ class Approval extends React.Component {
       case 3: {
         return (
           <Completion
-            txHash={currentTransactionHash}
-            submissionConfirmed={submissionConfirmed}
-            networkConfirmed={networkConfirmed}
-            tokensIssued={tokensIssued}
-            transactionError={transactionError}
+            header={transactionError
+              ? t('completion:approvalSubmittedHeader')
+              : t('completion:approvalSubmittedHeader')
+            }
+            subheader={transactionError
+              ? t('completion:pleaseTryAgainLater')
+              : (
+                <React.Fragment>
+                  {t('completion:txHashLabel')} <span className="hash">{currentTransactionHash}</span>
+                </React.Fragment>
+              )
+            }
+            progressSteps={[
+              {
+                text: t('completion:approvalSubmission'),
+                completed: submissionConfirmed,
+                error: transactionError,
+              },
+              {
+                text: t('completion:networkConfirmation'),
+                completed: networkConfirmed,
+                error: transactionError,
+              },
+              {
+                text: t('completion:tokensIssued'),
+                completed: tokensIssued,
+                error: transactionError,
+              },
+            ]}
           />
         );
       }
@@ -283,7 +348,7 @@ class Approval extends React.Component {
                 isUser={false}
                 color="primary"
               >
-                {t('seeTransactions')}
+                {t('completion:seeTransactions')}
               </Button>
             </div>
             <div className={getClass(classes, 'resetButton', isUser)}>
@@ -292,7 +357,7 @@ class Approval extends React.Component {
                 isUser={false}
                 onClick={this.handleReset}
               >
-                {t('backToMainPage')}
+                {t('completion:backToMainPage')}
               </Button>
             </div>
           </React.Fragment>
@@ -364,7 +429,7 @@ class Approval extends React.Component {
             rows={transactions.slice().reverse()}
             currentPage={currentPage}
             labelDisplayedRows={({ from, to, count }) => (
-              <Trans i18nKey="tableDisplayedRows">
+              <Trans i18nKey="transactions:tableDisplayedRows">
                 {{ from }}
                 -
                 {{ to }}
@@ -373,7 +438,7 @@ class Approval extends React.Component {
               </Trans>
             )}
             rowsPerPage={rowsPerPage}
-            labelRowsPerPage={t('rowsPerPage')}
+            labelRowsPerPage={t('transactions:rowsPerPage')}
             onChangePage={this.handleChangePage}
             onChangeRowsPerPage={this.handleChangeRowsPerPage}
           />
@@ -462,7 +527,7 @@ const mapStateToProps = state => ({
 
 const enhance = compose(
   withStyles(styles, { withTheme: true }),
-  translate(['approval', 'transactions']),
+  translate(['navigator', 'transactions', 'fields', 'completion']),
   connect(
     mapStateToProps,
     {

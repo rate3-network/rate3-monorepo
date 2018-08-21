@@ -5,8 +5,13 @@
   "walletSettings": "Wallet settings",
   "tokenize": "Tokenize",
   "withdraw": "Withdraw",
-  "approval" : "Approval",
+  "approval": "Approval",
   "transactions": "Transactions",
   "bankAccount": "Bank\naccount",
-  "ethWallet": "ETH\nwallet"
+  "ethWallet": "ETH\nwallet",
+
+  "next": "Next",
+  "back": "Back",
+  "submit": "Submit",
+  "approve": "Approve"
 }

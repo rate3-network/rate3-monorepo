@@ -6,7 +6,13 @@ import Button from '@material-ui/core/Button';
 
 import {
   buttonBgPrimary,
+  buttonBgPrimaryHover,
   buttonTextPrimary,
+  buttonTextPrimaryHover,
+  buttonShadowPrimary,
+  buttonShadowPrimaryHover,
+  buttonShadowPrimaryActive,
+  buttonBorderPrimary,
   buttonBg,
 } from '../constants/colors';
 import { genStyle, getClass } from '../utils';
@@ -20,7 +26,7 @@ const styles = theme => ({
     display: 'none',
   },
   root: {
-
+    transition: 'none',
   },
   ...genStyle('contained', isUser => ({
     boxShadow: 'none',
@@ -39,16 +45,23 @@ const styles = theme => ({
     },
   })),
   ...genStyle('containedPrimary', isUser => ({
-    boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
+    boxShadow: `4px 4px 10px ${buttonShadowPrimary}`,
+    border: '3px solid transparent',
     backgroundColor: buttonBgPrimary,
     color: buttonTextPrimary,
     padding: '0 30px',
     minWidth: '120px',
     '&:hover': {
-      backgroundColor: buttonBgPrimary,
+      boxShadow: `4px 4px 10px ${buttonShadowPrimaryHover}`,
+      border: `3px solid ${buttonBorderPrimary}`,
+      backgroundColor: buttonBgPrimaryHover,
+      color: buttonTextPrimaryHover,
     },
     '&:active': {
-      backgroundColor: buttonBgPrimary,
+      boxShadow: `4px 4px 10px ${buttonShadowPrimaryActive}`,
+      border: `3px solid ${buttonBorderPrimary}`,
+      backgroundColor: buttonBgPrimaryHover,
+      color: buttonTextPrimaryHover,
     },
   })),
   ...genStyle('containedSecondary', isUser => ({

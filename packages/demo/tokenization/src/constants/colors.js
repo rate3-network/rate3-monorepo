@@ -58,13 +58,20 @@ export const textFieldBorder = '#979797';
 export const textFieldFocused = '#203542';
 export const textFieldLabel = textDefault;
 export const textFieldInput = textDefault;
+export const textFieldInputDisabled = '#C4C4C4';
 export const textFieldShadow = 'rgba(0, 0, 0, 0.25)';
 
 
 // Button
 export const buttonTextPrimary = '#FFFFFF';
+export const buttonTextPrimaryHover = '#203542';
 export const buttonBg = 'inherit';
 export const buttonBgPrimary = '#203542';
+export const buttonBgPrimaryHover = '#F1F5F7';
+export const buttonShadowPrimary = 'rgba(0, 0, 0, 0.1)';
+export const buttonShadowPrimaryHover = buttonShadowPrimary;
+export const buttonShadowPrimaryActive = 'rgba(0, 0, 0, 0.25)';
+export const buttonBorderPrimary = '#203542';
 
 
 // Confirmation

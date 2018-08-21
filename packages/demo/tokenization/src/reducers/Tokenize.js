@@ -12,11 +12,11 @@ const initialState = {
   transactionError: false,
 
   [tokenizeFields.amount]: '',
-  [tokenizeFields.trustBank]: '',
-  [tokenizeFields.trustSwiftCode]: '',
-  [tokenizeFields.trustAccount]: '',
-  [tokenizeFields.gasLimit]: '',
-  [tokenizeFields.gasPrice]: '',
+  [tokenizeFields.trustBank]: 'DEUTSCHE BANK',
+  [tokenizeFields.trustSwiftCode]: 'DEUTSGSG',
+  [tokenizeFields.trustAccount]: '123-123456-1',
+  [tokenizeFields.gasLimit]: '141',
+  [tokenizeFields.gasPrice]: '151',
 };
 
 /**

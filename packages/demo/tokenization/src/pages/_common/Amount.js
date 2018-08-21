@@ -1,19 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { translate } from 'react-i18next';
 
 import Field from '../../components/Field';
-import { tokenizeFields } from '../../actions/Tokenize';
-import { compose } from '../../utils';
-import { sgdColor } from '../../constants/colors';
 
 class Amount extends React.Component {
   handleAmountChange = (e) => {
-    const { setField } = this.props;
+    const { onAmountChange } = this.props;
     if (isNaN(e.target.value)) {
       return;
     }
-    setField(tokenizeFields.amount, e.target.value);
+    onAmountChange(e.target.value);
   }
 
   handleKeyPress = (e) => {
@@ -25,40 +21,45 @@ class Amount extends React.Component {
 
   render() {
     const {
-      t,
       amount,
+      amountLabel,
+      amountAdornment,
+      message,
     } = this.props;
 
     return (
       <React.Fragment>
         <Field
           isUser
-          label={t('amountFieldLabel')}
-          id="tokenize-amount"
+          label={amountLabel}
+          id="amount"
           fullWidth
-          adornment={<span style={{ color: sgdColor }}>SGD</span>}
+          adornment={amountAdornment}
           value={amount}
           onChange={this.handleAmountChange}
           onKeyPress={this.handleKeyPress}
           autoFocus
         />
+        {message}
       </React.Fragment>
     );
   }
 }
 
-
 Amount.propTypes = {
-  t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
   amount: PropTypes.string.isRequired,
-  setField: PropTypes.func.isRequired,
+  amountLabel: PropTypes.node.isRequired,
+  amountAdornment: PropTypes.node,
+  onAmountChange: PropTypes.func.isRequired,
+
+  message: PropTypes.node,
   onSubmit: PropTypes.func,
 };
 
 Amount.defaultProps = {
+  amountAdornment: null,
+  message: null,
   onSubmit: () => null,
 };
 
-export default compose(
-  translate('tokenization'),
-)(Amount);
+export default Amount;

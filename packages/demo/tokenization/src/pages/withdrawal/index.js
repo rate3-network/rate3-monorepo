@@ -1,20 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { translate } from 'react-i18next';
+import { Trans, translate } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
 import { ClipLoader } from 'react-spinners';
 
-import Amount from './Amount';
-import Gas from './Gas';
-import Confirmation from './Confirmation';
-import Completion from './Completion';
+import Amount from '../_common/Amount';
+import Gas from '../_common/Gas';
+import Confirmation from '../_common/Confirmation';
+import Completion from '../_common/Completion';
 
 import Stepper from '../../components/Stepper';
 import Button from '../../components/Button';
+import { SgdPill, SgdrPill } from '../../components/CurrencyPill';
 
-import { buttonTextPrimary } from '../../constants/colors';
+import {
+  buttonTextPrimary,
+  sgdrColor,
+  withdrawalInfoText,
+} from '../../constants/colors';
 
 import {
   nextStep as nextStepAction,
@@ -59,6 +64,12 @@ const styles = theme => ({
   })),
   ...genStyle('resetButton', isUser => ({
   })),
+  willReceiveAmount: {
+    marginTop: '-1em',
+    color: withdrawalInfoText,
+    letterSpacing: 0,
+    wordBreak: 'break-word',
+  },
 });
 
 class Withdrawal extends React.Component {
@@ -66,9 +77,9 @@ class Withdrawal extends React.Component {
     const { t } = this.props;
 
     return [
-      t('amountToWithdraw'),
-      t('gasLimitAndPrice'),
-      t('confirmation'),
+      t('stepper:amountToWithdraw'),
+      t('stepper:gasLimitAndPrice'),
+      t('stepper:confirmation'),
     ];
   }
 
@@ -112,6 +123,11 @@ class Withdrawal extends React.Component {
     reset();
   }
 
+  handleFieldChange = field => (newValue) => {
+    const { setField } = this.props;
+    setField(field, newValue);
+  }
+
   canProceedNextStep = (currentStep) => {
     const {
       amount,
@@ -140,15 +156,16 @@ class Withdrawal extends React.Component {
 
   renderSteps() {
     const {
+      classes,
+      t,
       currentStep,
       amount,
       gasLimit,
       gasPrice,
-      setField,
       currentTransactionHash,
       submissionConfirmed,
       networkConfirmed,
-      trusteeApproved,
+      wireTransferred,
       transactionError,
     } = this.props;
 
@@ -157,7 +174,21 @@ class Withdrawal extends React.Component {
         return (
           <Amount
             amount={amount}
-            setField={setField}
+            amountLabel={t('fields:amountToWithdrawFieldLabel')}
+            amountAdornment={
+              <span style={{ color: sgdrColor }}>SGDR</span>
+            }
+            message={(
+              <div className={classes.willReceiveAmount}>
+                <Trans i18nKey="fields:receiveInReturn">
+                  You will receive
+                  {{ amount: amount || '0' }}
+                  <SgdPill />
+                  in return.
+                </Trans>
+              </div>
+            )}
+            onAmountChange={this.handleFieldChange(withdrawFields.amount)}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -165,9 +196,13 @@ class Withdrawal extends React.Component {
       case 1: {
         return (
           <Gas
+            isUser
             gasLimit={gasLimit}
+            gasLimitLabel={t('fields:gasLimitFieldLabel')}
+            onGasLimitChange={this.handleFieldChange(withdrawFields.gasLimit)}
             gasPrice={gasPrice}
-            setField={setField}
+            gasPriceLabel={t('fields:gasPriceFieldLabel')}
+            onGasPriceChange={this.handleFieldChange(withdrawFields.gasPrice)}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -175,9 +210,32 @@ class Withdrawal extends React.Component {
       case 2: {
         return (
           <Confirmation
-            amount={amount}
-            gasLimit={gasLimit}
-            gasPrice={gasPrice}
+            fields={[
+              {
+                label: t('fields:amountToWithdrawLabel'),
+                value: amount && (
+                  <React.Fragment>
+                    {amount} <SgdrPill />
+                  </React.Fragment>
+                ),
+              },
+              {
+                label: t('fields:amountToReceiveLabel'),
+                value: amount && (
+                  <React.Fragment>
+                    {amount} <SgdPill />
+                  </React.Fragment>
+                ),
+              },
+              {
+                label: t('fields:gasLimitLabel'),
+                value: gasLimit && `${gasLimit} UNITS`,
+              },
+              {
+                label: t('fields:gasPriceLabel'),
+                value: gasPrice && `${gasPrice} GWEI`,
+              },
+            ]}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -185,11 +243,35 @@ class Withdrawal extends React.Component {
       case 3: {
         return (
           <Completion
-            txHash={currentTransactionHash}
-            submissionConfirmed={submissionConfirmed}
-            networkConfirmed={networkConfirmed}
-            trusteeApproved={trusteeApproved}
-            transactionError={transactionError}
+            header={transactionError
+              ? t('completion:withdrawSubmittedHeader')
+              : t('completion:withdrawSubmittedHeader')
+            }
+            subheader={transactionError
+              ? t('completion:pleaseTryAgainLater')
+              : (
+                <React.Fragment>
+                  {t('completion:txHashLabel')} <span className="hash">{currentTransactionHash}</span>
+                </React.Fragment>
+              )
+            }
+            progressSteps={[
+              {
+                text: t('completion:withdrawSubmission'),
+                completed: submissionConfirmed,
+                error: transactionError,
+              },
+              {
+                text: t('completion:networkConfirmation'),
+                completed: networkConfirmed,
+                error: transactionError,
+              },
+              {
+                text: t('completion:wireTransferCompleted'),
+                completed: wireTransferred,
+                error: transactionError,
+              },
+            ]}
           />
         );
       }
@@ -258,7 +340,7 @@ class Withdrawal extends React.Component {
                 isUser={isUser}
                 color="primary"
               >
-                {t('seeTransactions')}
+                {t('completion:seeTransactions')}
               </Button>
             </div>
             <div className={getClass(classes, 'resetButton', isUser)}>
@@ -267,7 +349,7 @@ class Withdrawal extends React.Component {
                 isUser={isUser}
                 onClick={this.handleReset}
               >
-                {t('backToWithdraw')}
+                {t('completion:backToWithdraw')}
               </Button>
             </div>
           </React.Fragment>
@@ -320,7 +402,7 @@ Withdrawal.propTypes = {
   currentTransactionHash: PropTypes.string.isRequired,
   submissionConfirmed: PropTypes.bool.isRequired,
   networkConfirmed: PropTypes.bool.isRequired,
-  trusteeApproved: PropTypes.bool.isRequired,
+  wireTransferred: PropTypes.bool.isRequired,
   transactionError: PropTypes.bool.isRequired,
 
   // Actions
@@ -341,13 +423,13 @@ const mapStateToProps = state => ({
   currentTransactionHash: state.withdraw.currentTransactionHash,
   submissionConfirmed: state.withdraw.submissionConfirmed,
   networkConfirmed: state.withdraw.networkConfirmed,
-  trusteeApproved: state.withdraw.trusteeApproved,
+  wireTransferred: state.withdraw.wireTransferred,
   transactionError: state.withdraw.transactionError,
 });
 
 const enhance = compose(
   withStyles(styles, { withTheme: true }),
-  translate('withdrawal'),
+  translate(['navigator', 'fields', 'completion']),
   connect(
     mapStateToProps,
     {

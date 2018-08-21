@@ -10,8 +10,10 @@ import {
   textFieldLabel,
   textFieldFocused,
   textFieldInput,
+  textFieldInputDisabled,
   textFieldShadow,
   textFieldBg,
+  textFieldBgDisabled,
   textFieldBorder,
 } from '../constants/colors';
 import { genStyle, getClass } from '../utils';
@@ -40,7 +42,11 @@ const styles = theme => ({
     width: 'calc(100% - 24px)',
     transition: theme.transitions.create(['border-color', 'box-shadow']),
     '&:focus': {
-      boxShadow: `inset 1px 1px 4px ${textFieldShadow}`,
+      boxShadow: `inset 0px 3px 3px ${textFieldShadow}`,
+    },
+    '&:disabled': {
+      backgroundColor: textFieldBgDisabled,
+      color: textFieldInputDisabled,
     },
   })),
   inputWithAdornment: {

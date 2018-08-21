@@ -6,16 +6,17 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { ClipLoader } from 'react-spinners';
 
-import Amount from './Amount';
+import Amount from '../_common/Amount';
 import Trust from './Trust';
-import Gas from './Gas';
-import Confirmation from './Confirmation';
-import Completion from './Completion';
+import Gas from '../_common/Gas';
+import Confirmation from '../_common/Confirmation';
+import Completion from '../_common/Completion';
 
 import Stepper from '../../components/Stepper';
 import Button from '../../components/Button';
+import { SgdPill } from '../../components/CurrencyPill';
 
-import { buttonTextPrimary } from '../../constants/colors';
+import { buttonTextPrimary, sgdColor } from '../../constants/colors';
 
 import {
   nextStep as nextStepAction,
@@ -67,10 +68,10 @@ class Tokenization extends React.Component {
     const { t } = this.props;
 
     return [
-      t('amountToTokenize'),
-      t('wireTransferDetails'),
-      t('gasLimitAndPrice'),
-      t('confirmation'),
+      t('stepper:amountToTokenize'),
+      t('stepper:wireTransferDetails'),
+      t('stepper:gasLimitAndPrice'),
+      t('stepper:confirmation'),
     ];
   }
 
@@ -114,6 +115,11 @@ class Tokenization extends React.Component {
     reset();
   }
 
+  handleFieldChange = field => (newValue) => {
+    const { setField } = this.props;
+    setField(field, newValue);
+  }
+
   canProceedNextStep = (currentStep) => {
     const {
       amount,
@@ -147,6 +153,7 @@ class Tokenization extends React.Component {
 
   renderSteps() {
     const {
+      t,
       currentStep,
       amount,
       trustBank,
@@ -167,7 +174,11 @@ class Tokenization extends React.Component {
         return (
           <Amount
             amount={amount}
-            setField={setField}
+            amountLabel={t('fields:amountToTokenizeFieldLabel')}
+            amountAdornment={
+              <span style={{ color: sgdColor }}>SGD</span>
+            }
+            onAmountChange={this.handleFieldChange(tokenizeFields.amount)}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -187,9 +198,13 @@ class Tokenization extends React.Component {
       case 2: {
         return (
           <Gas
+            isUser
             gasLimit={gasLimit}
+            gasLimitLabel={t('fields:gasLimitFieldLabel')}
+            onGasLimitChange={this.handleFieldChange(tokenizeFields.gasLimit)}
             gasPrice={gasPrice}
-            setField={setField}
+            gasPriceLabel={t('fields:gasPriceFieldLabel')}
+            onGasPriceChange={this.handleFieldChange(tokenizeFields.gasPrice)}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -197,12 +212,36 @@ class Tokenization extends React.Component {
       case 3: {
         return (
           <Confirmation
-            amount={amount}
-            trustBank={trustBank}
-            trustSwiftCode={trustSwiftCode}
-            trustAccount={trustSwiftCode}
-            gasLimit={gasLimit}
-            gasPrice={gasPrice}
+            fields={[
+              {
+                label: t('fields:amountToTokenizeLabel'),
+                value: amount && (
+                  <React.Fragment>
+                    {amount} <SgdPill />
+                  </React.Fragment>
+                ),
+              },
+              {
+                label: t('fields:trustBankLabel'),
+                value: trustBank,
+              },
+              {
+                label: t('fields:trustSwiftCodeLabel'),
+                value: trustSwiftCode,
+              },
+              {
+                label: t('fields:trustAccountLabel'),
+                value: trustAccount,
+              },
+              {
+                label: t('fields:gasLimitLabel'),
+                value: gasLimit && `${gasLimit} UNITS`,
+              },
+              {
+                label: t('fields:gasPriceLabel'),
+                value: gasPrice && `${gasPrice} GWEI`,
+              },
+            ]}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -210,11 +249,35 @@ class Tokenization extends React.Component {
       case 4: {
         return (
           <Completion
-            txHash={currentTransactionHash}
-            submissionConfirmed={submissionConfirmed}
-            networkConfirmed={networkConfirmed}
-            trusteeApproved={trusteeApproved}
-            transactionError={transactionError}
+            header={transactionError
+              ? t('completion:tokenizeSubmittedHeader')
+              : t('completion:tokenizeSubmittedHeader')
+            }
+            subheader={transactionError
+              ? t('completion:pleaseTryAgainLater')
+              : (
+                <React.Fragment>
+                  {t('completion:txHashLabel')} <span className="hash">{currentTransactionHash}</span>
+                </React.Fragment>
+              )
+            }
+            progressSteps={[
+              {
+                text: t('completion:tokenizeSubmission'),
+                completed: submissionConfirmed,
+                error: transactionError,
+              },
+              {
+                text: t('completion:networkConfirmation'),
+                completed: networkConfirmed,
+                error: transactionError,
+              },
+              {
+                text: t('completion:trusteeApproval'),
+                completed: trusteeApproved,
+                error: transactionError,
+              },
+            ]}
           />
         );
       }
@@ -284,7 +347,7 @@ class Tokenization extends React.Component {
                 isUser={isUser}
                 color="primary"
               >
-                {t('seeTransactions')}
+                {t('completion:seeTransactions')}
               </Button>
             </div>
             <div className={getClass(classes, 'resetButton', isUser)}>
@@ -293,7 +356,7 @@ class Tokenization extends React.Component {
                 isUser={isUser}
                 onClick={this.handleReset}
               >
-                {t('backToTokenize')}
+                {t('completion:backToTokenize')}
               </Button>
             </div>
           </React.Fragment>
@@ -379,7 +442,7 @@ const mapStateToProps = state => ({
 
 const enhance = compose(
   withStyles(styles, { withTheme: true }),
-  translate('tokenization'),
+  translate(['navigator', 'fields']),
   connect(
     mapStateToProps,
     {

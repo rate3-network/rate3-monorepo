@@ -1,32 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { translate } from 'react-i18next';
 
 import Field from '../../components/Field';
-import { withdrawFields } from '../../actions/Withdraw';
-import { compose } from '../../utils';
 
 class Gas extends React.Component {
   handleLimitChange = (e) => {
-    const { setField } = this.props;
+    const { onGasLimitChange } = this.props;
     if (isNaN(e.target.value)) {
       return;
     }
     if (e.target.value.includes('.')) {
       return;
     }
-    setField(withdrawFields.gasLimit, e.target.value);
+    onGasLimitChange(e.target.value);
   }
 
   handlePriceChange = (e) => {
-    const { setField } = this.props;
+    const { onGasPriceChange } = this.props;
     if (isNaN(e.target.value)) {
       return;
     }
     if (e.target.value.includes('.')) {
       return;
     }
-    setField(withdrawFields.gasPrice, e.target.value);
+    onGasPriceChange(e.target.value);
   }
 
   handleKeyPress = (e) => {
@@ -38,33 +35,39 @@ class Gas extends React.Component {
 
   render() {
     const {
-      t,
+      isUser,
       gasLimit,
+      gasLimitLabel,
+      gasLimitAdornment,
       gasPrice,
+      gasPriceLabel,
+      gasPriceAdornment,
     } = this.props;
 
     return (
       <React.Fragment>
         <Field
-          isUser
-          label={t('gasLimitFieldLabel')}
-          id="withdraw-gas-limit"
+          isUser={isUser}
+          label={gasLimitLabel}
+          id="gas-limit"
           fullWidth
           value={gasLimit}
-          adornment="UNITS"
+          adornment={gasLimitAdornment}
           onChange={this.handleLimitChange}
           onKeyPress={this.handleKeyPress}
+          // disabled
           autoFocus
         />
         <Field
-          isUser
-          label={t('gasPriceFieldLabel')}
-          id="withdraw-gas-price"
+          isUser={isUser}
+          label={gasPriceLabel}
+          id="gas-price"
           fullWidth
           value={gasPrice}
-          adornment="GWEI"
+          adornment={gasPriceAdornment}
           onChange={this.handlePriceChange}
           onKeyPress={this.handleKeyPress}
+          // disabled
         />
       </React.Fragment>
     );
@@ -72,18 +75,26 @@ class Gas extends React.Component {
 }
 
 Gas.propTypes = {
-  t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
+  isUser: PropTypes.bool.isRequired,
+
   gasLimit: PropTypes.string.isRequired,
+  gasLimitLabel: PropTypes.node.isRequired,
+  gasLimitAdornment: PropTypes.node,
+  onGasLimitChange: PropTypes.func.isRequired,
+
   gasPrice: PropTypes.string.isRequired,
-  setField: PropTypes.func.isRequired,
+  gasPriceLabel: PropTypes.node.isRequired,
+  gasPriceAdornment: PropTypes.node,
+  onGasPriceChange: PropTypes.func.isRequired,
+
   onSubmit: PropTypes.func,
 };
 
 Gas.defaultProps = {
+  gasLimitAdornment: 'UNITS',
+  gasPriceAdornment: 'GWEI',
   onSubmit: () => null,
 };
 
 
-export default compose(
-  translate('withdrawal'),
-)(Gas);
+export default Gas;

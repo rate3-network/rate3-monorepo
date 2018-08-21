@@ -8,12 +8,12 @@ const initialState = {
   currentTransactionHash: '',
   submissionConfirmed: false,
   networkConfirmed: false,
-  trusteeApproved: false,
+  wireTransferred: false,
   transactionError: false,
 
   [withdrawFields.amount]: '',
-  [withdrawFields.gasLimit]: '',
-  [withdrawFields.gasPrice]: '',
+  [withdrawFields.gasLimit]: '121',
+  [withdrawFields.gasPrice]: '131',
 };
 
 /**
