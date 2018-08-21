@@ -47,8 +47,8 @@ contract OperationsInteractor is BaseAdminInteractor {
     event MintOperationFinalized(address indexed by, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
     event BurnOperationFinalized(address indexed by, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
 
-    event MintOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index));
-    event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index));
+    event MintOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
+    event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
 
     constructor() public {
         operationDelay = 6 hours;
@@ -56,7 +56,7 @@ contract OperationsInteractor is BaseAdminInteractor {
 
     function requestMint(address _to, uint256 _value) public {
         uint256 requestTimestamp = block.timestamp;
-        MintRequestOperation memory mintRequestOperation = MintRequestOperation(msg.sender, _to, _value, requestTimestamp);
+        MintRequestOperation memory mintRequestOperation = MintRequestOperation(msg.sender, _to, _value, requestTimestamp, address(0), false, 0, 0);
 
         emit MintOperationRequested(msg.sender, _to, _value, requestTimestamp, mintRequestOperations[msg.sender].length);
         mintRequestOperations[msg.sender].push(mintRequestOperation);
@@ -98,7 +98,7 @@ contract OperationsInteractor is BaseAdminInteractor {
 
     function requestBurn(address _from, uint256 _value) public {
         uint256 requestTimestamp = block.timestamp;
-        BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(msg.sender, _from, _value, requestTimestamp);
+        BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(msg.sender, _from, _value, requestTimestamp, address(0), false, 0, 0);
 
         emit BurnOperationRequested(msg.sender, _from, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
         burnRequestOperations[msg.sender].push(burnRequestOperation);

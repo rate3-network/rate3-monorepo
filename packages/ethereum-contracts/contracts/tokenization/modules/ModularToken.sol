@@ -17,7 +17,7 @@ contract ModularToken is ERC20, Claimable, Pausable {
 
     event BalanceModuleSet(address indexed moduleAddress);
     event AllowanceModuleSet(address indexed moduleAddress);
-    event Burn(address indexed burner, uint256 value, string note);
+    event Burn(address indexed burner, uint256 value);
     event Mint(address indexed to, uint256 value);
 
 
@@ -163,17 +163,18 @@ contract ModularToken is ERC20, Claimable, Pausable {
 
     /**
      * @dev Burns a specific amount of tokens.
+     * @param _from The address that tokens will be burned from.
      * @param _value The amount of token to be burned.
-     * @param _note A note that burner can attach.
+     * @return A boolean that indicates if the operation was successful.
      */
-    function burn(uint256 _value, string _note) public whenNotPaused returns (bool) {
-        require(_value <= balanceModule.balanceOf(msg.sender), "Insufficient balance");
+    function burn(address _from, uint256 _value) public onlyOwner returns (bool) {
+        require(_value <= balanceModule.balanceOf(_from), "Insufficient balance");
 
-        balanceModule.subBalance(msg.sender, _value);
+        balanceModule.subBalance(_from, _value);
         totalSupply_ = totalSupply_.sub(_value);
 
-        emit Burn(msg.sender, _value, _note);
-        emit Transfer(msg.sener, address(0), _value);
+        emit Burn(_from, _value);
+        emit Transfer(_from, address(0), _value);
         return true;
     }
 

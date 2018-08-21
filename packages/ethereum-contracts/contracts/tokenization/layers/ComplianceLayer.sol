@@ -1,15 +1,15 @@
 pragma solidity ^0.4.24;
 
-import "../modules/ModularToken";
+import "../modules/ModularToken.sol";
 
 contract ComplianceLayer is ModularToken {
-    function burn(uint256 _value, string _note) public onlyOwner returns (bool) {
-        require(registryModule);
-        super.burn(_value, _note);
+    function burn(address _from, uint256 _value) public onlyOwner returns (bool) {
+        //require(registryModule);
+        super.burn(_from, _value);
     }
 
     function mint(address _to, uint256 _value) public onlyOwner returns (bool) {
-        require(registryModule);
+        //require(registryModule);
         super.mint(_to, _value);
     }
 }

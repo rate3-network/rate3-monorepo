@@ -23,7 +23,7 @@ contract RegistryModule is Claimable {
         string _stringValue,
         address _addressValue,
         bool _booleanValue,
-        address _managerAddress,
+        address _managerAddress
     )
         public
         onlyOwner
@@ -38,7 +38,7 @@ contract RegistryModule is Claimable {
     // Returns the exact value of the attribute, as well as its metadata
     function getDataRecord(
         address _forAddress,
-        string _key,
+        string _key
     )
         public
         view
