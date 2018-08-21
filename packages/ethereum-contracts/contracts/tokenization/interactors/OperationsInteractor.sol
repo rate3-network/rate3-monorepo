@@ -2,7 +2,6 @@ pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
 import "./BaseAdminInteractor.sol";
-import "../TokenizeTemplateToken.sol";
 
 contract OperationsInteractor is BaseAdminInteractor {
     using SafeMath for uint256;

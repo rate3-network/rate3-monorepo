@@ -7,15 +7,15 @@ import "../TokenizeTemplateToken.sol";
 contract BaseAdminInteractor is Claimable {
     using SafeMath for uint256;
 
-    TokenizedTemplateToken public token;
+    TokenizeTemplateToken public token;
     address public admin;
 
-    constructor(TokenizedTemplateToken _token) {
+    constructor(TokenizeTemplateToken _token) {
         admin = msg.sender;
         token = _token;
     }
 
-    function setToken(TokenizedTemplateToken _newTokenContract) public onlyOwner {
+    function setToken(TokenizeTemplateToken _newTokenContract) public onlyOwner {
         token = _newTokenContract;
     }
 
