@@ -4,6 +4,7 @@ import { translate } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
+import { ClipLoader } from 'react-spinners';
 
 import Amount from './Amount';
 import Gas from './Gas';
@@ -12,6 +13,8 @@ import Completion from './Completion';
 
 import Stepper from '../../components/Stepper';
 import Button from '../../components/Button';
+
+import { buttonTextPrimary } from '../../constants/colors';
 
 import {
   nextStep as nextStepAction,
@@ -114,7 +117,10 @@ class Withdrawal extends React.Component {
       amount,
       gasLimit,
       gasPrice,
+      loadingNextStep,
     } = this.props;
+
+    if (loadingNextStep) return false;
 
     switch (currentStep) {
       case 0:
@@ -229,7 +235,14 @@ class Withdrawal extends React.Component {
                 onClick={this.handleNextStep}
                 disabled={!this.canProceedNextStep(currentStep)}
               >
-                {loadingNextStep && '<spinner>' /* TODO add spinner */}
+                {loadingNextStep && (
+                  <ClipLoader
+                    sizeUnit="em"
+                    size={1}
+                    color={buttonTextPrimary}
+                    loading
+                  />
+                )}
                 {!loadingNextStep && (currentStep === 2 ? t('submit') : t('next'))}
               </Button>
             </div>

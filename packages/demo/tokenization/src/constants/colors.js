@@ -62,8 +62,6 @@ export const textFieldShadow = 'rgba(0, 0, 0, 0.25)';
 
 
 // Button
-export const userbuttonText = '#54656F';
-export const trusteeButtonText = ' rgba(32, 53, 66, 0.75)';
 export const buttonTextPrimary = '#FFFFFF';
 export const buttonBg = 'inherit';
 export const buttonBgPrimary = '#203542';

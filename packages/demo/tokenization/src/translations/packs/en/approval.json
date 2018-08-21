@@ -2,15 +2,6 @@
   "gasLimitAndPrice": "Gas limit and price",
   "confirmation": "Confirmation",
 
-  "txHashHeader": "TxHash",
-  "from": "From",
-  "date/time": "Date/Time",
-  "amount": "Amount",
-  "type": "Type",
-
-  "typeTokenize": "Tokenize",
-  "typeWithdraw": "Withdraw",
-
   "approve": "Approve",
   "next": "Next",
   "back": "Back",

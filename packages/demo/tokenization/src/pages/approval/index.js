@@ -4,6 +4,7 @@ import { Trans, translate } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
+import { ClipLoader } from 'react-spinners';
 
 import Gas from './Gas';
 import Confirmation from './Confirmation';
@@ -21,6 +22,7 @@ import {
   renderType,
 } from '../transactions';
 import { txType } from '../../constants/enums';
+import { buttonTextPrimary } from '../../constants/colors';
 
 import {
   nextStep as nextStepAction,
@@ -149,7 +151,10 @@ class Approval extends React.Component {
     const {
       gasLimit,
       gasPrice,
+      loadingNextStep,
     } = this.props;
+
+    if (loadingNextStep) return false;
 
     switch (currentStep) {
       case 1:
@@ -255,7 +260,14 @@ class Approval extends React.Component {
                 onClick={this.handleNextStep}
                 disabled={!this.canProceedNextStep(currentStep)}
               >
-                {loadingNextStep && '<spinner>' /* TODO add spinner */}
+                {loadingNextStep && (
+                  <ClipLoader
+                    sizeUnit="em"
+                    size={1}
+                    color={buttonTextPrimary}
+                    loading
+                  />
+                )}
                 {!loadingNextStep && (currentStep === 2 ? t('submit') : t('next'))}
               </Button>
             </div>
@@ -318,26 +330,26 @@ class Approval extends React.Component {
     if (currentStep === 0) {
       const columns = [
         {
-          head: t('txHashHeader'),
+          head: t('transactions:txHash'),
           renderCell: renderTxHash,
         },
         {
-          head: t('from'),
+          head: t('transactions:from'),
           renderCell: renderFromAddr,
         },
         {
-          head: t('date/time'),
+          head: t('transactions:date/time'),
           renderCell: renderDate,
         },
         {
-          head: t('amount'),
+          head: t('transactions:amount'),
           renderCell: renderAmount,
         },
         {
-          head: t('type'),
+          head: t('transactions:type'),
           renderCell: renderType({
-            [txType.TOKENIZE]: t('typeTokenize'),
-            [txType.WITHDRAWAL]: t('typeWithdraw'),
+            [txType.TOKENIZE]: t('transactions:typeTokenize'),
+            [txType.WITHDRAWAL]: t('transactions:typeWithdraw'),
           }),
         },
         {
@@ -450,7 +462,7 @@ const mapStateToProps = state => ({
 
 const enhance = compose(
   withStyles(styles, { withTheme: true }),
-  translate('approval'),
+  translate(['approval', 'transactions']),
   connect(
     mapStateToProps,
     {
