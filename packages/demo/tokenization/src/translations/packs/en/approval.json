@@ -1,2 +1,37 @@
 {
+  "gasLimitAndPrice": "Gas limit and price",
+  "confirmation": "Confirmation",
+
+  "txHashHeader": "TxHash",
+  "from": "From",
+  "date/time": "Date/Time",
+  "amount": "Amount",
+  "type": "Type",
+
+  "typeTokenize": "Tokenize",
+  "typeWithdraw": "Withdraw",
+
+  "approve": "Approve",
+  "next": "Next",
+  "back": "Back",
+  "submit": "Submit",
+  "seeTransactions": "See transactions",
+  "backToMainPage": "Back to main page",
+
+  "gasLimitFieldLabel": "Gas Limit",
+  "gasLimitLabel": "Gas Limit",
+  "gasPriceFieldLabel": "Gas Price",
+  "gasPriceLabel": "Gas Price",
+  "amountToTokenizeLabel": "Amount to tokenize",
+  "amountToIssueLabel": "Amount to issue",
+  "addressLabel": "Address",
+  "txHashLabel": "Tx Hash",
+
+  "transactionSubmitted": "The approval is submitted.",
+  "transactionFailed": "The approval failed.",
+  "pleaseTryAgainLater": "Please try again later",
+  "txHash": "TxHash:",
+  "transactionSubmission": "Approval Submission",
+  "networkConfirmation": "Network Confirmation",
+  "tokensIssued": "Tokens Issued"
 }

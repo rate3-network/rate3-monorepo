@@ -29,9 +29,6 @@ const styles = theme => ({
     padding: theme.spacing.unit,
     border: 'none',
   },
-  tableCellDateTime: {
-    fontSize: '0.9em',
-  },
   tableHeaderCell: {
     fontWeight: 'bold',
     color: tableHeader,
@@ -71,7 +68,10 @@ const TransactionsTable = ({
                 columns
                   .filter(col => !col.hide)
                   .map(col => (
-                    <TableCell classes={{ root: classes.tableHeaderCell }}>
+                    <TableCell
+                      key={col.head}
+                      classes={{ root: classes.tableHeaderCell }}
+                    >
                       {col.head}
                     </TableCell>
                   ))
@@ -86,7 +86,7 @@ const TransactionsTable = ({
                   currentPage * rowsPerPage + rowsPerPage,
                 )
                 .map(txn => (
-                  <TableRow key={txn.txHash} style={{ height: 64 }}>
+                  <TableRow key={txn.tx_hash} style={{ height: 64 }}>
                     {
                       columns
                         .filter(col => !col.hide)
@@ -94,6 +94,7 @@ const TransactionsTable = ({
                           idx === 0
                             ? (
                               <TableCell
+                                key={`${txn.tx_hash}_${col.head}`}
                                 component="th"
                                 scope="row"
                                 classes={{ root: classes.tableCell }}
@@ -102,7 +103,10 @@ const TransactionsTable = ({
                               </TableCell>
                             )
                             : (
-                              <TableCell classes={{ root: classes.tableCell }}>
+                              <TableCell
+                                key={`${txn.tx_hash}_${col.head}`}
+                                classes={{ root: classes.tableCell }}
+                              >
                                 {col.renderCell(txn)}
                               </TableCell>
                             )
@@ -112,7 +116,7 @@ const TransactionsTable = ({
                 ))
             }
             {emptyRows > 0 && (
-              <TableRow style={{ height: 64 * emptyRows }}>
+              <TableRow key="empty" style={{ height: 64 * emptyRows }}>
                 <TableCell colSpan={emptyRows} classes={{ root: classes.tableCell }} />
               </TableRow>
             )}

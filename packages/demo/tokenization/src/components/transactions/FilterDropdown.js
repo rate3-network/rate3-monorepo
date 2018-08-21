@@ -166,7 +166,7 @@ class FilterDropdown extends React.Component {
           </Button>
           {
             filters.map(filter => (
-              <React.Fragment>
+              <React.Fragment key={filter.group}>
                 <div className={classes.formGroupHeader}>{filter.group}</div>
                 <FormGroup
                   classes={{
@@ -176,11 +176,12 @@ class FilterDropdown extends React.Component {
                   {
                     filter.options.map(opt => (
                       <FormControlLabel
+                        key={`${filter.group}_${opt.value}`}
                         control={(
                           <Checkbox
                             checked={opt.checked}
                             onChange={this.handleChange(filter, opt)}
-                            value={opt.value}
+                            value={`${opt.value}`}
                             classes={{
                               root: classes.checkboxRoot,
                             }}

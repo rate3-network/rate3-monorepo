@@ -156,6 +156,10 @@ class App extends React.Component {
   componentDidMount() {
     const { networkInit } = this.props;
     networkInit();
+    const { location: { pathname }, switchRole } = this.props;
+    if (pathname === '/issuer/approval') {
+      switchRole();
+    }
   }
 
   componentDidUpdate(prevProps) {

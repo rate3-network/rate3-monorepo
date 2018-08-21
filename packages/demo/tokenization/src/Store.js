@@ -4,6 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 import network from './reducers/Network';
 import tokenize from './reducers/Tokenize';
 import withdraw from './reducers/Withdraw';
+import approve from './reducers/Approve';
 import transactions from './reducers/Transactions';
 import wallet from './reducers/Wallet';
 import makeSagas from './effects';
@@ -98,6 +99,7 @@ const store = createStore(
     network,
     tokenize,
     withdraw,
+    approve,
     transactions,
     wallet,
   }),

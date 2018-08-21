@@ -6,6 +6,7 @@ import {
 } from 'redux-saga/effects';
 import { walletActions } from '../actions/Wallet';
 import { transactionsActions } from '../actions/Transactions';
+import { txStatus } from '../constants/enums';
 
 
 const wallet = (db) => {
@@ -15,13 +16,14 @@ const wallet = (db) => {
       case walletActions.INIT:
       case walletActions.SWITCH_ROLE: {
         const walletState = yield select(state => state.wallet);
-        const { isUser, currentDefaultAccount } = walletState;
+        const { isUser, userDefaultAccount, issuerDefaultAccount } = walletState;
 
-        if (isUser) {
+        // Use `isUser` only for init, switch role should use the opposite case
+        if (isUser && type === walletActions.INIT) {
           yield put({
             type: transactionsActions.SET_CURRENT_TRANSACTIONS,
             transactions: db.select('transactions', {
-              from: currentDefaultAccount,
+              from: userDefaultAccount,
             }),
             filterType: null,
             filterStatus: null,
@@ -30,10 +32,17 @@ const wallet = (db) => {
           yield put({
             type: transactionsActions.SET_CURRENT_TRANSACTIONS,
             transactions: db.select('transactions', {
-              to: currentDefaultAccount,
+              to: issuerDefaultAccount,
             }),
             filterType: null,
             filterStatus: null,
+          });
+          yield put({
+            type: transactionsActions.SET_PENDING_APPROVAL_TRANSACTIONS,
+            transactions: db.select('transactions', {
+              to: issuerDefaultAccount,
+              status: txStatus.PENDING_APPROVAL,
+            }),
           });
         }
 

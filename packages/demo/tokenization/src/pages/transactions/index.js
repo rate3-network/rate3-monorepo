@@ -48,6 +48,70 @@ const styles = theme => ({
   },
 });
 
+export const renderTxHash = txn => (
+  `${txn.tx_hash.substring(0, 9)}...`
+);
+
+export const renderFromAddr = txn => (
+  `${txn.from.substring(0, 9)}...`
+);
+
+export const renderDate = (txn) => {
+  const d = new Date(txn.date);
+
+  return (
+    <div style={{ fontSize: '0.9em' }}>
+      <div>{d.toLocaleDateString()}</div>
+      <div>{d.toLocaleTimeString()}</div>
+    </div>
+  );
+};
+
+export const renderAmount = txn => (
+  <div style={{ fontSize: '1.2em' }}>
+    <span style={{ fontWeight: 'bold' }}>{txn.amount}</span>
+    &nbsp;
+    {txn.type === txType.TOKENIZE
+      ? <SgdPill />
+      : <SgdrPill />
+    }
+  </div>
+);
+
+export const renderType = typeMapping => (txn) => {
+  const type = typeMapping[txn.type];
+
+  if (!type) return null;
+
+  return type;
+};
+
+export const renderStatus = statusMapping => (txn) => {
+  const statusOptions = statusMapping[txn.status];
+
+  if (!statusOptions) return null;
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
+      <div
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: 4,
+          marginRight: '1em',
+          flexShrink: 0,
+          backgroundColor: statusOptions.color,
+        }}
+      />
+      <div>{statusOptions.text}</div>
+    </div>
+  );
+};
 
 class Transactions extends React.Component {
   handleChangePage = (e, page) => {
@@ -76,79 +140,6 @@ class Transactions extends React.Component {
       ? newFilterStatus
       : null;
     setCurrentFilter(filterType, filterStatus);
-  }
-
-  renderTxHash = txn => (
-    `${txn.tx_hash.substring(0, 9)}...`
-  )
-
-  renderFromAddr = txn => (
-    `${txn.from.substring(0, 9)}...`
-  )
-
-  renderDate = (txn) => {
-    const { classes } = this.props;
-    const d = new Date(txn.date);
-
-    return (
-      <div className={classes.tableCellDateTime}>
-        <div>{d.toLocaleDateString()}</div>
-        <div>{d.toLocaleTimeString()}</div>
-      </div>
-    );
-  }
-
-  renderAmount = txn => (
-    <div style={{ fontSize: '1.2em' }}>
-      <span style={{ fontWeight: 'bold' }}>{txn.amount}</span>
-      &nbsp;
-      {txn.type === txType.TOKENIZE
-        ? <SgdPill />
-        : <SgdrPill />
-      }
-    </div>
-  )
-
-  renderType = (txn) => {
-    const { t } = this.props;
-    switch (txn.type) {
-      case txType.TOKENIZE: {
-        return t('typeTokenize');
-      }
-      case txType.WITHDRAWAL: {
-        return t('typeWithdraw');
-      }
-      default: {
-        return null;
-      }
-    }
-  }
-
-  renderStatus = (txn) => {
-    const { classes, t } = this.props;
-    const genNode = (dotClass, text) => (
-      <div className={classes.statusCell}>
-        <div className={[dotClass, classes.statusDot].join(' ')} />
-        <div className={classes.statusText}>{text}</div>
-      </div>
-    );
-    switch (txn.status) {
-      case txStatus.PENDING_NETWORK: {
-        return genNode(classes.statusDotPending, t('statusPendingNetwork'));
-      }
-      case txStatus.PENDING_APPROVAL: {
-        return genNode(classes.statusDotPending, t('statusPendingApproval'));
-      }
-      case txStatus.SUCCESS: {
-        return genNode(classes.statusDotSuccess, t('statusSuccess'));
-      }
-      case txStatus.ERROR: {
-        return genNode(classes.statusDotError, t('statusError'));
-      }
-      default: {
-        return null;
-      }
-    }
   }
 
   render() {
@@ -212,28 +203,48 @@ class Transactions extends React.Component {
     const columns = [
       {
         head: t('txHash'),
-        renderCell: this.renderTxHash,
+        renderCell: renderTxHash,
       },
       {
         head: t('from'),
-        renderCell: this.renderFromAddr,
+        renderCell: renderFromAddr,
         hide: isUser,
       },
       {
         head: t('date/time'),
-        renderCell: this.renderDate,
+        renderCell: renderDate,
       },
       {
         head: t('amount'),
-        renderCell: this.renderAmount,
+        renderCell: renderAmount,
       },
       {
         head: t('type'),
-        renderCell: this.renderType,
+        renderCell: renderType({
+          [txType.TOKENIZE]: t('typeTokenize'),
+          [txType.WITHDRAWAL]: t('typeWithdraw'),
+        }),
       },
       {
         head: t('status'),
-        renderCell: this.renderStatus,
+        renderCell: renderStatus({
+          [txStatus.PENDING_NETWORK]: {
+            color: transactionPending,
+            text: t('statusPendingNetwork'),
+          },
+          [txStatus.PENDING_APPROVAL]: {
+            color: transactionPending,
+            text: t('statusPendingApproval'),
+          },
+          [txStatus.SUCCESS]: {
+            color: transactionSuccess,
+            text: t('statusSuccess'),
+          },
+          [txStatus.ERROR]: {
+            color: transactionError,
+            text: t('statusError'),
+          },
+        }),
       },
     ];
 
