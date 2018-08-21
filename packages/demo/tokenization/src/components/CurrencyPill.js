@@ -8,13 +8,13 @@ const CurrencyPill = ({ text, backgroundColor, color }) => (
       style={{
         backgroundColor,
         color,
-        height: '1.2rem',
-        width: '2.4rem',
+        height: '1.6em',
+        width: '3.2em',
         textAlign: 'center',
         letterSpacing: 0,
         fontSize: '0.6em',
         fontWeight: 'bold',
-        borderRadius: '0.6rem',
+        borderRadius: '0.8em',
         display: 'table-cell',
         verticalAlign: 'middle',
       }}

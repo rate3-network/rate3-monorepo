@@ -1,2 +1,19 @@
 {
+  "txHash": "TxHash",
+  "from": "From",
+  "date/time": "Date/Time",
+  "amount": "Amount",
+  "type": "Type",
+  "status": "Status",
+
+  "typeTokenize": "Tokenize",
+  "typeWithdraw": "Withdrawal",
+
+  "statusPendingNetwork": "Pending Network",
+  "statusPendingApproval": "Pending Approval",
+  "statusSuccess": "Success",
+  "statusError": "Error",
+
+  "rowsPerPage": "Rows per page:",
+  "tableDisplayedRows": "<0>{{from}}</0>-<2>{{to}}</2> of <4>{{count}}</4>"
 }

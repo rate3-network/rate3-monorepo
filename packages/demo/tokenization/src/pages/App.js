@@ -171,7 +171,19 @@ class App extends React.Component {
   };
 
   handleRoleSwitch = () => {
-    const { switchRole, isUser, history } = this.props;
+    const {
+      switchRole,
+      isUser,
+      history,
+      location: { pathname },
+    } = this.props;
+
+    // Don't change path if on transactions tab
+    if (pathname === '/transactions') {
+      switchRole();
+      return;
+    }
+
     if (isUser) {
       history.push({
         pathname: '/issuer/approval',

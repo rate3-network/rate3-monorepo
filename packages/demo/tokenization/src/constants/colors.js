@@ -76,13 +76,19 @@ export const userConfirmationValue = textDefault;
 export const issuerConfirmationValue = textDefault;
 
 
+// Transaction Status
+export const transactionPending = '#F9AD54';
+export const transactionSuccess = '#1EAE60';
+export const transactionError = '#F95454';
+
+
 // Transaction Progress
 export const transactionProgressHeader = textDefault;
 export const transactionProgressSubHeader = textDefault;
 export const transactionProgressText = textDefault;
-export const transactionProgressStepperIcon = '#F9AD54';
-export const transactionProgressStepperIconCompleted = '#1EAE60';
-export const transactionProgressStepperIconError = '#F95454';
+export const transactionProgressStepperIcon = transactionPending;
+export const transactionProgressStepperIconCompleted = transactionSuccess;
+export const transactionProgressStepperIconError = transactionError;
 
 
 // Currency
@@ -93,3 +99,10 @@ export const currencyPillText = '#FFFFFF';
 
 // Withdrawal
 export const withdrawalInfoText = '#8A8A8A';
+
+
+// Transactions Table
+export const tableHeader = '#000000';
+export const filterButtonBg = '#FFFFFF';
+export const filterButtonText = '#000000';
+export const filterDropdownText = '#142834';
