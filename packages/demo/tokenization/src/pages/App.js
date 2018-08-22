@@ -22,11 +22,11 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 
 // Pages
-import Approval from './approval';
-import Tokenization from './tokenization';
-import Transactions from './transactions';
-import Wallet from './wallet';
-import Withdrawal from './withdrawal';
+import Approval from './Approval';
+import Tokenization from './Tokenization';
+import Transactions from './Transactions';
+import Wallet from './Wallet';
+import Withdrawal from './Withdrawal';
 
 // Constants
 import {
@@ -288,7 +288,7 @@ class App extends React.Component {
         </List>
         <div className={classes.drawerPadding} />
         <div className={getClass(classes, 'drawerFooter', isUser)}>
-          <Link to="/" className={classes.drawerLink}>
+          <Link to="/settings" className={classes.drawerLink}>
             {t('walletSettings')}
           </Link>
         </div>
@@ -357,7 +357,7 @@ class App extends React.Component {
             <RouterSwitch>
               <Route
                 exact
-                path="/"
+                path="/settings"
                 component={() => (
                   <MainContent
                     title={t('walletSettings')}

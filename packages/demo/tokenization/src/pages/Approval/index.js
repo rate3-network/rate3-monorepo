@@ -21,7 +21,7 @@ import {
   renderDate,
   renderAmount,
   renderType,
-} from '../transactions';
+} from '../Transactions';
 import { txType } from '../../constants/enums';
 import { buttonTextPrimary } from '../../constants/colors';
 
