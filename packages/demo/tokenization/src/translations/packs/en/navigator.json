@@ -1,11 +1,12 @@
 {
+  "tokenizationDemo": "Tokenization Demo",
   "user": "User",
   "trustee": "Trustee",
   "faq": "FAQ",
   "walletSettings": "Wallet settings",
   "tokenize": "Tokenize",
   "withdraw": "Withdraw",
-  "approval": "Approval",
+  "approval": "Approve Tokenization",
   "transactions": "Transactions",
   "bankAccount": "Bank\naccount",
   "ethWallet": "ETH\nwallet",
@@ -13,5 +14,12 @@
   "next": "Next",
   "back": "Back",
   "submit": "Submit",
-  "approve": "Approve"
+  "approve": "Approve",
+
+  "startDemo": "Start Demo",
+  "setUp": "Set Up",
+  "verify": "Verify",
+  "finish": "Finish",
+  "backToUser": "Back to User",
+  "backToTrustee": "Back to Trustee"
 }

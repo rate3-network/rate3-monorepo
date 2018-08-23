@@ -46,8 +46,18 @@ import {
   sgdrColor,
   sgdColor,
 } from '../constants/colors';
+import {
+  approvePath,
+  faqPath,
+  rootPath,
+  tokenizePath,
+  transactionsPath,
+  walletSettingsPath,
+  withdrawPath,
+} from '../constants/urls';
 
 // Components
+import Onboard from './Onboard';
 import AccountBalance from '../components/sidebar/AccountBalance';
 import AccountsSummary from '../components/sidebar/AccountsSummary';
 import ListLinkItem from '../components/sidebar/ListLinkItem';
@@ -163,7 +173,7 @@ class App extends React.Component {
     const { networkInit } = this.props;
     networkInit();
     const { location: { pathname }, switchRole } = this.props;
-    if (pathname === '/trustee/approval') {
+    if (pathname === approvePath) {
       switchRole();
     }
   }
@@ -172,6 +182,8 @@ class App extends React.Component {
     const { location, isUser, switchRole } = this.props;
     if (location !== prevProps.location
       && location.state && location.state.isUser !== isUser) {
+      switchRole();
+    } else if (location.pathname === approvePath && isUser) {
       switchRole();
     }
   }
@@ -189,19 +201,19 @@ class App extends React.Component {
     } = this.props;
 
     // Don't change path if on transactions tab
-    if (pathname === '/transactions') {
+    if (pathname === transactionsPath) {
       switchRole();
       return;
     }
 
     if (isUser) {
       history.push({
-        pathname: '/trustee/approval',
+        pathname: approvePath,
         state: { isUser: false },
       });
     } else {
       history.push({
-        pathname: '/user/tokenization',
+        pathname: tokenizePath,
         state: { isUser: true },
       });
     }
@@ -219,7 +231,7 @@ class App extends React.Component {
     return (
       <React.Fragment>
         <div className={classes.faq}>
-          <Link to="/faq" className={classes.drawerLink}>
+          <Link to={faqPath} className={classes.drawerLink}>
             {t('faq')}
           </Link>
         </div>
@@ -261,34 +273,34 @@ class App extends React.Component {
         <List component="div">
           { isUser && (
             <ListLinkItem
-              to={{ pathname: '/user/tokenization', state: { isUser: true } }}
+              to={{ pathname: tokenizePath, state: { isUser: true } }}
               primary={t('tokenize')}
               isUser
             />
           )}
           { isUser && (
             <ListLinkItem
-              to={{ pathname: '/user/withdrawal', state: { isUser: true } }}
+              to={{ pathname: withdrawPath, state: { isUser: true } }}
               primary={t('withdraw')}
               isUser
             />
           )}
           { !isUser && (
             <ListLinkItem
-              to={{ pathname: '/trustee/approval', state: { isUser: false } }}
+              to={{ pathname: approvePath, state: { isUser: false } }}
               primary={t('approval')}
               isUser={false}
             />
           )}
           <ListLinkItem
-            to={{ pathname: '/transactions', state: { isUser } }}
+            to={{ pathname: transactionsPath, state: { isUser } }}
             primary={t('transactions')}
             isUser={isUser}
           />
         </List>
         <div className={classes.drawerPadding} />
         <div className={getClass(classes, 'drawerFooter', isUser)}>
-          <Link to="/settings" className={classes.drawerLink}>
+          <Link to={walletSettingsPath} className={classes.drawerLink}>
             {t('walletSettings')}
           </Link>
         </div>
@@ -302,8 +314,13 @@ class App extends React.Component {
       theme,
       t,
       isUser,
+      location: { pathname },
     } = this.props;
     const { mobileOpen } = this.state;
+
+    if (pathname === rootPath) {
+      return <Onboard />;
+    }
 
     return (
       <div className={classes.root}>
@@ -356,8 +373,7 @@ class App extends React.Component {
           <div className={classes.content}>
             <RouterSwitch>
               <Route
-                exact
-                path="/settings"
+                path={walletSettingsPath}
                 component={() => (
                   <MainContent
                     title={t('walletSettings')}
@@ -366,7 +382,7 @@ class App extends React.Component {
                 )}
               />
               <Route
-                path="/user/tokenization"
+                path={tokenizePath}
                 component={() => (
                   <MainContent
                     title={t('tokenize')}
@@ -375,7 +391,7 @@ class App extends React.Component {
                 )}
               />
               <Route
-                path="/user/withdrawal"
+                path={withdrawPath}
                 component={() => (
                   <MainContent
                     title={t('withdraw')}
@@ -384,7 +400,7 @@ class App extends React.Component {
                 )}
               />
               <Route
-                path="/trustee/approval"
+                path={approvePath}
                 component={() => (
                   <MainContent
                     title={t('approval')}
@@ -393,7 +409,7 @@ class App extends React.Component {
                 )}
               />
               <Route
-                path="/transactions"
+                path={transactionsPath}
                 component={() => (
                   <MainContent
                     title={t('transactions')}

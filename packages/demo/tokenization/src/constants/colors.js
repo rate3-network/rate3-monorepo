@@ -41,6 +41,7 @@ export const userStepperIcon = '#DDE2E5';
 export const trusteeStepperIcon = '#F1F5F7';
 export const stepperIconActive = '#203542';
 export const stepperIconCompleted = stepperIconActive;
+export const stepperIconBorder = 'rgba(32, 53, 66, 0.2)';
 
 export const userStepperText = '#C4C4C4';
 export const trusteeStepperText = '#E5E5E5';
@@ -111,3 +112,26 @@ export const tableHeader = '#000000';
 export const filterButtonBg = '#FFFFFF';
 export const filterButtonText = '#000000';
 export const filterDropdownText = '#142834';
+
+
+// Onboarding
+export const onboardAppBarBg = '#203542';
+export const onboardAppBarText = '#FFFFFF';
+export const onboardContentBg = '#FFFFFF';
+export const onboardIntroHeaderText = '#203542';
+export const onboardIntroDescriptionText = '#494848';
+
+export const onboardRoleCardShadow = 'rgba(0, 0, 0, 0.15)';
+export const onboardUserRoleCardBg = '#FFFFFF';
+export const onboardUserRoleCardText = '#494848';
+export const onboardUserRoleCardAccent = '#203542';
+export const onboardUserRoleCardCircle = '#F1F5F7 ';
+export const onboardTrusteeRoleCardBg = '#203542';
+export const onboardTrusteeRoleCardText = '#FFFFFF';
+export const onboardTrusteeRoleCardAccent = '#98A4AB';
+export const onboardTrusteeRoleCardCircle = 'rgba(255, 255, 255, 0.3) ';
+
+export const onboardText = '#494848';
+export const onboardRadioLabel = '#FBFBFB';
+export const onboardRadio = '#334651';
+export const onboardingUnorderedListBullet = '#C1C1C1';

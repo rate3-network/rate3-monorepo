@@ -19,6 +19,8 @@ import {
   trusteeStepperActiveText,
   userStepperCompletedText,
   trusteeStepperCompletedText,
+  stepperConnector,
+  stepperIconBorder,
 } from '../constants/colors';
 
 
@@ -56,7 +58,7 @@ const styles = theme => ({
   },
   iconActive: {
     color: `${stepperIconActive} !important`,
-    border: `0.4em solid ${'rgba(32, 53, 66, 0.2)'}`,
+    border: `0.4em solid ${stepperIconBorder}`,
   },
   iconCompleted: {
     color: `${stepperIconCompleted} !important`,
@@ -66,7 +68,7 @@ const styles = theme => ({
     zIndex: 1,
   },
   connectorLine: {
-    backgroundColor: '#EBF0F3',
+    backgroundColor: stepperConnector,
     height: '8px',
     borderTop: 'none',
   },

@@ -3,6 +3,7 @@ import Translation from '../../models/Translation';
 
 // Import translated resources
 import navigator from './navigator';
+import onboarding from './onboarding';
 import transactions from './transactions';
 import wallet from './wallet';
 import completion from './completion';
@@ -13,6 +14,7 @@ const en = new Translation(
   new Language('EN', 'en'),
   {
     navigator,
+    onboarding,
     transactions,
     wallet,
     completion,

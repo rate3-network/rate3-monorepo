@@ -12,9 +12,11 @@ import makeSagas from './effects';
 import LocalStorageDB from './db';
 import { txType, txStatus } from './constants/enums';
 
-let db = null; // LocalStorageDB.load('tokenization');
+import { dbName } from './constants/storageKeys';
+
+let db = null; // LocalStorageDB.load(dbName);
 if (db === null) {
-  db = new LocalStorageDB('tokenization');
+  db = new LocalStorageDB(dbName);
   db.createTable('transactions', [
     'tx_hash',
     'from',
