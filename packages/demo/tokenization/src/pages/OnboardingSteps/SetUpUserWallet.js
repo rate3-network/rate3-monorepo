@@ -25,10 +25,54 @@ class SetUpUserWallet extends React.Component {
     });
   }
 
+  renderHeader() {
+    const { classes, t, isModal } = this.props;
+
+    if (isModal) {
+      return (
+        <h1 className={classes.modalHeader}>
+          {t('onboarding:setUpUserWallet')}
+        </h1>
+      );
+    }
+
+    return (
+      <h1 className={classes.header}>
+        <Trans i18nKey="onboarding:stepNumber">
+          Step
+          {{ stepNumber: 3 }}
+          :
+        </Trans>
+        &nbsp;
+        {t('onboarding:setUpUserWallet')}
+      </h1>
+    );
+  }
+
+  renderDescription() {
+    return (
+      <List>
+        <Trans
+          key="userSetUpWalletDesc1"
+          i18nKey="onboarding:userSetUpWalletDesc1"
+        >
+          ETH wallet address is your <strong>unique identifier</strong>.
+        </Trans>
+        <Trans
+          key="userSetUpWalletDesc2"
+          i18nKey="onboarding:userSetUpWalletDesc2"
+        >
+          ETH wallet is used to submit tokenization and withdrawal requests.
+        </Trans>
+      </List>
+    );
+  }
+
   render() {
     const {
       classes,
       t,
+      isModal,
       handlePrevStep,
       handleNextStep,
     } = this.props;
@@ -36,63 +80,51 @@ class SetUpUserWallet extends React.Component {
 
     return (
       <div className={classes.root}>
-        <h1>
-          <Trans i18nKey="onboarding:stepNumber">
-            Step
-            {{ stepNumber: 3 }}
-            :
-          </Trans>
-          &nbsp;
-          {t('onboarding:setUpUserWallet')}
-        </h1>
-        <List>
-          <Trans key="userSetUpWalletDesc1" i18nKey="onboarding:userSetUpWalletDesc1">
-            ETH wallet address is your <strong>unique identifier</strong>.
-          </Trans>
-          <Trans key="userSetUpWalletDesc2" i18nKey="onboarding:userSetUpWalletDesc2">
-            ETH wallet is used to submit tokenization and withdrawal requests.
-          </Trans>
-        </List>
-        <h2 className={classes.subheader}>{t('onboarding:selectETHWallet')}</h2>
+        {this.renderHeader()}
+        <div className={isModal ? classes.modalContent : classes.content}>
+          {this.renderDescription()}
+          <h2 className={classes.subheader}>{t('onboarding:selectETHWallet')}</h2>
 
-        <RadioGroup
-          aria-label="Ethereum Wallet"
-          name="userEthWallet"
-          className={classes.radioGroup}
-          value={userEthWallet}
-          onChange={this.handleWalletChange}
-          classes={{
-            radio: classes.radioRoot,
-            label: classes.labelRoot,
-          }}
-          items={[
-            {
-              key: '0x687422eea2cb73b5d3e242ba5456b782919afc85',
-              value: '0x687422eea2cb73b5d3e242ba5456b782919afc85',
-              label: (
-                <div>
-                  <div><strong>Stan Smith</strong></div>
-                  <div>0x687422eea2cb73b5d3e242ba5456b782919afc85</div>
-                </div>
-              ),
-            },
-          ]}
-        />
-        <div className={classes.buttonsGroup}>
-          <Button
-            onClick={handlePrevStep}
-            isUser
-          >
-            {t('back')}
-          </Button>
-          <Button
-            onClick={handleNextStep}
-            color="primary"
-            isUser
-            disabled={!userEthWallet}
-          >
-            {t('finish')}
-          </Button>
+          <RadioGroup
+            aria-label="Ethereum Wallet"
+            name="userEthWallet"
+            className={classes.radioGroup}
+            value={userEthWallet}
+            onChange={this.handleWalletChange}
+            classes={{
+              radio: classes.radioRoot,
+              label: classes.labelRoot,
+            }}
+            items={[
+              {
+                key: '0x687422eea2cb73b5d3e242ba5456b782919afc85',
+                value: '0x687422eea2cb73b5d3e242ba5456b782919afc85',
+                label: (
+                  <div>
+                    <div><strong>Stan Smith</strong></div>
+                    <div>0x687422eea2cb73b5d3e242ba5456b782919afc85</div>
+                  </div>
+                ),
+              },
+            ]}
+          />
+          <div className={classes.buttonsGroup}>
+            <div className={classes.flexGrow} />
+            <Button
+              onClick={handlePrevStep}
+              isUser
+            >
+              {t('back')}
+            </Button>
+            <Button
+              onClick={handleNextStep}
+              color="primary"
+              isUser
+              disabled={!userEthWallet}
+            >
+              {t('finish')}
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -102,9 +134,14 @@ class SetUpUserWallet extends React.Component {
 SetUpUserWallet.propTypes = {
   classes: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
+  isModal: PropTypes.bool,
   handlePrevStep: PropTypes.func.isRequired,
   handleNextStep: PropTypes.func.isRequired,
   setContext: PropTypes.func.isRequired,
+};
+
+SetUpUserWallet.defaultProps = {
+  isModal: false,
 };
 
 const enhance = compose(

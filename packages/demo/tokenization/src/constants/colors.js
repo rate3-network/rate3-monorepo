@@ -64,6 +64,7 @@ export const textFieldShadow = 'rgba(0, 0, 0, 0.25)';
 
 
 // Button
+export const buttonText = '#54656F';
 export const buttonTextPrimary = '#FFFFFF';
 export const buttonTextPrimaryHover = '#203542';
 export const buttonBg = 'inherit';
@@ -135,3 +136,13 @@ export const onboardText = '#494848';
 export const onboardRadioLabel = '#FBFBFB';
 export const onboardRadio = '#334651';
 export const onboardingUnorderedListBullet = '#C1C1C1';
+
+// Onboarding Modal
+export const onboardingModalUserBackdrop = 'rgba(243, 243, 243, 0.7)';
+export const onboardingModalTrusteeBackdrop = 'rgba(82, 82, 82, 0.7)';
+export const onboardingModalHeaderBg = '#203542';
+export const onboardingModalHeaderText = '#FFFFFF';
+export const onboardingModalBg = '#FFFFFF';
+export const onboardingModalShadow = 'rgba(0, 0, 0, 0.15)';
+export const onboardingModalTextSecondary = '#A5A5A5';
+export const onboardingModalBackToPrevText = '#54656F';

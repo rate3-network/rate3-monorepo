@@ -25,13 +25,13 @@
 
   "verifyBankAccountDesc1": "Your bank account is used to <1>wire SGD</1> to the Trust during <3>tokenization</3>.",
   "verifyBankAccountDesc2": "Your bank account is used to <1>receive SGD</1> from the Trust during <3>withdrawal</3>.",
-  "verifyBankAccountDesc1Short": "Wire SGD to the Trust during tokenization.",
-  "verifyBankAccountDesc2Short": "Receive SGD from the Trust during withdrawal",
+  "verifyBankAccountDesc1Short": "<1>Wire SGD</1> to the Trust during <3>tokenization</3>.",
+  "verifyBankAccountDesc2Short": "<1>Receive SGD</1> from the Trust during <3>withdrawal</3>.",
 
   "verifyTrustDetailsDesc1": "The Trust <1>receives SGD</1> from users during <3>tokenization</3> requests.",
   "verifyTrustDetailsDesc2": "The Trust <1>transfers SGD</1> to users during <3>withdrawal</3> requests.",
-  "verifyTrustDetailsDesc1Short": "Receives SGD from users during tokenization.",
-  "verifyTrustDetailsDesc2Short": "Transfers SGD to users during withdrawal.",
+  "verifyTrustDetailsDesc1Short": "<1>Receives SGD</1> from users during <3>tokenization</3>.",
+  "verifyTrustDetailsDesc2Short": "<1>Transfers SGD</1> to users during <3>withdrawal</3>.",
 
   "userSetUpWalletDesc1": "ETH wallet address is your <1>unique identifier</1>.",
   "userSetUpWalletDesc2": "ETH wallet is used to submit tokenization and withdrawal requests.",
@@ -41,7 +41,7 @@
 
   "switchingToTrustee": "Switching to Trustee?",
   "switchingToUser": "Switching to User?",
-  "switchToTrusteeMessage": "You need to verify the trust account and set up the trustee ETH wallet",
-  "switchToUserMessage": "You will need to set up your personal bank account and ETH wallet",
+  "switchToTrusteeMessage": "You need to verify the trust account\nand set up the trustee ETH wallet",
+  "switchToUserMessage": "You will need to set up your personal bank account\nand ETH wallet",
   "switchSubMessage": "You only need to do this once"
 }

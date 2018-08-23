@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid';
 import { compose } from '../../utils';
 import {
   onboardRoleCardShadow,
+  onboardText,
   onboardTrusteeRoleCardAccent,
   onboardTrusteeRoleCardBg,
   onboardTrusteeRoleCardCircle,
@@ -21,6 +22,7 @@ import {
 const styles = theme => ({
   root: {
     flexGrow: 1,
+    color: onboardText,
   },
   roleSelectionContainer: {
     display: 'flex',

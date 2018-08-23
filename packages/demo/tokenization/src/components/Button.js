@@ -5,15 +5,16 @@ import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 
 import {
+  buttonBg,
   buttonBgPrimary,
   buttonBgPrimaryHover,
+  buttonBorderPrimary,
+  buttonShadowPrimary,
+  buttonShadowPrimaryActive,
+  buttonShadowPrimaryHover,
+  buttonText,
   buttonTextPrimary,
   buttonTextPrimaryHover,
-  buttonShadowPrimary,
-  buttonShadowPrimaryHover,
-  buttonShadowPrimaryActive,
-  buttonBorderPrimary,
-  buttonBg,
 } from '../constants/colors';
 import { genStyle, getClass } from '../utils';
 
@@ -31,6 +32,7 @@ const styles = theme => ({
   ...genStyle('contained', isUser => ({
     boxShadow: 'none',
     backgroundColor: buttonBg,
+    color: buttonText,
     borderRadius: '1.2em',
     height: '2.4em',
     fontSize: '1.2em',

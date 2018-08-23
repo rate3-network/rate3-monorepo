@@ -19,10 +19,9 @@ const styles = theme => ({
     flexWrap: 'wrap',
   },
   contentContainer: {
-    padding: theme.spacing.unit * 3,
-    flex: '1 0 50%',
+    flex: '1 0 calc(50% - 20px)',
     boxSizing: 'border-box',
-    minWidth: '300px',
+    minWidth: '280px',
   },
   image: {
     width: '100%',

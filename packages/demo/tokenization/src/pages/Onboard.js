@@ -66,7 +66,7 @@ const styles = theme => ({
   content: {
     margin: 'auto',
     maxWidth: '900px',
-    padding: theme.spacing.unit * 2,
+    padding: '1em',
   },
 });
 
@@ -100,15 +100,15 @@ class Onboard extends React.Component {
   handleComplete = (context) => {
     const { history } = this.props;
     if (context.isUser) {
+      sessionStorage.setItem(userOnboarded, true);
       history.push({
         pathname: tokenizePath,
       });
-      sessionStorage.setItem(userOnboarded, true);
     } else {
+      sessionStorage.setItem(trusteeOnboarded, true);
       history.push({
         pathname: approvePath,
       });
-      sessionStorage.setItem(trusteeOnboarded, true);
     }
   }
 

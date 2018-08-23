@@ -20,6 +20,7 @@ import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
+import Modal from '@material-ui/core/Modal';
 
 // Pages
 import Approval from './Approval';
@@ -30,21 +31,24 @@ import Withdrawal from './Withdrawal';
 
 // Constants
 import {
+  navBoxShadow,
+  onboardingModalShadow,
+  onboardingModalTrusteeBackdrop,
+  onboardingModalUserBackdrop,
+  sgdColor,
+  sgdrColor,
   trusteeMainBg,
   trusteeNavBg,
   trusteeNavEmphasisPrimary,
   trusteeNavFooterBg,
   trusteeNavFooterText,
   trusteeNavPrimary,
-  navBoxShadow,
   userMainBg,
   userNavBg,
   userNavEmphasisPrimary,
   userNavFooterBg,
   userNavFooterText,
   userNavPrimary,
-  sgdrColor,
-  sgdColor,
 } from '../constants/colors';
 import {
   approvePath,
@@ -55,6 +59,7 @@ import {
   walletSettingsPath,
   withdrawPath,
 } from '../constants/urls';
+import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
 
 // Components
 import Onboard from './Onboard';
@@ -63,6 +68,14 @@ import AccountsSummary from '../components/sidebar/AccountsSummary';
 import ListLinkItem from '../components/sidebar/ListLinkItem';
 import MainContent from '../components/MainContent';
 import Switch from '../components/sidebar/Switch';
+import OnboardingFlow from '../components/onboarding/OnboardingFlow';
+import {
+  VerifyUserBankAccount,
+  SetUpUserWallet,
+  VerifyTrustDetails,
+  SetUpTrusteeWallet,
+  SwitchRoleIntro,
+} from './OnboardingSteps';
 
 // Actions
 import {
@@ -162,20 +175,47 @@ const styles = theme => ({
       padding: theme.spacing.unit * 2,
     },
   },
+  ...genStyle('modalBackdropRoot', isUser => ({
+    backgroundColor: isUser
+      ? onboardingModalUserBackdrop : onboardingModalTrusteeBackdrop,
+  })),
+  modalRoot: {
+    display: 'flex',
+    overflowY: 'auto',
+  },
+  modalContentRoot: {
+    margin: 'auto',
+    maxWidth: '600px',
+    width: '600px',
+    borderRadius: '10px',
+    overflow: 'hidden',
+    letterSpacing: 0,
+    boxShadow: `4px 4px 20px ${onboardingModalShadow}`,
+    '&:focus': {
+      outline: 'none',
+    },
+  },
 });
 
 class App extends React.Component {
   state = {
     mobileOpen: false,
+    modalOpen: false,
+    modalOnboardUser: false,
   };
 
   componentDidMount() {
-    const { networkInit } = this.props;
+    const { networkInit, isUser } = this.props;
+    this.checkOnboarded(isUser);
     networkInit();
     const { location: { pathname }, switchRole } = this.props;
     if (pathname === approvePath) {
       switchRole();
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.checkOnboarded(nextProps.isUser);
   }
 
   componentDidUpdate(prevProps) {
@@ -188,6 +228,15 @@ class App extends React.Component {
     }
   }
 
+  handleModalClose = isUser => () => {
+    if (isUser) {
+      sessionStorage.setItem(userOnboarded, true);
+    } else {
+      sessionStorage.setItem(trusteeOnboarded, true);
+    }
+    this.setState({ modalOpen: false });
+  }
+
   handleDrawerToggle = () => {
     this.setState(state => ({ mobileOpen: !state.mobileOpen }));
   };
@@ -196,7 +245,6 @@ class App extends React.Component {
     const {
       switchRole,
       isUser,
-      history,
       location: { pathname },
     } = this.props;
 
@@ -207,18 +255,44 @@ class App extends React.Component {
     }
 
     if (isUser) {
-      history.push({
-        pathname: approvePath,
-        state: { isUser: false },
-      });
+      this.switchToTrustee();
     } else {
-      history.push({
-        pathname: tokenizePath,
-        state: { isUser: true },
-      });
+      this.switchToUser();
     }
     switchRole();
   };
+
+  switchToUser = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: tokenizePath,
+      state: { isUser: true },
+    });
+  }
+
+  switchToTrustee = () => {
+    const { history } = this.props;
+    history.push({
+      pathname: approvePath,
+      state: { isUser: false },
+    });
+  }
+
+  checkOnboarded(isUser) {
+    const { modalOpen } = this.state;
+
+    if (isUser) {
+      if (sessionStorage.getItem(userOnboarded)) {
+        modalOpen && this.setState({ modalOpen: false });
+      } else {
+        this.setState({ modalOpen: true, modalOnboardUser: true });
+      }
+    } else if (sessionStorage.getItem(trusteeOnboarded)) {
+      modalOpen && this.setState({ modalOpen: false });
+    } else {
+      this.setState({ modalOpen: true, modalOnboardUser: false });
+    }
+  }
 
   renderDrawer() {
     const {
@@ -316,7 +390,7 @@ class App extends React.Component {
       isUser,
       location: { pathname },
     } = this.props;
-    const { mobileOpen } = this.state;
+    const { mobileOpen, modalOpen, modalOnboardUser } = this.state;
 
     if (pathname === rootPath) {
       return <Onboard />;
@@ -419,6 +493,54 @@ class App extends React.Component {
               />
             </RouterSwitch>
           </div>
+          <Modal
+            aria-labelledby="onboarding"
+            aria-describedby="onboarding"
+            open={modalOpen}
+            BackdropProps={{
+              classes: {
+                root: getClass(classes, 'modalBackdropRoot', isUser),
+              },
+            }}
+            classes={{
+              root: classes.modalRoot,
+            }}
+            disableBackdropClick
+            disableEscapeKeyDown
+          >
+            <div className={classes.modalContentRoot}>
+              {modalOnboardUser
+                ? (
+                  <OnboardingFlow
+                    onComplete={this.handleModalClose(modalOnboardUser)}
+                  >
+                    <SwitchRoleIntro
+                      isUser={modalOnboardUser}
+                      handleBackToPrevRole={() => {
+                        this.switchToTrustee();
+                      }}
+                    />
+                    <VerifyUserBankAccount isModal />
+                    <SetUpUserWallet isModal />
+                  </OnboardingFlow>
+                )
+                : (
+                  <OnboardingFlow
+                    onComplete={this.handleModalClose(modalOnboardUser)}
+                  >
+                    <SwitchRoleIntro
+                      isUser={modalOnboardUser}
+                      handleBackToPrevRole={() => {
+                        this.switchToUser();
+                      }}
+                    />
+                    <VerifyTrustDetails isModal />
+                    <SetUpTrusteeWallet isModal />
+                  </OnboardingFlow>
+                )
+              }
+            </div>
+          </Modal>
         </main>
       </div>
     );

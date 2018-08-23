@@ -2,12 +2,27 @@ import {
   onboardText,
   onboardRadio,
   onboardRadioLabel,
+  onboardingModalHeaderBg,
+  onboardingModalHeaderText,
+  onboardingModalBg,
 } from '../../constants/colors';
 
 const verifyAndSetUpStyles = theme => ({
   root: {
     flexGrow: 1,
     color: onboardText,
+  },
+  modalHeader: {
+    backgroundColor: onboardingModalHeaderBg,
+    color: onboardingModalHeaderText,
+    textAlign: 'center',
+    paddingTop: '1em',
+    paddingBottom: '1em',
+    margin: 0,
+  },
+  modalContent: {
+    backgroundColor: onboardingModalBg,
+    padding: '2em',
   },
   subheader: {
     marginTop: '2em',
@@ -16,7 +31,10 @@ const verifyAndSetUpStyles = theme => ({
     marginBottom: '2em',
   },
   buttonsGroup: {
-    textAlign: 'right',
+    display: 'flex',
+  },
+  flexGrow: {
+    flexGrow: 1,
   },
   labelRoot: {
     backgroundColor: onboardRadioLabel,
