@@ -50,7 +50,12 @@ contract OperationsInteractor is BaseAdminInteractor {
     event MintOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
     event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
 
-    constructor() public {
+    constructor(
+        TokenizeTemplateToken _token
+    ) 
+        public
+        BaseAdminInteractor(_token)
+    {
         operationDelay = 6 hours;
     }
 
