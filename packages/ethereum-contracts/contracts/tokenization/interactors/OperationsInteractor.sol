@@ -8,7 +8,6 @@ contract OperationsInteractor is BaseAdminInteractor {
 
     struct MintRequestOperation {
         address by;
-        address to;
         uint256 value;
         uint256 requestTimestamp;
         address approvedBy;
@@ -19,7 +18,6 @@ contract OperationsInteractor is BaseAdminInteractor {
 
     struct BurnRequestOperation {
         address by;
-        address from;
         uint256 value;
         uint256 requestTimestamp;
         address approvedBy;
@@ -38,8 +36,8 @@ contract OperationsInteractor is BaseAdminInteractor {
         _;
     }
 
-    event MintOperationRequested(address indexed by, address indexed to, uint256 value, uint256 requestTimestamp, uint256 index);
-    event BurnOperationRequested(address indexed by, address indexed from, uint256 value, uint256 requestTimestamp, uint256 index);
+    event MintOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
+    event BurnOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
 
     event MintOperationApproved(address indexed by, address indexed approvedBy, uint256 approvalTimestamp, uint256 finalizeTimestamp, uint256 index);
     event BurnOperationApproved(address indexed by, address indexed approvedBy, uint256 approvalTimestamp, uint256 finalizeTimestamp, uint256 index);
@@ -59,11 +57,11 @@ contract OperationsInteractor is BaseAdminInteractor {
         operationDelay = 6 hours;
     }
 
-    function requestMint(address _to, uint256 _value) public {
+    function requestMint(uint256 _value) public {
         uint256 requestTimestamp = block.timestamp;
-        MintRequestOperation memory mintRequestOperation = MintRequestOperation(msg.sender, _to, _value, requestTimestamp, address(0), false, 0, 0);
+        MintRequestOperation memory mintRequestOperation = MintRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0, 0);
 
-        emit MintOperationRequested(msg.sender, _to, _value, requestTimestamp, mintRequestOperations[msg.sender].length);
+        emit MintOperationRequested(msg.sender, _value, requestTimestamp, mintRequestOperations[msg.sender].length);
         mintRequestOperations[msg.sender].push(mintRequestOperation);
     }
 
@@ -88,7 +86,7 @@ contract OperationsInteractor is BaseAdminInteractor {
     function finalizeMint(address _requestor, uint256 _index) public onlyAdminOrOwner {
         MintRequestOperation memory mintRequestOperation = mintRequestOperations[_requestor][_index];
         require(mintRequestOperation.finalizeTimestamp <= block.timestamp, "Action is still timelocked");
-        address mintAddress = mintRequestOperation.to;
+        address mintAddress = mintRequestOperation.by;
         uint256 value = mintRequestOperation.value;
         delete mintRequestOperations[_requestor][_index];
         token.mint(mintAddress, value);
@@ -101,11 +99,11 @@ contract OperationsInteractor is BaseAdminInteractor {
         emit MintOperationRevoked(_requestor, msg.sender, block.timestamp, _index);
     }
 
-    function requestBurn(address _from, uint256 _value) public {
+    function requestBurn(uint256 _value) public {
         uint256 requestTimestamp = block.timestamp;
-        BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(msg.sender, _from, _value, requestTimestamp, address(0), false, 0, 0);
+        BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0, 0);
 
-        emit BurnOperationRequested(msg.sender, _from, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
+        emit BurnOperationRequested(msg.sender, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
         burnRequestOperations[msg.sender].push(burnRequestOperation);
     }
 
@@ -130,7 +128,7 @@ contract OperationsInteractor is BaseAdminInteractor {
     function finalizeBurn(address _requestor, uint256 _index) public onlyAdminOrOwner {
         BurnRequestOperation memory burnRequestOperation = burnRequestOperations[_requestor][_index];
         require(burnRequestOperation.finalizeTimestamp <= block.timestamp, "Action is still timelocked");
-        address burnAddress = burnRequestOperation.from;
+        address burnAddress = burnRequestOperation.by;
         uint256 value = burnRequestOperation.value;
         delete burnRequestOperations[_requestor][_index];
         token.burn(burnAddress, value);
