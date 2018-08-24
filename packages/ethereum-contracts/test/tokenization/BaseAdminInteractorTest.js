@@ -2,7 +2,7 @@ import { increaseTimeTo, duration } from '../helpers/increaseTime';
 import latestTime from '../helpers/latestTime';
 import { advanceBlock } from '../helpers/advanceToBlock';
 
-const TokenizeTemplateToken = artifacts.require("./tokenization/TokenizeTemplateToken");
+const TokenizeTemplateToken = artifacts.require("./tokenization/TokenizeTemplateToken.sol");
 const BaseAdminInteractor = artifacts.require("./tokenization/interactors/BaseAdminInteractor.sol");
 
 require('chai')
@@ -66,4 +66,3 @@ contract('BaseAdminInteractor Tests', function(accounts) {
         });
     });
 });
-
