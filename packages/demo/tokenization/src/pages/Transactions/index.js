@@ -186,6 +186,11 @@ class Transactions extends React.Component {
             checked: getChecked(filterStatus, txStatus.PENDING_APPROVAL),
           },
           {
+            label: 'Pending Finalization',
+            value: txStatus.PENDING_FINALIZE,
+            checked: getChecked(filterStatus, txStatus.PENDING_FINALIZE),
+          },
+          {
             label: 'Success',
             value: txStatus.SUCCESS,
             checked: getChecked(filterStatus, txStatus.SUCCESS),

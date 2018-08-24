@@ -4,6 +4,8 @@ export const networkActions = keyMirror(
   {
     INIT: null,
 
+    SET_CONTRACTS: null,
+
     CHANGE: null,
     CHANGE_SUCCESS: null,
     CHANGE_ERROR: null,

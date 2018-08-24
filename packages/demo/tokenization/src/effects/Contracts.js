@@ -2,6 +2,7 @@ import {
   all,
   put,
   call,
+  select,
   takeEvery,
 } from 'redux-saga/effects';
 import { tokenizeActions } from '../actions/Tokenize';
@@ -14,7 +15,7 @@ function delay(ms) {
   });
 }
 
-const contracts = (db) => {
+const contracts = (db, web3) => {
   function* handleTokenize(action) {
     const {
       type,

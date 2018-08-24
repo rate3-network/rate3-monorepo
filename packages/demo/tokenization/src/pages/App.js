@@ -151,6 +151,11 @@ const styles = theme => ({
     textTransform: 'uppercase',
     fontSize: '2em',
     fontWeight: 'bold',
+    marginBottom: '0.5rem',
+  })),
+  ...genStyle('drawerBalance', isUser => ({
+    fontSize: '0.9em',
+    marginBottom: '2rem',
   })),
   ...genStyle('drawerFooter', isUser => ({
     width: '100%',
@@ -219,7 +224,15 @@ class App extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { location, isUser, switchRole } = this.props;
+    const {
+      location,
+      isUser,
+      switchRole,
+      switchRoleLoading,
+    } = this.props;
+
+    if (switchRoleLoading) return;
+
     if (location !== prevProps.location
       && location.state && location.state.isUser !== isUser) {
       switchRole();
@@ -300,6 +313,9 @@ class App extends React.Component {
       t,
       isUser,
       currentDefaultAccount,
+      currentEthBalance,
+      currentTokenBalance,
+      currentBankBalance,
     } = this.props;
 
     return (
@@ -325,6 +341,9 @@ class App extends React.Component {
         <h1 className={getClass(classes, 'drawerRole', isUser)}>
           { isUser ? t('user') : t('trustee') }
         </h1>
+        <div className={getClass(classes, 'drawerBalance', isUser)}>
+          {t('ethWallet')}: <strong>{currentEthBalance} <small>ETH</small></strong>
+        </div>
         <Switch
           onChange={this.handleRoleSwitch}
           isUser={isUser}
@@ -334,14 +353,14 @@ class App extends React.Component {
         <AccountsSummary>
           <AccountBalance
             currency={<span style={{ color: sgdrColor }}>SGDR</span>}
-            name={t('ethWallet')}
-            amount={10}
+            name={isUser ? t('ethWallet') : t('circulatingTokens')}
+            amount={currentTokenBalance}
           />
           <AccountBalance
             currencySymbol="$"
             currency={<span style={{ color: sgdColor }}>SGD</span>}
-            name={t('bankAccount')}
-            amount={100}
+            name={isUser ? t('bankAccount') : t('trustBalance')}
+            amount={isUser ? currentBankBalance : currentTokenBalance}
           />
         </AccountsSummary>
         <List component="div">
@@ -559,14 +578,22 @@ App.propTypes = {
     state: PropTypes.object,
   }).isRequired,
   isUser: PropTypes.bool.isRequired,
+  switchRoleLoading: PropTypes.bool.isRequired,
   currentDefaultAccount: PropTypes.string.isRequired,
+  currentEthBalance: PropTypes.string.isRequired,
+  currentTokenBalance: PropTypes.string.isRequired,
+  currentBankBalance: PropTypes.string.isRequired,
   networkInit: PropTypes.func.isRequired,
   switchRole: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  switchRoleLoading: state.wallet.switchRoleLoading,
   currentDefaultAccount: state.wallet.currentDefaultAccount,
+  currentEthBalance: state.wallet.currentEthBalance,
+  currentTokenBalance: state.wallet.currentTokenBalance,
+  currentBankBalance: state.wallet.currentBankBalance,
 });
 
 const enhance = compose(

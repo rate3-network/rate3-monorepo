@@ -4,10 +4,14 @@ import {
   call,
   takeLatest,
 } from 'redux-saga/effects';
+
 import { networkActions } from '../actions/Network';
 import { walletActions } from '../actions/Wallet';
+import { contractAddresses } from '../constants/addresses';
+import tokenContractAbi from '../contracts/token';
+import operationsContractAbi from '../contracts/operations';
 
-const network = (db) => {
+const network = (db, web3) => {
   function* handleInit(action) {
     const { type } = action;
     switch (type) {
@@ -17,8 +21,27 @@ const network = (db) => {
         let id;
 
         try {
-          id = yield call(window.web3.eth.net.getId);
+          id = yield call(web3.eth.net.getId);
+          let addresses = contractAddresses[id];
+          if (!addresses) {
+            addresses = contractAddresses.local;
+          }
+          const tokenContract = new web3.eth.Contract(
+            tokenContractAbi,
+            addresses.token,
+          );
+          const operationsContract = new web3.eth.Contract(
+            operationsContractAbi,
+            addresses.operations,
+          );
+
+          yield put({
+            type: networkActions.SET_CONTRACTS,
+            tokenContract,
+            operationsContract,
+          });
         } catch (err) {
+          console.error(err);
           return yield all([
             put({
               type: networkActions.CHANGE_ERROR,
@@ -32,9 +55,9 @@ const network = (db) => {
           return yield all([]);
         }
 
-        const accountsRaw = yield call(window.web3.eth.getAccounts);
+        const accountsRaw = yield call(web3.eth.getAccounts);
         for (const hash of accountsRaw) {
-          const balanceWei = yield call(window.web3.eth.getBalance, hash);
+          const balanceWei = yield call(web3.eth.getBalance, hash);
           accounts.push({
             hash,
             balanceWei,

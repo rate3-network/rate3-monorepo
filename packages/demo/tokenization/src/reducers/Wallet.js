@@ -1,19 +1,25 @@
 import { walletActions } from '../actions/Wallet';
+import { accountAddresses } from '../constants/addresses';
 
+const initialAmount = '10000';
 
 const initialState = {
   isUser: true,
+  switchRoleLoading: false,
 
-  currentDefaultAccount: '0x687422eea2cb73b5d3e242ba5456b782919afc85',
+  currentDefaultAccount: accountAddresses.user,
+  currentEthBalance: '0',
+  currentTokenBalance: '0',
+  currentBankBalance: '0',
 
-  userDefaultAccount: '0x687422eea2cb73b5d3e242ba5456b782919afc85',
-  trusteeDefaultAccount: '0x590F39c5dadD62a3e4Ad6E323632cA2B3Ed371ab',
+  userDefaultAccount: accountAddresses.user,
+  trusteeDefaultAccount: accountAddresses.trustee,
 
   userAccounts: [
-    '0x687422eea2cb73b5d3e242ba5456b782919afc85',
+    accountAddresses.user,
   ],
   trusteeAccounts: [
-    '0x590F39c5dadD62a3e4Ad6E323632cA2B3Ed371ab',
+    accountAddresses.trustee,
   ],
 };
 
@@ -28,13 +34,37 @@ const initialState = {
 export default function (state = initialState, action = {}) {
   const { type } = action;
   switch (type) {
+    case walletActions.SWITCH_ROLE: {
+      return {
+        ...state,
+        switchRoleLoading: true,
+      };
+    }
     case `${walletActions.SWITCH_ROLE}_SUCCESS`: {
       return {
         ...state,
+        switchRoleLoading: false,
         isUser: !state.isUser,
         currentDefaultAccount: state.isUser
           ? state.trusteeDefaultAccount
           : state.userDefaultAccount,
+      };
+    }
+    case walletActions.SET_ETH_BALANCE: {
+      const { balance } = action;
+      return {
+        ...state,
+        currentEthBalance: balance,
+      };
+    }
+    case walletActions.SET_TOKEN_BALANCE: {
+      const { balance } = action;
+      const { BN } = window.web3.utils;
+      return {
+        ...state,
+        currentTokenBalance: balance,
+        currentBankBalance: (new BN(initialAmount))
+          .sub(new BN(balance)).toString(10),
       };
     }
     default: {

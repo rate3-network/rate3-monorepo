@@ -38,7 +38,7 @@ AccountBalance.propTypes = {
   currencySymbol: PropTypes.node,
   currency: PropTypes.node.isRequired,
   name: PropTypes.string.isRequired,
-  amount: PropTypes.number.isRequired,
+  amount: PropTypes.string.isRequired,
 };
 
 AccountBalance.defaultProps = {

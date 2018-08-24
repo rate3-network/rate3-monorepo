@@ -6,6 +6,7 @@ export const txType = {
 export const txStatus = {
   PENDING_NETWORK: 0,
   PENDING_APPROVAL: 1,
-  SUCCESS: 2,
-  ERROR: 3,
+  PENDING_FINALIZE: 2,
+  SUCCESS: 3,
+  ERROR: 4,
 };

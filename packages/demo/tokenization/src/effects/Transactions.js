@@ -7,7 +7,7 @@ import {
 import { transactionsActions } from '../actions/Transactions';
 
 
-const transactions = (db) => {
+const transactions = (db, web3) => {
   function* handleFilter(action) {
     const { filterType, filterStatus } = action;
     const walletState = yield select(state => state.wallet);

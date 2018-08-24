@@ -10,6 +10,8 @@
   "transactions": "Transactions",
   "bankAccount": "Bank\naccount",
   "ethWallet": "ETH\nwallet",
+  "circulatingTokens": "Circulating\ntokens",
+  "trustBalance": "Trust\nbalance",
 
   "next": "Next",
   "back": "Back",
