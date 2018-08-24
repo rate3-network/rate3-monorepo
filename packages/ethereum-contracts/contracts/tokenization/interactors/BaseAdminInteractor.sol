@@ -23,5 +23,9 @@ contract BaseAdminInteractor is Claimable {
         require(_newAdminAddress != address(0), "Admin cannot be 0x0 address");
         admin = _newAdminAddress;
     }
+
+    function claimTokenOwnership(TokenizeTemplateToken _newTokenContract) public onlyOwner {
+        token.claimOwnership();
+    }
 }
 

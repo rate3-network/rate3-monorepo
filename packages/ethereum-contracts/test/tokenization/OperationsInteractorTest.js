@@ -21,7 +21,25 @@ contract('OperationsInteractor Tests', function(accounts) {
 
     const [owner, admin, ...rest] = accounts;
 
-    describe('Test - mint operations', function() {
+    describe('Test - mint request operations', function() {
+        beforeEach(async function() {
+            this.token = await TokenizeTemplateToken.new({ from: owner });
+            this.interactor = await OperationsInteractor.new(this.token.address, { from: owner });
+
+            this.balanceModule = await BalanceModule.new({ from: owner });
+            this.allowanceModule = await AllowanceModule.new({ from: owner });
+            await this.balanceModule.transferOwnership(this.token.address, { from: owner });
+            await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
+            await this.token.setAllowanceModule(this.allowanceModule.address);
+            await this.token.setBalanceModule(this.balanceModule.address);
+
+            await this.token.transferOwnership(this.interactor.address, { from: owner });
+
+            await this.interactor.setAdmin(admin, { from: owner });
+        });
+    });
+
+    describe('Test - mint approve operations', function() {
         beforeEach(async function() {
             this.token = await TokenizeTemplateToken.new({ from: owner });
             this.interactor = await OperationsInteractor.new(this.token.address, { from: owner });
@@ -55,5 +73,50 @@ contract('OperationsInteractor Tests', function(accounts) {
         });
     });
 
+    describe('Test - mint finalize operations', function() {
+        beforeEach(async function() {
+            this.token = await TokenizeTemplateToken.new({ from: owner });
+            this.interactor = await OperationsInteractor.new(this.token.address, { from: owner });
 
+            this.balanceModule = await BalanceModule.new({ from: owner });
+            this.allowanceModule = await AllowanceModule.new({ from: owner });
+            await this.balanceModule.transferOwnership(this.token.address, { from: owner });
+            await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
+            await this.token.setAllowanceModule(this.allowanceModule.address);
+            await this.token.setBalanceModule(this.balanceModule.address);
+
+            await this.token.transferOwnership(this.interactor.address, { from: owner });
+            await this.interactor.claimTokenOwnership(this.token.address, { from: owner });
+
+            await this.interactor.setAdmin(admin, { from: owner });
+
+            this.finalizeTime = latestTime() + duration.hours(12);
+        });
+
+        it('owner can finalize mint request immediately', async function() {
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.approveMint(rest[0], 0, { from: owner });
+            await this.interactor.finalizeMint(rest[0], 0, { from: owner }).should.be.fulfilled;
+        });
+
+        it('admin can finalize mint request after delay', async function() {
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.approveMint(rest[0], 0, { from: admin });
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin }).should.be.rejected;
+
+            await increaseTimeTo(this.finalizeTime);
+
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin }).should.be.fulfilled;
+        });
+
+        it('non-owner/admin cannot finalize mint request', async function() {
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.approveMint(rest[0], 0, { from: admin });
+            await this.interactor.finalizeMint(rest[0], 0, { from: rest[0] }).should.be.rejected;
+
+            await increaseTimeTo(this.finalizeTime);
+
+            await this.interactor.finalizeMint(rest[0], 0, { from: rest[0] }).should.be.rejected;
+        });
+    });
 });
