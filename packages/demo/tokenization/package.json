@@ -25,7 +25,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "prebuild": "rm -rf _build && mv build _build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "postbuild": "rm -rf dist && mv build dist && mv _build build && rm -f dist/service-worker.js",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
@@ -34,6 +36,9 @@
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-bignumber": "^2.0.2",
     "eslint": "^5.3.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.13.0",
