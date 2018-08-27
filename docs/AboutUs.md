@@ -7,3 +7,8 @@
 
 ## Team
 
+#### [Lim Jing Rong @jjingrong](http://github.com/jjingrong)
+<img src="/docs/team_images/jjingrong.png" width="150"><br>
+
+* Co-CTO at Rate3 Network
+* BsC. Computer Science, National University of Singapore
