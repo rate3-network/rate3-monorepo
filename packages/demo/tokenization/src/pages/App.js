@@ -210,13 +210,16 @@ class App extends React.Component {
   };
 
   componentDidMount() {
-    const { networkInit, isUser } = this.props;
+    const {
+      networkInit,
+      isUser,
+      location: { pathname },
+    } = this.props;
     this.checkOnboarded(isUser);
-    networkInit();
-    const { location: { pathname }, switchRole } = this.props;
-    if (pathname === approvePath) {
-      switchRole();
-    }
+    const isTrusteePath = [
+      approvePath,
+    ].reduce((isTrustee, path) => (isTrustee || path === pathname), false);
+    networkInit(!isTrusteePath);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -235,8 +238,6 @@ class App extends React.Component {
 
     if (location !== prevProps.location
       && location.state && location.state.isUser !== isUser) {
-      switchRole();
-    } else if (location.pathname === approvePath && isUser) {
       switchRole();
     }
   }
@@ -342,7 +343,7 @@ class App extends React.Component {
           { isUser ? t('user') : t('trustee') }
         </h1>
         <div className={getClass(classes, 'drawerBalance', isUser)}>
-          {t('ethWallet')}: <strong>{currentEthBalance} <small>ETH</small></strong>
+          {t('ethWallet')}: <strong>{currentEthBalance}<small>&nbsp;ETH</small></strong>
         </div>
         <Switch
           onChange={this.handleRoleSwitch}

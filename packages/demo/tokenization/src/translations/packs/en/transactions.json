@@ -11,6 +11,7 @@
 
   "statusPendingNetwork": "Pending Network",
   "statusPendingApproval": "Pending Approval",
+  "statusPendingFinalize": "Pending Finalize",
   "statusSuccess": "Success",
   "statusError": "Error",
 

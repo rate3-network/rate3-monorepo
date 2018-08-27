@@ -12,8 +12,8 @@ const initialState = {
   transactionError: false,
 
   [withdrawFields.amount]: '',
-  [withdrawFields.gasLimit]: '121',
-  [withdrawFields.gasPrice]: '131',
+  [withdrawFields.gasLimit]: '150000',
+  [withdrawFields.gasPrice]: '5',
 };
 
 /**

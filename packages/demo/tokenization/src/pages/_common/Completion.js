@@ -19,6 +19,7 @@ const styles = theme => ({
   subheader: {
     textAlign: 'center',
     color: transactionProgressSubHeader,
+    wordBreak: 'break-word',
     '& .hash': {
       textDecoration: 'underline',
     },

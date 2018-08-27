@@ -35,10 +35,10 @@ class Table {
   }
 
   exists(filter) {
-    return this.rows.filter((existsCount, currRow) => (
+    return this.rows.reduce((existsCount, currRow) => (
       // eslint-disable-next-line no-underscore-dangle
       existsCount + (this._rowMatchesFilter(filter, currRow) ? 1 : 0)
-    ), 0);
+    ), 0) > 0;
   }
 
   select(filter) {

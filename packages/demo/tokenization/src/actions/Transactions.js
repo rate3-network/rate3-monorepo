@@ -10,6 +10,8 @@ export const transactionsActions = keyMirror(
     SET_PENDING_APPROVAL_TRANSACTIONS: null,
     SET_PENDING_APPROVAL_PAGE: null,
     SET_PENDING_APPROVAL_ROWS_PER_PAGE: null,
+
+    LOAD: null,
   },
   'TRANSACTIONS',
 );

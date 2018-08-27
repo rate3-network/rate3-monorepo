@@ -13,8 +13,8 @@ const initialState = {
   tokensIssued: false,
   transactionError: false,
 
-  [approveFields.gasLimit]: '',
-  [approveFields.gasPrice]: '',
+  [approveFields.gasLimit]: '150000',
+  [approveFields.gasPrice]: '5',
 };
 
 /**

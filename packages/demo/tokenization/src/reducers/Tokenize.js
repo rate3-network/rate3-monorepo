@@ -15,8 +15,8 @@ const initialState = {
   [tokenizeFields.trustBank]: 'DEUTSCHE BANK',
   [tokenizeFields.trustSwiftCode]: 'DEUTSGSG',
   [tokenizeFields.trustAccount]: '123-123456-1',
-  [tokenizeFields.gasLimit]: '141',
-  [tokenizeFields.gasPrice]: '151',
+  [tokenizeFields.gasLimit]: '150000',
+  [tokenizeFields.gasPrice]: '5',
 };
 
 /**

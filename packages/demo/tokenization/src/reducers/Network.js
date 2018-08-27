@@ -11,7 +11,6 @@ import Providers from '../constants/Providers';
  * @returns {Object} Next state
  */
 export default (web3, browserProvider) => {
-
   const initialState = {
     id: null,
 

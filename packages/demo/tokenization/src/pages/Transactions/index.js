@@ -241,6 +241,10 @@ class Transactions extends React.Component {
             color: transactionPending,
             text: t('statusPendingApproval'),
           },
+          [txStatus.PENDING_FINALIZE]: {
+            color: transactionPending,
+            text: t('statusPendingFinalize'),
+          },
           [txStatus.SUCCESS]: {
             color: transactionSuccess,
             text: t('statusSuccess'),

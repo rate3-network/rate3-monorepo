@@ -110,8 +110,8 @@ class Approval extends React.Component {
     }
     if (currentStep === 2) {
       submitApproveRequest(
-        '',
-        transactionToApprove.tx_hash,
+        transactionToApprove.index,
+        transactionToApprove.from,
         gasLimit,
         gasPrice,
       );

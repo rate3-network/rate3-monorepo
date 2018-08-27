@@ -31,10 +31,13 @@ export const networkActions = keyMirror(
     SEND_FROM_ACCOUNT: null,
     SEND_FROM_ACCOUNT_SUCCESS: null,
     SEND_FROM_ACCOUNT_ERROR: null,
+
+    NEW_BLOCK: null,
   },
   'NETWORK',
 );
 
-export const init = () => ({
+export const init = isUser => ({
   type: networkActions.INIT,
+  isUser,
 });
