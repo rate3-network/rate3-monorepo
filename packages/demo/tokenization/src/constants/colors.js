@@ -34,6 +34,7 @@ export const trusteeNavToggleBg = '#F1F5F7';
 // Main panel
 export const userMainBg = '#F1F5F7';
 export const trusteeMainBg = '#FFFFFF';
+export const mainText = textDefault;
 
 
 // Stepper

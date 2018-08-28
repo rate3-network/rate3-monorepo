@@ -1,7 +1,6 @@
 import { keyMirror } from '../utils';
 
 export const approveFields = keyMirror({
-  amount: null,
   gasLimit: null,
   gasPrice: null,
 });

@@ -38,6 +38,10 @@ module.exports = function deployment(deployer, network, accounts) {
     console.log('\nSetting admin of OperationsInteractor');
     await ops.setAdmin(admin);
 
+    console.log('\nTransferring ownership of token to operations interactor');
+    await token.transferOwnership(ops.address);
+    await ops.setToken(token.address);
+
     console.log('\n===== Addresses ======');
     console.log('AllowanceModule:', allowance.address);
     console.log('BalanceModule:  ', balance.address);

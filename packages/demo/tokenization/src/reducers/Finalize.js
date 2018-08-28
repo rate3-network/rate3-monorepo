@@ -1,25 +1,26 @@
-import { approveActions, approveFields } from '../actions/Approve';
+import { finalizeActions, finalizeFields } from '../actions/Finalize';
 
 
 const initialState = {
   step: 0,
   loadingNextStep: false,
 
-  transactionToApprove: null,
+  selectedTransaction: null,
+  toRevoke: false,
 
   currentTransactionHash: '',
   submissionConfirmed: false,
   networkConfirmed: false,
-  timeLockOver: false,
-  tokenizationFinalized: false,
+  tokensIssued: false,
+  tokenizationRevoked: false,
   transactionError: false,
 
-  [approveFields.gasLimit]: '150000',
-  [approveFields.gasPrice]: '5',
+  [finalizeFields.gasLimit]: '150000',
+  [finalizeFields.gasPrice]: '5',
 };
 
 /**
- * Reducer for approve state
+ * Reducer for finalize state
  *
  * @param {Object} [state=initialState] Previous state
  * @param {Object} [action={}] Current action
@@ -28,9 +29,9 @@ const initialState = {
 export default function (state = initialState, action = {}) {
   const { type } = action;
   switch (type) {
-    case approveActions.SET_FIELD: {
+    case finalizeActions.SET_FIELD: {
       const { field, value } = action;
-      if (approveFields[field] != null) {
+      if (finalizeFields[field] != null) {
         return {
           ...state,
           [field]: value,
@@ -38,39 +39,50 @@ export default function (state = initialState, action = {}) {
       }
       return state;
     }
-    case approveActions.SELECT_TRANSACTION_TO_APPROVE: {
+    case finalizeActions.SELECT_TRANSACTION_TO_FINALIZE: {
       const { transaction } = action;
       return {
         ...state,
         step: state.step + 1,
-        transactionToApprove: transaction,
+        selectedTransaction: transaction,
+        toRevoke: false,
       };
     }
-    case approveActions.NEXT_STEP: {
+    case finalizeActions.SELECT_TRANSACTION_TO_REVOKE: {
+      const { transaction } = action;
+      return {
+        ...state,
+        step: state.step + 1,
+        selectedTransaction: transaction,
+        toRevoke: true,
+      };
+    }
+    case finalizeActions.NEXT_STEP: {
       return {
         ...state,
         step: state.step + 1,
         loadingNextStep: false,
       };
     }
-    case approveActions.PREV_STEP: {
+    case finalizeActions.PREV_STEP: {
       return {
         ...state,
         step: Math.max(state.step - 1, 0),
-        transactionToApprove: state.step === 1 ? null : state.transactionToApprove,
+        selectedTransaction: state.step === 1 ? null : state.selectedTransaction,
+        toRevoke: state.step === 1 ? false : state.toRevoke,
         loadingNextStep: false,
       };
     }
-    case approveActions.RESET: {
+    case finalizeActions.RESET: {
       return initialState;
     }
-    case approveActions.SUBMIT_APPROVE_REQUEST: {
+    case finalizeActions.SUBMIT_REQUEST: {
       return {
         ...state,
         loadingNextStep: true,
       };
     }
-    case `${approveActions.SUBMIT_APPROVE_REQUEST}_HASH`: {
+    case `${finalizeActions.SUBMIT_REQUEST}_HASH`: {
       const { hash } = action;
       return {
         ...state,
@@ -79,17 +91,18 @@ export default function (state = initialState, action = {}) {
         currentTransactionHash: hash,
       };
     }
-    case `${approveActions.SUBMIT_APPROVE_REQUEST}_RECEIPT`: {
+    case `${finalizeActions.SUBMIT_REQUEST}_RECEIPT`: {
       return {
         ...state,
         submissionConfirmed: true,
       };
     }
-    case `${approveActions.SUBMIT_APPROVE_REQUEST}_CONFIRMATION`: {
+    case `${finalizeActions.SUBMIT_REQUEST}_CONFIRMATION`: {
       return {
         ...state,
         networkConfirmed: true,
-        tokensIssued: true,
+        tokensIssued: state.toRevoke ? state.tokensIssued : true,
+        tokenizationRevoked: state.toRevoke ? true : state.tokenizationRevoked,
       };
     }
     default: {

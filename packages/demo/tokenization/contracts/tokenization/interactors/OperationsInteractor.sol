@@ -102,6 +102,7 @@ contract OperationsInteractor is BaseAdminInteractor {
 
   function finalizeMint(address _requestor, uint256 _index) public onlyAdminOrOwner {
     MintRequestOperation memory mintRequestOperation = mintRequestOperations[_requestor][_index];
+    require(mintRequestOperation.approved, "Request is not approved");
     require(mintRequestOperation.finalizeTimestamp <= block.timestamp, "Action is still timelocked");
     address mintAddress = mintRequestOperation.by;
     uint256 value = mintRequestOperation.value;

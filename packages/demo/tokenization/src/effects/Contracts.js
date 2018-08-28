@@ -11,6 +11,7 @@ import { networkActions } from '../actions/Network';
 import { tokenizeActions } from '../actions/Tokenize';
 import { withdrawActions } from '../actions/Withdraw';
 import { approveActions } from '../actions/Approve';
+import { finalizeActions } from '../actions/Finalize';
 
 const contracts = (db, web3) => {
   function* handleTokenize(action) {
@@ -99,6 +100,44 @@ const contracts = (db, web3) => {
     }
   }
 
+  function* handleFinalizeOrRevoke(action) {
+    const { operationsContract } = yield select(state => state.network);
+    const { currentDefaultAccount } = yield select(state => state.wallet);
+    const { toRevoke } = yield select(state => state.finalize);
+
+    const {
+      type,
+      requestId,
+      requesterAddr,
+      gasLimit,
+      gasPrice,
+    } = action;
+
+    const tx = toRevoke
+      ? operationsContract.methods.revokeMint(requesterAddr, requestId)
+        .send({
+          from: currentDefaultAccount,
+          gas: gasLimit,
+          gasPrice,
+        })
+      : operationsContract.methods.finalizeMint(requesterAddr, requestId)
+        .send({
+          from: currentDefaultAccount,
+          gas: gasLimit,
+          gasPrice,
+        });
+
+    const chan = yield call(handleContractCall, tx, type);
+    try {
+      while (true) {
+        const nextAction = yield take(chan);
+        yield put(nextAction);
+      }
+    } finally {
+      chan.close();
+    }
+  }
+
   function handleContractCall(transaction, type, data) {
     return eventChannel((emitter) => {
       transaction
@@ -145,6 +184,7 @@ const contracts = (db, web3) => {
       takeEvery(tokenizeActions.SUBMIT_TOKENIZE_REQUEST, handleTokenize),
       takeEvery(withdrawActions.SUBMIT_WITHDRAW_REQUEST, handleWithdraw),
       takeEvery(approveActions.SUBMIT_APPROVE_REQUEST, handleApprove),
+      takeEvery(finalizeActions.SUBMIT_REQUEST, handleFinalizeOrRevoke),
     ]);
   };
 };

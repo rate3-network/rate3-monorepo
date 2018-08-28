@@ -8,5 +8,5 @@ export const txStatus = {
   PENDING_APPROVAL: 1,
   PENDING_FINALIZE: 2,
   SUCCESS: 3,
-  ERROR: 4,
+  FAILURE: 4,
 };

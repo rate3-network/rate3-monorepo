@@ -11,6 +11,7 @@ import network from './reducers/Network';
 import tokenize from './reducers/Tokenize';
 import withdraw from './reducers/Withdraw';
 import approve from './reducers/Approve';
+import finalize from './reducers/Finalize';
 import transactions from './reducers/Transactions';
 import wallet from './reducers/Wallet';
 import makeSagas from './effects';
@@ -57,6 +58,7 @@ const store = createStore(
     tokenize,
     withdraw,
     approve,
+    finalize,
     transactions,
     wallet,
   }),

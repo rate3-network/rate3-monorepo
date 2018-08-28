@@ -55,7 +55,7 @@ class Gas extends React.Component {
           adornment={gasLimitAdornment}
           onChange={this.handleLimitChange}
           onKeyPress={this.handleKeyPress}
-          // disabled
+          disabled
           autoFocus
         />
         <Field

@@ -75,6 +75,14 @@ const transactions = (db, web3) => {
           status: txStatus.PENDING_APPROVAL,
         }),
       }));
+      nextActions.push(put({
+        type: transactionsActions.SET_PENDING_FINALIZE_TRANSACTIONS,
+        transactions: db.select(transactionsTable, {
+          to: operationsContractAddress,
+          type: txType.TOKENIZE,
+          status: txStatus.PENDING_FINALIZE,
+        }),
+      }));
     }
 
     yield all(nextActions);

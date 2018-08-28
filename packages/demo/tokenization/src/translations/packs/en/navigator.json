@@ -7,6 +7,9 @@
   "tokenize": "Tokenize",
   "withdraw": "Withdraw",
   "approval": "Approve Tokenization",
+  "finalization": "Finalize Tokenization",
+  "revocation": "Revoke Tokenization",
+  "finalizationOrRevocation": "Finalize / Revoke Tokenization",
   "transactions": "Transactions",
   "bankAccount": "Bank\naccount",
   "ethWallet": "ETH\nwallet",
@@ -17,6 +20,8 @@
   "back": "Back",
   "submit": "Submit",
   "approve": "Approve",
+  "finalize": "Finalize",
+  "revoke": "Revoke",
 
   "startDemo": "Start Demo",
   "setUp": "Set Up",

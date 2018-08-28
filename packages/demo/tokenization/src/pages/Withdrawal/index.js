@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
 import { ClipLoader } from 'react-spinners';
+import Decimal from 'decimal.js-light';
 
 import Amount from '../_common/Amount';
 import Gas from '../_common/Gas';
@@ -208,6 +209,11 @@ class Withdrawal extends React.Component {
         );
       }
       case 2: {
+        const maxFee = (new Decimal(gasLimit))
+          .mul(new Decimal(gasPrice))
+          .div(new Decimal('1000000000')) // Because price is in GWEI
+          .toFixed(6);
+
         return (
           <Confirmation
             fields={[
@@ -235,6 +241,14 @@ class Withdrawal extends React.Component {
                 label: t('fields:gasPriceLabel'),
                 value: gasPrice && `${gasPrice} GWEI`,
               },
+              {
+                label: t('fields:maxFeeLabel'),
+                value: (
+                  <React.Fragment>
+                    ♦&nbsp;{maxFee}
+                  </React.Fragment>
+                ),
+              },
             ]}
             onSubmit={this.handleFormSubmit}
           />
@@ -244,7 +258,7 @@ class Withdrawal extends React.Component {
         return (
           <Completion
             header={transactionError
-              ? t('completion:withdrawSubmittedHeader')
+              ? t('completion:withdrawFailedHeader')
               : t('completion:withdrawSubmittedHeader')
             }
             subheader={transactionError

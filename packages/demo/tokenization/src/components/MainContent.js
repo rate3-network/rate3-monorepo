@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
+import { mainText } from '../constants/colors';
+
 const styles = {
+  root: {
+    color: mainText,
+  },
   header: {
     textTransform: 'uppercase',
     letterSpacing: '0.1em',
@@ -14,10 +19,10 @@ const MainContent = ({
   title,
   component: Component,
 }) => (
-  <React.Fragment>
+  <div className={classes.root}>
     { title && <h1 className={classes.header}>{title}</h1> }
     <Component />
-  </React.Fragment>
+  </div>
 );
 
 MainContent.propTypes = {

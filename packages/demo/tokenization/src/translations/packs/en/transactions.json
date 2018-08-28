@@ -13,8 +13,11 @@
   "statusPendingApproval": "Pending Approval",
   "statusPendingFinalize": "Pending Finalize",
   "statusSuccess": "Success",
-  "statusError": "Error",
+  "statusFailure": "Failure",
 
   "rowsPerPage": "Rows per page:",
-  "tableDisplayedRows": "<0>{{from}}</0>-<2>{{to}}</2> of <4>{{count}}</4>"
+  "tableDisplayedRows": "<0>{{from}}</0>-<2>{{to}}</2> of <4>{{count}}</4>",
+
+  "finalizeOrRevokeDesc": "Select one approved tokenization request to finalize or revoke",
+  "finalizeOrRevokeDescNote": "Tokenization Requests can only be finalized after the time lock period"
 }

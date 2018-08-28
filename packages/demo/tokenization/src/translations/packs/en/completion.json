@@ -5,6 +5,10 @@
   "withdrawFailedHeader": "The withdraw failed.",
   "approvalSubmittedHeader": "The approval is submitted.",
   "approvalFailedHeader": "The approval failed.",
+  "finalizeSubmittedHeader": "The tokenization is finalized.",
+  "finalizeFailedHeader": "The finalization failed.",
+  "revokeSubmittedHeader": "The tokenization is revoked.",
+  "revokeFailedHeader": "The revocation failed.",
 
   "txHashLabel": "TxHash:",
   "pleaseTryAgainLater": "Please try again later",
@@ -19,6 +23,7 @@
   "trusteeApproval": "Trustee Approval",
   "wireTransferCompleted": "Wire Transfer Completed",
   "tokensIssued": "Tokens Issued",
+  "tokenizationRevoked": "Tokenization Revoked",
 
   "seeTransactions": "See transactions",
 

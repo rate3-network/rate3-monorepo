@@ -9,10 +9,15 @@ const initialState = {
   currentFilterType: null,
   currentFilterStatus: null,
 
-  // pending transactions for the current trustee account
+  // pending approval transactions for the current trustee account
   pendingApproval: [],
   pendingApprovalPage: 0,
   pendingApprovalRowsPerPage: 5,
+
+  // pending transactions for the current trustee account
+  pendingFinalize: [],
+  pendingFinalizePage: 0,
+  pendingFinalizeRowsPerPage: 5,
 };
 
 /**
@@ -69,6 +74,28 @@ export default function (state = initialState, action = {}) {
       return {
         ...state,
         pendingApprovalRowsPerPage: rows,
+      };
+    }
+    case transactionsActions.SET_PENDING_FINALIZE_TRANSACTIONS: {
+      const { transactions } = action;
+      return {
+        ...state,
+        pendingFinalize: transactions,
+        pendingFinalizePage: 0,
+      };
+    }
+    case transactionsActions.SET_PENDING_FINALIZE_PAGE: {
+      const { pageNum } = action;
+      return {
+        ...state,
+        pendingFinalizePage: pageNum,
+      };
+    }
+    case transactionsActions.SET_PENDING_FINALIZE_ROWS_PER_PAGE: {
+      const { rows } = action;
+      return {
+        ...state,
+        pendingFinalizeRowsPerPage: rows,
       };
     }
     default: {

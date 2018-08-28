@@ -11,6 +11,10 @@ export const transactionsActions = keyMirror(
     SET_PENDING_APPROVAL_PAGE: null,
     SET_PENDING_APPROVAL_ROWS_PER_PAGE: null,
 
+    SET_PENDING_FINALIZE_TRANSACTIONS: null,
+    SET_PENDING_FINALIZE_PAGE: null,
+    SET_PENDING_FINALIZE_ROWS_PER_PAGE: null,
+
     LOAD: null,
   },
   'TRANSACTIONS',
@@ -39,5 +43,15 @@ export const setPendingApprovalPage = pageNum => ({
 
 export const setPendingApprovalRowsPerPage = rows => ({
   type: transactionsActions.SET_PENDING_APPROVAL_ROWS_PER_PAGE,
+  rows,
+});
+
+export const setPendingFinalizePage = pageNum => ({
+  type: transactionsActions.SET_PENDING_FINALIZE_PAGE,
+  pageNum,
+});
+
+export const setPendingFinalizeRowsPerPage = rows => ({
+  type: transactionsActions.SET_PENDING_FINALIZE_ROWS_PER_PAGE,
   rows,
 });

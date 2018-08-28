@@ -68,7 +68,7 @@ export const renderDate = (txn) => {
 };
 
 export const renderAmount = txn => (
-  <div style={{ fontSize: '1.2em' }}>
+  <div style={{ fontSize: '1.2em', whiteSpace: 'nowrap' }}>
     <span style={{ fontWeight: 'bold' }}>{txn.amount}</span>
     &nbsp;
     {txn.type === txType.TOKENIZE
@@ -157,15 +157,15 @@ class Transactions extends React.Component {
     const getChecked = (filter, key) => Boolean(filter && filter[key]);
     const filters = [
       {
-        group: 'Type',
+        group: t('type'),
         options: [
           {
-            label: 'Tokenize',
+            label: t('typeTokenize'),
             value: txType.TOKENIZE,
             checked: getChecked(filterType, txType.TOKENIZE),
           },
           {
-            label: 'Withdrawal',
+            label: t('typeWithdraw'),
             value: txType.WITHDRAWAL,
             checked: getChecked(filterType, txType.WITHDRAWAL),
           },
@@ -173,32 +173,32 @@ class Transactions extends React.Component {
         onChange: this.handleFilterTypeChange,
       },
       {
-        group: 'Status',
+        group: t('status'),
         options: [
           {
-            label: 'Pending Network',
+            label: t('statusPendingNetwork'),
             value: txStatus.PENDING_NETWORK,
             checked: getChecked(filterStatus, txStatus.PENDING_NETWORK),
           },
           {
-            label: 'Pending Approval',
+            label: t('statusPendingApproval'),
             value: txStatus.PENDING_APPROVAL,
             checked: getChecked(filterStatus, txStatus.PENDING_APPROVAL),
           },
           {
-            label: 'Pending Finalization',
+            label: t('statusPendingFinalize'),
             value: txStatus.PENDING_FINALIZE,
             checked: getChecked(filterStatus, txStatus.PENDING_FINALIZE),
           },
           {
-            label: 'Success',
+            label: t('statusSuccess'),
             value: txStatus.SUCCESS,
             checked: getChecked(filterStatus, txStatus.SUCCESS),
           },
           {
-            label: 'Error',
-            value: txStatus.ERROR,
-            checked: getChecked(filterStatus, txStatus.ERROR),
+            label: t('statusFailure'),
+            value: txStatus.FAILURE,
+            checked: getChecked(filterStatus, txStatus.FAILURE),
           },
         ],
         onChange: this.handleFilterStatusChange,
@@ -249,9 +249,9 @@ class Transactions extends React.Component {
             color: transactionSuccess,
             text: t('statusSuccess'),
           },
-          [txStatus.ERROR]: {
+          [txStatus.FAILURE]: {
             color: transactionError,
-            text: t('statusError'),
+            text: t('statusFailure'),
           },
         }),
       },

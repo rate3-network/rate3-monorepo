@@ -19,5 +19,6 @@
   "trustSwiftCodeLabel": "Trust Swiftcode",
   "trustAccountLabel": "Trust Account",
   "gasLimitLabel": "Gas Limit",
-  "gasPriceLabel": "Gas Price"
+  "gasPriceLabel": "Gas Price",
+  "maxFeeLabel": "Max Fee"
 }

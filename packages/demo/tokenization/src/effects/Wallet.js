@@ -77,7 +77,7 @@ const wallet = (db, web3) => {
       );
       nextActions.push(put({
         type: walletActions.SET_TOKEN_BALANCE,
-        balance: web3.utils.fromWei(tokenBalance),
+        balance: tokenBalance,
       }));
     } else {
       const ethBalance = yield call(web3.eth.getBalance, trusteeDefaultAccount);
@@ -91,7 +91,7 @@ const wallet = (db, web3) => {
       );
       nextActions.push(put({
         type: walletActions.SET_TOKEN_BALANCE,
-        balance: web3.utils.fromWei(tokenBalance),
+        balance: tokenBalance,
       }));
     }
 

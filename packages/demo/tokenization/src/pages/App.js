@@ -10,6 +10,7 @@ import {
 import { translate } from 'react-i18next';
 
 import blockies from 'ethereum-blockies';
+import Decimal from 'decimal.js-light';
 
 // Material UI
 import { withStyles } from '@material-ui/core/styles';
@@ -24,6 +25,7 @@ import Modal from '@material-ui/core/Modal';
 
 // Pages
 import Approval from './Approval';
+import Finalization from './Finalization';
 import Tokenization from './Tokenization';
 import Transactions from './Transactions';
 import Wallet from './Wallet';
@@ -53,6 +55,7 @@ import {
 import {
   approvePath,
   faqPath,
+  finalizePath,
   rootPath,
   tokenizePath,
   transactionsPath,
@@ -218,6 +221,7 @@ class App extends React.Component {
     this.checkOnboarded(isUser);
     const isTrusteePath = [
       approvePath,
+      finalizePath,
     ].reduce((isTrustee, path) => (isTrustee || path === pathname), false);
     networkInit(!isTrusteePath);
   }
@@ -343,7 +347,15 @@ class App extends React.Component {
           { isUser ? t('user') : t('trustee') }
         </h1>
         <div className={getClass(classes, 'drawerBalance', isUser)}>
-          {t('ethWallet')}: <strong>{currentEthBalance}<small>&nbsp;ETH</small></strong>
+          {t('ethWallet')}:{' '}
+          <strong>
+            {
+              (new Decimal(currentEthBalance))
+                .todp(6, Decimal.ROUND_DOWN)
+                .toString()
+            }
+            <small>&nbsp;ETH</small>
+          </strong>
         </div>
         <Switch
           onChange={this.handleRoleSwitch}
@@ -386,6 +398,13 @@ class App extends React.Component {
               isUser={false}
             />
           )}
+          { !isUser && (
+            <ListLinkItem
+              to={{ pathname: finalizePath, state: { isUser: false } }}
+              primary={t('finalizationOrRevocation')}
+              isUser={false}
+            />
+          )}
           <ListLinkItem
             to={{ pathname: transactionsPath, state: { isUser } }}
             primary={t('transactions')}
@@ -409,6 +428,7 @@ class App extends React.Component {
       t,
       isUser,
       location: { pathname },
+      toRevoke,
     } = this.props;
     const { mobileOpen, modalOpen, modalOnboardUser } = this.state;
 
@@ -503,6 +523,15 @@ class App extends React.Component {
                 )}
               />
               <Route
+                path={finalizePath}
+                component={() => (
+                  <MainContent
+                    title={toRevoke ? t('revocation') : t('finalization')}
+                    component={Finalization}
+                  />
+                )}
+              />
+              <Route
                 path={transactionsPath}
                 component={() => (
                   <MainContent
@@ -584,6 +613,7 @@ App.propTypes = {
   currentEthBalance: PropTypes.string.isRequired,
   currentTokenBalance: PropTypes.string.isRequired,
   currentBankBalance: PropTypes.string.isRequired,
+  toRevoke: PropTypes.bool.isRequired,
   networkInit: PropTypes.func.isRequired,
   switchRole: PropTypes.func.isRequired,
 };
@@ -595,6 +625,7 @@ const mapStateToProps = state => ({
   currentEthBalance: state.wallet.currentEthBalance,
   currentTokenBalance: state.wallet.currentTokenBalance,
   currentBankBalance: state.wallet.currentBankBalance,
+  toRevoke: state.finalize.toRevoke,
 });
 
 const enhance = compose(

@@ -54,7 +54,6 @@ const network = (db, web3) => {
         isUser,
       });
     } catch (err) {
-      console.error(err);
       return yield all([
         put({
           type: networkActions.CHANGE_ERROR,
@@ -100,11 +99,11 @@ const network = (db, web3) => {
   }
 
   function* getPastContractEvents(action) {
-    const { tokenContract, operationsContract, networkId } = action;
+    const { operationsContract, networkId } = action;
 
     const latestBlock = yield call(web3.eth.getBlock, 'latest');
     const fromBlock = (db.exists('network', { network_id: networkId }))
-      ? (db.select('network', { network_id: networkId })[0]).block_number
+      ? (db.select('network', { network_id: networkId })[0]).block_number + 1
       : 0;
 
     const opsPastEventsCall = call(
@@ -114,18 +113,7 @@ const network = (db, web3) => {
         fromBlock, toBlock: latestBlock.number,
       },
     );
-    const tokenPastEventsCall = call(
-      tokenContract.getPastEvents.bind(tokenContract),
-      'allEvents',
-      {
-        fromBlock, toBlock: latestBlock.number,
-      },
-    );
-
     const opsPastEvents = yield opsPastEventsCall;
-    const tokenPastEvents = yield tokenPastEventsCall;
-    console.log(opsPastEvents);
-    console.log(tokenPastEvents);
 
     const transactionsTable = `transactions_${networkId}`;
 
@@ -138,6 +126,7 @@ const network = (db, web3) => {
         'amount',
         'type',
         'status',
+        'finalizeDate',
       ]);
     }
 
@@ -160,7 +149,11 @@ const network = (db, web3) => {
           db.update(
             transactionsTable,
             { from: e.returnValues.by, index: e.returnValues.index },
-            row => ({ ...row, status: txStatus.PENDING_FINALIZE }),
+            row => ({
+              ...row,
+              status: txStatus.PENDING_FINALIZE,
+              finalizeDate: parseInt(e.returnValues.finalizeTimestamp, 10) * 1000,
+            }),
           );
           break;
         }
@@ -176,7 +169,7 @@ const network = (db, web3) => {
           db.update(
             transactionsTable,
             { from: e.returnValues.by, index: e.returnValues.index },
-            row => ({ ...row, status: txStatus.Failure }),
+            row => ({ ...row, status: txStatus.FAILURE }),
           );
           break;
         }

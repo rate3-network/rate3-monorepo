@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core/styles';
 import { ClipLoader } from 'react-spinners';
 import Decimal from 'decimal.js-light';
+import Countdown from 'react-countdown-now';
 
 import Gas from '../_common/Gas';
 import Confirmation from '../_common/Confirmation';
@@ -21,9 +22,7 @@ import {
   renderFromAddr,
   renderDate,
   renderAmount,
-  renderType,
 } from '../Transactions';
-import { txType } from '../../constants/enums';
 import { buttonTextPrimary } from '../../constants/colors';
 
 import {
@@ -31,15 +30,16 @@ import {
   prevStep as prevStepAction,
   reset as resetAction,
   setField as setFieldAction,
-  selectTransactionToApprove as selectTransactionToApproveAction,
-  submitApproveRequest as submitApproveRequestAction,
-  approveFields,
-} from '../../actions/Approve';
+  selectTransactionToFinalize as selectTransactionToFinalizeAction,
+  selectTransactionToRevoke as selectTransactionToRevokeAction,
+  submitRequest as submitRequestAction,
+  finalizeFields,
+} from '../../actions/Finalize';
 import {
-  setPendingApprovalPage as setPendingApprovalPageAction,
-  setPendingApprovalRowsPerPage as setPendingApprovalRowsPerPageAction,
+  setPendingFinalizePage as setPendingFinalizePageAction,
+  setPendingFinalizeRowsPerPage as setPendingFinalizeRowsPerPageAction,
 } from '../../actions/Transactions';
-import { compose, genStyle, getClass } from '../../utils';
+import { compose } from '../../utils';
 
 const styles = theme => ({
   root: {
@@ -63,23 +63,27 @@ const styles = theme => ({
       padding: 0,
     },
   },
+  description: {
+    fontWeight: 'bold',
+    maxWidth: '600px',
+  },
+  descriptionNote: {
+    fontSize: '0.8em',
+    maxWidth: '600px',
+  },
   buttons: {
     maxWidth: '600px',
     margin: 'auto',
   },
-  ...genStyle('backButton', isUser => ({
+  backButton: {
     display: 'inline-block',
-  })),
-  ...genStyle('nextButton', isUser => ({
+  },
+  nextButton: {
     display: 'inline-block',
-  })),
-  ...genStyle('transactionsButton', isUser => ({
-  })),
-  ...genStyle('resetButton', isUser => ({
-  })),
+  },
 });
 
-class Approval extends React.Component {
+class Finalize extends React.Component {
   getSteps() {
     const { t } = this.props;
 
@@ -96,12 +100,12 @@ class Approval extends React.Component {
 
   handleNextStep = () => {
     const {
-      transactionToApprove,
+      selectedTransaction,
       gasLimit,
       gasPrice,
       currentStep,
       nextStep,
-      submitApproveRequest,
+      submitRequest,
     } = this.props;
     if (!this.canProceedNextStep(currentStep)) {
       return;
@@ -110,9 +114,9 @@ class Approval extends React.Component {
       return;
     }
     if (currentStep === 2) {
-      submitApproveRequest(
-        transactionToApprove.index,
-        transactionToApprove.from,
+      submitRequest(
+        selectedTransaction.index,
+        selectedTransaction.from,
         gasLimit,
         gasPrice,
       );
@@ -139,19 +143,24 @@ class Approval extends React.Component {
     setField(field, newValue);
   }
 
-  handleApproveClick = txn => () => {
-    const { selectTransactionToApprove } = this.props;
-    selectTransactionToApprove(txn);
+  handleFinalizeClick = txn => () => {
+    const { selectTransactionToFinalize } = this.props;
+    selectTransactionToFinalize(txn);
+  }
+
+  handleRevokeClick = txn => () => {
+    const { selectTransactionToRevoke } = this.props;
+    selectTransactionToRevoke(txn);
   }
 
   handleChangePage = (e, page) => {
-    const { setPendingApprovalPage } = this.props;
-    setPendingApprovalPage(page);
+    const { setPendingFinalizePage } = this.props;
+    setPendingFinalizePage(page);
   };
 
   handleChangeRowsPerPage = (e) => {
-    const { setPendingApprovalRowsPerPage } = this.props;
-    setPendingApprovalRowsPerPage(e.target.value);
+    const { setPendingFinalizeRowsPerPage } = this.props;
+    setPendingFinalizeRowsPerPage(e.target.value);
   }
 
   canProceedNextStep = (currentStep) => {
@@ -181,14 +190,15 @@ class Approval extends React.Component {
     const {
       t,
       currentStep,
-      transactionToApprove,
+      selectedTransaction,
       gasLimit,
       gasPrice,
       currentTransactionHash,
+      toRevoke,
       submissionConfirmed,
       networkConfirmed,
-      timeLockOver,
-      tokenizationFinalized,
+      tokensIssued,
+      tokenizationRevoked,
       transactionError,
     } = this.props;
 
@@ -199,10 +209,10 @@ class Approval extends React.Component {
             isUser={false}
             gasLimit={gasLimit}
             gasLimitLabel={t('fields:gasLimitFieldLabel')}
-            onGasLimitChange={this.handleFieldChange(approveFields.gasLimit)}
+            onGasLimitChange={this.handleFieldChange(finalizeFields.gasLimit)}
             gasPrice={gasPrice}
             gasPriceLabel={t('fields:gasPriceFieldLabel')}
-            onGasPriceChange={this.handleFieldChange(approveFields.gasPrice)}
+            onGasPriceChange={this.handleFieldChange(finalizeFields.gasPrice)}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -218,28 +228,28 @@ class Approval extends React.Component {
             fields={[
               {
                 label: t('fields:addressLabel'),
-                value: transactionToApprove.from,
+                value: selectedTransaction.from,
               },
               {
                 label: t('fields:txHashLabel'),
-                value: transactionToApprove.tx_hash,
+                value: selectedTransaction.tx_hash,
               },
               {
                 label: t('fields:amountToTokenizeLabel'),
-                value: transactionToApprove && (
+                value: selectedTransaction && (
                   <React.Fragment>
-                    {transactionToApprove.amount} <SgdPill />
+                    {selectedTransaction.amount} <SgdPill />
                   </React.Fragment>
                 ),
               },
-              {
+              toRevoke ? null : ({
                 label: t('fields:amountToIssueLabel'),
-                value: transactionToApprove && (
+                value: selectedTransaction && (
                   <React.Fragment>
-                    {transactionToApprove.amount} <SgdrPill />
+                    {selectedTransaction.amount} <SgdrPill />
                   </React.Fragment>
                 ),
-              },
+              }),
               {
                 label: t('fields:gasLimitLabel'),
                 value: gasLimit && `${gasLimit} UNITS`,
@@ -256,18 +266,21 @@ class Approval extends React.Component {
                   </React.Fragment>
                 ),
               },
-            ]}
+            ].filter(Boolean)}
             onSubmit={this.handleFormSubmit}
           />
         );
       }
       case 3: {
+        const headerSuccess = toRevoke
+          ? t('completion:revokeSubmittedHeader')
+          : t('commpletion:finalizeSubmittedHeader');
+        const headerError = toRevoke
+          ? t('completion:revokeSubmittedHeader')
+          : t('commpletion:finalizeSubmittedHeader');
         return (
           <Completion
-            header={transactionError
-              ? t('completion:approvalFailedHeader')
-              : t('completion:approvalSubmittedHeader')
-            }
+            header={transactionError ? headerError : headerSuccess}
             subheader={transactionError
               ? t('completion:pleaseTryAgainLater')
               : (
@@ -288,13 +301,10 @@ class Approval extends React.Component {
                 error: transactionError,
               },
               {
-                text: t('completion:timeLock'),
-                completed: timeLockOver,
-                error: transactionError,
-              },
-              {
-                text: t('completion:tokenizationFinalized'),
-                completed: tokenizationFinalized,
+                text: toRevoke
+                  ? t('completion:tokenizationRevoked')
+                  : t('completion:tokensIssued'),
+                completed: toRevoke ? tokenizationRevoked : tokensIssued,
                 error: transactionError,
               },
             ]}
@@ -311,7 +321,6 @@ class Approval extends React.Component {
     const {
       classes,
       t,
-      isUser,
       currentStep,
       loadingNextStep,
     } = this.props;
@@ -324,7 +333,7 @@ class Approval extends React.Component {
       case 2: {
         return (
           <React.Fragment>
-            <div className={getClass(classes, 'backButton', isUser)}>
+            <div className={classes.backButton}>
               {
                 currentStep > 0 && (
                   <Button
@@ -337,7 +346,7 @@ class Approval extends React.Component {
                 )
               }
             </div>
-            <div className={getClass(classes, 'nextButton', isUser)}>
+            <div className={classes.nextButton}>
               <Button
                 key={`next-${currentStep}`}
                 isUser={false}
@@ -362,7 +371,7 @@ class Approval extends React.Component {
       case 3: {
         return (
           <React.Fragment>
-            <div className={getClass(classes, 'transactionsButton', isUser)}>
+            <div>
               <Button
                 key="transactions"
                 isUser={false}
@@ -371,7 +380,7 @@ class Approval extends React.Component {
                 {t('completion:seeTransactions')}
               </Button>
             </div>
-            <div className={getClass(classes, 'resetButton', isUser)}>
+            <div>
               <Button
                 key="reset"
                 isUser={false}
@@ -388,18 +397,53 @@ class Approval extends React.Component {
     }
   }
 
-  renderSelectButton = buttonText => txn => (
-    <div style={{ zoom: 0.75 }}>
-      <Button
-        key="approve"
-        isUser={false}
-        color="primary"
-        onClick={this.handleApproveClick(txn)}
-      >
-        {buttonText}
-      </Button>
-    </div>
-  )
+  renderTableRowButtons = (finalizeButtonText, revokeButtonText) => (txn) => {
+    const renderer = ({
+      hours,
+      minutes,
+      seconds,
+      completed,
+    }) => {
+      if (completed) {
+        return (
+          <Button
+            key="finalize"
+            isUser={false}
+            color="primary"
+            onClick={this.handleFinalizeClick(txn)}
+          >
+            {finalizeButtonText}
+          </Button>
+        );
+      }
+      return (
+        <Button
+          key="finalize"
+          isUser={false}
+          color="primary"
+          disabled
+        >
+          {hours}:{minutes}:{seconds}
+        </Button>
+      );
+    };
+
+    return (
+      <div style={{ zoom: 0.75, whiteSpace: 'nowrap' }}>
+        <Countdown
+          date={new Date(txn.finalizeDate)}
+          renderer={renderer}
+        />
+        <Button
+          key="revoke"
+          isUser={false}
+          onClick={this.handleRevokeClick(txn)}
+        >
+          {revokeButtonText}
+        </Button>
+      </div>
+    );
+  }
 
   render() {
     const {
@@ -431,19 +475,18 @@ class Approval extends React.Component {
           renderCell: renderAmount,
         },
         {
-          head: t('transactions:type'),
-          renderCell: renderType({
-            [txType.TOKENIZE]: t('transactions:typeTokenize'),
-            [txType.WITHDRAWAL]: t('transactions:typeWithdraw'),
-          }),
-        },
-        {
           head: '',
-          renderCell: this.renderSelectButton(t('approve')),
+          renderCell: this.renderTableRowButtons(t('finalize'), t('revoke')),
         },
       ];
       return (
         <div className={classes.selectTableRoot}>
+          <p className={classes.description}>
+            {t('transactions:finalizeOrRevokeDesc')}
+          </p>
+          <p className={classes.descriptionNote}>
+            {t('transactions:finalizeOrRevokeDescNote')}
+          </p>
           <Table
             columns={columns}
             rows={transactions.slice().reverse()}
@@ -491,7 +534,7 @@ class Approval extends React.Component {
   }
 }
 
-Approval.propTypes = {
+Finalize.propTypes = {
   classes: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
 
@@ -502,14 +545,15 @@ Approval.propTypes = {
   rowsPerPage: PropTypes.number.isRequired,
   currentStep: PropTypes.number.isRequired,
   loadingNextStep: PropTypes.bool.isRequired,
-  transactionToApprove: PropTypes.object,
+  selectedTransaction: PropTypes.object,
   gasLimit: PropTypes.string.isRequired,
   gasPrice: PropTypes.string.isRequired,
   currentTransactionHash: PropTypes.string.isRequired,
+  toRevoke: PropTypes.bool.isRequired,
   submissionConfirmed: PropTypes.bool.isRequired,
   networkConfirmed: PropTypes.bool.isRequired,
-  timeLockOver: PropTypes.bool.isRequired,
-  tokenizationFinalized: PropTypes.bool.isRequired,
+  tokensIssued: PropTypes.bool.isRequired,
+  tokenizationRevoked: PropTypes.bool.isRequired,
   transactionError: PropTypes.bool.isRequired,
 
   // Actions
@@ -517,34 +561,36 @@ Approval.propTypes = {
   prevStep: PropTypes.func.isRequired,
   reset: PropTypes.func.isRequired,
   setField: PropTypes.func.isRequired,
-  selectTransactionToApprove: PropTypes.func.isRequired,
-  submitApproveRequest: PropTypes.func.isRequired,
-  setPendingApprovalPage: PropTypes.func.isRequired,
-  setPendingApprovalRowsPerPage: PropTypes.func.isRequired,
+  selectTransactionToFinalize: PropTypes.func.isRequired,
+  selectTransactionToRevoke: PropTypes.func.isRequired,
+  submitRequest: PropTypes.func.isRequired,
+  setPendingFinalizePage: PropTypes.func.isRequired,
+  setPendingFinalizeRowsPerPage: PropTypes.func.isRequired,
 };
 
-Approval.defaultProps = {
-  transactionToApprove: null,
+Finalize.defaultProps = {
+  selectedTransaction: null,
 };
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
 
-  transactions: state.transactions.pendingApproval,
-  currentPage: state.transactions.pendingApprovalPage,
-  rowsPerPage: state.transactions.pendingApprovalRowsPerPage,
+  transactions: state.transactions.pendingFinalize,
+  currentPage: state.transactions.pendingFinalizePage,
+  rowsPerPage: state.transactions.pendingFinalizeRowsPerPage,
 
-  currentStep: state.approve.step,
-  loadingNextStep: state.approve.loadingNextStep,
-  transactionToApprove: state.approve.transactionToApprove,
-  gasLimit: state.approve[approveFields.gasLimit],
-  gasPrice: state.approve[approveFields.gasPrice],
-  currentTransactionHash: state.approve.currentTransactionHash,
-  submissionConfirmed: state.approve.submissionConfirmed,
-  networkConfirmed: state.approve.networkConfirmed,
-  timeLockOver: state.approve.timeLockOver,
-  tokenizationFinalized: state.approve.tokenizationFinalized,
-  transactionError: state.approve.transactionError,
+  currentStep: state.finalize.step,
+  loadingNextStep: state.finalize.loadingNextStep,
+  selectedTransaction: state.finalize.selectedTransaction,
+  gasLimit: state.finalize[finalizeFields.gasLimit],
+  gasPrice: state.finalize[finalizeFields.gasPrice],
+  currentTransactionHash: state.finalize.currentTransactionHash,
+  toRevoke: state.finalize.toRevoke,
+  submissionConfirmed: state.finalize.submissionConfirmed,
+  networkConfirmed: state.finalize.networkConfirmed,
+  tokensIssued: state.finalize.tokensIssued,
+  tokenizationRevoked: state.finalize.tokenizationRevoked,
+  transactionError: state.finalize.transactionError,
 });
 
 const enhance = compose(
@@ -557,12 +603,13 @@ const enhance = compose(
       prevStep: prevStepAction,
       reset: resetAction,
       setField: setFieldAction,
-      selectTransactionToApprove: selectTransactionToApproveAction,
-      submitApproveRequest: submitApproveRequestAction,
-      setPendingApprovalPage: setPendingApprovalPageAction,
-      setPendingApprovalRowsPerPage: setPendingApprovalRowsPerPageAction,
+      selectTransactionToFinalize: selectTransactionToFinalizeAction,
+      selectTransactionToRevoke: selectTransactionToRevokeAction,
+      submitRequest: submitRequestAction,
+      setPendingFinalizePage: setPendingFinalizePageAction,
+      setPendingFinalizeRowsPerPage: setPendingFinalizeRowsPerPageAction,
     },
   ),
 );
 
-export default enhance(Approval);
+export default enhance(Finalize);
