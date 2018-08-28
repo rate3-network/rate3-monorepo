@@ -9,7 +9,6 @@ const styles = theme => ({
     padding: theme.spacing.unit * 2,
   },
   paper: {
-    padding: theme.spacing.unit * 2,
     backgroundColor: 'inherit',
   },
 });

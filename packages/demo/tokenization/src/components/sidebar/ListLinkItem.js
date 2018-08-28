@@ -11,7 +11,7 @@ import {
   userNavEmphasisSecondary,
   userNavPrimary,
 } from '../../constants/colors';
-import { genStyle } from '../../utils';
+import { genStyle, getClass } from '../../utils';
 
 const styles = theme => ({
   ...genStyle('link', isUser => ({
@@ -36,7 +36,8 @@ const styles = theme => ({
     color: 'inherit',
     backgroundColor: 'inherit',
     textAlign: 'center',
-    padding: theme.spacing.unit * 3,
+    minHeight: '4em',
+    padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px`,
     '&:hover': {
       backgroundColor: 'inherit',
     },
@@ -57,12 +58,12 @@ const ListLinkItem = ({
 }) => (
   <NavLink
     to={to}
-    className={isUser ? classes.userLink : classes.trusteeLink}
-    activeClassName={isUser ? classes.userActiveLink : classes.trusteeActiveLink}
+    className={getClass(classes, 'link', isUser)}
+    activeClassName={getClass(classes, 'activeLink', isUser)}
   >
-    <ListItem classes={{ button: isUser ? classes.userItem : classes.trusteeItem }} button>
+    <ListItem classes={{ button: getClass(classes, 'item', isUser) }} button>
       <div className={
-        `nav-highlight ${isUser ? classes.userHighlight : classes.trusteeHighlight}`
+        `nav-highlight ${getClass(classes, 'highlight', isUser)}`
       }
       />
       <ListItemText

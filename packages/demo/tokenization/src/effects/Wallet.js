@@ -6,10 +6,10 @@ import {
   takeEvery,
   takeLatest,
 } from 'redux-saga/effects';
+import { Decimal } from 'decimal.js-light';
 import { walletActions } from '../actions/Wallet';
 import { transactionsActions } from '../actions/Transactions';
 import { txType, txStatus } from '../constants/enums';
-import { Decimal } from 'decimal.js-light';
 
 
 const wallet = (db, web3) => {

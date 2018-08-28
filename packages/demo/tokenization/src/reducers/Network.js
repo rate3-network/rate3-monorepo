@@ -14,8 +14,6 @@ export default (web3, browserProvider) => {
   const initialState = {
     id: null,
 
-    accounts: [],
-    account: null,
     status: 'disconnected',
 
     browserProvider,
@@ -30,13 +28,11 @@ export default (web3, browserProvider) => {
     const { type } = action;
     switch (type) {
       case networkActions.CHANGE_SUCCESS: {
-        const { id, accounts } = action;
+        const { id } = action;
         return {
           ...state,
           status: 'connected',
           id,
-          accounts,
-          account: accounts[0],
         };
       }
       case networkActions.SET_CONTRACTS: {

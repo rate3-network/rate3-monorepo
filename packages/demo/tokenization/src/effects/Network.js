@@ -13,6 +13,7 @@ import { contractAddresses } from '../constants/addresses';
 import tokenContractAbi from '../contracts/token';
 import operationsContractAbi from '../contracts/operations';
 import { txType, txStatus } from '../constants/enums';
+import { userPrivKey, trusteePrivKey } from '../constants/defaults';
 
 const network = (db, web3) => {
   function* handleInit(action) {
@@ -27,6 +28,10 @@ const network = (db, web3) => {
     if (networkInfo == null) {
       return yield all([]);
     }
+
+    // Add default accounts
+    web3.eth.accounts.wallet.add(userPrivKey);
+    web3.eth.accounts.wallet.add(trusteePrivKey);
 
     return yield put({
       type: walletActions.INIT,
@@ -59,20 +64,9 @@ const network = (db, web3) => {
         networkId: id,
       });
 
-      const accountsRaw = yield call(web3.eth.getAccounts);
-      const accounts = [];
-      for (const hash of accountsRaw) {
-        const balanceWei = yield call(web3.eth.getBalance, hash);
-        accounts.push({
-          hash,
-          balanceWei,
-          balance: balanceWei,
-        });
-      }
       yield put({
         type: networkActions.CHANGE_SUCCESS,
         id,
-        accounts,
       });
 
       return {

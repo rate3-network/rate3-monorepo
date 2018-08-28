@@ -1,27 +1,55 @@
+import { trusteeAddress, userAddress } from './defaults';
+
+export const mainnet = {
+  id: 1,
+  endpoint: 'https://mainnet.infura.io',
+  faucet: null,
+  token: '0x0',
+  operations: '0x0',
+  etherscan: 'https://etherscan.io/tx/',
+};
+export const ropsten = {
+  id: 3,
+  endpoint: 'https://ropsten.infura.io',
+  faucet: 'http://faucet.ropsten.be:3001',
+  token: '0x0',
+  operations: '0x0',
+  etherscan: 'https://ropsten.etherscan.io/tx/',
+};
+export const rinkeby = {
+  id: 4,
+  endpoint: 'https://rinkeby.infura.io',
+  faucet: 'https://faucet.rinkeby.io',
+  token: '0x0',
+  operations: '0x0',
+  etherscan: 'https://rinkeby.etherscan.io/tx/',
+};
+export const kovan = {
+  id: 42,
+  endpoint: 'https://kovan.infura.io',
+  faucet: 'https://github.com/kovan-testnet/faucet',
+  token: '0x0',
+  operations: '0x0',
+  etherscan: 'https://kovan.etherscan.io/tx/',
+};
+export const local = {
+  id: null,
+  endpoint: 'http://localhost:8545',
+  faucet: null,
+  token: '0x0',
+  operations: '0x0',
+  etherscan: 'https://etherscan.io/tx/',
+};
+
 export const contractAddresses = {
-  1: { // Mainnet
-    token: '0x0',
-    operations: '0x0',
-  },
-  3: { // Ropsten
-    token: '0x0',
-    operations: '0x0',
-  },
-  4: { // Rinkeby
-    token: '0x0',
-    operations: '0x0',
-  },
-  42: { // Kovan
-    token: '0x0',
-    operations: '0x0',
-  },
-  local: { // Local
-    token: '0x0',
-    operations: '0x0',
-  },
+  [mainnet.id]: mainnet,
+  [ropsten.id]: ropsten,
+  [rinkeby.id]: rinkeby,
+  [kovan.id]: kovan,
+  local,
 };
 
 export const accountAddresses = {
-  trustee: '0x6177FCE9DC1eFB884649f97799305A6DbF51Ad46',
-  user: '0x3199f3B36aFEb8c7493558F015d1D40662B08a6f',
+  trustee: trusteeAddress,
+  user: userAddress,
 };

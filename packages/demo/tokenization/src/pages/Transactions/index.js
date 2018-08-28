@@ -4,6 +4,7 @@ import { Trans, translate } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
+import Countdown from 'react-countdown-now';
 
 import FilterDropdown from '../../components/transactions/FilterDropdown';
 import Table from '../../components/transactions/Table';
@@ -108,7 +109,10 @@ export const renderStatus = statusMapping => (txn) => {
           backgroundColor: statusOptions.color,
         }}
       />
-      <div>{statusOptions.text}</div>
+      <div>
+        {typeof statusOptions.text === 'function'
+          ? statusOptions.text(txn) : statusOptions.text}
+      </div>
     </div>
   );
 };
@@ -243,7 +247,14 @@ class Transactions extends React.Component {
           },
           [txStatus.PENDING_FINALIZE]: {
             color: transactionPending,
-            text: t('statusPendingFinalize'),
+            text: txn => (
+              <Countdown
+                date={new Date(txn.finalizeDate)}
+                renderer={({ completed }) => (
+                  completed ? t('statusPendingFinalize') : t('statusTimeLock')
+                )}
+              />
+            ),
           },
           [txStatus.SUCCESS]: {
             color: transactionSuccess,

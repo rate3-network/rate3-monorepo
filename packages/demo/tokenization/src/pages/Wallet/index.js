@@ -123,6 +123,7 @@ class Wallet extends React.Component {
           value: 0,
           content: [
             {
+              key: bankName,
               title: bankName,
               paragraph: t('linkBankAccount'),
               footer: (
@@ -137,6 +138,7 @@ class Wallet extends React.Component {
           label: t('ethWalletTab'),
           value: 1,
           content: userAccounts.map(acc => ({
+            key: acc,
             title: userName,
             paragraph: acc,
             footer: acc === userDefaultAccount && (
@@ -152,6 +154,7 @@ class Wallet extends React.Component {
           label: t('ethWalletTab'),
           value: 0,
           content: trusteeAccounts.map(acc => ({
+            key: acc,
             title: trusteeName,
             paragraph: acc,
             footer: acc === trusteeDefaultAccount && (
@@ -171,7 +174,7 @@ class Wallet extends React.Component {
           <Grid container spacing={24}>
             {
               tabs[isUser][currentTab].content.map(content => (
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid key={content.key} item xs={12} sm={6} lg={3}>
                   <Paper
                     elevation={0}
                     square={false}

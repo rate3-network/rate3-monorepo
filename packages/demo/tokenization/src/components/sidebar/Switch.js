@@ -23,7 +23,6 @@ const styles = theme => ({
     position: 'relative',
     width: switchWidth,
     margin: 'auto',
-    lineHeight: `${switchHeight}px`,
     cursor: 'pointer',
     userSelect: 'none',
     textTransform: 'uppercase',
@@ -35,6 +34,7 @@ const styles = theme => ({
     left: 0,
     width: switchWidth * 0.53,
     zIndex: 999,
+    lineHeight: `${switchHeight}px`,
     color: isUser ? userNavTogglePrimary : trusteeNavToggleSecondary,
   })),
   ...genStyle('rightText', isUser => ({
@@ -42,6 +42,7 @@ const styles = theme => ({
     right: 0,
     width: switchWidth * 0.53,
     zIndex: 999,
+    lineHeight: `${switchHeight}px`,
     color: isUser ? userNavToggleSecondary : trusteeNavTogglePrimary,
   })),
   ...genStyle('root', isUser => ({

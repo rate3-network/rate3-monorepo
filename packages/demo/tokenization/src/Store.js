@@ -45,6 +45,7 @@ if (typeof window !== 'undefined') {
 const middlewares = [];
 
 if (process.env.NODE_ENV !== 'production') {
+  // eslint-disable-next-line global-require
   const { logger } = require('redux-logger');
   middlewares.push(logger);
 }
