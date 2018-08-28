@@ -214,10 +214,8 @@ class App extends React.Component {
   componentDidMount() {
     const {
       networkInit,
-      isUser,
       location: { pathname },
     } = this.props;
-    this.checkOnboarded(isUser);
     const isTrusteePath = [
       approvePath,
       finalizePath,
@@ -234,10 +232,7 @@ class App extends React.Component {
       location,
       isUser,
       switchRole,
-      switchRoleLoading,
     } = this.props;
-
-    if (switchRoleLoading) return;
 
     if (location !== prevProps.location
       && location.state && location.state.isUser !== isUser) {
@@ -611,7 +606,6 @@ App.propTypes = {
     state: PropTypes.object,
   }).isRequired,
   isUser: PropTypes.bool.isRequired,
-  switchRoleLoading: PropTypes.bool.isRequired,
   currentDefaultAccount: PropTypes.string.isRequired,
   currentEthBalance: PropTypes.string.isRequired,
   currentTokenBalance: PropTypes.string.isRequired,
@@ -623,7 +617,6 @@ App.propTypes = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
-  switchRoleLoading: state.wallet.switchRoleLoading,
   currentDefaultAccount: state.wallet.currentDefaultAccount,
   currentEthBalance: state.wallet.currentEthBalance,
   currentTokenBalance: state.wallet.currentTokenBalance,

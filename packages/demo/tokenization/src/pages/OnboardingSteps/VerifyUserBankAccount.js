@@ -9,20 +9,20 @@ import RadioGroup from '../../components/onboarding/RadioGroup';
 import Button from '../../components/Button';
 import { verifyStepStyles } from './_styles';
 import { compose } from '../../utils';
-import { bankName, bankSwiftCode } from '../../constants/defaults';
+import { bankName, bankSwiftCode, bankAccount } from '../../constants/defaults';
 
 
 class VerifyUserBankAccount extends React.Component {
   state = {
-    bankAccount: null,
+    selectedBankAccount: null,
   }
 
   handleBankAccountChange = (e) => {
     const newValue = e.target.value;
     const { setContext } = this.props;
 
-    this.setState({ bankAccount: newValue }, () => {
-      setContext(ctx => ({ ...ctx, bankAccount: newValue }));
+    this.setState({ selectedBankAccount: newValue }, () => {
+      setContext(ctx => ({ ...ctx, selectedBankAccount: newValue }));
     });
   }
 
@@ -102,7 +102,7 @@ class VerifyUserBankAccount extends React.Component {
       handlePrevStep,
       handleNextStep,
     } = this.props;
-    const { bankAccount } = this.state;
+    const { selectedBankAccount } = this.state;
 
     return (
       <div className={classes.root}>
@@ -115,7 +115,7 @@ class VerifyUserBankAccount extends React.Component {
             aria-label="Bank Account"
             name="bankAccount"
             className={classes.radioGroup}
-            value={bankAccount}
+            value={selectedBankAccount}
             onChange={this.handleBankAccountChange}
             classes={{
               radio: classes.radioRoot,
@@ -146,7 +146,7 @@ class VerifyUserBankAccount extends React.Component {
               onClick={handleNextStep}
               color="primary"
               isUser
-              disabled={!bankAccount}
+              disabled={!selectedBankAccount}
             >
               {t('verify')}
             </Button>

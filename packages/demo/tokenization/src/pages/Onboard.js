@@ -81,10 +81,12 @@ class Onboard extends React.Component {
     if (sessionStorage.getItem(userOnboarded)) {
       history.push({
         pathname: tokenizePath,
+        state: { isUser: true },
       });
     } else if (sessionStorage.getItem(trusteeOnboarded)) {
       history.push({
         pathname: approvePath,
+        state: { isUser: false },
       });
     }
   }
@@ -103,11 +105,13 @@ class Onboard extends React.Component {
       sessionStorage.setItem(userOnboarded, true);
       history.push({
         pathname: tokenizePath,
+        state: { isUser: true },
       });
     } else {
       sessionStorage.setItem(trusteeOnboarded, true);
       history.push({
         pathname: approvePath,
+        state: { isUser: false },
       });
     }
   }
