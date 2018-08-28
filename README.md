@@ -31,15 +31,18 @@ _Stellar_
 
 
 ## Follow us
-Announcement: https://t.me/Rate3Announcement 
-Website Link: https://rate3.network 
-Medium: https://medium.com/official-rate3 
-Telegram (EN): http://t.me/officialrate3 
-Telegram (CN): http://t.me/officialrate3CN 
-Telegram (VN): http://t.me/officialrate3VN 
-Telegram (KR): http://t.me/officialrate3KR 
-Kakao (KR): http://open.kakao.com/o/giaHBbN 
-Facebook: https://www.facebook.com/officialrate3 
-Instagram: https://www.instagram.com/official.rate3 
-Twitter: https://twitter.com/officialrate3 
-Reddit: https://reddit.com/r/Rate3
+
+| Platform | Link |
+| :----- | :------------ |
+| Announcement | https://t.me/Rate3Announcement |
+| Website Link | https://rate3.network |
+| Medium | https://medium.com/official-rate3 |
+| Telegram (EN) | http://t.me/officialrate3 |
+| Telegram (CN) | http://t.me/officialrate3CN |
+| Telegram (VN) | http://t.me/officialrate3VN |
+| Telegram (KR) | http://t.me/officialrate3KR |
+| Kakao (KR) | http://open.kakao.com/o/giaHBbN |
+| Facebook | https://www.facebook.com/officialrate3 |
+| Instagram | https://www.instagram.com/official.rate3 |
+| Twitter | https://twitter.com/officialrate3 |
+| Reddit | https://reddit.com/r/Rate3 |
