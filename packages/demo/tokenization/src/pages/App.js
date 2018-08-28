@@ -266,8 +266,12 @@ class App extends React.Component {
       location: { pathname },
     } = this.props;
 
-    // Don't change path if on transactions tab
-    if (pathname === transactionsPath) {
+    // Don't change path if on shared pages
+    const sharedPage = [
+      transactionsPath,
+      walletSettingsPath,
+    ].reduce((isShared, path) => (isShared || path === pathname), false);
+    if (sharedPage) {
       switchRole();
       return;
     }

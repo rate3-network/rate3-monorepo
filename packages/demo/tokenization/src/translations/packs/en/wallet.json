@@ -1,3 +1,9 @@
 {
-  "walletSettings": "Wallet Settings"
+  "bankAccountTab": "Bank Account",
+  "ethWalletTab": "ETH Wallet",
+
+  "linkBankAccount": "Link your bank account to conduct transactions",
+
+  "verified": "Verified",
+  "inUse": "In Use"
 }

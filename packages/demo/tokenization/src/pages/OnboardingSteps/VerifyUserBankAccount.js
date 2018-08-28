@@ -9,6 +9,7 @@ import RadioGroup from '../../components/onboarding/RadioGroup';
 import Button from '../../components/Button';
 import { verifyStepStyles } from './_styles';
 import { compose } from '../../utils';
+import { bankName, bankSwiftCode } from '../../constants/defaults';
 
 
 class VerifyUserBankAccount extends React.Component {
@@ -122,12 +123,12 @@ class VerifyUserBankAccount extends React.Component {
             }}
             items={[
               {
-                key: 'DEUTSGSG',
+                key: bankSwiftCode,
                 value: '0',
                 label: (
                   <div>
-                    <div>DEUTSCHE BANK</div>
-                    <div>123-123456-1</div>
+                    <div>{bankName}</div>
+                    <div>{bankAccount}</div>
                   </div>
                 ),
               },

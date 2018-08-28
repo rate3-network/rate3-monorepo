@@ -23,6 +23,8 @@
   "trusteeApproval": "Trustee Approval",
   "wireTransferCompleted": "Wire Transfer Completed",
   "tokensIssued": "Tokens Issued",
+  "timeLock": "Time Lock",
+  "tokenizationFinalized": "Tokenization Finalized",
   "tokenizationRevoked": "Tokenization Revoked",
 
   "seeTransactions": "See transactions",

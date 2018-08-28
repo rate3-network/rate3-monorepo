@@ -1,4 +1,5 @@
 import { tokenizeActions, tokenizeFields } from '../actions/Tokenize';
+import { bankName, bankSwiftCode, bankAccount } from '../constants/defaults';
 
 
 const initialState = {
@@ -12,9 +13,9 @@ const initialState = {
   transactionError: false,
 
   [tokenizeFields.amount]: '',
-  [tokenizeFields.trustBank]: 'DEUTSCHE BANK',
-  [tokenizeFields.trustSwiftCode]: 'DEUTSGSG',
-  [tokenizeFields.trustAccount]: '123-123456-1',
+  [tokenizeFields.trustBank]: bankName,
+  [tokenizeFields.trustSwiftCode]: bankSwiftCode,
+  [tokenizeFields.trustAccount]: bankAccount,
   [tokenizeFields.gasLimit]: '150000',
   [tokenizeFields.gasPrice]: '5',
 };

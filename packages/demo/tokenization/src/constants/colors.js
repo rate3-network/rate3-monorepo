@@ -147,3 +147,13 @@ export const onboardingModalBg = '#FFFFFF';
 export const onboardingModalShadow = 'rgba(0, 0, 0, 0.15)';
 export const onboardingModalTextSecondary = '#A5A5A5';
 export const onboardingModalBackToPrevText = '#54656F';
+
+
+// Tabs
+export const tabIndicator = textDefault;
+export const tabIndicatorBg = '#E2E1E1';
+
+
+// Wallet
+export const walletUserCardBg = '#FFFFFF';
+export const walletTrusteeCardBg = '#F1F5F7';
