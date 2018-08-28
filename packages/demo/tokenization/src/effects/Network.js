@@ -20,15 +20,25 @@ const network = (db, web3) => {
     const { isUser } = action;
     const { isUser: currentIsUser } = yield select(state => state.wallet);
     if (isUser !== currentIsUser) {
-      yield put({
-        type: `${walletActions.SWITCH_ROLE}_SUCCESS`,
-      });
+      yield put({ type: `${walletActions.SWITCH_ROLE}_SUCCESS` });
     }
-    const accounts = [];
-    let id;
 
+    const networkInfo = yield call(loadNetwork);
+    if (networkInfo == null) {
+      return yield all([]);
+    }
+
+    return yield put({
+      type: walletActions.INIT,
+      tokenContract: networkInfo.tokenContract,
+      isUser,
+    });
+  }
+
+  function* loadNetwork() {
     try {
-      id = yield call(web3.eth.net.getId);
+      const id = yield call(web3.eth.net.getId);
+
       let addresses = contractAddresses[id];
       if (!addresses) {
         addresses = contractAddresses.local;
@@ -48,40 +58,38 @@ const network = (db, web3) => {
         operationsContract,
         networkId: id,
       });
+
+      const accountsRaw = yield call(web3.eth.getAccounts);
+      const accounts = [];
+      for (const hash of accountsRaw) {
+        const balanceWei = yield call(web3.eth.getBalance, hash);
+        accounts.push({
+          hash,
+          balanceWei,
+          balance: balanceWei,
+        });
+      }
       yield put({
-        type: walletActions.INIT,
-        tokenContract,
-        isUser,
+        type: networkActions.CHANGE_SUCCESS,
+        id,
+        accounts,
       });
+
+      return {
+        tokenContract,
+        operationsContract,
+        networkId: id,
+      };
     } catch (err) {
-      return yield all([
+      yield all([
         put({
           type: networkActions.CHANGE_ERROR,
           // TODO translate
           error: 'Network unavailable',
         }),
       ]);
+      return null;
     }
-
-    if (!id) {
-      return yield all([]);
-    }
-
-    const accountsRaw = yield call(web3.eth.getAccounts);
-    for (const hash of accountsRaw) {
-      const balanceWei = yield call(web3.eth.getBalance, hash);
-      accounts.push({
-        hash,
-        balanceWei,
-        balance: balanceWei,
-      });
-    }
-
-    return yield put({
-      type: networkActions.CHANGE_SUCCESS,
-      id,
-      accounts,
-    });
   }
 
   function* getNewEvents() {
@@ -209,15 +217,21 @@ const network = (db, web3) => {
     const transactionsState = yield select(state => state.transactions);
     const { isUser, currentDefaultAccount } = walletState;
 
-    return yield put({
-      type: transactionsActions.LOAD,
-      filterType: transactionsState.currentFilterType,
-      filterStatus: transactionsState.currentFilterStatus,
-      networkId,
-      isUser,
-      currentDefaultAccount,
-      operationsContractAddress: operationsContract.address,
-    });
+    return yield all([
+      put({
+        type: transactionsActions.LOAD,
+        filterType: transactionsState.currentFilterType,
+        filterStatus: transactionsState.currentFilterStatus,
+        networkId,
+        isUser,
+        currentDefaultAccount,
+        operationsContractAddress: operationsContract.address,
+      }),
+      put({
+        type: walletActions.CALCULATE_PENDING,
+        networkId,
+      }),
+    ]);
   }
 
   return function* watchNetwork() {

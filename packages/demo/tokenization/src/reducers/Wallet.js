@@ -12,6 +12,9 @@ const initialState = {
   currentTokenBalance: '0',
   currentBankBalance: '0',
 
+  currentPendingTokenBalance: '0',
+  currentPendingBankBalance: '0',
+
   userDefaultAccount: accountAddresses.user,
   trusteeDefaultAccount: accountAddresses.trustee,
 
@@ -43,11 +46,13 @@ export default function (state = initialState, action = {}) {
     case `${walletActions.SWITCH_ROLE}_SUCCESS`: {
       return {
         ...state,
-        switchRoleLoading: false,
         isUser: !state.isUser,
         currentDefaultAccount: state.isUser
           ? state.trusteeDefaultAccount
           : state.userDefaultAccount,
+        currentEthBalance: '0',
+        currentTokenBalance: '0',
+        currentBankBalance: '0',
       };
     }
     case walletActions.SET_ETH_BALANCE: {
@@ -65,6 +70,26 @@ export default function (state = initialState, action = {}) {
         currentTokenBalance: balance,
         currentBankBalance: (new BN(initialAmount))
           .sub(new BN(balance)).toString(10),
+      };
+    }
+    case walletActions.SET_PENDING_TOKENIZE_BALANCE: {
+      const { balance } = action;
+      return {
+        ...state,
+        currentPendingTokenBalance: balance,
+      };
+    }
+    case walletActions.SET_PENDING_WITHDRAW_BALANCE: {
+      const { balance } = action;
+      return {
+        ...state,
+        currentPendingBankBalance: balance,
+      };
+    }
+    case `${walletActions.INIT}_SUCCESS`: {
+      return {
+        ...state,
+        switchRoleLoading: false,
       };
     }
     default: {

@@ -321,6 +321,7 @@ class App extends React.Component {
       classes,
       t,
       isUser,
+      switchRoleLoading,
       currentDefaultAccount,
       currentEthBalance,
       currentTokenBalance,

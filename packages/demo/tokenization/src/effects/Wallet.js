@@ -8,6 +8,8 @@ import {
 } from 'redux-saga/effects';
 import { walletActions } from '../actions/Wallet';
 import { transactionsActions } from '../actions/Transactions';
+import { txType, txStatus } from '../constants/enums';
+import { Decimal } from 'decimal.js-light';
 
 
 const wallet = (db, web3) => {
@@ -25,6 +27,11 @@ const wallet = (db, web3) => {
         type: `${walletActions.SWITCH_ROLE}_SUCCESS`,
       });
     }
+
+    // Put this first so that UI will can eager load
+    yield put({
+      type: `${walletActions.SWITCH_ROLE}_SUCCESS`,
+    });
 
     const getUserInformation = !isUser;
     const nextActions = [];
@@ -47,12 +54,7 @@ const wallet = (db, web3) => {
       operationsContractAddress: operationsContract.address,
     }));
 
-    return yield all([
-      ...nextActions,
-      put({
-        type: `${walletActions.SWITCH_ROLE}_SUCCESS`,
-      }),
-    ]);
+    return yield all(nextActions);
   }
 
   function* initWallet(action) {
@@ -95,8 +97,53 @@ const wallet = (db, web3) => {
       }));
     }
 
-    return yield all([
+    yield all([
       ...nextActions,
+    ]);
+
+    return yield put({
+      type: `${walletActions.INIT}_SUCCESS`,
+    });
+  }
+
+  function* calculatePending(action) {
+    const { networkId } = action;
+    const walletState = yield select(state => state.wallet);
+    const { userDefaultAccount } = walletState;
+    const transactionsTable = `transactions_${networkId}`;
+
+    const pendingTokenization = db
+      .select(transactionsTable, {
+        from: userDefaultAccount,
+        type: txType.TOKENIZE,
+        status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
+      })
+      .reduce(
+        (pending, txn) => pending.add(new Decimal(txn.amount)),
+        new Decimal(0),
+      )
+      .toString();
+    const pendingWithdrawal = db
+      .select(transactionsTable, {
+        from: userDefaultAccount,
+        type: txType.WITHDRAWAL,
+        status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
+      })
+      .reduce(
+        (pending, txn) => pending.add(new Decimal(txn.amount)),
+        new Decimal(0),
+      )
+      .toString();
+
+    return yield all([
+      put({
+        type: walletActions.SET_PENDING_TOKENIZE_BALANCE,
+        balance: pendingTokenization,
+      }),
+      put({
+        type: walletActions.SET_PENDING_WITHDRAW_BALANCE,
+        balance: pendingWithdrawal,
+      }),
     ]);
   }
 
@@ -104,6 +151,7 @@ const wallet = (db, web3) => {
     yield all([
       takeEvery(walletActions.SWITCH_ROLE, handleRoleSwitch),
       takeLatest(walletActions.INIT, initWallet),
+      takeLatest(walletActions.CALCULATE_PENDING, calculatePending),
     ]);
   };
 };
