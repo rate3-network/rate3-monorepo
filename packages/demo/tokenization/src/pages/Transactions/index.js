@@ -272,6 +272,7 @@ class Transactions extends React.Component {
       <div className={classes.root}>
         <FilterDropdown
           filters={filters}
+          buttonText={t('transactions:filter')}
         />
         <Table
           columns={columns}

@@ -114,7 +114,7 @@ class FilterDropdown extends React.Component {
   }
 
   render() {
-    const { classes, filters } = this.props;
+    const { classes, buttonText, filters } = this.props;
     const { anchorEl } = this.state;
     const open = Boolean(anchorEl);
 
@@ -131,7 +131,9 @@ class FilterDropdown extends React.Component {
             root: classes.filterButtonRoot,
           }}
         >
-          <Typography classes={{ root: classes.buttonText }}>Filter</Typography>
+          <Typography classes={{ root: classes.buttonText }}>
+            {buttonText}
+          </Typography>
           <KeyboardArrowDown />
         </Button>
         <Popover
@@ -207,6 +209,7 @@ class FilterDropdown extends React.Component {
 
 FilterDropdown.propTypes = {
   classes: PropTypes.object.isRequired,
+  buttonText: PropTypes.node.isRequired,
   filters: PropTypes.arrayOf(PropTypes.shape({
     group: PropTypes.node.isRequired,
     options: PropTypes.arrayOf(PropTypes.shape({

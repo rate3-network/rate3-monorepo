@@ -1,4 +1,6 @@
 {
+  "filter": "Filter",
+
   "txHash": "TxHash",
   "from": "From",
   "date/time": "Date/Time",
