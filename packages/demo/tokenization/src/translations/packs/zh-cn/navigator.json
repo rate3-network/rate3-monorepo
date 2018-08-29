@@ -1,0 +1,32 @@
+{
+  "tokenizationDemo": "资产化 - 演示版",
+  "user": "用户",
+  "trustee": "受托人",
+  "faq": "常见问题",
+  "walletSettings": "钱包设置",
+  "tokenize": "代币化",
+  "withdraw": "提取",
+  "approval": "批准代币发行",
+  "finalization": "完成代币化",
+  "revocation": "撤消代币化",
+  "finalizationOrRevocation": "完成/撤销代币化",
+  "transactions": "交易信息",
+  "bankAccount": "银行账户",
+  "ethWallet": "以太坊钱包",
+  "circulatingTokens": "流通代币",
+  "trustBalance": "信托余额",
+
+  "next": "下一步",
+  "back": "上一步",
+  "submit": "提交",
+  "approve": "批准",
+  "finalize": "完成",
+  "revoke": "撤消",
+
+  "startDemo": "开始试用",
+  "setUp": "设置",
+  "verify": "核实",
+  "finish": "完成",
+  "backToUser": "返回用户",
+  "backToTrustee": "返回受托人"
+}

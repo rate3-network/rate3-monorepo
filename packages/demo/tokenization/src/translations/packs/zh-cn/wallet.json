@@ -1,0 +1,9 @@
+{
+  "bankAccountTab": "银行账户",
+  "ethWalletTab": "以太坊钱包",
+
+  "linkBankAccount": "连接银行帐户以进行交易",
+
+  "verified": "已核实",
+  "inUse": "使用中"
+}

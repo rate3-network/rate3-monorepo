@@ -1,0 +1,47 @@
+{
+  "tokenizationHeader": "代币化",
+  "tokenizationDescription": "资产权转换至区块链代币的过程。过程一般涉及一个用户和一个受托人。",
+
+  "tokenize": "代币化",
+  "tokenizeDesc": "兑换SGD至SGDR",
+  "withdraw": "提取",
+  "withdrawDesc": "兑换SGDR至SGD",
+
+  "approve": "批准",
+  "approveDesc": "批准用户的代币化请求",
+  "monitor": "监控",
+  "monitorDesc": "监控用户的交易",
+
+  "stepNumber": "第<1>{{stepNumber}}</1>步：",
+  "chooseRole": "选择角色",
+  "verifyBankAccount": "核实银行信息",
+  "verifyTrustDetails": "核实受托人信息",
+  "setUpTrusteeWallet": "设置受托人账户",
+  "setUpUserWallet": "设置用户账户",
+
+  "selectBankAccount": "选择银行账户",
+  "trustAccount": "受托人账户",
+  "selectETHWallet": "选择以太坊钱包",
+
+  "verifyBankAccountDesc1": "<1>代币化</1>时用以<3>SGD转账</3>的银行账户。",
+  "verifyBankAccountDesc2": "<1>提取</1>时用以<3>接受SGD</3>的银行账户。",
+  "verifyBankAccountDesc1Short": "<1>代币化</1>时用以<3>SGD转账</3>的银行账户。",
+  "verifyBankAccountDesc2Short": "<1>提取</1>时用以<3>接受SGD</3>的银行账户。",
+
+  "verifyTrustDetailsDesc1": "<1>代币化</1>时用以<3>接收SGD</3>。",
+  "verifyTrustDetailsDesc2": "<1>提取</1>时用以<3>SGD转账</3>。",
+  "verifyTrustDetailsDesc1Short": "<1>代币化</1>时用以<3>接收SGD</3>。",
+  "verifyTrustDetailsDesc2Short": "<1>提取</1>时用以<3>SGD转账</3>。",
+
+  "userSetUpWalletDesc1": "以太坊钱包地址是您的<1>个人独特标识符</1>。",
+  "userSetUpWalletDesc2": "用以提交代币化及提取申请。",
+
+  "trusteeSetUpWalletDesc1": "以太坊钱包地址是受托人的<1>独特标识符</1>。",
+  "trusteeSetUpWalletDesc2": "用以批准代币化及提取申请。",
+
+  "switchingToTrustee": "切换至受托人角色",
+  "switchingToUser": "切换至用户角色",
+  "switchToTrusteeMessage": "您需先核实受托人账号，并设置受托人的以太坊钱包",
+  "switchToUserMessage": "您需先置受您的银行账户与太坊钱包",
+  "switchSubMessage": "只需设置一次"
+}

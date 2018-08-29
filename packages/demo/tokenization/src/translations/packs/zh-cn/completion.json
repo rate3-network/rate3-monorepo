@@ -1,0 +1,35 @@
+{
+  "tokenizeSubmittedHeader": "交易已提交至以太坊网络。",
+  "tokenizeFailedHeader": "交易失败。",
+  "withdrawSubmittedHeader": "提取交易已提交至以太坊网络。",
+  "withdrawFailedHeader": "提取失败。",
+  "approvalSubmittedHeader": "批准交易已提交至以太坊网络。",
+  "approvalFailedHeader": "批准失败。",
+  "finalizeSubmittedHeader": "代币化已完成。",
+  "finalizeFailedHeader": "确认失败。",
+  "revokeSubmittedHeader": "代币化已撤消。",
+  "revokeFailedHeader": "撤消失败。",
+
+  "txHashLabel": "交易哈希：",
+  "pleaseTryAgainLater": "请稍后再试",
+
+
+  "tokenizeSubmission": "交易提交",
+  "withdrawSubmission": "提取交易",
+  "approvalSubmission": "批准交易",
+
+  "networkConfirmation": "网络确认",
+
+  "trusteeApproval": "受托人批准",
+  "wireTransferCompleted": "转账成功",
+  "tokensIssued": "发行代币",
+  "timeLock": "锁定时间",
+  "tokenizationFinalized": "代币化完成",
+  "tokenizationRevoked": "代币化撤消",
+
+  "seeTransactions": "交易历史",
+
+  "backToMainPage": "返回主页",
+  "backToTokenize": "再次代币化",
+  "backToWithdraw": "再次提取"
+}

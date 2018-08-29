@@ -3,12 +3,14 @@ import { reactI18nextModule } from 'react-i18next';
 
 // -- Import language packs here --
 import en from './packs/en';
+import zhCN from './packs/zh-cn';
 
 
 class TranslationHandler {
   static translations = [
     // -- Add translations here --
     en,
+    zhCN,
   ];
 
   /**

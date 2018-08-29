@@ -1,0 +1,26 @@
+{
+  "filter": "筛选",
+
+  "txHash": "交易哈希",
+  "from": "发送地址",
+  "date/time": "日期/时间",
+  "amount": "数额",
+  "type": "类",
+  "status": "状态",
+
+  "typeTokenize": "代币化",
+  "typeWithdraw": "提取",
+
+  "statusPendingNetwork": "等待网络确认",
+  "statusPendingApproval": "等待受托人批准",
+  "statusPendingFinalize": "待确认",
+  "statusTimeLock": "时间锁定",
+  "statusSuccess": "成功",
+  "statusFailure": "失败",
+
+  "rowsPerPage": "每页行数",
+  "tableDisplayedRows": "<0>{{from}}</0>至<2>{{to}}</2>，总：<4>{{count}}<4>",
+
+  "finalizeOrRevokeDesc": "选择一个已批准的代币化申请，以完成或撤消",
+  "finalizeOrRevokeDescNote": "代币化申请只能在时间锁定期后完成"
+}
