@@ -163,7 +163,9 @@ class FilterDropdown extends React.Component {
               root: classes.dismissButtonRoot,
             }}
           >
-            <Typography classes={{ root: classes.buttonText }}>Filter</Typography>
+            <Typography classes={{ root: classes.buttonText }}>
+              {buttonText}
+            </Typography>
             <KeyboardArrowUp />
           </Button>
           {
