@@ -12,7 +12,7 @@ import Providers from '../constants/Providers';
  */
 export default (web3, browserProvider) => {
   const initialState = {
-    id: null,
+    id: -1,
 
     status: 'disconnected',
 

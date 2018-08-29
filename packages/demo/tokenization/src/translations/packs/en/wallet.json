@@ -5,5 +5,10 @@
   "linkBankAccount": "Link your bank account to conduct transactions",
 
   "verified": "Verified",
-  "inUse": "In Use"
+  "inUse": "In Use",
+
+  "ropsten": "Ropsten Test Network",
+  "rinkeby": "Rinkeby Test Network",
+  "kovan": "Kovan Test Network",
+  "localhost": "Localhost 8545"
 }

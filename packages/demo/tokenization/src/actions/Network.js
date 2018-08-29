@@ -1,3 +1,4 @@
+import { contractAddresses } from '../constants/addresses';
 import { keyMirror } from '../utils';
 
 export const networkActions = keyMirror(
@@ -10,27 +11,7 @@ export const networkActions = keyMirror(
     CHANGE_SUCCESS: null,
     CHANGE_ERROR: null,
 
-    UPDATE_BALANCE: null,
-    UPDATE_BALANCE_SUCCESS: null,
-    UPDATE_BALANCE_ERROR: null,
-
-    FETCH_ACCOUNTS: null,
-    FETCH_ACCOUNTS_SUCCESS: null,
-
-    FETCH_LOCAL_WALLET: null,
-    FETCH_LOCAL_WALLET_SUCCESS: null,
-
-    SELECT_ACCOUNT: null,
-    SET_PROVIDER: null,
-    SET_IPFS: null,
-
-    SEND_FROM_NODE: null,
-    SEND_FROM_NODE_SUCCESS: null,
-    SEND_FROM_NODE_ERROR: null,
-
-    SEND_FROM_ACCOUNT: null,
-    SEND_FROM_ACCOUNT_SUCCESS: null,
-    SEND_FROM_ACCOUNT_ERROR: null,
+    CHANGE_PROVIDER: null,
 
     NEW_BLOCK: null,
   },
@@ -40,4 +21,11 @@ export const networkActions = keyMirror(
 export const init = isUser => ({
   type: networkActions.INIT,
   isUser,
+});
+
+export const change = networkId => ({
+  type: networkActions.CHANGE_PROVIDER,
+  provider: Object.prototype.hasOwnProperty.call(contractAddresses, networkId)
+    ? contractAddresses[networkId].endpoint
+    : contractAddresses.local.endpoint,
 });

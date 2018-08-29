@@ -40,6 +40,13 @@ const network = (db, web3) => {
     });
   }
 
+  function* handleChange(action) {
+    const { provider } = action;
+    web3.eth.setProvider(provider);
+    const { isUser } = yield select(state => state.wallet);
+    return yield call(handleInit, { isUser });
+  }
+
   function* loadNetwork() {
     try {
       const id = yield call(web3.eth.net.getId);
@@ -236,6 +243,7 @@ const network = (db, web3) => {
       takeLatest(networkActions.INIT, handleInit),
       takeLatest(networkActions.SET_CONTRACTS, getPastContractEvents),
       takeLatest(networkActions.NEW_BLOCK, getNewEvents),
+      takeLatest(networkActions.CHANGE_PROVIDER, handleChange),
     ]);
   };
 };

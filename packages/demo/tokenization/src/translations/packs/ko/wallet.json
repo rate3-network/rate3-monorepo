@@ -5,5 +5,10 @@
   "linkBankAccount": "당신의 은행계좌를 트랜잭션 실행을 위해 연동하세요",
 
   "verified": "확인됨",
-  "inUse": "사용중"
+  "inUse": "사용중",
+
+  "ropsten": "Ropsten Test Network",
+  "rinkeby": "Rinkeby Test Network",
+  "kovan": "Kovan Test Network",
+  "localhost": "Localhost 8545"
 }

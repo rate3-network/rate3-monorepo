@@ -5,5 +5,10 @@
   "linkBankAccount": "连接银行帐户以进行交易",
 
   "verified": "已核实",
-  "inUse": "使用中"
+  "inUse": "使用中",
+
+  "ropsten": "Ropsten Test Network",
+  "rinkeby": "Rinkeby Test Network",
+  "kovan": "Kovan Test Network",
+  "localhost": "Localhost 8545"
 }

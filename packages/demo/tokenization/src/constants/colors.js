@@ -166,3 +166,9 @@ export const walletTrusteeCardBg = '#F1F5F7';
 // Language Menu
 export const languageMenuSelectedBg = '#203542';
 export const languageMenuSelectedText = '#FFFFFF';
+
+
+// Network Menu
+export const networkMenuButtonText = textDefault;
+export const networkMenuItemSelectedBg = '#203542';
+export const networkMenuItemSelectedText = '#FFFFFF';
