@@ -10,3 +10,9 @@ export const userPrivKey = '';
 
 export const trusteeAddress = '';
 export const trusteePrivKey = '';
+
+export const sgdDecimalPlaces = 2;
+export const sgdrDecimalPlaces = 2;
+export const ethDecimalPlaces = 6;
+
+export const userInitialAmount = '10000';

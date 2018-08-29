@@ -7,11 +7,9 @@ export const walletActions = keyMirror(
     SWITCH_ROLE: null,
 
     SET_ETH_BALANCE: null,
-    SET_TOKEN_BALANCE: null,
+    SET_BALANCE: null,
 
     CALCULATE_PENDING: null,
-    SET_PENDING_TOKENIZE_BALANCE: null,
-    SET_PENDING_WITHDRAW_BALANCE: null,
   },
   'WALLET',
 );

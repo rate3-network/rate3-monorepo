@@ -31,6 +31,10 @@ export const trusteeNavToggleEmphasis = '#63727B';
 export const trusteeNavToggleBg = '#F1F5F7';
 
 
+// Balance pending amount
+export const balancePendingText = '#B0B0B0';
+
+
 // Main panel
 export const userMainBg = '#F1F5F7';
 export const trusteeMainBg = '#FFFFFF';

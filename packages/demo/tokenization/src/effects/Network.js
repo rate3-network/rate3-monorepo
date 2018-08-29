@@ -101,7 +101,7 @@ const network = (db, web3) => {
   }
 
   function* getPastContractEvents(action) {
-    const { operationsContract, networkId } = action;
+    const { tokenContract, operationsContract, networkId } = action;
 
     const latestBlock = yield call(web3.eth.getBlock, 'latest');
     const fromBlock = (db.exists('network', { network_id: networkId }))
@@ -223,7 +223,10 @@ const network = (db, web3) => {
       }),
       put({
         type: walletActions.CALCULATE_PENDING,
+        isUser,
         networkId,
+        tokenContract,
+        operationsContract,
       }),
     ]);
   }

@@ -1,7 +1,6 @@
 import { walletActions } from '../actions/Wallet';
 import { accountAddresses } from '../constants/addresses';
-
-const initialAmount = '10000';
+import { sgdrDecimalPlaces, sgdDecimalPlaces } from '../constants/defaults';
 
 const initialState = {
   isUser: true,
@@ -9,11 +8,11 @@ const initialState = {
 
   currentDefaultAccount: accountAddresses.user,
   currentEthBalance: '0',
-  currentTokenBalance: '0',
-  currentBankBalance: '0',
+  currentTokenBalance: (0).toFixed(sgdrDecimalPlaces),
+  currentBankBalance: (0).toFixed(sgdDecimalPlaces),
 
-  currentPendingTokenBalance: '0',
-  currentPendingBankBalance: '0',
+  currentPendingTokenization: (0).toFixed(sgdDecimalPlaces),
+  currentPendingWithdrawal: (0).toFixed(sgdrDecimalPlaces),
 
   userDefaultAccount: accountAddresses.user,
   trusteeDefaultAccount: accountAddresses.trustee,
@@ -51,8 +50,10 @@ export default function (state = initialState, action = {}) {
           ? state.trusteeDefaultAccount
           : state.userDefaultAccount,
         currentEthBalance: '0',
-        currentTokenBalance: '0',
-        currentBankBalance: '0',
+        currentTokenBalance: (0).toFixed(sgdrDecimalPlaces),
+        currentBankBalance: (0).toFixed(sgdDecimalPlaces),
+        currentPendingTokenization: (0).toFixed(sgdDecimalPlaces),
+        currentPendingWithdrawal: (0).toFixed(sgdrDecimalPlaces),
       };
     }
     case walletActions.SET_ETH_BALANCE: {
@@ -62,28 +63,20 @@ export default function (state = initialState, action = {}) {
         currentEthBalance: balance,
       };
     }
-    case walletActions.SET_TOKEN_BALANCE: {
-      const { balance } = action;
-      const { BN } = window.web3.utils;
+    case walletActions.SET_BALANCE: {
+      const {
+        tokenBalance,
+        bankBalance,
+        pendingTokenization,
+        pendingWithdrawal,
+      } = action;
+
       return {
         ...state,
-        currentTokenBalance: balance,
-        currentBankBalance: (new BN(initialAmount))
-          .sub(new BN(balance)).toString(10),
-      };
-    }
-    case walletActions.SET_PENDING_TOKENIZE_BALANCE: {
-      const { balance } = action;
-      return {
-        ...state,
-        currentPendingTokenBalance: balance,
-      };
-    }
-    case walletActions.SET_PENDING_WITHDRAW_BALANCE: {
-      const { balance } = action;
-      return {
-        ...state,
-        currentPendingBankBalance: balance,
+        currentTokenBalance: tokenBalance,
+        currentBankBalance: bankBalance,
+        currentPendingTokenization: pendingTokenization,
+        currentPendingWithdrawal: pendingWithdrawal,
       };
     }
     case `${walletActions.INIT}_SUCCESS`: {

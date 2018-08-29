@@ -15,6 +15,7 @@
   "ethWallet": "以太坊钱包",
   "circulatingTokens": "流通代币",
   "trustBalance": "信托余额",
+  "pendingAmount": "<1>{{value}}</1> pending",
 
   "next": "下一步",
   "back": "上一步",

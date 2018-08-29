@@ -15,6 +15,7 @@
   "ethWallet": "ETH\nwallet",
   "circulatingTokens": "Circulating\ntokens",
   "trustBalance": "Trust\nbalance",
+  "pendingAmount": "<1>{{value}}</1>\npending",
 
   "next": "Next",
   "back": "Back",

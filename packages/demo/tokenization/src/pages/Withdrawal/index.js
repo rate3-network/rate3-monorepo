@@ -21,6 +21,7 @@ import {
   sgdrColor,
   withdrawalInfoText,
 } from '../../constants/colors';
+import { ethDecimalPlaces } from '../../constants/defaults';
 
 import {
   nextStep as nextStepAction,
@@ -212,7 +213,7 @@ class Withdrawal extends React.Component {
         const maxFee = (new Decimal(gasLimit))
           .mul(new Decimal(gasPrice))
           .div(new Decimal('1000000000')) // Because price is in GWEI
-          .toFixed(6);
+          .toFixed(ethDecimalPlaces);
 
         return (
           <Confirmation

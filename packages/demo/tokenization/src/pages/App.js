@@ -7,7 +7,7 @@ import {
   Switch as RouterSwitch,
   withRouter,
 } from 'react-router-dom';
-import { translate } from 'react-i18next';
+import { Trans, translate } from 'react-i18next';
 
 import blockies from 'ethereum-blockies';
 import Decimal from 'decimal.js-light';
@@ -63,6 +63,7 @@ import {
   withdrawPath,
 } from '../constants/urls';
 import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
+import { sgdrDecimalPlaces, sgdDecimalPlaces } from '../constants/defaults';
 
 // Components
 import Onboard from './Onboard';
@@ -206,6 +207,12 @@ const styles = theme => ({
       outline: 'none',
     },
   },
+  sgdCurrency: {
+    color: sgdColor,
+  },
+  sgdrCurrency: {
+    color: sgdrColor,
+  },
 });
 
 class App extends React.Component {
@@ -242,6 +249,54 @@ class App extends React.Component {
       && location.state && location.state.isUser !== isUser) {
       switchRole();
     }
+  }
+
+  getAvailableTokenBalance() {
+    const {
+      currentTokenBalance,
+      currentPendingWithdrawal,
+    } = this.props;
+
+    return (new Decimal(currentTokenBalance))
+      .sub(new Decimal(currentPendingWithdrawal))
+      .toFixed(sgdrDecimalPlaces);
+  }
+
+  getPendingTokenBalance() {
+    const {
+      currentPendingTokenization,
+    } = this.props;
+    const pendingDecimal = new Decimal(currentPendingTokenization);
+
+    if (pendingDecimal.isZero()) {
+      return null;
+    }
+
+    return pendingDecimal.toFixed(sgdrDecimalPlaces);
+  }
+
+  getAvailableBankBalance() {
+    const {
+      currentBankBalance,
+      currentPendingTokenization,
+    } = this.props;
+
+    return (new Decimal(currentBankBalance))
+      .sub(new Decimal(currentPendingTokenization))
+      .toFixed(sgdDecimalPlaces);
+  }
+
+  getPendingBankBalance() {
+    const {
+      currentPendingWithdrawal,
+    } = this.props;
+    const pendingDecimal = new Decimal(currentPendingWithdrawal);
+
+    if (pendingDecimal.isZero()) {
+      return null;
+    }
+
+    return pendingDecimal.toFixed(sgdrDecimalPlaces);
   }
 
   handleModalClose = isUser => () => {
@@ -314,6 +369,14 @@ class App extends React.Component {
     }
   }
 
+  renderPendingValue = value => (
+    <Trans i18nKey="pendingAmount">
+      {''}
+      {{ value }}
+      pending
+    </Trans>
+  )
+
   renderDrawer() {
     const {
       classes,
@@ -323,6 +386,8 @@ class App extends React.Component {
       currentEthBalance,
       currentTokenBalance,
       currentBankBalance,
+      currentPendingTokenization,
+      currentPendingWithdrawal,
     } = this.props;
 
     return (
@@ -368,15 +433,31 @@ class App extends React.Component {
         />
         <AccountsSummary>
           <AccountBalance
-            currency={<span style={{ color: sgdrColor }}>SGDR</span>}
+            currency="SGDR"
             name={isUser ? t('ethWallet') : t('circulatingTokens')}
             amount={currentTokenBalance}
+            pendingAmount={(new Decimal(currentPendingTokenization)).isZero()
+              ? null
+              : currentPendingTokenization
+            }
+            renderPending={this.renderPendingValue}
+            classes={{
+              currency: classes.sgdrCurrency,
+            }}
           />
           <AccountBalance
             currencySymbol="$"
-            currency={<span style={{ color: sgdColor }}>SGD</span>}
+            currency="SGD"
             name={isUser ? t('bankAccount') : t('trustBalance')}
-            amount={isUser ? currentBankBalance : currentTokenBalance}
+            amount={currentBankBalance}
+            pendingAmount={(new Decimal(currentPendingWithdrawal)).isZero()
+              ? null
+              : currentPendingWithdrawal
+            }
+            renderPending={this.renderPendingValue}
+            classes={{
+              currency: classes.sgdCurrency,
+            }}
           />
         </AccountsSummary>
         <List component="div">
@@ -615,6 +696,8 @@ App.propTypes = {
   currentEthBalance: PropTypes.string.isRequired,
   currentTokenBalance: PropTypes.string.isRequired,
   currentBankBalance: PropTypes.string.isRequired,
+  currentPendingTokenization: PropTypes.string.isRequired,
+  currentPendingWithdrawal: PropTypes.string.isRequired,
   toRevoke: PropTypes.bool.isRequired,
   networkInit: PropTypes.func.isRequired,
   switchRole: PropTypes.func.isRequired,
@@ -626,6 +709,8 @@ const mapStateToProps = state => ({
   currentEthBalance: state.wallet.currentEthBalance,
   currentTokenBalance: state.wallet.currentTokenBalance,
   currentBankBalance: state.wallet.currentBankBalance,
+  currentPendingTokenization: state.wallet.currentPendingTokenization,
+  currentPendingWithdrawal: state.wallet.currentPendingWithdrawal,
   toRevoke: state.finalize.toRevoke,
 });
 

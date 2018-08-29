@@ -15,6 +15,7 @@
   "ethWallet": "이더리움\n지갑",
   "circulatingTokens": "유통되는\n토큰",
   "trustBalance": "신탁\n잔액",
+  "pendingAmount": "<1>{{value}}</1> pending",
 
   "next": "다음",
   "back": "되돌아가기",

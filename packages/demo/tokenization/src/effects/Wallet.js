@@ -10,6 +10,7 @@ import { Decimal } from 'decimal.js-light';
 import { walletActions } from '../actions/Wallet';
 import { transactionsActions } from '../actions/Transactions';
 import { txType, txStatus } from '../constants/enums';
+import { userInitialAmount, sgdrDecimalPlaces, sgdDecimalPlaces } from '../constants/defaults';
 
 
 const wallet = (db, web3) => {
@@ -53,13 +54,19 @@ const wallet = (db, web3) => {
       currentDefaultAccount: userDefaultAccount,
       operationsContractAddress: operationsContract.address,
     }));
+    nextActions.push(put({
+      type: walletActions.CALCULATE_PENDING,
+      isUser: getUserInformation,
+      networkId,
+      tokenContract,
+      operationsContract,
+    }));
 
     return yield all(nextActions);
   }
 
   function* initWallet(action) {
     const {
-      tokenContract,
       isUser,
     } = action;
     const walletState = yield select(state => state.wallet);
@@ -73,27 +80,11 @@ const wallet = (db, web3) => {
         type: walletActions.SET_ETH_BALANCE,
         balance: web3.utils.fromWei(ethBalance),
       }));
-
-      const tokenBalance = yield call(
-        tokenContract.methods.balanceOf(userDefaultAccount).call,
-      );
-      nextActions.push(put({
-        type: walletActions.SET_TOKEN_BALANCE,
-        balance: tokenBalance,
-      }));
     } else {
       const ethBalance = yield call(web3.eth.getBalance, trusteeDefaultAccount);
       nextActions.push(put({
         type: walletActions.SET_ETH_BALANCE,
         balance: web3.utils.fromWei(ethBalance),
-      }));
-
-      const tokenBalance = yield call(
-        tokenContract.methods.totalSupply().call,
-      );
-      nextActions.push(put({
-        type: walletActions.SET_TOKEN_BALANCE,
-        balance: tokenBalance,
       }));
     }
 
@@ -107,44 +98,78 @@ const wallet = (db, web3) => {
   }
 
   function* calculatePending(action) {
-    const { networkId } = action;
+    const {
+      isUser,
+      tokenContract,
+      operationsContract,
+      networkId,
+    } = action;
     const walletState = yield select(state => state.wallet);
     const { userDefaultAccount } = walletState;
     const transactionsTable = `transactions_${networkId}`;
 
-    const pendingTokenization = db
-      .select(transactionsTable, {
-        from: userDefaultAccount,
-        type: txType.TOKENIZE,
-        status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
-      })
-      .reduce(
-        (pending, txn) => pending.add(new Decimal(txn.amount)),
-        new Decimal(0),
-      )
-      .toString();
-    const pendingWithdrawal = db
-      .select(transactionsTable, {
-        from: userDefaultAccount,
-        type: txType.WITHDRAWAL,
-        status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
-      })
-      .reduce(
-        (pending, txn) => pending.add(new Decimal(txn.amount)),
-        new Decimal(0),
-      )
-      .toString();
+    let tokenBalance;
+    let bankBalance;
+    let pendingTokenization;
+    let pendingWithdrawal;
 
-    return yield all([
-      put({
-        type: walletActions.SET_PENDING_TOKENIZE_BALANCE,
-        balance: pendingTokenization,
-      }),
-      put({
-        type: walletActions.SET_PENDING_WITHDRAW_BALANCE,
-        balance: pendingWithdrawal,
-      }),
-    ]);
+    if (isUser) {
+      tokenBalance = new Decimal(yield call(
+        tokenContract.methods.balanceOf(userDefaultAccount).call,
+      )).toFixed(sgdrDecimalPlaces);
+      pendingTokenization = db
+        .select(transactionsTable, {
+          from: userDefaultAccount,
+          type: txType.TOKENIZE,
+          status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
+        })
+        .reduce(
+          (pending, txn) => pending.add(new Decimal(txn.amount)),
+          new Decimal(0),
+        )
+        .toFixed(sgdDecimalPlaces);
+      pendingWithdrawal = db
+        .select(transactionsTable, {
+          from: userDefaultAccount,
+          type: txType.WITHDRAWAL,
+          status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
+        })
+        .reduce(
+          (pending, txn) => pending.add(new Decimal(txn.amount)),
+          new Decimal(0),
+        )
+        .toFixed(sgdrDecimalPlaces);
+      bankBalance = (new Decimal(userInitialAmount))
+        .sub(new Decimal(pendingTokenization))
+        .toFixed(sgdDecimalPlaces);
+    } else {
+      tokenBalance = new Decimal(yield call(
+        tokenContract.methods.totalSupply().call,
+      )).toFixed(sgdrDecimalPlaces);
+      pendingTokenization = db
+        .select(transactionsTable, {
+          to: operationsContract.address,
+          type: txType.TOKENIZE,
+          status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
+        })
+        .reduce(
+          (pending, txn) => pending.add(new Decimal(txn.amount)),
+          new Decimal(0),
+        )
+        .toFixed(sgdDecimalPlaces);
+      pendingWithdrawal = (new Decimal(0)).toFixed(sgdrDecimalPlaces);
+      bankBalance = (new Decimal(tokenBalance))
+        .add(new Decimal(pendingTokenization))
+        .toFixed(sgdDecimalPlaces);
+    }
+
+    return yield put({
+      type: walletActions.SET_BALANCE,
+      tokenBalance,
+      bankBalance,
+      pendingTokenization,
+      pendingWithdrawal,
+    });
   }
 
   return function* watchWallet() {
