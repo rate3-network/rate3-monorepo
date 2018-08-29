@@ -1,0 +1,9 @@
+{
+  "bankAccountTab": "은행계좌",
+  "ethWalletTab": "이더리움 주소",
+
+  "linkBankAccount": "당신의 은행계좌를 트랜잭션 실행을 위해 연동하세요",
+
+  "verified": "확인됨",
+  "inUse": "사용중"
+}

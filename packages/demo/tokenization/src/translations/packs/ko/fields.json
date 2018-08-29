@@ -1,0 +1,24 @@
+{
+  "amountToWithdrawFieldLabel": "출금 수량 입력",
+  "amountToTokenizeFieldLabel": "토큰화할 수량입력",
+  "trustBankFieldLabel": "신탁 은행",
+  "trustSwiftCodeFieldLabel": "신탁 스위프트코드(Swiftcode)",
+  "trustAccountFieldLabel": "신탁 계좌",
+  "gasLimitFieldLabel": "가스 한도",
+  "gasPriceFieldLabel": "가스 가격",
+
+  "receiveInReturn": "<1>{{amount}}</1> <2></2> 를받게 될 것입니다",
+
+  "addressLabel": "주소",
+  "txHashLabel": "Tx Hash",
+  "amountToWithdrawLabel": "출금할 수량",
+  "amountToReceiveLabel": "받을 수량",
+  "amountToTokenizeLabel": "토큰화할 수량",
+  "amountToIssueLabel": "발행할 수량",
+  "trustBankLabel": "신탁 은행",
+  "trustSwiftCodeLabel": "신탁 스위프트코드(Swiftcode)",
+  "trustAccountLabel": "신탁 계좌",
+  "gasLimitLabel": "가스 한도",
+  "gasPriceLabel": "가스 가격",
+  "maxFeeLabel": "최대 수수료"
+}

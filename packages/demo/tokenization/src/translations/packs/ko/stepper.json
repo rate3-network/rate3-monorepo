@@ -1,0 +1,7 @@
+{
+  "amountToTokenize": "토큰화 할 수량",
+  "amountToWithdraw": "출금할 수량",
+  "wireTransferDetails": "온라인 송금 세부내역",
+  "gasLimitAndPrice": "가스 한도 및 가격",
+  "confirmation": "확인"
+}
