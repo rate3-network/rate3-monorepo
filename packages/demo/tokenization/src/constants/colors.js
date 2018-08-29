@@ -157,3 +157,8 @@ export const tabIndicatorBg = '#E2E1E1';
 // Wallet
 export const walletUserCardBg = '#FFFFFF';
 export const walletTrusteeCardBg = '#F1F5F7';
+
+
+// Language Menu
+export const languageMenuSelectedBg = '#203542';
+export const languageMenuSelectedText = '#FFFFFF';

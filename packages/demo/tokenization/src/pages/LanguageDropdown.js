@@ -8,6 +8,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 
 import TranslationsHandler from '../translations';
+import {
+  languageMenuSelectedBg,
+  languageMenuSelectedText,
+} from '../constants/colors';
 
 const styles = theme => ({
   inputRoot: {
@@ -17,15 +21,35 @@ const styles = theme => ({
     color: 'inherit',
   },
   selectMenu: {
+    paddingTop: 0,
+    paddingBottom: 0,
     '&:focus': {
       backgroundColor: 'inherit',
     },
   },
+  itemRoot: {
+    padding: '0.2em 1em',
+  },
+  itemText: {
+    margin: 'auto',
+  },
+  selectedItem: {
+    backgroundColor: `${languageMenuSelectedBg} !important`,
+    color: languageMenuSelectedText,
+  },
 });
 
 class LanguageDropDown extends React.Component {
+  componentDidMount() {
+    const savedLang = sessionStorage.getItem('lang');
+    if (savedLang) {
+      TranslationsHandler.setLanguage(savedLang);
+    }
+  }
+
   handleChange = (e) => {
     TranslationsHandler.setLanguage(e.target.value);
+    sessionStorage.setItem('lang', e.target.value);
   }
 
   render() {
@@ -51,9 +75,6 @@ class LanguageDropDown extends React.Component {
               PaperProps: {
                 square: false,
               },
-              MenuListProps: {
-                disablePadding: true,
-              },
             }}
             classes={{
               selectMenu: classes.selectMenu,
@@ -62,8 +83,15 @@ class LanguageDropDown extends React.Component {
           >
             {
               languages.map(lang => (
-                <MenuItem key={lang.getCodeName()} value={lang.getCodeName()}>
-                  {lang.getName()}
+                <MenuItem
+                  key={lang.getCodeName()}
+                  value={lang.getCodeName()}
+                  classes={{
+                    root: classes.itemRoot,
+                    selected: classes.selectedItem,
+                  }}
+                >
+                  <div className={classes.itemText}>{lang.getName()}</div>
                 </MenuItem>
               ))
             }

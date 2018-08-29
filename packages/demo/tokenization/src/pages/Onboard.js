@@ -6,10 +6,6 @@ import { withRouter } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Button from '@material-ui/core/Button';
-import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
 
 import Rate3Logo from '../components/Rate3Logo';
 import OnboardingFlow from '../components/onboarding/OnboardingFlow';
@@ -30,6 +26,7 @@ import {
 } from '../constants/colors';
 import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
 import { tokenizePath, approvePath } from '../constants/urls';
+import LanguageDropdown from './LanguageDropdown';
 
 const styles = theme => ({
   root: {
@@ -68,13 +65,19 @@ const styles = theme => ({
     maxWidth: '900px',
     padding: '1em',
   },
+  headerRight: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  verticalSeparator: {
+    borderLeft: `1px solid ${onboardAppBarText}`,
+    width: 1,
+    height: '2em',
+    margin: '0 1em',
+  },
 });
 
 class Onboard extends React.Component {
-  state = {
-    anchorEl: null,
-  };
-
   componentDidMount() {
     const { history } = this.props;
 
@@ -90,14 +93,6 @@ class Onboard extends React.Component {
       });
     }
   }
-
-  handleMenu = (event) => {
-    this.setState({ anchorEl: event.currentTarget });
-  };
-
-  handleClose = () => {
-    this.setState({ anchorEl: null });
-  };
 
   handleComplete = (context) => {
     const { history } = this.props;
@@ -118,8 +113,6 @@ class Onboard extends React.Component {
 
   render() {
     const { classes, t } = this.props;
-    const { anchorEl } = this.state;
-    const open = Boolean(anchorEl);
 
     return (
       <div className={classes.root}>
@@ -133,42 +126,10 @@ class Onboard extends React.Component {
             <div className={classes.logo}>
               <Rate3Logo />
             </div>
-            <div>
-              <Button
-                aria-owns={open ? 'menu-appbar' : null}
-                aria-haspopup="true"
-                onClick={this.handleMenu}
-                color="inherit"
-                classes={{
-                  root: classes.buttonRoot,
-                }}
-              >
-                {t('tokenizationDemo')}
-                <KeyboardArrowDown />
-              </Button>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={open}
-                onClose={this.handleClose}
-              >
-                <MenuItem
-                  onClick={this.handleClose}
-                  classes={{
-                    root: classes.menuItem,
-                  }}
-                >
-                  {t('tokenizationDemo')}
-                </MenuItem>
-              </Menu>
+            <div className={classes.headerRight}>
+              <div>{t('tokenizationDemo')}</div>
+              <div className={classes.verticalSeparator} />
+              <LanguageDropdown />
             </div>
           </Toolbar>
         </AppBar>
