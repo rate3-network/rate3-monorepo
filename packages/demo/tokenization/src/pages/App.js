@@ -66,6 +66,7 @@ import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
 
 // Components
 import Onboard from './Onboard';
+import LanguageDropdown from './LanguageDropdown';
 import AccountBalance from '../components/sidebar/AccountBalance';
 import AccountsSummary from '../components/sidebar/AccountsSummary';
 import ListLinkItem from '../components/sidebar/ListLinkItem';
@@ -129,9 +130,12 @@ const styles = theme => ({
     textAlign: 'center',
     boxShadow: isUser ? `1px 0 5px ${navBoxShadow}` : 'none',
   })),
-  faq: {
-    textAlign: 'left',
+  drawerHeader: {
     padding: theme.spacing.unit * 2,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
   },
   drawerLink: {
     textDecoration: 'none',
@@ -323,10 +327,11 @@ class App extends React.Component {
 
     return (
       <React.Fragment>
-        <div className={classes.faq}>
+        <div className={classes.drawerHeader}>
           <Link to={faqPath} className={classes.drawerLink}>
             {t('faq')}
           </Link>
+          <LanguageDropdown />
         </div>
         <div>
           <img

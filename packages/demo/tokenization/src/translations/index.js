@@ -86,6 +86,15 @@ class TranslationHandler {
   static setLanguage(languageCodeName) {
     i18next.changeLanguage(languageCodeName);
   }
+
+  /**
+   * Gets the current language that is shown.
+   *
+   * @returns {string} Code name for translation language
+   */
+  static getLanguage() {
+    return i18next.language || en.getLanguage().getCodeName();
+  }
 }
 
 export default TranslationHandler;
