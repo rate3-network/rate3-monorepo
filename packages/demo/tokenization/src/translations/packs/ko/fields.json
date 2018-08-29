@@ -20,5 +20,8 @@
   "trustAccountLabel": "신탁 계좌",
   "gasLimitLabel": "가스 한도",
   "gasPriceLabel": "가스 가격",
-  "maxFeeLabel": "최대 수수료"
+  "maxFeeLabel": "최대 수수료",
+
+  "tokenizeAmountOverLimitError": "Tokenization amount cannot be higher than bank account balance",
+  "withdrawAmountOverLimitError": "Withdrawal amount cannot be higher than token balance"
 }

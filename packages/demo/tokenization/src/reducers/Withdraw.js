@@ -1,4 +1,6 @@
+import { Decimal } from 'decimal.js-light';
 import { withdrawActions, withdrawFields } from '../actions/Withdraw';
+import { sgdrDecimalPlaces } from '../constants/defaults';
 
 
 const initialState = {
@@ -37,8 +39,15 @@ export default function (state = initialState, action = {}) {
       return state;
     }
     case withdrawActions.NEXT_STEP: {
+      const sanitation = {};
+      if (state.step === 0) {
+        sanitation[withdrawFields.amount] = (new Decimal(state[withdrawFields.amount]))
+          .todp(sgdrDecimalPlaces, Decimal.ROUND_DOWN)
+          .toString();
+      }
       return {
         ...state,
+        ...sanitation,
         step: state.step + 1,
         loadingNextStep: false,
       };

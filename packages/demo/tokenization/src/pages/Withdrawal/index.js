@@ -21,7 +21,7 @@ import {
   sgdrColor,
   withdrawalInfoText,
 } from '../../constants/colors';
-import { ethDecimalPlaces } from '../../constants/defaults';
+import { ethDecimalPlaces, sgdDecimalPlaces } from '../../constants/defaults';
 
 import {
   nextStep as nextStepAction,
@@ -67,7 +67,7 @@ const styles = theme => ({
   ...genStyle('resetButton', isUser => ({
   })),
   willReceiveAmount: {
-    marginTop: '-1em',
+    marginTop: '0.5em',
     color: withdrawalInfoText,
     letterSpacing: 0,
     wordBreak: 'break-word',
@@ -75,6 +75,15 @@ const styles = theme => ({
 });
 
 class Withdrawal extends React.Component {
+  state = {
+    errors: {},
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const errors = this.validateFields(nextProps);
+    this.setState({ errors });
+  }
+
   getSteps() {
     const { t } = this.props;
 
@@ -137,8 +146,10 @@ class Withdrawal extends React.Component {
       gasPrice,
       loadingNextStep,
     } = this.props;
+    const { errors } = this.state;
 
     if (loadingNextStep) return false;
+    if (Object.keys(errors).length > 0) return false;
 
     switch (currentStep) {
       case 0:
@@ -156,6 +167,37 @@ class Withdrawal extends React.Component {
     return currentStep < this.getSteps().length;
   }
 
+  validateFields(props) {
+    const {
+      t,
+      currentStep,
+    } = props;
+
+    const error = {};
+
+    switch (currentStep) {
+      case 0: {
+        const {
+          currentTokenBalance,
+          amount,
+        } = props;
+
+        if (!amount) {
+          return error;
+        }
+
+        if ((new Decimal(amount)).gt(new Decimal(currentTokenBalance))) {
+          error[withdrawFields.amount] = t('fields:withdrawAmountOverLimitError');
+        }
+
+        return error;
+      }
+      default: {
+        return error;
+      }
+    }
+  }
+
   renderSteps() {
     const {
       classes,
@@ -170,6 +212,7 @@ class Withdrawal extends React.Component {
       wireTransferred,
       transactionError,
     } = this.props;
+    const { errors } = this.state;
 
     switch (currentStep) {
       case 0: {
@@ -184,13 +227,18 @@ class Withdrawal extends React.Component {
               <div className={classes.willReceiveAmount}>
                 <Trans i18nKey="fields:receiveInReturn">
                   You will receive
-                  {{ amount: amount || '0' }}
+                  {{
+                    amount: (new Decimal(amount || '0'))
+                      .todp(sgdDecimalPlaces)
+                      .toString(),
+                  }}
                   <SgdPill />
                   in return.
                 </Trans>
               </div>
             )}
             onAmountChange={this.handleFieldChange(withdrawFields.amount)}
+            amountError={errors[withdrawFields.amount] || null}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -430,6 +478,7 @@ Withdrawal.propTypes = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  currentTokenBalance: state.wallet.currentTokenBalance,
   currentStep: state.withdraw.step,
   loadingNextStep: state.withdraw.loadingNextStep,
   amount: state.withdraw[withdrawFields.amount],

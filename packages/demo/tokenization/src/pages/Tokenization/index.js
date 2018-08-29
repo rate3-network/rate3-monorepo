@@ -66,6 +66,15 @@ const styles = theme => ({
 });
 
 class Tokenization extends React.Component {
+  state = {
+    errors: {},
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const errors = this.validateFields(nextProps);
+    this.setState({ errors });
+  }
+
   getSteps() {
     const { t } = this.props;
 
@@ -132,8 +141,10 @@ class Tokenization extends React.Component {
       gasPrice,
       loadingNextStep,
     } = this.props;
+    const { errors } = this.state;
 
     if (loadingNextStep) return false;
+    if (Object.keys(errors).length > 0) return false;
 
     switch (currentStep) {
       case 0:
@@ -153,6 +164,37 @@ class Tokenization extends React.Component {
     return currentStep < this.getSteps().length;
   }
 
+  validateFields(props) {
+    const {
+      t,
+      currentStep,
+    } = props;
+
+    const error = {};
+
+    switch (currentStep) {
+      case 0: {
+        const {
+          currentBankBalance,
+          amount,
+        } = props;
+
+        if (!amount) {
+          return error;
+        }
+
+        if ((new Decimal(amount)).gt(new Decimal(currentBankBalance))) {
+          error[tokenizeFields.amount] = t('fields:tokenizeAmountOverLimitError');
+        }
+
+        return error;
+      }
+      default: {
+        return error;
+      }
+    }
+  }
+
   renderSteps() {
     const {
       t,
@@ -170,6 +212,7 @@ class Tokenization extends React.Component {
       trusteeApproved,
       transactionError,
     } = this.props;
+    const { errors } = this.state;
 
     switch (currentStep) {
       case 0: {
@@ -181,6 +224,7 @@ class Tokenization extends React.Component {
               <span style={{ color: sgdColor }}>SGD</span>
             }
             onAmountChange={this.handleFieldChange(tokenizeFields.amount)}
+            amountError={errors[tokenizeFields.amount] || null}
             onSubmit={this.handleFormSubmit}
           />
         );
@@ -440,6 +484,7 @@ Tokenization.propTypes = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  currentBankBalance: state.wallet.currentBankBalance,
   currentStep: state.tokenize.step,
   loadingNextStep: state.tokenize.loadingNextStep,
   amount: state.tokenize[tokenizeFields.amount],

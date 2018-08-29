@@ -57,10 +57,12 @@ const styles = theme => ({
     color: textFieldLabel,
     letterSpacing: 0,
     transform: 'translate(0)',
+    '&$inputLabelFocused:not($inputLabelError)': {
+      color: textFieldFocused,
+    },
   },
-  inputLabelFocused: {
-    color: `${textFieldFocused} !important`,
-  },
+  inputLabelFocused: {},
+  inputLabelError: {},
   adornment: {
     padding: '10px',
     width: '3em',
@@ -112,9 +114,10 @@ const Field = ({
       }}
       InputLabelProps={{
         shrink: true,
-        className: classes.inputLabel,
         FormLabelClasses: {
+          root: classes.inputLabel,
           focused: classes.inputLabelFocused,
+          error: classes.inputLabelError,
         },
       }}
       classes={{

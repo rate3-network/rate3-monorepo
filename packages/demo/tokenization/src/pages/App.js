@@ -63,7 +63,7 @@ import {
   withdrawPath,
 } from '../constants/urls';
 import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
-import { sgdrDecimalPlaces, sgdDecimalPlaces } from '../constants/defaults';
+import { sgdrDecimalPlaces, sgdDecimalPlaces, ethDecimalPlaces } from '../constants/defaults';
 
 // Components
 import Onboard from './Onboard';
@@ -419,7 +419,7 @@ class App extends React.Component {
           <strong>
             {
               (new Decimal(currentEthBalance))
-                .todp(6, Decimal.ROUND_DOWN)
+                .todp(ethDecimalPlaces, Decimal.ROUND_DOWN)
                 .toString()
             }
             <small>&nbsp;ETH</small>

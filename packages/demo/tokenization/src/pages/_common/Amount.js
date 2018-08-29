@@ -24,22 +24,27 @@ class Amount extends React.Component {
       amount,
       amountLabel,
       amountAdornment,
+      amountError,
       message,
     } = this.props;
 
     return (
       <React.Fragment>
-        <Field
-          isUser
-          label={amountLabel}
-          id="amount"
-          fullWidth
-          adornment={amountAdornment}
-          value={amount}
-          onChange={this.handleAmountChange}
-          onKeyPress={this.handleKeyPress}
-          autoFocus
-        />
+        <div>
+          <Field
+            isUser
+            label={amountLabel}
+            id="amount"
+            fullWidth
+            adornment={amountAdornment}
+            value={amount}
+            onChange={this.handleAmountChange}
+            onKeyPress={this.handleKeyPress}
+            error={Boolean(amountError)}
+            helperText={amountError}
+            autoFocus
+          />
+        </div>
         {message}
       </React.Fragment>
     );
@@ -50,6 +55,7 @@ Amount.propTypes = {
   amount: PropTypes.string.isRequired,
   amountLabel: PropTypes.node.isRequired,
   amountAdornment: PropTypes.node,
+  amountError: PropTypes.node,
   onAmountChange: PropTypes.func.isRequired,
 
   message: PropTypes.node,
@@ -58,6 +64,7 @@ Amount.propTypes = {
 
 Amount.defaultProps = {
   amountAdornment: null,
+  amountError: null,
   message: null,
   onSubmit: () => null,
 };

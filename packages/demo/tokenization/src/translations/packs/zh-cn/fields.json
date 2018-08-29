@@ -20,5 +20,8 @@
   "trustAccountLabel": "账户名",
   "gasLimitLabel": "Gas限制",
   "gasPriceLabel": "Gas价格",
-  "maxFeeLabel": "费用上限"
+  "maxFeeLabel": "费用上限",
+
+  "tokenizeAmountOverLimitError": "Tokenization amount cannot be higher than bank account balance",
+  "withdrawAmountOverLimitError": "Withdrawal amount cannot be higher than token balance"
 }

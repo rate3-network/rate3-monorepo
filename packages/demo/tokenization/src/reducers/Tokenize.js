@@ -1,5 +1,11 @@
+import { Decimal } from 'decimal.js-light';
 import { tokenizeActions, tokenizeFields } from '../actions/Tokenize';
-import { bankName, bankSwiftCode, bankAccount } from '../constants/defaults';
+import {
+  bankName,
+  bankSwiftCode,
+  bankAccount,
+  sgdDecimalPlaces,
+} from '../constants/defaults';
 
 
 const initialState = {
@@ -41,8 +47,15 @@ export default function (state = initialState, action = {}) {
       return state;
     }
     case tokenizeActions.NEXT_STEP: {
+      const sanitation = {};
+      if (state.step === 0) {
+        sanitation[tokenizeFields.amount] = (new Decimal(state[tokenizeFields.amount]))
+          .todp(sgdDecimalPlaces, Decimal.ROUND_DOWN)
+          .toString();
+      }
       return {
         ...state,
+        ...sanitation,
         step: state.step + 1,
         loadingNextStep: false,
       };
