@@ -4,7 +4,6 @@ import { translate } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import { withStyles } from '@material-ui/core/styles';
-import { ClipLoader } from 'react-spinners';
 import Decimal from 'decimal.js-light';
 
 import Amount from '../_common/Amount';
@@ -16,6 +15,7 @@ import Completion from '../_common/Completion';
 import Stepper from '../../components/Stepper';
 import Button from '../../components/Button';
 import { SgdPill } from '../../components/CurrencyPill';
+import MaterialDesignSpinner from '../../components/spinners/MaterialDesignSpinner';
 
 import { buttonTextPrimary, sgdColor } from '../../constants/colors';
 import { ethDecimalPlaces } from '../../constants/defaults';
@@ -384,11 +384,12 @@ class Tokenization extends React.Component {
                 disabled={!this.canProceedNextStep(currentStep)}
               >
                 {loadingNextStep && (
-                  <ClipLoader
+                  <MaterialDesignSpinner
                     sizeUnit="em"
                     size={1}
+                    margin={0}
+                    border={2}
                     color={buttonTextPrimary}
-                    loading
                   />
                 )}
                 {!loadingNextStep && (currentStep === 3 ? t('submit') : t('next'))}

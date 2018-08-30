@@ -51,6 +51,8 @@ import {
   userNavFooterBg,
   userNavFooterText,
   userNavPrimary,
+  globalSpinnerBg,
+  globalSpinner,
 } from '../constants/colors';
 import {
   approvePath,
@@ -81,6 +83,7 @@ import {
   SetUpTrusteeWallet,
   SwitchRoleIntro,
 } from './OnboardingSteps';
+import MaterialDesignSpinner from '../components/spinners/MaterialDesignSpinner';
 
 // Actions
 import {
@@ -212,6 +215,16 @@ const styles = theme => ({
   },
   sgdrCurrency: {
     color: sgdrColor,
+  },
+  spinnerContainer: {
+    position: 'fixed',
+    width: '100vw',
+    height: '100vh',
+    zIndex: 9999,
+    backgroundColor: globalSpinnerBg,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -511,6 +524,7 @@ class App extends React.Component {
       theme,
       t,
       isUser,
+      accountLoading,
       location: { pathname },
       toRevoke,
     } = this.props;
@@ -522,6 +536,16 @@ class App extends React.Component {
 
     return (
       <div className={classes.root}>
+        {accountLoading && (
+          <div className={classes.spinnerContainer}>
+            <MaterialDesignSpinner
+              size={300}
+              margin={10}
+              border={30}
+              color={globalSpinner}
+            />
+          </div>
+        )}
         <Hidden mdUp implementation="css">
           <AppBar
             className={getClass(classes, 'appBar', isUser)}
@@ -692,6 +716,7 @@ App.propTypes = {
     state: PropTypes.object,
   }).isRequired,
   isUser: PropTypes.bool.isRequired,
+  accountLoading: PropTypes.bool.isRequired,
   currentDefaultAccount: PropTypes.string.isRequired,
   currentEthBalance: PropTypes.string.isRequired,
   currentTokenBalance: PropTypes.string.isRequired,
@@ -705,6 +730,7 @@ App.propTypes = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  accountLoading: state.wallet.walletLoading && state.wallet.balancesLoading,
   currentDefaultAccount: state.wallet.currentDefaultAccount,
   currentEthBalance: state.wallet.currentEthBalance,
   currentTokenBalance: state.wallet.currentTokenBalance,

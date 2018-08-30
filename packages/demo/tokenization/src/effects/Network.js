@@ -4,6 +4,7 @@ import {
   call,
   select,
   takeLatest,
+  takeEvery,
 } from 'redux-saga/effects';
 
 import { networkActions } from '../actions/Network';
@@ -110,6 +111,20 @@ const network = (db, web3) => {
   function* getPastContractEvents(action) {
     const { tokenContract, operationsContract, networkId } = action;
 
+    const transactionsTable = `transactions_${networkId}`;
+    if (!db.hasTable(transactionsTable)) {
+      db.createTable(transactionsTable, [
+        'tx_hash',
+        'from',
+        'index',
+        'date',
+        'amount',
+        'type',
+        'status',
+        'finalizeDate',
+      ]);
+    }
+
     const latestBlock = yield call(web3.eth.getBlock, 'latest');
     const fromBlock = (db.exists('network', { network_id: networkId }))
       ? (db.select('network', { network_id: networkId })[0]).block_number + 1
@@ -123,21 +138,6 @@ const network = (db, web3) => {
       },
     );
     const opsPastEvents = yield opsPastEventsCall;
-
-    const transactionsTable = `transactions_${networkId}`;
-
-    if (!db.hasTable(transactionsTable)) {
-      db.createTable(transactionsTable, [
-        'tx_hash',
-        'from',
-        'index',
-        'date',
-        'amount',
-        'type',
-        'status',
-        'finalizeDate',
-      ]);
-    }
 
     opsPastEvents.forEach((e) => {
       switch (e.event) {
@@ -241,7 +241,7 @@ const network = (db, web3) => {
   return function* watchNetwork() {
     yield all([
       takeLatest(networkActions.INIT, handleInit),
-      takeLatest(networkActions.SET_CONTRACTS, getPastContractEvents),
+      takeEvery(networkActions.SET_CONTRACTS, getPastContractEvents),
       takeLatest(networkActions.NEW_BLOCK, getNewEvents),
       takeLatest(networkActions.CHANGE_PROVIDER, handleChange),
     ]);

@@ -4,7 +4,9 @@ import { sgdrDecimalPlaces, sgdDecimalPlaces } from '../constants/defaults';
 
 const initialState = {
   isUser: true,
-  switchRoleLoading: false,
+
+  walletLoading: false,
+  balancesLoading: false,
 
   currentDefaultAccount: accountAddresses.user,
   currentEthBalance: '0',
@@ -36,10 +38,12 @@ const initialState = {
 export default function (state = initialState, action = {}) {
   const { type } = action;
   switch (type) {
-    case walletActions.SWITCH_ROLE: {
+    case walletActions.SWITCH_ROLE:
+    case walletActions.INIT: {
       return {
         ...state,
-        switchRoleLoading: true,
+        walletLoading: true,
+        balancesLoading: true,
       };
     }
     case `${walletActions.SWITCH_ROLE}_SUCCESS`: {
@@ -61,6 +65,7 @@ export default function (state = initialState, action = {}) {
       return {
         ...state,
         currentEthBalance: balance,
+        walletLoading: false,
       };
     }
     case walletActions.SET_BALANCE: {
@@ -77,12 +82,7 @@ export default function (state = initialState, action = {}) {
         currentBankBalance: bankBalance,
         currentPendingTokenization: pendingTokenization,
         currentPendingWithdrawal: pendingWithdrawal,
-      };
-    }
-    case `${walletActions.INIT}_SUCCESS`: {
-      return {
-        ...state,
-        switchRoleLoading: false,
+        balancesLoading: true,
       };
     }
     default: {

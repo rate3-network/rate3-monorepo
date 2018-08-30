@@ -110,6 +110,7 @@ const wallet = (db, web3) => {
 
     let tokenBalance;
     let bankBalance;
+    let bankBalanceDecimal;
     let pendingTokenization;
     let pendingWithdrawal;
 
@@ -139,9 +140,9 @@ const wallet = (db, web3) => {
           new Decimal(0),
         )
         .toFixed(sgdrDecimalPlaces);
-      bankBalance = (new Decimal(userInitialAmount))
-        .sub(new Decimal(pendingTokenization))
-        .toFixed(sgdDecimalPlaces);
+      bankBalanceDecimal = (new Decimal(userInitialAmount))
+        .sub(new Decimal(tokenBalance))
+        .sub(new Decimal(pendingTokenization));
     } else {
       tokenBalance = new Decimal(yield call(
         tokenContract.methods.totalSupply().call,
@@ -158,9 +159,14 @@ const wallet = (db, web3) => {
         )
         .toFixed(sgdDecimalPlaces);
       pendingWithdrawal = (new Decimal(0)).toFixed(sgdrDecimalPlaces);
-      bankBalance = (new Decimal(tokenBalance))
-        .add(new Decimal(pendingTokenization))
-        .toFixed(sgdDecimalPlaces);
+      bankBalanceDecimal = (new Decimal(tokenBalance))
+        .add(new Decimal(pendingTokenization));
+    }
+
+    if (bankBalanceDecimal.isNegative()) {
+      bankBalance = new Decimal(0);
+    } else {
+      bankBalance = bankBalanceDecimal.toFixed(sgdDecimalPlaces);
     }
 
     return yield put({

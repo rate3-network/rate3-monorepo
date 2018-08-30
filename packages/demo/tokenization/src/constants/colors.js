@@ -172,3 +172,8 @@ export const languageMenuSelectedText = '#FFFFFF';
 export const networkMenuButtonText = textDefault;
 export const networkMenuItemSelectedBg = '#203542';
 export const networkMenuItemSelectedText = '#FFFFFF';
+
+
+// Spinner
+export const globalSpinnerBg = 'rgba(255, 255, 255, 0.2)';
+export const globalSpinner = '#203542';
