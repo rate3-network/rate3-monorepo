@@ -124,6 +124,9 @@ contract OperationsInteractor is BaseAdminInteractor {
 
     emit BurnOperationRequested(msg.sender, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
     burnRequestOperations[msg.sender].push(burnRequestOperation);
+    address burnAddress = burnRequestOperation.by;
+    uint256 value = burnRequestOperation.value;
+    token.burn(burnAddress, value);
   }
 
   // function approveBurn(address _requestor, uint256 _index) public onlyAdminOrOwner {
