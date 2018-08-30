@@ -2,9 +2,9 @@ import {
   all,
   put,
   call,
+  fork,
   select,
   takeLatest,
-  takeEvery,
 } from 'redux-saga/effects';
 
 import { networkActions } from '../actions/Network';
@@ -15,6 +15,23 @@ import tokenContractAbi from '../contracts/token';
 import operationsContractAbi from '../contracts/operations';
 import { txType, txStatus } from '../constants/enums';
 import { userPrivKey, trusteePrivKey } from '../constants/defaults';
+
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+// eslint-disable-next-line no-underscore-dangle
+function* _retryCall(args, delayTime, maxRetry) {
+  for (let i = 0; i < maxRetry; i += 1) {
+    try {
+      const order = yield call(...args);
+      return order;
+    } catch (err) {
+      if (i < maxRetry - 1) {
+        yield call(delay, delayTime);
+      }
+    }
+  }
+  throw new Error('Max retries reached');
+}
 
 const network = (db, web3) => {
   function* handleInit(action) {
@@ -34,10 +51,15 @@ const network = (db, web3) => {
     web3.eth.accounts.wallet.add(userPrivKey);
     web3.eth.accounts.wallet.add(trusteePrivKey);
 
-    return yield put({
+    yield put({
       type: walletActions.INIT,
       tokenContract: networkInfo.tokenContract,
       isUser,
+    });
+
+    return yield put({
+      type: networkActions.CHANGE_SUCCESS,
+      id: networkInfo.networkId,
     });
   }
 
@@ -65,17 +87,19 @@ const network = (db, web3) => {
         addresses.operations,
       );
 
-      yield put({
-        type: networkActions.SET_CONTRACTS,
-        tokenContract,
-        operationsContract,
-        networkId: id,
-      });
-
-      yield put({
-        type: networkActions.CHANGE_SUCCESS,
-        id,
-      });
+      yield all([
+        put({
+          type: networkActions.SET_CONTRACTS,
+          tokenContract,
+          operationsContract,
+        }),
+        fork(
+          getPastContractEvents,
+          tokenContract,
+          operationsContract,
+          id,
+        ),
+      ]);
 
       return {
         tokenContract,
@@ -101,17 +125,17 @@ const network = (db, web3) => {
       id: networkId,
     } = yield select(state => state.network);
 
-    return yield call(getPastContractEvents, {
+    return yield call(
+      getPastContractEvents,
       tokenContract,
       operationsContract,
       networkId,
-    });
+    );
   }
 
-  function* getPastContractEvents(action) {
-    const { tokenContract, operationsContract, networkId } = action;
-
+  function* getPastContractEvents(tokenContract, operationsContract, networkId) {
     const transactionsTable = `transactions_${networkId}`;
+
     if (!db.hasTable(transactionsTable)) {
       db.createTable(transactionsTable, [
         'tx_hash',
@@ -125,19 +149,54 @@ const network = (db, web3) => {
       ]);
     }
 
-    const latestBlock = yield call(web3.eth.getBlock, 'latest');
-    const fromBlock = (db.exists('network', { network_id: networkId }))
-      ? (db.select('network', { network_id: networkId })[0]).block_number + 1
-      : 0;
+    const maxRange = 200;
 
-    const opsPastEventsCall = call(
-      operationsContract.getPastEvents.bind(operationsContract),
-      'allEvents',
-      {
-        fromBlock, toBlock: latestBlock.number,
-      },
-    );
-    const opsPastEvents = yield opsPastEventsCall;
+    let opsPastEvents = [];
+    let latestBlock = 0;
+    let fromBlock = 0;
+    try {
+      latestBlock = yield call(web3.eth.getBlock, 'latest');
+      fromBlock = (db.exists('network', { network_id: networkId }))
+        ? (db.select('network', { network_id: networkId })[0]).block_number + 1
+        : 0;
+      const allCalls = yield all(
+        (new Array(Math.ceil((latestBlock.number - fromBlock) / maxRange)))
+          .fill(fromBlock)
+          .map((initial, idx) => ({
+            from: initial + idx * maxRange,
+            to: Math.min(
+              initial + (idx + 1) * maxRange - 1,
+              latestBlock.number,
+            ),
+          }))
+          .map(({ from, to }) => call(
+            _retryCall,
+            [
+              operationsContract.getPastEvents.bind(operationsContract),
+              'allEvents',
+              { fromBlock: from, toBlock: to },
+            ],
+            500,
+            3,
+          )),
+      );
+
+      opsPastEvents = [].concat(...allCalls);
+    } catch (e) {
+      return yield all([
+        put({
+          type: `${transactionsActions.LOAD}_ERROR`,
+          message: e.message,
+        }),
+        put({
+          type: walletActions.CALCULATE_PENDING,
+          isUser,
+          networkId,
+          tokenContract,
+          operationsContract,
+        }),
+      ]);
+    }
 
     opsPastEvents.forEach((e) => {
       switch (e.event) {
@@ -241,7 +300,6 @@ const network = (db, web3) => {
   return function* watchNetwork() {
     yield all([
       takeLatest(networkActions.INIT, handleInit),
-      takeEvery(networkActions.SET_CONTRACTS, getPastContractEvents),
       takeLatest(networkActions.NEW_BLOCK, getNewEvents),
       takeLatest(networkActions.CHANGE_PROVIDER, handleChange),
     ]);

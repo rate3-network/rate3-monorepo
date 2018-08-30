@@ -2,15 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
-  Link,
   Route,
   Switch as RouterSwitch,
   withRouter,
 } from 'react-router-dom';
-import { Trans, translate } from 'react-i18next';
-
-import blockies from 'ethereum-blockies';
-import Decimal from 'decimal.js-light';
+import { translate } from 'react-i18next';
 
 // Material UI
 import { withStyles } from '@material-ui/core/styles';
@@ -18,7 +14,6 @@ import AppBar from '@material-ui/core/AppBar';
 import Drawer from '@material-ui/core/Drawer';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Modal from '@material-ui/core/Modal';
@@ -37,26 +32,15 @@ import {
   onboardingModalShadow,
   onboardingModalTrusteeBackdrop,
   onboardingModalUserBackdrop,
-  sgdColor,
-  sgdrColor,
   trusteeMainBg,
   trusteeNavBg,
-  trusteeNavEmphasisPrimary,
-  trusteeNavFooterBg,
-  trusteeNavFooterText,
   trusteeNavPrimary,
   userMainBg,
   userNavBg,
-  userNavEmphasisPrimary,
-  userNavFooterBg,
-  userNavFooterText,
   userNavPrimary,
-  globalSpinnerBg,
-  globalSpinner,
 } from '../constants/colors';
 import {
   approvePath,
-  faqPath,
   finalizePath,
   rootPath,
   tokenizePath,
@@ -65,16 +49,12 @@ import {
   withdrawPath,
 } from '../constants/urls';
 import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
-import { sgdrDecimalPlaces, sgdDecimalPlaces, ethDecimalPlaces } from '../constants/defaults';
 
 // Components
+import SpinnerOverlay from './_SpinnerOverlay';
+import Sidebar from './_Sidebar';
 import Onboard from './Onboard';
-import LanguageDropdown from './LanguageDropdown';
-import AccountBalance from '../components/sidebar/AccountBalance';
-import AccountsSummary from '../components/sidebar/AccountsSummary';
-import ListLinkItem from '../components/sidebar/ListLinkItem';
 import MainContent from '../components/MainContent';
-import Switch from '../components/sidebar/Switch';
 import OnboardingFlow from '../components/onboarding/OnboardingFlow';
 import {
   VerifyUserBankAccount,
@@ -83,7 +63,6 @@ import {
   SetUpTrusteeWallet,
   SwitchRoleIntro,
 } from './OnboardingSteps';
-import MaterialDesignSpinner from '../components/spinners/MaterialDesignSpinner';
 
 // Actions
 import {
@@ -134,49 +113,6 @@ const styles = theme => ({
     textAlign: 'center',
     boxShadow: isUser ? `1px 0 5px ${navBoxShadow}` : 'none',
   })),
-  drawerHeader: {
-    padding: theme.spacing.unit * 2,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-
-  },
-  drawerLink: {
-    textDecoration: 'none',
-    color: 'inherit',
-  },
-  drawerPadding: {
-    flexGrow: 1,
-  },
-  ...genStyle('drawerCircularProfile', isUser => ({
-    width: `${drawerWidth / 3}px`,
-    height: `${drawerWidth / 3}px`,
-    borderRadius: `${drawerWidth / 3}px`,
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    backgroundColor: isUser ? userNavEmphasisPrimary : trusteeNavEmphasisPrimary,
-  })),
-  ...genStyle('drawerRole', isUser => ({
-    textTransform: 'uppercase',
-    fontSize: '2em',
-    fontWeight: 'bold',
-    marginTop: '0.5rem',
-    marginBottom: '0.5rem',
-  })),
-  ...genStyle('drawerBalance', isUser => ({
-    fontSize: '0.9em',
-    marginBottom: '1.5rem',
-  })),
-  ...genStyle('drawerFooter', isUser => ({
-    width: '100%',
-    boxSizing: 'border-box',
-    padding: theme.spacing.unit * 2,
-    textAlign: 'left',
-    textTransform: 'uppercase',
-    fontSize: '0.8em',
-    color: isUser ? userNavFooterText : trusteeNavFooterText,
-    backgroundColor: isUser ? userNavFooterBg : trusteeNavFooterBg,
-  })),
   ...genStyle('main', isUser => ({
     flexGrow: 1,
     backgroundColor: isUser ? userMainBg : trusteeMainBg,
@@ -209,22 +145,6 @@ const styles = theme => ({
     '&:focus': {
       outline: 'none',
     },
-  },
-  sgdCurrency: {
-    color: sgdColor,
-  },
-  sgdrCurrency: {
-    color: sgdrColor,
-  },
-  spinnerContainer: {
-    position: 'fixed',
-    width: '100vw',
-    height: '100vh',
-    zIndex: 9999,
-    backgroundColor: globalSpinnerBg,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
 
@@ -264,54 +184,6 @@ class App extends React.Component {
     }
   }
 
-  getAvailableTokenBalance() {
-    const {
-      currentTokenBalance,
-      currentPendingWithdrawal,
-    } = this.props;
-
-    return (new Decimal(currentTokenBalance))
-      .sub(new Decimal(currentPendingWithdrawal))
-      .toFixed(sgdrDecimalPlaces);
-  }
-
-  getPendingTokenBalance() {
-    const {
-      currentPendingTokenization,
-    } = this.props;
-    const pendingDecimal = new Decimal(currentPendingTokenization);
-
-    if (pendingDecimal.isZero()) {
-      return null;
-    }
-
-    return pendingDecimal.toFixed(sgdrDecimalPlaces);
-  }
-
-  getAvailableBankBalance() {
-    const {
-      currentBankBalance,
-      currentPendingTokenization,
-    } = this.props;
-
-    return (new Decimal(currentBankBalance))
-      .sub(new Decimal(currentPendingTokenization))
-      .toFixed(sgdDecimalPlaces);
-  }
-
-  getPendingBankBalance() {
-    const {
-      currentPendingWithdrawal,
-    } = this.props;
-    const pendingDecimal = new Decimal(currentPendingWithdrawal);
-
-    if (pendingDecimal.isZero()) {
-      return null;
-    }
-
-    return pendingDecimal.toFixed(sgdrDecimalPlaces);
-  }
-
   handleModalClose = isUser => () => {
     if (isUser) {
       sessionStorage.setItem(userOnboarded, true);
@@ -325,11 +197,10 @@ class App extends React.Component {
     this.setState(state => ({ mobileOpen: !state.mobileOpen }));
   };
 
-  handleRoleSwitch = () => {
+  switchRoleWithoutRedirect = () => {
     const {
-      switchRole,
-      isUser,
       location: { pathname },
+      switchRole,
     } = this.props;
 
     // Don't change path if on shared pages
@@ -339,18 +210,16 @@ class App extends React.Component {
     ].reduce((isShared, path) => (isShared || path === pathname), false);
     if (sharedPage) {
       switchRole();
-      return;
+      return true;
     }
 
-    if (isUser) {
-      this.switchToTrustee();
-    } else {
-      this.switchToUser();
-    }
-    switchRole();
-  };
+    return false;
+  }
 
   switchToUser = () => {
+    if (this.switchRoleWithoutRedirect()) {
+      return;
+    }
     const { history } = this.props;
     history.push({
       pathname: tokenizePath,
@@ -359,6 +228,9 @@ class App extends React.Component {
   }
 
   switchToTrustee = () => {
+    if (this.switchRoleWithoutRedirect()) {
+      return;
+    }
     const { history } = this.props;
     history.push({
       pathname: approvePath,
@@ -382,149 +254,12 @@ class App extends React.Component {
     }
   }
 
-  renderPendingValue = value => (
-    <Trans i18nKey="pendingAmount">
-      {''}
-      {{ value }}
-      pending
-    </Trans>
-  )
-
-  renderDrawer() {
-    const {
-      classes,
-      t,
-      isUser,
-      currentDefaultAccount,
-      currentEthBalance,
-      currentTokenBalance,
-      currentBankBalance,
-      currentPendingTokenization,
-      currentPendingWithdrawal,
-    } = this.props;
-
-    return (
-      <React.Fragment>
-        <div className={classes.drawerHeader}>
-          <Link to={faqPath} className={classes.drawerLink}>
-            {t('faq')}
-          </Link>
-          <LanguageDropdown />
-        </div>
-        <div>
-          <img
-            className={getClass(classes, 'drawerCircularProfile', isUser)}
-            src={
-              blockies.create({
-                seed: currentDefaultAccount,
-                size: 8,
-                scale: Math.ceil(drawerWidth / (3 * 8)),
-              }).toDataURL()
-            }
-            alt=""
-          />
-        </div>
-        <h1 className={getClass(classes, 'drawerRole', isUser)}>
-          { isUser ? t('user') : t('trustee') }
-        </h1>
-        <div className={getClass(classes, 'drawerBalance', isUser)}>
-          {t('ethWallet')}:{' '}
-          <strong>
-            {
-              (new Decimal(currentEthBalance))
-                .todp(ethDecimalPlaces, Decimal.ROUND_DOWN)
-                .toString()
-            }
-            <small>&nbsp;ETH</small>
-          </strong>
-        </div>
-        <Switch
-          onChange={this.handleRoleSwitch}
-          isUser={isUser}
-          leftText={t('user')}
-          rightText={t('trustee')}
-        />
-        <AccountsSummary>
-          <AccountBalance
-            currency="SGDR"
-            name={isUser ? t('ethWallet') : t('circulatingTokens')}
-            amount={currentTokenBalance}
-            pendingAmount={(new Decimal(currentPendingTokenization)).isZero()
-              ? null
-              : currentPendingTokenization
-            }
-            renderPending={this.renderPendingValue}
-            classes={{
-              currency: classes.sgdrCurrency,
-            }}
-          />
-          <AccountBalance
-            currencySymbol="$"
-            currency="SGD"
-            name={isUser ? t('bankAccount') : t('trustBalance')}
-            amount={currentBankBalance}
-            pendingAmount={(new Decimal(currentPendingWithdrawal)).isZero()
-              ? null
-              : currentPendingWithdrawal
-            }
-            renderPending={this.renderPendingValue}
-            classes={{
-              currency: classes.sgdCurrency,
-            }}
-          />
-        </AccountsSummary>
-        <List component="div">
-          { isUser && (
-            <ListLinkItem
-              to={{ pathname: tokenizePath, state: { isUser: true } }}
-              primary={t('tokenize')}
-              isUser
-            />
-          )}
-          { isUser && (
-            <ListLinkItem
-              to={{ pathname: withdrawPath, state: { isUser: true } }}
-              primary={t('withdraw')}
-              isUser
-            />
-          )}
-          { !isUser && (
-            <ListLinkItem
-              to={{ pathname: approvePath, state: { isUser: false } }}
-              primary={t('approval')}
-              isUser={false}
-            />
-          )}
-          { !isUser && (
-            <ListLinkItem
-              to={{ pathname: finalizePath, state: { isUser: false } }}
-              primary={t('finalizationOrRevocation')}
-              isUser={false}
-            />
-          )}
-          <ListLinkItem
-            to={{ pathname: transactionsPath, state: { isUser } }}
-            primary={t('transactions')}
-            isUser={isUser}
-          />
-        </List>
-        <div className={classes.drawerPadding} />
-        <div className={getClass(classes, 'drawerFooter', isUser)}>
-          <Link to={walletSettingsPath} className={classes.drawerLink}>
-            {t('walletSettings')}
-          </Link>
-        </div>
-      </React.Fragment>
-    );
-  }
-
   render() {
     const {
       classes,
       theme,
       t,
       isUser,
-      accountLoading,
       location: { pathname },
       toRevoke,
     } = this.props;
@@ -536,16 +271,7 @@ class App extends React.Component {
 
     return (
       <div className={classes.root}>
-        {accountLoading && (
-          <div className={classes.spinnerContainer}>
-            <MaterialDesignSpinner
-              size={300}
-              margin={10}
-              border={30}
-              color={globalSpinner}
-            />
-          </div>
-        )}
+        <SpinnerOverlay />
         <Hidden mdUp implementation="css">
           <AppBar
             className={getClass(classes, 'appBar', isUser)}
@@ -574,7 +300,10 @@ class App extends React.Component {
               keepMounted: true, // Better open performance on mobile.
             }}
           >
-            {this.renderDrawer()}
+            <Sidebar
+              switchToUser={this.switchToUser}
+              switchToTrustee={this.switchToTrustee}
+            />
           </Drawer>
         </Hidden>
         <Hidden smDown implementation="css">
@@ -585,7 +314,10 @@ class App extends React.Component {
               paper: getClass(classes, 'drawerPaper', isUser),
             }}
           >
-            {this.renderDrawer()}
+            <Sidebar
+              switchToUser={this.switchToUser}
+              switchToTrustee={this.switchToTrustee}
+            />
           </Drawer>
         </Hidden>
         <main className={getClass(classes, 'main', isUser)}>
@@ -712,13 +444,6 @@ App.propTypes = {
     state: PropTypes.object,
   }).isRequired,
   isUser: PropTypes.bool.isRequired,
-  accountLoading: PropTypes.bool.isRequired,
-  currentDefaultAccount: PropTypes.string.isRequired,
-  currentEthBalance: PropTypes.string.isRequired,
-  currentTokenBalance: PropTypes.string.isRequired,
-  currentBankBalance: PropTypes.string.isRequired,
-  currentPendingTokenization: PropTypes.string.isRequired,
-  currentPendingWithdrawal: PropTypes.string.isRequired,
   toRevoke: PropTypes.bool.isRequired,
   networkInit: PropTypes.func.isRequired,
   switchRole: PropTypes.func.isRequired,
@@ -726,15 +451,6 @@ App.propTypes = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
-  accountLoading: state.wallet.walletLoading
-    || state.wallet.balancesLoading
-    || state.network.contractsLoading,
-  currentDefaultAccount: state.wallet.currentDefaultAccount,
-  currentEthBalance: state.wallet.currentEthBalance,
-  currentTokenBalance: state.wallet.currentTokenBalance,
-  currentBankBalance: state.wallet.currentBankBalance,
-  currentPendingTokenization: state.wallet.currentPendingTokenization,
-  currentPendingWithdrawal: state.wallet.currentPendingWithdrawal,
   toRevoke: state.finalize.toRevoke,
 });
 

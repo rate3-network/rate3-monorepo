@@ -13,6 +13,8 @@ import Providers from '../constants/Providers';
 export default (web3, browserProvider) => {
   const initialState = {
     id: -1,
+
+    networkChanging: false,
     contractsLoading: false,
 
     status: 'disconnected',
@@ -31,6 +33,7 @@ export default (web3, browserProvider) => {
       case networkActions.CHANGE: {
         return {
           ...state,
+          networkChanging: true,
           contractsLoading: true,
         };
       }
@@ -38,6 +41,7 @@ export default (web3, browserProvider) => {
         const { id } = action;
         return {
           ...state,
+          networkChanging: false,
           status: 'connected',
           id,
         };
