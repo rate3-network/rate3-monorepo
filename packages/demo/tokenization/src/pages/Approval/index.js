@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Trans, translate } from 'react-i18next';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import { withStyles } from '@material-ui/core/styles';
 import Decimal from 'decimal.js-light';
@@ -26,6 +27,7 @@ import {
 import { txType } from '../../constants/enums';
 import { buttonTextPrimary } from '../../constants/colors';
 import { ethDecimalPlaces } from '../../constants/defaults';
+import { transactionsPath } from '../../constants/urls';
 
 import {
   nextStep as nextStepAction,
@@ -171,6 +173,14 @@ class Approval extends React.Component {
       default:
         return true;
     }
+  }
+
+  redirectToTransactions = () => {
+    const { history, isUser } = this.props;
+    history.push({
+      pathname: transactionsPath,
+      state: { isUser },
+    });
   }
 
   showStepper() {
@@ -369,6 +379,7 @@ class Approval extends React.Component {
                 key="transactions"
                 isUser={false}
                 color="primary"
+                onClick={this.redirectToTransactions}
               >
                 {t('completion:seeTransactions')}
               </Button>
@@ -496,6 +507,9 @@ class Approval extends React.Component {
 Approval.propTypes = {
   classes: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 
   // State
   isUser: PropTypes.bool.isRequired,
@@ -552,6 +566,7 @@ const mapStateToProps = state => ({
 const enhance = compose(
   withStyles(styles, { withTheme: true }),
   translate(['navigator', 'transactions', 'fields', 'completion']),
+  withRouter,
   connect(
     mapStateToProps,
     {

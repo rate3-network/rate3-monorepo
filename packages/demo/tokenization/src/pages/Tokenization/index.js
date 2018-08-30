@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { translate } from 'react-i18next';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import { withStyles } from '@material-ui/core/styles';
 import Decimal from 'decimal.js-light';
@@ -19,6 +20,7 @@ import MaterialDesignSpinner from '../../components/spinners/MaterialDesignSpinn
 
 import { buttonTextPrimary, sgdColor } from '../../constants/colors';
 import { ethDecimalPlaces } from '../../constants/defaults';
+import { transactionsPath } from '../../constants/urls';
 
 import {
   nextStep as nextStepAction,
@@ -157,6 +159,14 @@ class Tokenization extends React.Component {
       default:
         return true;
     }
+  }
+
+  redirectToTransactions = () => {
+    const { history, isUser } = this.props;
+    history.push({
+      pathname: transactionsPath,
+      state: { isUser },
+    });
   }
 
   showStepper() {
@@ -406,6 +416,7 @@ class Tokenization extends React.Component {
                 key="transactions"
                 isUser={isUser}
                 color="primary"
+                onClick={this.redirectToTransactions}
               >
                 {t('completion:seeTransactions')}
               </Button>
@@ -458,6 +469,9 @@ class Tokenization extends React.Component {
 Tokenization.propTypes = {
   classes: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+  }).isRequired,
 
   // State
   isUser: PropTypes.bool.isRequired,
@@ -504,6 +518,7 @@ const mapStateToProps = state => ({
 const enhance = compose(
   withStyles(styles, { withTheme: true }),
   translate(['navigator', 'fields']),
+  withRouter,
   connect(
     mapStateToProps,
     {

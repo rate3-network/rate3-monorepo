@@ -147,7 +147,7 @@ class Wallet extends React.Component {
     } = this.props;
 
     let currentNetworkName;
-    let currentNetworkId = networkId
+    let currentNetworkId = networkId;
     let bulletClass;
     let buttonClass;
     switch (networkId) {

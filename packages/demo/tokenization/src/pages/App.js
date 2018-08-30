@@ -673,9 +673,7 @@ class App extends React.Component {
                   >
                     <SwitchRoleIntro
                       isUser={modalOnboardUser}
-                      handleBackToPrevRole={() => {
-                        this.switchToTrustee();
-                      }}
+                      handleBackToPrevRole={this.switchToTrustee}
                     />
                     <VerifyUserBankAccount isModal />
                     <SetUpUserWallet isModal />
@@ -687,9 +685,7 @@ class App extends React.Component {
                   >
                     <SwitchRoleIntro
                       isUser={modalOnboardUser}
-                      handleBackToPrevRole={() => {
-                        this.switchToUser();
-                      }}
+                      handleBackToPrevRole={this.switchToUser}
                     />
                     <VerifyTrustDetails isModal />
                     <SetUpTrusteeWallet isModal />
