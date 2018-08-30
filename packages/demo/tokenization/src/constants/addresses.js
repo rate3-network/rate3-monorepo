@@ -6,7 +6,8 @@ export const mainnet = {
   faucet: null,
   token: '0x0',
   operations: '0x0',
-  etherscan: 'https://etherscan.io/tx/',
+  etherscanTx: 'https://etherscan.io/tx/',
+  etherscanAddr: 'https://etherscan.io/address/',
 };
 export const ropsten = {
   id: 3,
@@ -14,7 +15,8 @@ export const ropsten = {
   faucet: 'http://faucet.ropsten.be:3001',
   token: '0x0',
   operations: '0x0',
-  etherscan: 'https://ropsten.etherscan.io/tx/',
+  etherscanTx: 'https://ropsten.etherscan.io/tx/',
+  etherscanAddr: 'https://ropsten.etherscan.io/address/',
 };
 export const rinkeby = {
   id: 4,
@@ -22,7 +24,8 @@ export const rinkeby = {
   faucet: 'https://faucet.rinkeby.io',
   token: '0x0',
   operations: '0x0',
-  etherscan: 'https://rinkeby.etherscan.io/tx/',
+  etherscanTx: 'https://rinkeby.etherscan.io/tx/',
+  etherscanAddr: 'https://rinkeby.etherscan.io/address/',
 };
 export const kovan = {
   id: 42,
@@ -30,7 +33,8 @@ export const kovan = {
   faucet: 'https://github.com/kovan-testnet/faucet',
   token: '0x0',
   operations: '0x0',
-  etherscan: 'https://kovan.etherscan.io/tx/',
+  etherscanTx: 'https://kovan.etherscan.io/tx/',
+  etherscanAddr: 'https://kovan.etherscan.io/address/',
 };
 export const local = {
   id: null,
@@ -38,7 +42,6 @@ export const local = {
   faucet: null,
   token: '0x0',
   operations: '0x0',
-  etherscan: 'https://etherscan.io/tx/',
 };
 
 export const contractAddresses = {

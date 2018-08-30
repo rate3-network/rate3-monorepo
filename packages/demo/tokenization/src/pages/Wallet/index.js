@@ -11,6 +11,7 @@ import Grid from '@material-ui/core/Grid';
 import CheckCircle from '@material-ui/icons/CheckCircle';
 
 import NetworkDropdown from '../../components/NetworkDropdown';
+import { EtherscanAddrLink } from '../../components/EtherscanLink';
 
 import {
   tabIndicator,
@@ -236,6 +237,7 @@ class Wallet extends React.Component {
       classes,
       t,
       isUser,
+      networkId,
       userDefaultAccount,
       trusteeDefaultAccount,
       userAccounts,
@@ -274,7 +276,12 @@ class Wallet extends React.Component {
               {this.renderSelections(userAccounts.map(acc => ({
                 key: acc,
                 title: userName,
-                paragraph: acc,
+                paragraph: (
+                  <EtherscanAddrLink
+                    networkId={networkId}
+                    addr={acc}
+                  />
+                ),
                 footer: acc === userDefaultAccount && (
                   <React.Fragment>
                     <CheckCircle />&nbsp;<strong>{t('inUse')}</strong>
@@ -295,7 +302,12 @@ class Wallet extends React.Component {
               {this.renderSelections(trusteeAccounts.map(acc => ({
                 key: acc,
                 title: trusteeName,
-                paragraph: acc,
+                paragraph: (
+                  <EtherscanAddrLink
+                    networkId={networkId}
+                    addr={acc}
+                  />
+                ),
                 footer: acc === trusteeDefaultAccount && (
                   <React.Fragment>
                     <CheckCircle />&nbsp;<strong>{t('inUse')}</strong>

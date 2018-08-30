@@ -17,6 +17,7 @@ import Button from '../../components/Button';
 import Table from '../../components/transactions/Table';
 import { SgdPill, SgdrPill } from '../../components/CurrencyPill';
 import MaterialDesignSpinner from '../../components/spinners/MaterialDesignSpinner';
+import { EtherscanTxnLink } from '../../components/EtherscanLink';
 
 import {
   renderTxHash,
@@ -200,6 +201,7 @@ class Finalize extends React.Component {
   renderSteps() {
     const {
       t,
+      networkId,
       currentStep,
       selectedTransaction,
       gasLimit,
@@ -296,7 +298,12 @@ class Finalize extends React.Component {
               ? t('completion:pleaseTryAgainLater')
               : (
                 <React.Fragment>
-                  {t('completion:txHashLabel')} <span className="hash">{currentTransactionHash}</span>
+                  {t('completion:txHashLabel')}
+                  &nbsp;
+                  <EtherscanTxnLink
+                    networkId={networkId}
+                    hash={currentTransactionHash}
+                  />
                 </React.Fragment>
               )
             }
@@ -463,6 +470,7 @@ class Finalize extends React.Component {
       classes,
       t,
       isUser,
+      networkId,
       currentStep,
       transactions,
       currentPage,
@@ -473,11 +481,11 @@ class Finalize extends React.Component {
       const columns = [
         {
           head: t('transactions:txHash'),
-          renderCell: renderTxHash,
+          renderCell: renderTxHash(networkId),
         },
         {
           head: t('transactions:from'),
-          renderCell: renderFromAddr,
+          renderCell: renderFromAddr(networkId),
         },
         {
           head: t('transactions:date/time'),
@@ -556,6 +564,7 @@ Finalize.propTypes = {
 
   // State
   isUser: PropTypes.bool.isRequired,
+  networkId: PropTypes.number.isRequired,
   transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
   currentPage: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
@@ -590,6 +599,7 @@ Finalize.defaultProps = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  networkId: state.network.id,
 
   transactions: state.transactions.pendingFinalize,
   currentPage: state.transactions.pendingFinalizePage,

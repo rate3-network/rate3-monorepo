@@ -42,7 +42,7 @@ import { ethDecimalPlaces } from '../constants/defaults';
 
 import { compose, genStyle, getClass } from '../utils';
 
-const drawerWidth = 320;
+export const drawerWidth = 300;
 
 const styles = theme => ({
   drawerHeader: {

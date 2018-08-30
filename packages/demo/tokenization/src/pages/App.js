@@ -52,7 +52,7 @@ import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
 
 // Components
 import SpinnerOverlay from './_SpinnerOverlay';
-import Sidebar from './_Sidebar';
+import Sidebar, { drawerWidth } from './_Sidebar';
 import Onboard from './Onboard';
 import MainContent from '../components/MainContent';
 import OnboardingFlow from '../components/onboarding/OnboardingFlow';
@@ -74,8 +74,6 @@ import {
 
 // Utilities
 import { compose, genStyle, getClass } from '../utils';
-
-const drawerWidth = 320;
 
 const styles = theme => ({
   root: {

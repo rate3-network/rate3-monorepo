@@ -17,6 +17,7 @@ import Stepper from '../../components/Stepper';
 import Button from '../../components/Button';
 import { SgdPill } from '../../components/CurrencyPill';
 import MaterialDesignSpinner from '../../components/spinners/MaterialDesignSpinner';
+import { EtherscanTxnLink } from '../../components/EtherscanLink';
 
 import { buttonTextPrimary, sgdColor } from '../../constants/colors';
 import { ethDecimalPlaces } from '../../constants/defaults';
@@ -208,6 +209,7 @@ class Tokenization extends React.Component {
   renderSteps() {
     const {
       t,
+      networkId,
       currentStep,
       amount,
       trustBank,
@@ -326,7 +328,12 @@ class Tokenization extends React.Component {
               ? t('completion:pleaseTryAgainLater')
               : (
                 <React.Fragment>
-                  {t('completion:txHashLabel')} <span className="hash">{currentTransactionHash}</span>
+                  {t('completion:txHashLabel')}
+                  &nbsp;
+                  <EtherscanTxnLink
+                    networkId={networkId}
+                    hash={currentTransactionHash}
+                  />
                 </React.Fragment>
               )
             }
@@ -475,6 +482,7 @@ Tokenization.propTypes = {
 
   // State
   isUser: PropTypes.bool.isRequired,
+  networkId: PropTypes.number.isRequired,
   currentStep: PropTypes.number.isRequired,
   loadingNextStep: PropTypes.bool.isRequired,
   amount: PropTypes.string.isRequired,
@@ -499,6 +507,7 @@ Tokenization.propTypes = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  networkId: state.network.id,
   currentBankBalance: state.wallet.currentBankBalance,
   currentStep: state.tokenize.step,
   loadingNextStep: state.tokenize.loadingNextStep,

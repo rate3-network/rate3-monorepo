@@ -22,6 +22,7 @@ import {
   setCurrentFilter as setCurrentFilterAction,
 } from '../../actions/Transactions';
 import { compose } from '../../utils';
+import { EtherscanTxnLink, EtherscanAddrLink } from '../../components/EtherscanLink';
 
 const styles = theme => ({
   root: {
@@ -49,12 +50,24 @@ const styles = theme => ({
   },
 });
 
-export const renderTxHash = txn => (
-  `${txn.tx_hash.substring(0, 9)}...`
+const txHashStyle = {
+  width: '100px',
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+  display: 'inline-block',
+};
+const addrStyle = txHashStyle;
+
+export const renderTxHash = networkId => txn => (
+  <span style={txHashStyle}>
+    <EtherscanTxnLink hash={txn.tx_hash} networkId={networkId} />
+  </span>
 );
 
-export const renderFromAddr = txn => (
-  `${txn.from.substring(0, 9)}...`
+export const renderFromAddr = networkId => txn => (
+  <span style={addrStyle}>
+    <EtherscanAddrLink addr={txn.from} networkId={networkId} />
+  </span>
 );
 
 export const renderDate = (txn) => {
@@ -151,6 +164,7 @@ class Transactions extends React.Component {
       classes,
       t,
       isUser,
+      networkId,
       currentPage,
       rowsPerPage,
       transactions,
@@ -212,11 +226,11 @@ class Transactions extends React.Component {
     const columns = [
       {
         head: t('txHash'),
-        renderCell: renderTxHash,
+        renderCell: renderTxHash(networkId),
       },
       {
         head: t('from'),
-        renderCell: renderFromAddr,
+        renderCell: renderFromAddr(networkId),
         hide: isUser,
       },
       {
@@ -303,6 +317,7 @@ Transactions.propTypes = {
 
   // State
   isUser: PropTypes.bool.isRequired,
+  networkId: PropTypes.number.isRequired,
   transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
   currentPage: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
@@ -322,6 +337,7 @@ Transactions.defaultProps = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  networkId: state.network.id,
   transactions: state.transactions.current,
   currentPage: state.transactions.currentPage,
   rowsPerPage: state.transactions.currentRowsPerPage,

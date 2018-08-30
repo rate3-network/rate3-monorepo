@@ -16,6 +16,7 @@ import Button from '../../components/Button';
 import Table from '../../components/transactions/Table';
 import { SgdPill, SgdrPill } from '../../components/CurrencyPill';
 import MaterialDesignSpinner from '../../components/spinners/MaterialDesignSpinner';
+import { EtherscanTxnLink } from '../../components/EtherscanLink';
 
 import {
   renderTxHash,
@@ -191,6 +192,7 @@ class Approval extends React.Component {
   renderSteps() {
     const {
       t,
+      networkId,
       currentStep,
       transactionToApprove,
       gasLimit,
@@ -283,7 +285,12 @@ class Approval extends React.Component {
               ? t('completion:pleaseTryAgainLater')
               : (
                 <React.Fragment>
-                  {t('completion:txHashLabel')} <span className="hash">{currentTransactionHash}</span>
+                  {t('completion:txHashLabel')}
+                  &nbsp;
+                  <EtherscanTxnLink
+                    networkId={networkId}
+                    hash={currentTransactionHash}
+                  />
                 </React.Fragment>
               )
             }
@@ -419,6 +426,7 @@ class Approval extends React.Component {
       classes,
       t,
       isUser,
+      networkId,
       currentStep,
       transactions,
       currentPage,
@@ -429,11 +437,11 @@ class Approval extends React.Component {
       const columns = [
         {
           head: t('transactions:txHash'),
-          renderCell: renderTxHash,
+          renderCell: renderTxHash(networkId),
         },
         {
           head: t('transactions:from'),
-          renderCell: renderFromAddr,
+          renderCell: renderFromAddr(networkId),
         },
         {
           head: t('transactions:date/time'),
@@ -513,6 +521,7 @@ Approval.propTypes = {
 
   // State
   isUser: PropTypes.bool.isRequired,
+  networkId: PropTypes.number.isRequired,
   transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
   currentPage: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
@@ -545,6 +554,7 @@ Approval.defaultProps = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  networkId: state.network.id,
 
   transactions: state.transactions.pendingApproval,
   currentPage: state.transactions.pendingApprovalPage,
