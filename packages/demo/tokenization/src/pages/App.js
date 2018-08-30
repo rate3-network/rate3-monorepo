@@ -726,7 +726,9 @@ App.propTypes = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
-  accountLoading: state.wallet.walletLoading && state.wallet.balancesLoading,
+  accountLoading: state.wallet.walletLoading
+    || state.wallet.balancesLoading
+    || state.network.contractsLoading,
   currentDefaultAccount: state.wallet.currentDefaultAccount,
   currentEthBalance: state.wallet.currentEthBalance,
   currentTokenBalance: state.wallet.currentTokenBalance,

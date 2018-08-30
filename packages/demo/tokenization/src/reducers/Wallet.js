@@ -82,7 +82,7 @@ export default function (state = initialState, action = {}) {
         currentBankBalance: bankBalance,
         currentPendingTokenization: pendingTokenization,
         currentPendingWithdrawal: pendingWithdrawal,
-        balancesLoading: true,
+        balancesLoading: false,
       };
     }
     default: {

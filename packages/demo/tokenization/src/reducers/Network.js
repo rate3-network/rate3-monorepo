@@ -13,6 +13,7 @@ import Providers from '../constants/Providers';
 export default (web3, browserProvider) => {
   const initialState = {
     id: -1,
+    contractsLoading: false,
 
     status: 'disconnected',
 
@@ -27,6 +28,12 @@ export default (web3, browserProvider) => {
   return function reducer(state = initialState, action = {}) {
     const { type } = action;
     switch (type) {
+      case networkActions.CHANGE: {
+        return {
+          ...state,
+          contractsLoading: true,
+        };
+      }
       case networkActions.CHANGE_SUCCESS: {
         const { id } = action;
         return {
@@ -39,6 +46,7 @@ export default (web3, browserProvider) => {
         const { tokenContract, operationsContract } = action;
         return {
           ...state,
+          contractsLoading: false,
           tokenContract,
           operationsContract,
         };
