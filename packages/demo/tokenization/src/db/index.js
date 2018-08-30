@@ -98,25 +98,36 @@ Table.prototype.toJSON = function () {
   };
 };
 
-class LocalStorageDB {
-  constructor(dbName) {
+class DB {
+  /**
+   * Creates an instance of DB.
+   *
+   * @param {*} dbName Name of the database.
+   * @param {*} engine Can be either localStorage, sessionStorage or null
+   * @memberof DB
+   */
+  constructor(dbName, engine) {
     this.db = `${dbPrefix}${dbName}`;
     this.schema = {};
+    this.engine = engine;
     this.save();
   }
 
   save() {
+    if (this.engint == null) {
+      return;
+    }
     const dump = JSON.stringify(this.schema);
     localStorage.setItem(this.db, dump);
   }
 
-  static load(dbName) {
-    const rawData = localStorage.getItem(`${dbPrefix}${dbName}`);
+  static load(dbName, engine) {
+    const rawData = engine.getItem(`${dbPrefix}${dbName}`);
 
     if (rawData === null) return null;
 
     const parsed = JSON.parse(rawData);
-    const db = new LocalStorageDB(dbName);
+    const db = new DB(dbName, engine);
 
     for (const tableName of Object.keys(parsed)) {
       db.schema[tableName] = Table.fromJSON(parsed[tableName]);
@@ -188,4 +199,4 @@ class LocalStorageDB {
   }
 }
 
-export default LocalStorageDB;
+export default DB;

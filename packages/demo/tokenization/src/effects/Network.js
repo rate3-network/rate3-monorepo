@@ -183,6 +183,7 @@ const network = (db, web3) => {
 
       opsPastEvents = [].concat(...allCalls);
     } catch (e) {
+      const { isUser } = yield select(state => state.wallet);
       return yield all([
         put({
           type: `${transactionsActions.LOAD}_ERROR`,

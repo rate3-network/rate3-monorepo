@@ -16,18 +16,16 @@ import transactions from './reducers/Transactions';
 import wallet from './reducers/Wallet';
 import makeSagas from './effects';
 
-import LocalStorageDB from './db';
+import DB from './db';
 
 import { dbName } from './constants/storageKeys';
 
-let db = null; // LocalStorageDB.load(dbName);
-if (db === null) {
-  db = new LocalStorageDB(dbName);
-  db.createTable('network', [
-    'network_id',
-    'block_number',
-  ]);
-}
+const db = new DB(dbName);
+
+db.createTable('network', [
+  'network_id',
+  'block_number',
+]);
 
 let provider = 'https://rinkeby.infura.io';
 provider = 'http://localhost:8545';
@@ -48,6 +46,8 @@ if (process.env.NODE_ENV !== 'production') {
   // eslint-disable-next-line global-require
   const { logger } = require('redux-logger');
   middlewares.push(logger);
+
+  window.db = db;
 }
 
 const sagaMiddleware = createSagaMiddleware();
