@@ -147,15 +147,14 @@ class Main extends React.Component {
     modalOnboardUser: false,
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     const {
       location,
       isUser,
       switchRole,
     } = this.props;
 
-    if (location !== prevProps.location
-      && location.state && location.state.isUser !== isUser) {
+    if (location.state && location.state.isUser !== isUser) {
       switchRole();
     }
   }
