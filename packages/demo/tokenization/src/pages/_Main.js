@@ -147,18 +147,6 @@ class Main extends React.Component {
     modalOnboardUser: false,
   };
 
-  componentDidUpdate() {
-    const {
-      location,
-      isUser,
-      switchRole,
-    } = this.props;
-
-    if (location.state && location.state.isUser !== isUser) {
-      switchRole();
-    }
-  }
-
   static getDerivedStateFromProps(props, state) {
     const { history, isUser } = props;
     const { modalOpen } = state;
@@ -211,6 +199,7 @@ class Main extends React.Component {
     const sharedPage = [
       transactionsPath,
       walletSettingsPath,
+      faqPath,
     ].reduce((isShared, path) => (isShared || path === pathname), false);
     if (sharedPage) {
       switchRole();

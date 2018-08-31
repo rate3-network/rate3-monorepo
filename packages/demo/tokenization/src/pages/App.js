@@ -13,6 +13,9 @@ import Main from './_Main';
 import Onboard from './Onboard';
 
 import {
+  switchRole as switchRoleAction,
+} from '../actions/Wallet';
+import {
   init as networkInitAction,
 } from '../actions/Network';
 
@@ -30,6 +33,19 @@ class App extends React.Component {
       finalizePath,
     ].reduce((isTrustee, path) => (isTrustee || path === pathname), false);
     networkInit(!isTrusteePath);
+  }
+
+  componentDidUpdate(prevProps) {
+    const {
+      location,
+      isUser,
+      switchRole,
+    } = this.props;
+
+    if (location !== prevProps.location
+      && location.state && location.state.isUser !== isUser) {
+      switchRole();
+    }
   }
 
   render() {
@@ -50,15 +66,22 @@ App.propTypes = {
     pathname: PropTypes.string.isRequired,
     state: PropTypes.object,
   }).isRequired,
+  isUser: PropTypes.bool.isRequired,
   networkInit: PropTypes.func.isRequired,
+  switchRole: PropTypes.func.isRequired,
 };
+
+const mapStateToProps = state => ({
+  isUser: state.wallet.isUser,
+});
 
 const enhance = compose(
   withRouter,
   connect(
-    null,
+    mapStateToProps,
     {
       networkInit: networkInitAction,
+      switchRole: switchRoleAction,
     },
   ),
 );
