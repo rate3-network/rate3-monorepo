@@ -25,6 +25,9 @@ import { ropsten, rinkeby, kovan } from '../../constants/addresses';
 import {
   change as networkChangeAction,
 } from '../../actions/Network';
+import {
+  switchSettingsTab as switchSettingsTabAction,
+} from '../../actions/Wallet';
 import { compose, genStyle, getClass } from '../../utils';
 
 const styles = theme => ({
@@ -93,26 +96,16 @@ const styles = theme => ({
 });
 
 class Wallet extends React.Component {
-  state = {
-    currentTab: 0,
-  };
-
-  componentWillReceiveProps(nextProps) {
-    const { isUser } = this.props;
-    if (nextProps.isUser !== isUser) {
-      this.setState({ currentTab: 0 });
-    }
-  }
-
   handleChange = (event, tabIndex) => {
-    this.setState({ currentTab: tabIndex });
+    const { switchSettingsTab } = this.props;
+    switchSettingsTab(tabIndex);
   };
 
   renderTabs(tabs) {
     const {
       classes,
+      currentTab,
     } = this.props;
-    const { currentTab } = this.state;
 
     return (
       <React.Fragment>
@@ -242,8 +235,8 @@ class Wallet extends React.Component {
       trusteeDefaultAccount,
       userAccounts,
       trusteeAccounts,
+      currentTab,
     } = this.props;
-    const { currentTab } = this.state;
 
     const tabs = {
       [true]: [
@@ -340,7 +333,9 @@ Wallet.propTypes = {
   trusteeDefaultAccount: PropTypes.string.isRequired,
   userAccounts: PropTypes.arrayOf(PropTypes.string).isRequired,
   trusteeAccounts: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currentTab: PropTypes.number.isRequired,
   changeNetwork: PropTypes.func.isRequired,
+  switchSettingsTab: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -352,6 +347,8 @@ const mapStateToProps = state => ({
 
   userAccounts: state.wallet.userAccounts,
   trusteeAccounts: state.wallet.trusteeAccounts,
+
+  currentTab: state.wallet.settingsTab,
 });
 
 const enhance = compose(
@@ -361,6 +358,7 @@ const enhance = compose(
     mapStateToProps,
     {
       changeNetwork: networkChangeAction,
+      switchSettingsTab: switchSettingsTabAction,
     },
   ),
 );

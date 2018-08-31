@@ -25,6 +25,8 @@ const initialState = {
   trusteeAccounts: [
     accountAddresses.trustee,
   ],
+
+  settingsTab: 0,
 };
 
 /**
@@ -39,6 +41,12 @@ export default function (state = initialState, action = {}) {
   const { type } = action;
   switch (type) {
     case walletActions.SWITCH_ROLE:
+      return {
+        ...state,
+        settingsTab: 0,
+        walletLoading: true,
+        balancesLoading: true,
+      };
     case walletActions.INIT: {
       return {
         ...state,
@@ -83,6 +91,14 @@ export default function (state = initialState, action = {}) {
         currentPendingTokenization: pendingTokenization,
         currentPendingWithdrawal: pendingWithdrawal,
         balancesLoading: false,
+      };
+    }
+    case walletActions.SWITCH_SETTINGS_TAB: {
+      const { tabIndex } = action;
+
+      return {
+        ...state,
+        settingsTab: tabIndex,
       };
     }
     default: {

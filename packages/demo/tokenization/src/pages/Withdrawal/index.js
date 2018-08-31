@@ -78,13 +78,43 @@ const styles = theme => ({
 });
 
 class Withdrawal extends React.Component {
+  static validateFields(props) {
+    const {
+      t,
+      currentStep,
+    } = props;
+
+    const errors = {};
+
+    switch (currentStep) {
+      case 0: {
+        const {
+          currentTokenBalance,
+          amount,
+        } = props;
+
+        if (!amount) {
+          return { errors };
+        }
+
+        if ((new Decimal(amount)).gt(new Decimal(currentTokenBalance))) {
+          errors[withdrawFields.amount] = t('fields:withdrawAmountOverLimitError');
+        }
+
+        return { errors };
+      }
+      default: {
+        return { errors };
+      }
+    }
+  }
+
   state = {
     errors: {},
   }
 
-  componentWillReceiveProps(nextProps) {
-    const errors = this.validateFields(nextProps);
-    this.setState({ errors });
+  static getDerivedStateFromProps(props, state) {
+    return Withdrawal.validateFields(props);
   }
 
   getSteps() {
@@ -176,37 +206,6 @@ class Withdrawal extends React.Component {
   showStepper() {
     const { currentStep } = this.props;
     return currentStep < this.getSteps().length;
-  }
-
-  validateFields(props) {
-    const {
-      t,
-      currentStep,
-    } = props;
-
-    const error = {};
-
-    switch (currentStep) {
-      case 0: {
-        const {
-          currentTokenBalance,
-          amount,
-        } = props;
-
-        if (!amount) {
-          return error;
-        }
-
-        if ((new Decimal(amount)).gt(new Decimal(currentTokenBalance))) {
-          error[withdrawFields.amount] = t('fields:withdrawAmountOverLimitError');
-        }
-
-        return error;
-      }
-      default: {
-        return error;
-      }
-    }
   }
 
   renderSteps() {

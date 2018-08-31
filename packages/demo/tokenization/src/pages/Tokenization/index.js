@@ -69,13 +69,43 @@ const styles = theme => ({
 });
 
 class Tokenization extends React.Component {
+  static validateFields(props) {
+    const {
+      t,
+      currentStep,
+    } = props;
+
+    const errors = {};
+
+    switch (currentStep) {
+      case 0: {
+        const {
+          currentBankBalance,
+          amount,
+        } = props;
+
+        if (!amount) {
+          return { errors };
+        }
+
+        if ((new Decimal(amount)).gt(new Decimal(currentBankBalance))) {
+          errors[tokenizeFields.amount] = t('fields:tokenizeAmountOverLimitError');
+        }
+
+        return { errors };
+      }
+      default: {
+        return { errors };
+      }
+    }
+  }
+
   state = {
     errors: {},
   }
 
-  componentWillReceiveProps(nextProps) {
-    const errors = this.validateFields(nextProps);
-    this.setState({ errors });
+  static getDerivedStateFromProps(props, state) {
+    return Tokenization.validateFields(props);
   }
 
   getSteps() {
@@ -173,37 +203,6 @@ class Tokenization extends React.Component {
   showStepper() {
     const { currentStep } = this.props;
     return currentStep < this.getSteps().length;
-  }
-
-  validateFields(props) {
-    const {
-      t,
-      currentStep,
-    } = props;
-
-    const error = {};
-
-    switch (currentStep) {
-      case 0: {
-        const {
-          currentBankBalance,
-          amount,
-        } = props;
-
-        if (!amount) {
-          return error;
-        }
-
-        if ((new Decimal(amount)).gt(new Decimal(currentBankBalance))) {
-          error[tokenizeFields.amount] = t('fields:tokenizeAmountOverLimitError');
-        }
-
-        return error;
-      }
-      default: {
-        return error;
-      }
-    }
   }
 
   renderSteps() {

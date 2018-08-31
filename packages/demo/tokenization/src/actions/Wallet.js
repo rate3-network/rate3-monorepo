@@ -10,10 +10,17 @@ export const walletActions = keyMirror(
     SET_BALANCE: null,
 
     CALCULATE_PENDING: null,
+
+    SWITCH_SETTINGS_TAB: null,
   },
   'WALLET',
 );
 
 export const switchRole = () => ({
   type: walletActions.SWITCH_ROLE,
+});
+
+export const switchSettingsTab = tabIndex => ({
+  type: walletActions.SWITCH_SETTINGS_TAB,
+  tabIndex,
 });
