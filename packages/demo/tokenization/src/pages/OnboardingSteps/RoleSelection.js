@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { translate } from 'react-i18next';
 
+import blockies from 'ethereum-blockies';
+
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 
@@ -18,6 +20,12 @@ import {
   onboardUserRoleCardCircle,
   onboardUserRoleCardText,
 } from '../../constants/colors';
+import {
+  trusteeAddress,
+  trusteeBlockie,
+  userAddress,
+  userBlockie,
+} from '../../constants/defaults';
 
 const styles = theme => ({
   root: {
@@ -62,6 +70,7 @@ const styles = theme => ({
 
 const RoleCard = ({
   classes,
+  imgSrc,
   onClick,
   label,
   description,
@@ -76,15 +85,16 @@ const RoleCard = ({
       style={{ width: '100%', height: '8px' }}
     />
     <div style={{ padding: '2em' }}>
-      <div
+      <img
         className={classes.circle}
         style={{
           width: '50%',
           height: 'auto',
           borderRadius: '50%',
-          paddingTop: '50%',
-          margin: '2em auto',
+          margin: '2em 25%',
         }}
+        src={imgSrc}
+        alt=""
       />
       <h1
         className={classes.label}
@@ -109,6 +119,7 @@ const RoleCard = ({
 
 RoleCard.propTypes = {
   classes: PropTypes.object.isRequired,
+  imgSrc: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired,
   label: PropTypes.node.isRequired,
   description: PropTypes.node.isRequired,
@@ -126,6 +137,11 @@ const RoleSelection = ({
       <div className={classes.roleCardContainer}>
         <RoleCard
           label={t('user')}
+          imgSrc={blockies.create({
+            seed: userAddress,
+            ...userBlockie,
+            scale: 20,
+          }).toDataURL()}
           classes={{
             root: classes.userRoleCardRoot,
             accent: classes.userRoleCardAccent,
@@ -156,6 +172,11 @@ const RoleSelection = ({
       <div className={classes.roleCardContainer}>
         <RoleCard
           label={t('trustee')}
+          imgSrc={blockies.create({
+            seed: trusteeAddress,
+            ...trusteeBlockie,
+            scale: 20,
+          }).toDataURL()}
           classes={{
             root: classes.trusteeRoleCardRoot,
             accent: classes.trusteeRoleCardAccent,

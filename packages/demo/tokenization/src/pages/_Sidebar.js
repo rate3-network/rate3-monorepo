@@ -38,7 +38,7 @@ import {
   walletSettingsPath,
   withdrawPath,
 } from '../constants/urls';
-import { ethDecimalPlaces } from '../constants/defaults';
+import { ethDecimalPlaces, userBlockie, trusteeBlockie } from '../constants/defaults';
 
 import { compose, genStyle, getClass } from '../utils';
 
@@ -146,7 +146,7 @@ class Sidebar extends React.Component {
             src={
               blockies.create({
                 seed: currentDefaultAccount,
-                size: 8,
+                ...(isUser ? userBlockie : trusteeBlockie),
                 scale: Math.ceil(drawerWidth / (3 * 8)),
               }).toDataURL()
             }
