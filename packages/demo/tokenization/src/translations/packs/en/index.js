@@ -9,6 +9,7 @@ import wallet from './wallet';
 import completion from './completion';
 import fields from './fields';
 import stepper from './stepper';
+import faq from './faq';
 
 const en = new Translation(
   new Language('EN', 'en'),
@@ -20,6 +21,7 @@ const en = new Translation(
     completion,
     fields,
     stepper,
+    faq,
   },
 );
 

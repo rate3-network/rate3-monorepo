@@ -25,6 +25,7 @@ import Tokenization from './Tokenization';
 import Transactions from './Transactions';
 import Wallet from './Wallet';
 import Withdrawal from './Withdrawal';
+import Faq from './Faq';
 
 import {
   navBoxShadow,
@@ -46,6 +47,7 @@ import {
   walletSettingsPath,
   withdrawPath,
   rootPath,
+  faqPath,
 } from '../constants/urls';
 import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
 
@@ -359,6 +361,15 @@ class Main extends React.Component {
                   <MainContent
                     title={t('transactions')}
                     component={Transactions}
+                  />
+                )}
+              />
+              <Route
+                path={faqPath}
+                component={() => (
+                  <MainContent
+                    title={t('faq')}
+                    component={Faq}
                   />
                 )}
               />
