@@ -38,7 +38,6 @@ const styles = theme => ({
   })),
   ...genStyle('labelText', isUser => ({
     color: isUser ? userStepperText : trusteeStepperText,
-    wordBreak: 'break-word',
     letterSpacing: 0,
   })),
   ...genStyle('labelActive', isUser => ({

@@ -73,7 +73,6 @@ const styles = theme => ({
     marginTop: '0.5em',
     color: withdrawalInfoText,
     letterSpacing: 0,
-    wordBreak: 'break-word',
   },
 });
 
