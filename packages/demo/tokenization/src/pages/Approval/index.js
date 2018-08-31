@@ -193,6 +193,8 @@ class Approval extends React.Component {
     const {
       t,
       networkId,
+      currentDefaultAddress,
+      operationsContractAddress,
       currentStep,
       transactionToApprove,
       gasLimit,
@@ -210,6 +212,9 @@ class Approval extends React.Component {
         return (
           <Gas
             isUser={false}
+            networkId={networkId}
+            fromAddr={currentDefaultAddress}
+            toAddr={operationsContractAddress}
             gasLimit={gasLimit}
             gasLimitLabel={t('fields:gasLimitFieldLabel')}
             onGasLimitChange={this.handleFieldChange(approveFields.gasLimit)}
@@ -522,6 +527,8 @@ Approval.propTypes = {
   // State
   isUser: PropTypes.bool.isRequired,
   networkId: PropTypes.number.isRequired,
+  currentDefaultAddress: PropTypes.string,
+  operationsContractAddress: PropTypes.string,
   transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
   currentPage: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
@@ -550,11 +557,17 @@ Approval.propTypes = {
 
 Approval.defaultProps = {
   transactionToApprove: null,
+  currentDefaultAddress: '',
+  operationsContractAddress: '',
 };
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
   networkId: state.network.id,
+  currentDefaultAddress: state.wallet.currentDefaultAccount,
+  operationsContractAddress: (contract => (
+    contract ? contract.options.address : ''
+  ))(state.network.operationsContract),
 
   transactions: state.transactions.pendingApproval,
   currentPage: state.transactions.pendingApprovalPage,

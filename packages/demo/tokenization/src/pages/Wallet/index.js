@@ -18,6 +18,14 @@ import {
   tabIndicatorBg,
   walletUserCardBg,
   walletTrusteeCardBg,
+  networkRopstenBullet,
+  networkRopstenBg,
+  networkRinkebyBullet,
+  networkRinkebyBg,
+  networkKovanBullet,
+  networkKovanBg,
+  networkLocalhostBullet,
+  networkLocalhostBg,
 } from '../../constants/colors';
 import { userName, trusteeName, bankName } from '../../constants/defaults';
 import { ropsten, rinkeby, kovan } from '../../constants/addresses';
@@ -70,28 +78,28 @@ const styles = theme => ({
     marginBottom: '2em',
   },
   ropstenBullet: {
-    backgroundColor: '#e91550',
+    backgroundColor: networkRopstenBullet,
   },
   ropstenBg: {
-    backgroundColor: '#fad0db',
+    backgroundColor: networkRopstenBg,
   },
   rinkebyBullet: {
-    backgroundColor: '#ebb33f',
+    backgroundColor: networkRinkebyBullet,
   },
   rinkebyBg: {
-    backgroundColor: '#faefd8',
+    backgroundColor: networkRinkebyBg,
   },
   kovanBullet: {
-    backgroundColor: '#690496',
+    backgroundColor: networkKovanBullet,
   },
   kovanBg: {
-    backgroundColor: '#e8b9fd',
+    backgroundColor: networkKovanBg,
   },
   localhostBullet: {
-    backgroundColor: '#000000',
+    backgroundColor: networkLocalhostBullet,
   },
   localhostBg: {
-    backgroundColor: '#C4C4C4',
+    backgroundColor: networkLocalhostBg,
   },
 });
 

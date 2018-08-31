@@ -2,7 +2,6 @@ import {
   createStore,
   applyMiddleware,
   combineReducers,
-  compose,
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import Web3 from 'web3';

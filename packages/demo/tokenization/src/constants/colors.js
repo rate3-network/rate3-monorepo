@@ -177,3 +177,14 @@ export const networkMenuItemSelectedText = '#FFFFFF';
 // Spinner
 export const globalSpinnerBg = 'rgba(255, 255, 255, 0.2)';
 export const globalSpinner = '#203542';
+
+
+// Networks
+export const networkRopstenBullet = '#e91550';
+export const networkRopstenBg = '#fad0db';
+export const networkRinkebyBullet = '#ebb33f';
+export const networkRinkebyBg = '#faefd8';
+export const networkKovanBullet = '#690496';
+export const networkKovanBg = '#e8b9fd';
+export const networkLocalhostBullet = '#000000';
+export const networkLocalhostBg = '#C4C4C4';

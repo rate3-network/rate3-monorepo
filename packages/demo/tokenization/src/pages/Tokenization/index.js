@@ -209,6 +209,8 @@ class Tokenization extends React.Component {
     const {
       t,
       networkId,
+      currentDefaultAddress,
+      operationsContractAddress,
       currentStep,
       amount,
       trustBank,
@@ -256,6 +258,9 @@ class Tokenization extends React.Component {
         return (
           <Gas
             isUser
+            networkId={networkId}
+            fromAddr={currentDefaultAddress}
+            toAddr={operationsContractAddress}
             gasLimit={gasLimit}
             gasLimitLabel={t('fields:gasLimitFieldLabel')}
             onGasLimitChange={this.handleFieldChange(tokenizeFields.gasLimit)}
@@ -482,6 +487,8 @@ Tokenization.propTypes = {
   // State
   isUser: PropTypes.bool.isRequired,
   networkId: PropTypes.number.isRequired,
+  currentDefaultAddress: PropTypes.string,
+  operationsContractAddress: PropTypes.string,
   currentStep: PropTypes.number.isRequired,
   loadingNextStep: PropTypes.bool.isRequired,
   amount: PropTypes.string.isRequired,
@@ -504,9 +511,18 @@ Tokenization.propTypes = {
   submitTokenizeRequest: PropTypes.func.isRequired,
 };
 
+Tokenization.defaultProps = {
+  currentDefaultAddress: '',
+  operationsContractAddress: '',
+};
+
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
   networkId: state.network.id,
+  currentDefaultAddress: state.wallet.currentDefaultAccount,
+  operationsContractAddress: (contract => (
+    contract ? contract.options.address : ''
+  ))(state.network.operationsContract),
   currentBankBalance: state.wallet.currentBankBalance,
   currentStep: state.tokenize.step,
   loadingNextStep: state.tokenize.loadingNextStep,

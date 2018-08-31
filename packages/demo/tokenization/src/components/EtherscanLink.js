@@ -27,7 +27,9 @@ const etherscanTxnLink = ({
     ? contractAddresses[networkId]
     : {};
 
-  if (!etherscanTx) return hash;
+  if (!etherscanTx) {
+    return <a title={hash}>{hash}</a>;
+  }
 
   return (
     <a
@@ -71,7 +73,9 @@ const etherscanAddrLink = ({
     ? contractAddresses[networkId]
     : {};
 
-  if (!etherscanAddr) return addr;
+  if (!etherscanAddr) {
+    return <a title={addr}>{addr}</a>;
+  }
 
   return (
     <a

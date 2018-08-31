@@ -22,7 +22,7 @@ const transactions = (db, web3) => {
       networkId,
       isUser,
       currentDefaultAccount,
-      operationsContractAddress: operationsContract.address,
+      operationsContractAddress: operationsContract.options.address,
     });
   }
 

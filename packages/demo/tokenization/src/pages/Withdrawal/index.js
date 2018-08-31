@@ -213,6 +213,8 @@ class Withdrawal extends React.Component {
       classes,
       t,
       networkId,
+      currentDefaultAddress,
+      operationsContractAddress,
       currentStep,
       amount,
       gasLimit,
@@ -258,6 +260,9 @@ class Withdrawal extends React.Component {
         return (
           <Gas
             isUser
+            networkId={networkId}
+            fromAddr={currentDefaultAddress}
+            toAddr={operationsContractAddress}
             gasLimit={gasLimit}
             gasLimitLabel={t('fields:gasLimitFieldLabel')}
             onGasLimitChange={this.handleFieldChange(withdrawFields.gasLimit)}
@@ -479,6 +484,8 @@ Withdrawal.propTypes = {
   // State
   isUser: PropTypes.bool.isRequired,
   networkId: PropTypes.number.isRequired,
+  currentDefaultAddress: PropTypes.string,
+  operationsContractAddress: PropTypes.string,
   currentStep: PropTypes.number.isRequired,
   loadingNextStep: PropTypes.bool.isRequired,
   amount: PropTypes.string.isRequired,
@@ -498,9 +505,18 @@ Withdrawal.propTypes = {
   submitWithdrawRequest: PropTypes.func.isRequired,
 };
 
+Withdrawal.defaultProps = {
+  currentDefaultAddress: '',
+  operationsContractAddress: '',
+};
+
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
   networkId: state.network.id,
+  currentDefaultAddress: state.wallet.currentDefaultAccount,
+  operationsContractAddress: (contract => (
+    contract ? contract.options.address : ''
+  ))(state.network.operationsContract),
   currentTokenBalance: state.wallet.currentTokenBalance,
   currentStep: state.withdraw.step,
   loadingNextStep: state.withdraw.loadingNextStep,

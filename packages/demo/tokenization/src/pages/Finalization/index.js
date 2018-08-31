@@ -202,6 +202,8 @@ class Finalize extends React.Component {
     const {
       t,
       networkId,
+      currentDefaultAddress,
+      operationsContractAddress,
       currentStep,
       selectedTransaction,
       gasLimit,
@@ -220,6 +222,9 @@ class Finalize extends React.Component {
         return (
           <Gas
             isUser={false}
+            networkId={networkId}
+            fromAddr={currentDefaultAddress}
+            toAddr={operationsContractAddress}
             gasLimit={gasLimit}
             gasLimitLabel={t('fields:gasLimitFieldLabel')}
             onGasLimitChange={this.handleFieldChange(finalizeFields.gasLimit)}
@@ -565,6 +570,8 @@ Finalize.propTypes = {
   // State
   isUser: PropTypes.bool.isRequired,
   networkId: PropTypes.number.isRequired,
+  currentDefaultAddress: PropTypes.string,
+  operationsContractAddress: PropTypes.string,
   transactions: PropTypes.arrayOf(PropTypes.object).isRequired,
   currentPage: PropTypes.number.isRequired,
   rowsPerPage: PropTypes.number.isRequired,
@@ -595,11 +602,17 @@ Finalize.propTypes = {
 
 Finalize.defaultProps = {
   selectedTransaction: null,
+  currentDefaultAddress: '',
+  operationsContractAddress: '',
 };
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
   networkId: state.network.id,
+  currentDefaultAddress: state.wallet.currentDefaultAccount,
+  operationsContractAddress: (contract => (
+    contract ? contract.options.address : ''
+  ))(state.network.operationsContract),
 
   transactions: state.transactions.pendingFinalize,
   currentPage: state.transactions.pendingFinalizePage,

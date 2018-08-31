@@ -52,7 +52,7 @@ const wallet = (db, web3) => {
       networkId,
       isUser: getUserInformation,
       currentDefaultAccount: userDefaultAccount,
-      operationsContractAddress: operationsContract.address,
+      operationsContractAddress: operationsContract.options.address,
     }));
     nextActions.push(put({
       type: walletActions.CALCULATE_PENDING,
@@ -149,7 +149,7 @@ const wallet = (db, web3) => {
       )).toFixed(sgdrDecimalPlaces);
       pendingTokenization = db
         .select(transactionsTable, {
-          to: operationsContract.address,
+          to: operationsContract.options.address,
           type: txType.TOKENIZE,
           status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
         })

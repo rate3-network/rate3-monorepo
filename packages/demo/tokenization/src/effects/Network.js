@@ -205,7 +205,7 @@ const network = (db, web3) => {
           db.insert(transactionsTable, {
             tx_hash: e.transactionHash,
             from: e.returnValues.by,
-            to: operationsContract.address,
+            to: operationsContract.options.address,
             index: e.returnValues.index,
             date: parseInt(e.returnValues.requestTimestamp, 10) * 1000,
             amount: e.returnValues.value,
@@ -246,7 +246,7 @@ const network = (db, web3) => {
           db.insert(transactionsTable, {
             tx_hash: e.transactionHash,
             from: e.returnValues.by,
-            to: operationsContract.address,
+            to: operationsContract.options.address,
             index: e.returnValues.index,
             date: parseInt(e.returnValues.requestTimestamp, 10) * 1000,
             amount: e.returnValues.value,
@@ -286,7 +286,7 @@ const network = (db, web3) => {
         networkId,
         isUser,
         currentDefaultAccount,
-        operationsContractAddress: operationsContract.address,
+        operationsContractAddress: operationsContract.options.address,
       }),
       put({
         type: walletActions.CALCULATE_PENDING,
