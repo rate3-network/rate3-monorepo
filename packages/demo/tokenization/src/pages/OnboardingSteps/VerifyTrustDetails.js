@@ -113,7 +113,7 @@ class VerifyTrustDetails extends React.Component {
               color="primary"
               isUser
             >
-              {t('verify')}
+              {t('next')}
             </Button>
           </div>
         </div>

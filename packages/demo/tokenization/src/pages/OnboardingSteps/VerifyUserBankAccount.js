@@ -148,7 +148,7 @@ class VerifyUserBankAccount extends React.Component {
               isUser
               disabled={!selectedBankAccount}
             >
-              {t('verify')}
+              {t('next')}
             </Button>
           </div>
         </div>
