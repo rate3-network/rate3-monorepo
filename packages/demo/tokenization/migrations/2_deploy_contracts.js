@@ -36,7 +36,7 @@ module.exports = function deployment(deployer, network, accounts) {
     const ops = await OperationsInteractor.new([token.address]);
 
     console.log('\nSetting admin of OperationsInteractor');
-    await ops.setAdmin(admin);
+    await ops.setAdmin('0x98ef42619e57b16ee5D0EB1dCc495B1fc2bfDdc3');
 
     console.log('\nTransferring ownership of token to operations interactor');
     await token.transferOwnership(ops.address);

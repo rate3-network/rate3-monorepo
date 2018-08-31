@@ -19,6 +19,7 @@ import makeSagas from './effects';
 import DB from './db';
 
 import { dbName } from './constants/storageKeys';
+import { ropsten } from './constants/addresses';
 
 const db = new DB(dbName);
 
@@ -26,9 +27,11 @@ db.createTable('network', [
   'network_id',
   'block_number',
 ]);
+db.insert('network', { network_id: 3, block_number: 3937004 });
+db.insert('network', { network_id: 4, block_number: 2902285 });
+db.insert('network', { network_id: 42, block_number: 8544488 });
 
-let provider = 'https://rinkeby.infura.io';
-provider = 'http://localhost:8545';
+let provider = ropsten.endpoint;
 let browserProvider = null;
 
 if (typeof window !== 'undefined') {
