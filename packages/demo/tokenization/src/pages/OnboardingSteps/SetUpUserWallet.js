@@ -9,6 +9,7 @@ import RadioGroup from '../../components/onboarding/RadioGroup';
 import Button from '../../components/Button';
 import { setUpStepStyles } from './_styles';
 import { compose } from '../../utils';
+import { userAddress } from '../../constants/defaults';
 
 
 class SetUpUserWallet extends React.Component {
@@ -97,12 +98,12 @@ class SetUpUserWallet extends React.Component {
             }}
             items={[
               {
-                key: '0x687422eea2cb73b5d3e242ba5456b782919afc85',
-                value: '0x687422eea2cb73b5d3e242ba5456b782919afc85',
+                key: userAddress,
+                value: userAddress,
                 label: (
                   <div>
                     <div><strong>Stan Smith</strong></div>
-                    <div>0x687422eea2cb73b5d3e242ba5456b782919afc85</div>
+                    <div>{userAddress}</div>
                   </div>
                 ),
               },

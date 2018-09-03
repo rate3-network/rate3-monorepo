@@ -9,7 +9,7 @@ import RadioGroup from '../../components/onboarding/RadioGroup';
 import Button from '../../components/Button';
 import { setUpStepStyles } from './_styles';
 
-import { trusteeName } from '../../constants/defaults';
+import { trusteeName, trusteeAddress } from '../../constants/defaults';
 import { compose } from '../../utils';
 
 
@@ -99,12 +99,12 @@ class SetUpTrusteeWallet extends React.Component {
             }}
             items={[
               {
-                key: '0x590F39c5dadD62a3e4Ad6E323632cA2B3Ed371ab',
-                value: '0x590F39c5dadD62a3e4Ad6E323632cA2B3Ed371ab',
+                key: trusteeAddress,
+                value: trusteeAddress,
                 label: (
                   <div>
                     <div><strong>{trusteeName}</strong></div>
-                    <div>0x590F39c5dadD62a3e4Ad6E323632cA2B3Ed371ab</div>
+                    <div>{trusteeAddress}</div>
                   </div>
                 ),
               },
