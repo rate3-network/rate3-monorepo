@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Route, BrowserRouter } from 'react-router-dom';
+import { Route, HashRouter } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 import App from './pages/App';
 import store from './Store';
@@ -13,9 +13,9 @@ const i18next = TranslationHandler.init();
 ReactDOM.render(
   <I18nextProvider i18n={i18next}>
     <Provider store={store}>
-      <BrowserRouter>
+      <HashRouter>
         <Route component={App} />
-      </BrowserRouter>
+      </HashRouter>
     </Provider>
   </I18nextProvider>,
   document.getElementById('root'),
