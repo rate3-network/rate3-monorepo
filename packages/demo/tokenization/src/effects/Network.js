@@ -15,6 +15,7 @@ import tokenContractAbi from '../contracts/token';
 import operationsContractAbi from '../contracts/operations';
 import { txType, txStatus } from '../constants/enums';
 import { userPrivKey, trusteePrivKey } from '../constants/defaults';
+import { networkId as networkIdKey } from '../constants/storageKeys';
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -64,8 +65,12 @@ const network = (db, web3) => {
   }
 
   function* handleChange(action) {
-    const { provider } = action;
-    web3.eth.setProvider(provider);
+    const { networkId } = action;
+    const networkData = Object.prototype.hasOwnProperty.call(contractAddresses, networkId)
+      ? contractAddresses[networkId]
+      : contractAddresses.local;
+    sessionStorage.setItem(networkIdKey, networkData.id || -1);
+    web3.eth.setProvider(networkData.endpoint);
     const { isUser } = yield select(state => state.wallet);
     return yield call(handleInit, { isUser });
   }

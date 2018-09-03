@@ -1,4 +1,3 @@
-import { contractAddresses } from '../constants/addresses';
 import { keyMirror } from '../utils';
 
 export const networkActions = keyMirror(
@@ -25,7 +24,5 @@ export const init = isUser => ({
 
 export const change = networkId => ({
   type: networkActions.CHANGE_PROVIDER,
-  provider: Object.prototype.hasOwnProperty.call(contractAddresses, networkId)
-    ? contractAddresses[networkId].endpoint
-    : contractAddresses.local.endpoint,
+  networkId,
 });

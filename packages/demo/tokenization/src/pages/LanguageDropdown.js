@@ -12,6 +12,7 @@ import {
   languageMenuSelectedBg,
   languageMenuSelectedText,
 } from '../constants/colors';
+import { language } from '../constants/storageKeys';
 
 const styles = theme => ({
   inputRoot: {
@@ -41,7 +42,7 @@ const styles = theme => ({
 
 class LanguageDropDown extends React.Component {
   componentDidMount() {
-    const savedLang = sessionStorage.getItem('lang');
+    const savedLang = sessionStorage.getItem(language);
     if (savedLang) {
       TranslationsHandler.setLanguage(savedLang);
     }
@@ -49,7 +50,7 @@ class LanguageDropDown extends React.Component {
 
   handleChange = (e) => {
     TranslationsHandler.setLanguage(e.target.value);
-    sessionStorage.setItem('lang', e.target.value);
+    sessionStorage.setItem(language, e.target.value);
   }
 
   render() {
