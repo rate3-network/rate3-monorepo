@@ -2,14 +2,14 @@ import {
   configure,
   observable,
   action,
-  runInAction,
 } from 'mobx';
 
-configure({ enforceActions: 'strict' }); // don't allow state modifications outside actions
+configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
 class CommonStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable isUser: Boolean = true;
+  @observable isSetupDone: Boolean = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -20,12 +20,24 @@ class CommonStore {
   /**
    * Gets the role of user
    *
-   * @returns {Boolean} If is User
+   * @returns {Boolean} True if is User, false if is Verifier
    * @memberof CommonStore
    */
 
   getIsUser() {
     return this.isUser;
+  }
+
+  /* ************* Getters *************  */
+  /**
+   * Gets the status of setup
+   *
+   * @returns {Boolean} True if done, false otherwise
+   * @memberof CommonStore
+   */
+
+  getIsSetupDone() {
+    return this.isSetupDone;
   }
 
   /**
@@ -48,6 +60,17 @@ class CommonStore {
   @action
   changeToUser() {
     this.isUser = true;
+  }
+
+  /**
+   * Change Setup status to done
+   *
+   * @returns {null} null
+   * @memberof CommonStore
+   */
+  @action
+  finishSetup() {
+    this.isSetupDone = true;
   }
 }
 
