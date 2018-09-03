@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^3.0.1",
+    "@material-ui/icons": "^3.0.1",
     "i18next": "^11.6.0",
     "mobx": "^5.1.0",
     "mobx-react": "^5.2.5",
@@ -11,6 +13,7 @@
     "react-app-rewire-mobx": "^1.0.8",
     "react-dom": "^16.4.2",
     "react-i18next": "^7.11.0",
+    "react-router-dom": "^4.3.1",
     "react-scripts": "1.1.5"
   },
   "scripts": {
