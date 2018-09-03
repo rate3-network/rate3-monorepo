@@ -6,33 +6,35 @@ import { withStyles } from '@material-ui/core/styles';
 import MaterialDesignSpinner from '../components/spinners/MaterialDesignSpinner';
 
 import {
-  globalSpinnerBg,
-  globalSpinner,
+  userGlobalSpinnerBg,
+  trusteeGlobalSpinnerBg,
+  userGlobalSpinner,
+  trusteeGlobalSpinner,
 } from '../constants/colors';
-import { compose } from '../utils';
+import { compose, genStyle, getClass } from '../utils';
 
 const styles = {
-  spinnerContainer: {
+  ...genStyle('spinnerContainer', isUser => ({
     position: 'fixed',
     width: '100vw',
     height: '100vh',
     zIndex: 9999,
-    backgroundColor: globalSpinnerBg,
+    backgroundColor: isUser ? userGlobalSpinnerBg : trusteeGlobalSpinnerBg,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  },
+  })),
 };
 
-const SpinnerOverlay = ({ classes, loading }) => (
+const SpinnerOverlay = ({ classes, isUser, loading }) => (
   loading
     ? (
-      <div className={classes.spinnerContainer}>
+      <div className={getClass(classes, 'spinnerContainer', isUser)}>
         <MaterialDesignSpinner
           size={300}
           margin={10}
           border={30}
-          color={globalSpinner}
+          color={isUser ? userGlobalSpinner : trusteeGlobalSpinner}
         />
       </div>
     )
@@ -41,6 +43,7 @@ const SpinnerOverlay = ({ classes, loading }) => (
 
 SpinnerOverlay.propTypes = {
   classes: PropTypes.object.isRequired,
+  isUser: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 
@@ -52,6 +55,7 @@ const enhance = compose(
         || state.wallet.balancesLoading
         || state.network.contractsLoading
         || state.network.networkChanging,
+      isUser: state.wallet.isUser,
     }),
   ),
 );

@@ -175,8 +175,10 @@ export const networkMenuItemSelectedText = '#FFFFFF';
 
 
 // Spinner
-export const globalSpinnerBg = 'rgba(255, 255, 255, 0.2)';
-export const globalSpinner = '#203542';
+export const userGlobalSpinnerBg = 'rgba(243, 243, 243, 0.7)';
+export const userGlobalSpinner = '#203542';
+export const trusteeGlobalSpinnerBg = 'rgba(82, 82, 82, 0.7)';
+export const trusteeGlobalSpinner = '#FFFFFF';
 
 
 // Networks
