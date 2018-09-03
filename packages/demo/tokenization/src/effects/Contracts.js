@@ -28,7 +28,7 @@ const contracts = (db, web3) => {
     const tx = operationsContract.methods.requestMint(amount).send({
       from: currentDefaultAccount,
       gas: gasLimit,
-      gasPrice,
+      gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
     });
 
     const chan = yield call(handleContractCall, tx, type);
@@ -56,7 +56,7 @@ const contracts = (db, web3) => {
     const tx = operationsContract.methods.requestBurn(amount).send({
       from: currentDefaultAccount,
       gas: gasLimit,
-      gasPrice,
+      gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
     });
 
     const chan = yield call(handleContractCall, tx, type);
@@ -86,7 +86,7 @@ const contracts = (db, web3) => {
       .send({
         from: currentDefaultAccount,
         gas: gasLimit,
-        gasPrice,
+        gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
       });
 
     const chan = yield call(handleContractCall, tx, type);
@@ -118,13 +118,13 @@ const contracts = (db, web3) => {
         .send({
           from: currentDefaultAccount,
           gas: gasLimit,
-          gasPrice,
+          gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
         })
       : operationsContract.methods.finalizeMint(requesterAddr, requestId)
         .send({
           from: currentDefaultAccount,
           gas: gasLimit,
-          gasPrice,
+          gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
         });
 
     const chan = yield call(handleContractCall, tx, type);
