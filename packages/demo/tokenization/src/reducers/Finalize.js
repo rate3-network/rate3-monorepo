@@ -100,6 +100,7 @@ export default function (state = initialState, action = {}) {
     case `${finalizeActions.SUBMIT_REQUEST}_CONFIRMATION`: {
       return {
         ...state,
+        submissionConfirmed: true,
         networkConfirmed: true,
         tokensIssued: state.toRevoke ? state.tokensIssued : true,
         tokenizationRevoked: state.toRevoke ? true : state.tokenizationRevoked,

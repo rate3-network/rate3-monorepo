@@ -88,6 +88,7 @@ export default function (state = initialState, action = {}) {
     case `${approveActions.SUBMIT_APPROVE_REQUEST}_CONFIRMATION`: {
       return {
         ...state,
+        submissionConfirmed: true,
         networkConfirmed: true,
         tokensIssued: true,
       };

@@ -86,7 +86,9 @@ export default function (state = initialState, action = {}) {
     case `${withdrawActions.SUBMIT_WITHDRAW_REQUEST}_CONFIRMATION`: {
       return {
         ...state,
+        submissionConfirmed: true,
         networkConfirmed: true,
+        wireTransferred: true,
       };
     }
     default: {

@@ -94,6 +94,7 @@ export default function (state = initialState, action = {}) {
     case `${tokenizeActions.SUBMIT_TOKENIZE_REQUEST}_CONFIRMATION`: {
       return {
         ...state,
+        submissionConfirmed: true,
         networkConfirmed: true,
       };
     }

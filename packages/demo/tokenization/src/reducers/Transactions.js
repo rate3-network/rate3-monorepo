@@ -31,11 +31,17 @@ export default function (state = initialState, action = {}) {
   const { type } = action;
   switch (type) {
     case transactionsActions.SET_CURRENT_TRANSACTIONS: {
-      const { transactions, filterType, filterStatus } = action;
+      const {
+        transactions,
+        resetPage,
+        filterType,
+        filterStatus,
+      } = action;
+
       return {
         ...state,
         current: transactions,
-        currentPage: 0,
+        currentPage: resetPage ? 0 : state.currentPage,
         currentFilterType: filterType,
         currentFilterStatus: filterStatus,
       };
@@ -55,11 +61,11 @@ export default function (state = initialState, action = {}) {
       };
     }
     case transactionsActions.SET_PENDING_APPROVAL_TRANSACTIONS: {
-      const { transactions } = action;
+      const { transactions, resetPage } = action;
       return {
         ...state,
         pendingApproval: transactions,
-        pendingApprovalPage: 0,
+        pendingApprovalPage: resetPage ? 0 : state.pendingApprovalPage,
       };
     }
     case transactionsActions.SET_PENDING_APPROVAL_PAGE: {
@@ -77,11 +83,11 @@ export default function (state = initialState, action = {}) {
       };
     }
     case transactionsActions.SET_PENDING_FINALIZE_TRANSACTIONS: {
-      const { transactions } = action;
+      const { transactions, resetPage } = action;
       return {
         ...state,
         pendingFinalize: transactions,
-        pendingFinalizePage: 0,
+        pendingFinalizePage: resetPage ? 0 : state.pendingFinalizePage,
       };
     }
     case transactionsActions.SET_PENDING_FINALIZE_PAGE: {
@@ -96,6 +102,16 @@ export default function (state = initialState, action = {}) {
       return {
         ...state,
         pendingFinalizeRowsPerPage: rows,
+      };
+    }
+    case transactionsActions.RESET_PAGES_AND_FILTER: {
+      return {
+        ...state,
+        currentPage: 0,
+        currentFilterType: null,
+        currentFilterStatus: null,
+        pendingApprovalPage: 0,
+        pendingFinalizePage: 0,
       };
     }
     default: {

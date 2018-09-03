@@ -48,7 +48,7 @@ class TranslationHandler {
         react: { // refer to https://react.i18next.com/components/i18next-instance for available settings
           wait: true,
         },
-        debug: true,
+        debug: process.env.NODE_ENV !== 'production',
         resources: TranslationHandler.getResourcesFromTranslationsForI18Next(),
       });
 

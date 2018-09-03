@@ -23,6 +23,7 @@ const transactions = (db, web3) => {
       isUser,
       currentDefaultAccount,
       operationsContractAddress: operationsContract.options.address,
+      resetPage: true,
     });
   }
 
@@ -34,6 +35,7 @@ const transactions = (db, web3) => {
       isUser,
       currentDefaultAccount,
       operationsContractAddress,
+      resetPage,
     } = action;
 
     const filter = {};
@@ -56,6 +58,7 @@ const transactions = (db, web3) => {
         }),
         filterType,
         filterStatus,
+        resetPage,
       }));
     } else {
       nextActions.push(put({
@@ -66,6 +69,7 @@ const transactions = (db, web3) => {
         }),
         filterType,
         filterStatus,
+        resetPage,
       }));
       nextActions.push(put({
         type: transactionsActions.SET_PENDING_APPROVAL_TRANSACTIONS,
@@ -74,6 +78,7 @@ const transactions = (db, web3) => {
           type: txType.TOKENIZE,
           status: txStatus.PENDING_APPROVAL,
         }),
+        resetPage,
       }));
       nextActions.push(put({
         type: transactionsActions.SET_PENDING_FINALIZE_TRANSACTIONS,
@@ -82,6 +87,7 @@ const transactions = (db, web3) => {
           type: txType.TOKENIZE,
           status: txStatus.PENDING_FINALIZE,
         }),
+        resetPage,
       }));
     }
 

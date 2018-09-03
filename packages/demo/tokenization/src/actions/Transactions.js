@@ -15,6 +15,8 @@ export const transactionsActions = keyMirror(
     SET_PENDING_FINALIZE_PAGE: null,
     SET_PENDING_FINALIZE_ROWS_PER_PAGE: null,
 
+    RESET_PAGES_AND_FILTER: null,
+
     LOAD: null,
   },
   'TRANSACTIONS',

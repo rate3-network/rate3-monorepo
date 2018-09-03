@@ -153,16 +153,21 @@ const contracts = (db, web3) => {
         })
         .once('receipt', (receipt) => {
           emitter({ type: `${type}_RECEIPT`, receipt, ...data });
-          emitter({ type: networkActions.NEW_BLOCK });
         })
-        .once('confirmation', (num, receipt) => {
-          emitter({
-            type: `${type}_CONFIRMATION`,
-            receipt,
-            num,
-            ...data,
-          });
-          emitter(END);
+        .on('confirmation', (num, receipt) => {
+          if (num >= 2) {
+            emitter({
+              type: `${type}_CONFIRMATION`,
+              receipt,
+              num,
+              ...data,
+            });
+            emitter({
+              type: networkActions.NEW_BLOCK,
+              toBlock: receipt.blockNumber,
+            });
+            emitter(END);
+          }
         })
         .then((receipt) => {
           emitter({ type: `${type}_SUCCESS`, receipt, ...data });

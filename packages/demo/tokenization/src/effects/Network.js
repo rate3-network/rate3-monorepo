@@ -2,13 +2,17 @@ import {
   all,
   put,
   call,
-  fork,
+  spawn,
   select,
   takeLatest,
 } from 'redux-saga/effects';
 
 import { networkActions } from '../actions/Network';
 import { transactionsActions } from '../actions/Transactions';
+import { tokenizeActions } from '../actions/Tokenize';
+import { withdrawActions } from '../actions/Withdraw';
+import { approveActions } from '../actions/Approve';
+import { finalizeActions } from '../actions/Finalize';
 import { walletActions } from '../actions/Wallet';
 import { contractAddresses } from '../constants/addresses';
 import tokenContractAbi from '../contracts/token';
@@ -35,6 +39,38 @@ function* _retryCall(args, delayTime, maxRetry) {
 }
 
 const network = (db, web3) => {
+  let currentFetchingNetwork = null;
+  let currentFetchingBlock = null;
+
+  function* autoFetchBlocks(networkId) {
+    if (networkId !== currentFetchingNetwork) {
+      return;
+    }
+
+    if (currentFetchingBlock == null) {
+      const latestBlock = yield call(web3.eth.getBlock, 'latest');
+      const latestBlockNumber = latestBlock.number;
+      const currentBlockNumber = (db.exists('network', { network_id: networkId }))
+        ? (db.select('network', { network_id: networkId })[0]).block_number
+        : 0;
+      if (latestBlockNumber > currentBlockNumber) {
+        const {
+          tokenContract,
+          operationsContract,
+        } = yield select(state => state.network);
+        yield call(
+          getPastContractEvents,
+          tokenContract,
+          operationsContract,
+          networkId,
+          latestBlockNumber,
+        );
+      }
+    }
+    yield call(delay, 5000);
+    yield spawn(autoFetchBlocks, networkId);
+  }
+
   function* handleInit(action) {
     yield put({ type: networkActions.CHANGE });
     const { isUser } = action;
@@ -71,6 +107,16 @@ const network = (db, web3) => {
       : contractAddresses.local;
     sessionStorage.setItem(networkIdKey, networkData.id || -1);
     web3.eth.setProvider(networkData.endpoint);
+
+    // Reset all current processes
+    yield all([
+      put({ type: tokenizeActions.RESET }),
+      put({ type: withdrawActions.RESET }),
+      put({ type: approveActions.RESET }),
+      put({ type: finalizeActions.RESET }),
+      put({ type: transactionsActions.RESET_PAGES_AND_FILTER }),
+    ]);
+
     const { isUser } = yield select(state => state.wallet);
     return yield call(handleInit, { isUser });
   }
@@ -98,13 +144,17 @@ const network = (db, web3) => {
           tokenContract,
           operationsContract,
         }),
-        fork(
+        spawn(
           getPastContractEvents,
           tokenContract,
           operationsContract,
           id,
+          null,
         ),
       ]);
+
+      currentFetchingNetwork = id;
+      yield spawn(autoFetchBlocks, id);
 
       return {
         tokenContract,
@@ -123,7 +173,8 @@ const network = (db, web3) => {
     }
   }
 
-  function* getNewEvents() {
+  function* getNewEvents(action) {
+    const { toBlock } = action;
     const {
       tokenContract,
       operationsContract,
@@ -135,10 +186,11 @@ const network = (db, web3) => {
       tokenContract,
       operationsContract,
       networkId,
+      toBlock,
     );
   }
 
-  function* getPastContractEvents(tokenContract, operationsContract, networkId) {
+  function* getPastContractEvents(tokenContract, operationsContract, networkId, toBlockNumber) {
     const transactionsTable = `transactions_${networkId}`;
 
     if (!db.hasTable(transactionsTable)) {
@@ -157,21 +209,35 @@ const network = (db, web3) => {
     const maxRange = 200;
 
     let opsPastEvents = [];
-    let latestBlock = 0;
+    let toBlock = 0;
     let fromBlock = 0;
     try {
-      latestBlock = yield call(web3.eth.getBlock, 'latest');
+      if (toBlockNumber == null) {
+        const latestBlock = yield call(web3.eth.getBlock, 'latest');
+        toBlock = latestBlock.number;
+      } else {
+        toBlock = toBlockNumber;
+      }
+      // wait for current fetching to finish
+      while (currentFetchingBlock != null) {
+        if (currentFetchingBlock >= toBlock) {
+          return yield all([]);
+        }
+        yield call(delay, 500);
+      }
+      currentFetchingBlock = toBlock;
+
       fromBlock = (db.exists('network', { network_id: networkId }))
-        ? (db.select('network', { network_id: networkId })[0]).block_number + 1
+        ? (db.select('network', { network_id: networkId })[0]).block_number
         : 0;
       const allCalls = yield all(
-        (new Array(Math.ceil((latestBlock.number - fromBlock) / maxRange)))
+        (new Array(Math.ceil((toBlock - fromBlock) / maxRange)))
           .fill(fromBlock)
           .map((initial, idx) => ({
             from: initial + idx * maxRange,
             to: Math.min(
               initial + (idx + 1) * maxRange - 1,
-              latestBlock.number,
+              toBlock,
             ),
           }))
           .map(({ from, to }) => call(
@@ -207,16 +273,18 @@ const network = (db, web3) => {
     opsPastEvents.forEach((e) => {
       switch (e.event) {
         case 'MintOperationRequested': {
-          db.insert(transactionsTable, {
-            tx_hash: e.transactionHash,
-            from: e.returnValues.by,
-            to: operationsContract.options.address,
-            index: e.returnValues.index,
-            date: parseInt(e.returnValues.requestTimestamp, 10) * 1000,
-            amount: e.returnValues.value,
-            type: txType.TOKENIZE,
-            status: txStatus.PENDING_APPROVAL,
-          });
+          if (!db.exists(transactionsTable, { tx_hash: e.transactionHash })) {
+            db.insert(transactionsTable, {
+              tx_hash: e.transactionHash,
+              from: e.returnValues.by,
+              to: operationsContract.options.address,
+              index: e.returnValues.index,
+              date: parseInt(e.returnValues.requestTimestamp, 10) * 1000,
+              amount: e.returnValues.value,
+              type: txType.TOKENIZE,
+              status: txStatus.PENDING_APPROVAL,
+            });
+          }
           break;
         }
         case 'MintOperationApproved': {
@@ -248,16 +316,18 @@ const network = (db, web3) => {
           break;
         }
         case 'BurnOperationRequested': {
-          db.insert(transactionsTable, {
-            tx_hash: e.transactionHash,
-            from: e.returnValues.by,
-            to: operationsContract.options.address,
-            index: e.returnValues.index,
-            date: parseInt(e.returnValues.requestTimestamp, 10) * 1000,
-            amount: e.returnValues.value,
-            type: txType.WITHDRAWAL,
-            status: txStatus.SUCCESS,
-          });
+          if (!db.exists(transactionsTable, { tx_hash: e.transactionHash })) {
+            db.insert(transactionsTable, {
+              tx_hash: e.transactionHash,
+              from: e.returnValues.by,
+              to: operationsContract.options.address,
+              index: e.returnValues.index,
+              date: parseInt(e.returnValues.requestTimestamp, 10) * 1000,
+              amount: e.returnValues.value,
+              type: txType.WITHDRAWAL,
+              status: txStatus.SUCCESS,
+            });
+          }
           break;
         }
         default: {
@@ -269,15 +339,17 @@ const network = (db, web3) => {
     if (fromBlock === 0) {
       db.insert(
         'network',
-        { network_id: networkId, block_number: latestBlock.number },
+        { network_id: networkId, block_number: toBlock },
       );
     } else {
       db.update(
         'network',
         { network_id: networkId },
-        row => ({ ...row, block_number: latestBlock.number }),
+        row => ({ ...row, block_number: toBlock }),
       );
     }
+
+    currentFetchingBlock = null;
 
     const walletState = yield select(state => state.wallet);
     const transactionsState = yield select(state => state.transactions);
@@ -292,6 +364,7 @@ const network = (db, web3) => {
         isUser,
         currentDefaultAccount,
         operationsContractAddress: operationsContract.options.address,
+        resetPage: false,
       }),
       put({
         type: walletActions.CALCULATE_PENDING,
