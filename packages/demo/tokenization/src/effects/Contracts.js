@@ -144,7 +144,7 @@ const contracts = (db, web3) => {
         .once('error', (error) => {
           emitter({
             type: `${type}_ERROR`,
-            message: error.message,
+            error: error.message,
           });
           emitter(END);
         })
@@ -175,7 +175,7 @@ const contracts = (db, web3) => {
         .catch((err) => {
           emitter({
             type: `${type}_ERROR`,
-            message: err.message,
+            error: err.message,
           });
           emitter(END);
         });

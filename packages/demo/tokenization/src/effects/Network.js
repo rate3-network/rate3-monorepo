@@ -165,8 +165,7 @@ const network = (db, web3) => {
       yield all([
         put({
           type: networkActions.CHANGE_ERROR,
-          // TODO translate
-          error: 'Network unavailable',
+          error: err.message,
         }),
       ]);
       return null;
@@ -258,7 +257,7 @@ const network = (db, web3) => {
       return yield all([
         put({
           type: `${transactionsActions.LOAD}_ERROR`,
-          message: e.message,
+          error: e.message,
         }),
         put({
           type: walletActions.CALCULATE_PENDING,

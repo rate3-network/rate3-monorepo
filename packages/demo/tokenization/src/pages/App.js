@@ -11,6 +11,7 @@ import {
 
 import Main from './_Main';
 import Onboard from './Onboard';
+import Snackbar from './_SnackBar';
 import withTracker from './withTracker';
 
 import {
@@ -55,10 +56,20 @@ class App extends React.Component {
     } = this.props;
 
     if (pathname === rootPath) {
-      return <Onboard />;
+      return (
+        <React.Fragment>
+          <Onboard />
+          <Snackbar />
+        </React.Fragment>
+      );
     }
 
-    return <Main />;
+    return (
+      <React.Fragment>
+        <Main />
+        <Snackbar />
+      </React.Fragment>
+    );
   }
 }
 

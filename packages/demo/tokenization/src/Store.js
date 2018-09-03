@@ -13,6 +13,7 @@ import approve from './reducers/Approve';
 import finalize from './reducers/Finalize';
 import transactions from './reducers/Transactions';
 import wallet from './reducers/Wallet';
+import errors from './reducers/Errors';
 import makeSagas from './effects';
 
 import DB from './db';
@@ -73,6 +74,7 @@ const store = createStore(
     finalize,
     transactions,
     wallet,
+    errors,
   }),
   applyMiddleware(...middlewares),
 );
