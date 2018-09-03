@@ -4,11 +4,9 @@ import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-// import { mailFolderListItems, otherMailFolderListItems } from './tileData';
 
-const drawerWidth = 240;
+import OnboardImg1 from './../assets/OnboardImg1.svg';
 
 const styles = theme => ({
   root: {
@@ -20,8 +18,10 @@ const styles = theme => ({
     display: 'flex',
   },
   drawerPaper: {
+    backgroundColor: '#4392F1',
     position: 'relative',
-    width: drawerWidth,
+    width: '45vw',
+    boxShadow: '4px 4px 8px rgba(0, 0, 0, 0.15)',
   },
   content: {
     flexGrow: 1,
@@ -36,24 +36,14 @@ function OnboardSideBar(props) {
   const { classes } = props;
 
   return (
-    <div className={classes.root}>
-
-      <Drawer
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.toolbar} />
-        <List>content</List>
-        <Divider />
-        {/* <List>{otherMailFolderListItems}</List> */}
-      </Drawer>
-      <main className={classes.content}>
-        <div className={classes.toolbar} />
-        <Typography noWrap>{'You think water moves fast? You should see ice.'}</Typography>
-      </main>
-    </div>
+    <Drawer
+      variant="permanent"
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+    >
+      <img src={OnboardImg1} alt="Onboard 1" />
+    </Drawer>
   );
 }
 
