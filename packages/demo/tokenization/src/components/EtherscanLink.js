@@ -64,6 +64,7 @@ const etherscanAddrLink = ({
   classes,
   networkId,
   addr,
+  linkText,
   disableUnderline,
 }) => {
   const { etherscanAddr } = Object
@@ -74,7 +75,7 @@ const etherscanAddrLink = ({
     : {};
 
   if (!etherscanAddr) {
-    return <a title={addr}>{addr}</a>;
+    return <a title={addr}>{linkText || addr}</a>;
   }
 
   return (
@@ -88,7 +89,7 @@ const etherscanAddrLink = ({
         { [classes.disableUnderline]: disableUnderline },
       ])}
     >
-      {addr}
+      {linkText || addr}
     </a>
   );
 };
@@ -97,11 +98,13 @@ etherscanAddrLink.propTypes = {
   classes: PropTypes.object.isRequired,
   networkId: PropTypes.number.isRequired,
   addr: PropTypes.string.isRequired,
+  linkText: PropTypes.string,
   disableUnderline: PropTypes.bool,
 };
 
 etherscanAddrLink.defaultProps = {
   disableUnderline: false,
+  linkText: null,
 };
 
 export const EtherscanAddrLink = (withStyles(styles))(etherscanAddrLink);

@@ -41,6 +41,7 @@ import {
 import { ethDecimalPlaces, userBlockie, trusteeBlockie } from '../constants/defaults';
 
 import { compose, genStyle, getClass } from '../utils';
+import { EtherscanAddrLink } from '../components/EtherscanLink';
 
 export const drawerWidth = 300;
 
@@ -124,6 +125,7 @@ class Sidebar extends React.Component {
       classes,
       t,
       isUser,
+      networkId,
       currentDefaultAccount,
       currentEthBalance,
       currentTokenBalance,
@@ -157,7 +159,12 @@ class Sidebar extends React.Component {
           {isUser ? t('user') : t('trustee')}
         </h1>
         <div className={getClass(classes, 'drawerBalance', isUser)}>
-          {t('ethWallet')}:{' '}
+          <EtherscanAddrLink
+            networkId={networkId}
+            addr={currentDefaultAccount}
+            linkText={t('ethWallet')}
+          />
+          :{' '}
           <strong>
             {
               (new Decimal(currentEthBalance))
@@ -252,6 +259,7 @@ Sidebar.propTypes = {
   classes: PropTypes.object.isRequired,
   t: PropTypes.func.isRequired, // translate prop passed in from translate HOC
   isUser: PropTypes.bool.isRequired,
+  networkId: PropTypes.number.isRequired,
   currentDefaultAccount: PropTypes.string.isRequired,
   currentEthBalance: PropTypes.string.isRequired,
   currentTokenBalance: PropTypes.string.isRequired,
@@ -264,6 +272,7 @@ Sidebar.propTypes = {
 
 const mapStateToProps = state => ({
   isUser: state.wallet.isUser,
+  networkId: state.network.id,
   currentDefaultAccount: state.wallet.currentDefaultAccount,
   currentEthBalance: state.wallet.currentEthBalance,
   currentTokenBalance: state.wallet.currentTokenBalance,
