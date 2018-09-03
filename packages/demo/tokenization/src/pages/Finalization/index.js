@@ -27,7 +27,7 @@ import {
 } from '../Transactions';
 import { buttonTextPrimary } from '../../constants/colors';
 import { ethDecimalPlaces } from '../../constants/defaults';
-import { transactionsPath } from '../../constants/urls';
+import { trusteeTransactionsPath } from '../../constants/urls';
 
 import {
   nextStep as nextStepAction,
@@ -188,7 +188,7 @@ class Finalize extends React.Component {
   redirectToTransactions = () => {
     const { history, isUser } = this.props;
     history.push({
-      pathname: transactionsPath,
+      pathname: trusteeTransactionsPath,
       state: { isUser },
     });
   }

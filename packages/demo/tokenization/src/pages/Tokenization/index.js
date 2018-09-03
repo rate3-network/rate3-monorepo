@@ -21,7 +21,7 @@ import { EtherscanTxnLink } from '../../components/EtherscanLink';
 
 import { buttonTextPrimary, sgdColor } from '../../constants/colors';
 import { ethDecimalPlaces } from '../../constants/defaults';
-import { transactionsPath } from '../../constants/urls';
+import { userTransactionsPath } from '../../constants/urls';
 
 import {
   nextStep as nextStepAction,
@@ -195,7 +195,7 @@ class Tokenization extends React.Component {
   redirectToTransactions = () => {
     const { history, isUser } = this.props;
     history.push({
-      pathname: transactionsPath,
+      pathname: userTransactionsPath,
       state: { isUser },
     });
   }

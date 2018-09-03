@@ -24,7 +24,7 @@ import {
   withdrawalInfoText,
 } from '../../constants/colors';
 import { ethDecimalPlaces, sgdDecimalPlaces } from '../../constants/defaults';
-import { transactionsPath } from '../../constants/urls';
+import { userTransactionsPath } from '../../constants/urls';
 
 import {
   nextStep as nextStepAction,
@@ -197,7 +197,7 @@ class Withdrawal extends React.Component {
   redirectToTransactions = () => {
     const { history, isUser } = this.props;
     history.push({
-      pathname: transactionsPath,
+      pathname: userTransactionsPath,
       state: { isUser },
     });
   }

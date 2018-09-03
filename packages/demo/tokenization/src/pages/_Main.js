@@ -43,11 +43,14 @@ import {
   approvePath,
   finalizePath,
   tokenizePath,
-  transactionsPath,
-  walletSettingsPath,
+  userTransactionsPath,
+  trusteeTransactionsPath,
+  userWalletSettingsPath,
+  trusteeWalletSettingsPath,
   withdrawPath,
   rootPath,
   faqPath,
+  getSwitchedRolePath,
 } from '../constants/urls';
 import { userOnboarded, trusteeOnboarded } from '../constants/storageKeys';
 
@@ -197,8 +200,6 @@ class Main extends React.Component {
 
     // Don't change path if on shared pages
     const sharedPage = [
-      transactionsPath,
-      walletSettingsPath,
       faqPath,
     ].reduce((isShared, path) => (isShared || path === pathname), false);
     if (sharedPage) {
@@ -213,9 +214,9 @@ class Main extends React.Component {
     if (this.switchRoleWithoutRedirect()) {
       return;
     }
-    const { history } = this.props;
+    const { location: { pathname }, history } = this.props;
     history.push({
-      pathname: tokenizePath,
+      pathname: getSwitchedRolePath(pathname),
       state: { isUser: true },
     });
   }
@@ -224,9 +225,9 @@ class Main extends React.Component {
     if (this.switchRoleWithoutRedirect()) {
       return;
     }
-    const { history } = this.props;
+    const { location: { pathname }, history } = this.props;
     history.push({
-      pathname: approvePath,
+      pathname: getSwitchedRolePath(pathname),
       state: { isUser: false },
     });
   }
@@ -299,7 +300,16 @@ class Main extends React.Component {
           <div className={classes.content}>
             <RouterSwitch>
               <Route
-                path={walletSettingsPath}
+                path={userWalletSettingsPath}
+                component={() => (
+                  <MainContent
+                    title={t('walletSettings')}
+                    component={Wallet}
+                  />
+                )}
+              />
+              <Route
+                path={trusteeWalletSettingsPath}
                 component={() => (
                   <MainContent
                     title={t('walletSettings')}
@@ -344,7 +354,16 @@ class Main extends React.Component {
                 )}
               />
               <Route
-                path={transactionsPath}
+                path={userTransactionsPath}
+                component={() => (
+                  <MainContent
+                    title={t('transactions')}
+                    component={Transactions}
+                  />
+                )}
+              />
+              <Route
+                path={trusteeTransactionsPath}
                 component={() => (
                   <MainContent
                     title={t('transactions')}

@@ -34,8 +34,10 @@ import {
   faqPath,
   finalizePath,
   tokenizePath,
-  transactionsPath,
-  walletSettingsPath,
+  userTransactionsPath,
+  trusteeTransactionsPath,
+  userWalletSettingsPath,
+  trusteeWalletSettingsPath,
   withdrawPath,
 } from '../constants/urls';
 import { ethDecimalPlaces, userBlockie, trusteeBlockie } from '../constants/defaults';
@@ -224,6 +226,13 @@ class Sidebar extends React.Component {
               isUser
             />
           )}
+          {isUser && (
+            <ListLinkItem
+              to={{ pathname: userTransactionsPath, state: { isUser: true } }}
+              primary={t('transactions')}
+              isUser
+            />
+          )}
           {!isUser && (
             <ListLinkItem
               to={{ pathname: approvePath, state: { isUser: false } }}
@@ -238,15 +247,20 @@ class Sidebar extends React.Component {
               isUser={false}
             />
           )}
-          <ListLinkItem
-            to={{ pathname: transactionsPath, state: { isUser } }}
-            primary={t('transactions')}
-            isUser={isUser}
-          />
+          {!isUser && (
+            <ListLinkItem
+              to={{ pathname: trusteeTransactionsPath, state: { isUser: false } }}
+              primary={t('transactions')}
+              isUser={false}
+            />
+          )}
         </List>
         <div className={classes.drawerPadding} />
         <div className={getClass(classes, 'drawerFooter', isUser)}>
-          <Link to={walletSettingsPath} className={classes.drawerLink}>
+          <Link
+            to={isUser ? userWalletSettingsPath : trusteeWalletSettingsPath}
+            className={classes.drawerLink}
+          >
             {t('walletSettings')}
           </Link>
         </div>

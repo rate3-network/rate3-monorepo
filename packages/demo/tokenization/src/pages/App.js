@@ -11,6 +11,7 @@ import {
 
 import Main from './_Main';
 import Onboard from './Onboard';
+import withTracker from './withTracker';
 
 import {
   switchRole as switchRoleAction,
@@ -76,6 +77,7 @@ const mapStateToProps = state => ({
 });
 
 const enhance = compose(
+  withTracker,
   withRouter,
   connect(
     mapStateToProps,

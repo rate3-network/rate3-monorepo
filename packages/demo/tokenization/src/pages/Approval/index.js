@@ -28,7 +28,7 @@ import {
 import { txType } from '../../constants/enums';
 import { buttonTextPrimary } from '../../constants/colors';
 import { ethDecimalPlaces } from '../../constants/defaults';
-import { transactionsPath } from '../../constants/urls';
+import { trusteeTransactionsPath } from '../../constants/urls';
 
 import {
   nextStep as nextStepAction,
@@ -179,7 +179,7 @@ class Approval extends React.Component {
   redirectToTransactions = () => {
     const { history, isUser } = this.props;
     history.push({
-      pathname: transactionsPath,
+      pathname: trusteeTransactionsPath,
       state: { isUser },
     });
   }
