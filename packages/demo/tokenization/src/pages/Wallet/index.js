@@ -169,17 +169,20 @@ class Wallet extends React.Component {
         bulletClass = classes.kovanBullet;
         break;
       default:
-        currentNetworkId = -1;
-        currentNetworkName = t('localhost');
-        buttonClass = classes.localhostBg;
-        bulletClass = classes.localhostBullet;
+        currentNetworkName = t('ropsten');
+        buttonClass = classes.ropstenBg;
+        bulletClass = classes.ropstenBullet;
+        // currentNetworkId = -1;
+        // currentNetworkName = t('localhost');
+        // buttonClass = classes.localhostBg;
+        // bulletClass = classes.localhostBullet;
     }
 
     const choices = [
       { label: t('ropsten'), value: ropsten.id },
       { label: t('rinkeby'), value: rinkeby.id },
       { label: t('kovan'), value: kovan.id },
-      { label: t('localhost'), value: -1 },
+      // { label: t('localhost'), value: -1 },
     ];
 
     return (

@@ -19,7 +19,11 @@ import makeSagas from './effects';
 import DB from './db';
 
 import { dbName, networkId } from './constants/storageKeys';
-import { ropsten, local, contractAddresses } from './constants/addresses';
+import {
+  ropsten,
+  // local,
+  contractAddresses,
+} from './constants/addresses';
 
 const db = new DB(dbName);
 
@@ -36,8 +40,8 @@ const sessionNetworkId = sessionStorage.getItem(networkId);
 if (sessionNetworkId) {
   if (Object.prototype.hasOwnProperty.call(contractAddresses, sessionNetworkId)) {
     provider = contractAddresses[sessionNetworkId].endpoint;
-  } else if (sessionNetworkId === '-1') {
-    provider = local.endpoint;
+  // } else if (sessionNetworkId === '-1') {
+  //   provider = local.endpoint;
   }
 }
 
