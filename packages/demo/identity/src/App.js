@@ -22,7 +22,7 @@ class App extends React.Component {
   render() {
     return (
       <I18nextProvider i18n={i18next}>
-        <BrowserRouter>
+        <BrowserRouter basename="/test/">
           <Switch>
             <Route
               exact
