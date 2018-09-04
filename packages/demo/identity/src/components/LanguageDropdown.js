@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { withStyles } from '@material-ui/core/styles';
+import { observer, inject } from 'mobx-react';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -37,41 +38,30 @@ const styles = theme => ({
   },
 });
 
+@inject('RootStore') @observer 
 class LanguageDropDown extends React.Component {
-  // constructor() {
-  //   super();
-  //   this.state = {
-  //     currentLanguage: {},
-  //   };
-  // }
   componentDidMount() {
     const savedLang = sessionStorage.getItem(language);
     if (savedLang) {
-
       TranslationsHandler.setLanguage(savedLang);
+      this.props.RootStore.commonStore.setCurrentLanguage(savedLang);
     }
   }
 
-  // updateCurrentLanguage = (l) => {
-  //   this.setState({ currentLanguage: l });
-  // }
-
   handleChange = (e) => {
     TranslationsHandler.setLanguage(e.target.value);
+    this.props.RootStore.commonStore.setCurrentLanguage(e.target.value);
     sessionStorage.setItem(language, e.target.value);
   }
 
   render() {
     const { classes } = this.props;
-    const currentLanguage = TranslationsHandler.getLanguage();
     const languages = TranslationsHandler.getSupportedLanguages();
-
     return (
       <form className={classes.root} autoComplete="off">
         <FormControl className={classes.formControl}>
           <Select
-            value={currentLanguage.getCodeName()}
-            // value={language}
+            value={this.props.RootStore.commonStore.getCurrentLanguage()}
             onChange={this.handleChange}
             input={(
               <Input
@@ -92,22 +82,23 @@ class LanguageDropDown extends React.Component {
             }}
           >
             {
-              languages.map(lang => (
-                <MenuItem
-                  key={lang.getCodeName()}
-                  value={lang.getCodeName()}
-                  classes={{
-                    root: classes.itemRoot,
-                    selected: classes.selectedItem,
-                  }}
-                >
-                  <div className={classes.itemText}>{lang.getCodeName()}</div>
-                </MenuItem>
-              ))
+              languages.map((lang) => {
+                return (
+                  <MenuItem
+                    key={lang.getCodeName()}
+                    value={lang.getCodeName()}
+                    classes={{
+                      root: classes.itemRoot,
+                      selected: classes.selectedItem,
+                    }}
+                  >
+                    <div className={classes.itemText}>{lang.getName()}</div>
+                  </MenuItem>
+                );
+              })
             }
           </Select>
         </FormControl>
-        <p>{TranslationsHandler.getLanguage().getCodeName()}</p>
       </form>
     );
   }

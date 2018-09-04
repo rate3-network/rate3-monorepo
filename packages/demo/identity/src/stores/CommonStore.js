@@ -11,6 +11,7 @@ class CommonStore {
   @observable isUser: Boolean = true;
   @observable isSetupDone: Boolean = false;
   @observable activeOnboardStep: Number = 1;
+  @observable currentLanguage: String = 'en';
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -43,6 +44,10 @@ class CommonStore {
 
   getActiveOnboardStep() {
     return this.activeOnboardStep;
+  }
+
+  getCurrentLanguage() {
+    return this.currentLanguage;
   }
 
   /**
@@ -81,6 +86,11 @@ class CommonStore {
   @action
   onboardNextStep() {
     this.activeOnboardStep += 1;
+  }
+
+  @action
+  setCurrentLanguage(l) {
+    this.currentLanguage = l;
   }
 }
 
