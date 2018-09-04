@@ -1,6 +1,6 @@
 {
   "tokenizationHeader": "토큰화",
-  "tokenizationDescription": "블록체인 상에서 자산의 권리를 디지털 토큰으로 전환하는 과정. 이 트랜잭션은 일반적으로 사용자와 수탁자로 이루어집니다.",
+  "tokenizationDescription": "블록체인 상에서 자산의 권리를 디지털 토큰으로 전환하는 과정입니다. 이 트랜잭션은 일반적으로 사용자와 수탁자로 이루어집니다.",
 
   "tokenize": "토큰화",
   "tokenizeDesc": "SGD를 SGDR로 전환",

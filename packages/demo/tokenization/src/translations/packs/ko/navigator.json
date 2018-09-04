@@ -6,7 +6,7 @@
   "walletSettings": "지갑 설정",
   "tokenize": "토큰화 하기",
   "withdraw": "출금",
-  "approval": "토큰 화승인",
+  "approval": "토큰화 승인",
   "finalization": "토큰화 완료하기",
   "revocation": "토큰화 취소하기",
   "finalizationOrRevocation": "토큰화 완료/취소",
@@ -15,7 +15,7 @@
   "ethWallet": "이더리움\n지갑",
   "circulatingTokens": "유통되는\n토큰",
   "trustBalance": "신탁\n잔액",
-  "pendingAmount": "<1>{{value}}</1> pending",
+  "pendingAmount": "<1>{{value}}</1>\n대기중",
 
   "next": "다음",
   "back": "되돌아가기",

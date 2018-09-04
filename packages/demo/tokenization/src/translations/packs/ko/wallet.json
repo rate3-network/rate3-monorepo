@@ -7,8 +7,8 @@
   "verified": "확인됨",
   "inUse": "사용중",
 
-  "ropsten": "Ropsten Test Network",
-  "rinkeby": "Rinkeby Test Network",
-  "kovan": "Kovan Test Network",
-  "localhost": "Localhost 8545"
+  "ropsten": "Ropsten 테스트넷",
+  "rinkeby": "Rinkeby 테스트넷",
+  "kovan": "Kovan 테스트넷",
+  "localhost": "로컬호스트 8545"
 }

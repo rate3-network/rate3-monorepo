@@ -22,6 +22,6 @@
   "gasPriceLabel": "가스 가격",
   "maxFeeLabel": "최대 수수료",
 
-  "tokenizeAmountOverLimitError": "Tokenization amount cannot be higher than bank account balance",
-  "withdrawAmountOverLimitError": "Withdrawal amount cannot be higher than token balance"
+  "tokenizeAmountOverLimitError": "토큰화할 수량은 은행 계좌에 있는 수량보다 적어야 됩니다.",
+  "withdrawAmountOverLimitError": "인출할 수량은 토큰 수량보다 적어야 됩니다."
 }
