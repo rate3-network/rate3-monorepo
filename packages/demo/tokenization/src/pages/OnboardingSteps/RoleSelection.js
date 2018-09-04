@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { translate } from 'react-i18next';
+import { Trans, translate } from 'react-i18next';
 
 import blockies from 'ethereum-blockies';
 
@@ -132,7 +132,15 @@ const RoleSelection = ({
   setContext,
 }) => (
   <div className={classes.root}>
-    <h1>Step 1: Choose Your Role</h1>
+    <h1>
+      <Trans i18nKey="onboarding:stepNumber">
+        Step
+        {{ stepNumber: 1 }}
+        :
+      </Trans>
+        &nbsp;
+      {t('onboarding:chooseRole')}
+    </h1>
     <div className={classes.roleSelectionContainer}>
       <div className={classes.roleCardContainer}>
         <RoleCard
