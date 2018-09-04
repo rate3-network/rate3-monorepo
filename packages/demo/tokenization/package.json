@@ -9,6 +9,7 @@
     "classnames": "^2.2.6",
     "decimal.js-light": "^2.4.1",
     "ethereum-blockies": "^0.1.1",
+    "history": "^4.7.2",
     "i18next": "^11.6.0",
     "prop-types": "^15.6.2",
     "react": "^16.4.2",
