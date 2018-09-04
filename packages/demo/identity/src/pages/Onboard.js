@@ -60,24 +60,14 @@ const Onboard = inject('RootStore')(observer((props) => {
   const { classes } = props;
   return (
     <div className={classes.root}>
-
       <OnboardSideBar imageSrc={onboardImgs[props.RootStore.commonStore.getActiveOnboardStep() - 1]} />
-
       <div className={classes.content}>
         <div className={classes.dropdownContainer}>
           <div className={classes.demoDropdown}>CROSS-CHAIN IDENTITY DEMO</div>
           <ExpandMore className={classes.icon} />
         </div>
-        {/* <OnboardStepper className={classes.onboardDetailContainer} /> */}
         <div className={classes.onboardDetailContainer}>
           <OnboardStepper />
-          {/* <div className={classes.header}>Cross-Chain Identity.</div>
-          <div className={classes.text}>
-            A unified cross-chain identity framework for real-world entities to share identity information.
-          </div>
-          <Button size="large" className={classes.button}>
-            Begin
-          </Button> */}
         </div>
       </div>
     </div>

@@ -15,9 +15,12 @@ const language = 'lang';
 const styles = theme => ({
   inputRoot: {
     color: 'inherit',
+    fontWeight: 'bold',
+    fontSize: '1.2em',
   },
   selectIcon: {
     color: 'inherit',
+    transform: 'scale(-1, -1)', // Hack: flip the dropdown selection arrow
   },
   selectMenu: {
     paddingTop: 0,

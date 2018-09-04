@@ -5,6 +5,7 @@ import MobileStepper from '@material-ui/core/MobileStepper';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import DemoButton from './DemoButton';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
@@ -57,7 +58,7 @@ const styles = theme => ({
     borderRadius: '50px',
     backgroundColor: identityBlue,
     color: 'white',
-    boxShadow: '0px 0px white',
+    boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
   },
   mobileStepper: {
     backgroundColor: 'white',
@@ -70,6 +71,10 @@ const styles = theme => ({
   },
   dotActive: {
     backgroundColor: materialGrey,
+  },
+  colorInherit: {
+    backgroundColor: identityBlue,
+    // color: identityBlue,
   },
 });
 
@@ -106,9 +111,18 @@ class OnboardStepper extends React.Component {
           {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} /> }
         </div>
         <div className={classes.buttonContainer}>
-          <Button size="large" className={classes.button}>
+          <DemoButton />
+          {/* <Button
+            variant="contained"
+            size="large"
+            // color="primary"
+            className={classes.button}
+            classes={{
+              root: classes.colorInherit,
+            }}
+          >
             Begin
-          </Button>
+          </Button> */}
           <MobileStepper
             steps={maxSteps}
             variant="dots"
@@ -140,8 +154,8 @@ class OnboardStepper extends React.Component {
 }
 
 OnboardStepper.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired,
+  // classes: PropTypes.object.isRequired,
+  // theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(OnboardStepper);
+export default withStyles(styles)(OnboardStepper);

@@ -2,12 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
+import { observer, inject } from 'mobx-react';
 
 import LanguageDropdown from './LanguageDropdown';
-import { identityBlue, materialGrey } from './../constants/colors';
+import { identityBlue } from './../constants/colors';
 import Rate3Logo from './../assets/rate3Logo.svg';
 
 const styles = theme => ({
@@ -41,16 +39,17 @@ const styles = theme => ({
   },
   logo: {
     alignSelf: 'flex-start',
+    width: '23%',
   },
   image: {
-
+    alignSelf: 'center',
+    width: '60%',
   },
   toolbar: theme.mixins.toolbar,
 });
 
 const OnboardSideBar = (props) => {
   const { classes } = props;
-
   return (
     <Drawer
       variant="permanent"
@@ -71,4 +70,4 @@ OnboardSideBar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(OnboardSideBar);
+export default inject('RootStore')(observer((withStyles(styles)(OnboardSideBar))));
