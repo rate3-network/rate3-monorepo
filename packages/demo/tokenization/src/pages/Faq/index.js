@@ -12,6 +12,7 @@ const styles = theme => ({
     letterSpacing: 0,
     '& p': {
       lineHeight: '1.5em',
+      whiteSpace: 'pre-line',
     },
     '& li': {
       lineHeight: '1.5em',
