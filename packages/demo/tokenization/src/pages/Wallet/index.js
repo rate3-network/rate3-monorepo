@@ -67,7 +67,7 @@ const styles = theme => ({
   paperPara: {
     fontWeight: 300,
     marginBottom: '2em',
-    wordBreak: 'break-all',
+    wordBreak: 'break-word',
   },
   paperFooter: {
     display: 'flex',
