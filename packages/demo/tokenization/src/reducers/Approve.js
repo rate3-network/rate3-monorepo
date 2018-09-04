@@ -77,6 +77,11 @@ export default function (state = initialState, action = {}) {
         loadingNextStep: false,
         step: state.step + 1,
         currentTransactionHash: hash,
+        submissionConfirmed: false,
+        networkConfirmed: false,
+        timeLockOver: false,
+        tokenizationFinalized: false,
+        transactionError: false,
       };
     }
     case `${approveActions.SUBMIT_APPROVE_REQUEST}_RECEIPT`: {
@@ -90,7 +95,20 @@ export default function (state = initialState, action = {}) {
         ...state,
         submissionConfirmed: true,
         networkConfirmed: true,
-        tokensIssued: true,
+      };
+    }
+    case `${approveActions.SUBMIT_APPROVE_REQUEST}_FINALIZATION`: {
+      const { txHash } = action;
+      if (state.transactionToApprove == null
+        || txHash !== state.transactionToApprove.tx_hash) {
+        return state;
+      }
+      return {
+        ...state,
+        submissionConfirmed: true,
+        networkConfirmed: true,
+        timeLockOver: true,
+        tokenizationFinalized: true,
       };
     }
     default: {

@@ -83,6 +83,10 @@ export default function (state = initialState, action = {}) {
         loadingNextStep: false,
         step: state.step + 1,
         currentTransactionHash: hash,
+        submissionConfirmed: false,
+        networkConfirmed: false,
+        trusteeApproved: false,
+        transactionError: false,
       };
     }
     case `${tokenizeActions.SUBMIT_TOKENIZE_REQUEST}_RECEIPT`: {
@@ -96,6 +100,18 @@ export default function (state = initialState, action = {}) {
         ...state,
         submissionConfirmed: true,
         networkConfirmed: true,
+      };
+    }
+    case `${tokenizeActions.SUBMIT_TOKENIZE_REQUEST}_APPROVAL`: {
+      const { txHash } = action;
+      if (txHash !== state.currentTransactionHash) {
+        return state;
+      }
+      return {
+        ...state,
+        submissionConfirmed: true,
+        networkConfirmed: true,
+        trusteeApproved: true,
       };
     }
     default: {

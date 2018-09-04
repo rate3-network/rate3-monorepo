@@ -75,6 +75,10 @@ export default function (state = initialState, action = {}) {
         loadingNextStep: false,
         step: state.step + 1,
         currentTransactionHash: hash,
+        submissionConfirmed: false,
+        networkConfirmed: false,
+        wireTransferred: false,
+        transactionError: false,
       };
     }
     case `${withdrawActions.SUBMIT_WITHDRAW_REQUEST}_RECEIPT`: {

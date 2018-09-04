@@ -269,7 +269,7 @@ const network = (db, web3) => {
       ]);
     }
 
-    opsPastEvents.forEach((e) => {
+    for (const e of opsPastEvents) {
       switch (e.event) {
         case 'MintOperationRequested': {
           if (!db.exists(transactionsTable, { tx_hash: e.transactionHash })) {
@@ -304,6 +304,22 @@ const network = (db, web3) => {
             { from: e.returnValues.by, index: e.returnValues.index },
             row => ({ ...row, status: txStatus.SUCCESS }),
           );
+          const txns = db.select(
+            transactionsTable,
+            { from: e.returnValues.by, index: e.returnValues.index },
+          );
+          if (txns.length === 1) {
+            yield all([
+              put({
+                type: `${approveActions.SUBMIT_APPROVE_REQUEST}_FINALIZATION`,
+                txHash: txns[0].tx_hash,
+              }),
+              put({
+                type: `${tokenizeActions.SUBMIT_TOKENIZE_REQUEST}_APPROVAL`,
+                txHash: txns[0].tx_hash,
+              }),
+            ]);
+          }
           break;
         }
         case 'MintOperationRevoked': {
@@ -312,6 +328,16 @@ const network = (db, web3) => {
             { from: e.returnValues.by, index: e.returnValues.index },
             row => ({ ...row, status: txStatus.FAILURE }),
           );
+          const txns = db.select(
+            transactionsTable,
+            { from: e.returnValues.by, index: e.returnValues.index },
+          );
+          if (txns.length === 1) {
+            yield put({
+              type: `${approveActions.SUBMIT_APPROVE_REQUEST}_REVOCATION`,
+              txHash: txns[0].tx_hash,
+            });
+          }
           break;
         }
         case 'BurnOperationRequested': {
@@ -333,7 +359,7 @@ const network = (db, web3) => {
           // Do nothing
         }
       }
-    });
+    }
 
     if (fromBlock === 0) {
       db.insert(

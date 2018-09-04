@@ -89,6 +89,11 @@ export default function (state = initialState, action = {}) {
         loadingNextStep: false,
         step: state.step + 1,
         currentTransactionHash: hash,
+        submissionConfirmed: false,
+        networkConfirmed: false,
+        tokensIssued: false,
+        tokenizationRevoked: false,
+        transactionError: false,
       };
     }
     case `${finalizeActions.SUBMIT_REQUEST}_RECEIPT`: {
