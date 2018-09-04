@@ -10,6 +10,7 @@ class CommonStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable isUser: Boolean = true;
   @observable isSetupDone: Boolean = false;
+  @observable activeOnboardStep: Number = 1;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -38,6 +39,10 @@ class CommonStore {
 
   getIsSetupDone() {
     return this.isSetupDone;
+  }
+
+  getActiveOnboardStep() {
+    return this.activeOnboardStep;
   }
 
   /**
@@ -71,6 +76,11 @@ class CommonStore {
   @action
   finishSetup() {
     this.isSetupDone = true;
+  }
+
+  @action
+  onboardNextStep() {
+    this.activeOnboardStep += 1;
   }
 }
 

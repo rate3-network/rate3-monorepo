@@ -15,6 +15,11 @@ import TranslationHandler from './translation/TranslationHandler';
 import RootStore from './stores/RootStore';
 
 const i18next = TranslationHandler.init();
+
+const stores = {
+  RootStore,
+};
+@observer
 class App extends React.Component {
   componentDidMount() {
     console.log('mounted');
@@ -22,20 +27,22 @@ class App extends React.Component {
   render() {
     return (
       <I18nextProvider i18n={i18next}>
-        <BrowserRouter basename="/#/">
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={() => {
-                return !RootStore.commonStore.getIsSetupDone()
-                ? <Redirect to="/onboard" />
-                : <Home />;
-              }}
-            />
-            <Route exact path="/onboard" component={Onboard} />
-          </Switch>
-        </BrowserRouter>
+        <Provider {...stores}>
+          <BrowserRouter basename="/#/">
+            <Switch>
+              <Route
+                exact
+                path="/"
+                render={() => {
+                  return !RootStore.commonStore.getIsSetupDone()
+                  ? <Redirect to="/onboard" />
+                  : <Home />;
+                }}
+              />
+              <Route exact path="/onboard" component={Onboard} />
+            </Switch>
+          </BrowserRouter>
+        </Provider>
       </I18nextProvider>
     );
   }

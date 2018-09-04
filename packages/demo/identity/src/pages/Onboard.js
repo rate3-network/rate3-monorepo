@@ -1,14 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { withStyles } from '@material-ui/core/styles';
-import MobileStepper from '@material-ui/core/MobileStepper';
+import { observer, inject } from 'mobx-react';
 
 import OnboardSideBar from './../components/OnboardSideBar';
 import OnboardStepper from './../components/OnboardStepper';
 import { identityBlue } from './../constants/colors';
+import OnboardImg1 from './../assets/OnboardImg1.svg';
+import OnboardImg2 from './../assets/OnboardImg2.svg';
+import OnboardImg3 from './../assets/OnboardImg3.svg';
 
+const onboardImgs = [OnboardImg1, OnboardImg2, OnboardImg3];
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -53,12 +56,12 @@ const styles = theme => ({
     backgroundColor: 'white',
   },
 });
-const Onboard = (props) => {
+const Onboard = inject('RootStore')(observer((props) => {
   const { classes } = props;
   return (
     <div className={classes.root}>
 
-      <OnboardSideBar />
+      <OnboardSideBar imageSrc={onboardImgs[props.RootStore.commonStore.getActiveOnboardStep() - 1]} />
 
       <div className={classes.content}>
         <div className={classes.dropdownContainer}>
@@ -79,7 +82,7 @@ const Onboard = (props) => {
       </div>
     </div>
   );
-};
+}));
 
 Onboard.propTypes = {
   classes: PropTypes.object.isRequired,
