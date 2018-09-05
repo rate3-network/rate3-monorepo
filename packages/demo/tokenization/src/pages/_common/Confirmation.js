@@ -21,7 +21,8 @@ const styles = ({
     color: userConfirmationValue,
     fontWeight: 'bold',
     marginBottom: '0.5em',
-    wordBreak: 'break-word',
+    whiteSpace: 'pre-wrap',
+    wordBreak: 'break-all',
   },
 });
 
