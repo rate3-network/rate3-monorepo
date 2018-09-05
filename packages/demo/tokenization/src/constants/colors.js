@@ -4,7 +4,7 @@ export const textDefault = '#494848';
 // Nav bar
 export const navBoxShadow = 'rgba(0, 0, 0, 0.2)';
 export const userNavBg = '#FFFFFF';
-export const userNavFooterBg = '#F1F5F7';
+export const userNavFooterBg = '#FFFFFF';
 export const userNavFooterText = '#A5A5A5';
 export const userNavPrimary = '#494848';
 export const userNavSecondary = '#A5A5A5';
