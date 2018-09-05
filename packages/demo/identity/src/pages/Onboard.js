@@ -22,7 +22,7 @@ const styles = theme => ({
   },
   content: {
     width: '100%',
-    padding: '2% 3% 5% 7%',
+    padding: '2% 3% 8% 7%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',

@@ -22,9 +22,9 @@ const i18next = TranslationHandler.init();
 const theme = createMuiTheme({
   palette: {
     primary: {
-      light: identityBlueLight,
+      light: identityBlue,
       main: identityBlue,
-      dark: identityBlueDark,
+      dark: identityBlue,
     },
   },
 });

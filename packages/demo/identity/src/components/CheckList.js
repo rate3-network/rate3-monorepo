@@ -9,6 +9,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 
+import NetworkBox from './NetworkBox';
+
 const styles = theme => ({
   root: {
     width: '100%',
@@ -16,12 +18,13 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
   },
   listItem: {
-    paddingLeft: 0,
+    padding: '0px 0px 0px 0px',
+    margin: '1em 0em 1em 0em',
   },
   listItemButton: {
     display: 'flex',
     flexDirection: 'column',
-  }
+  },
 });
 
 class CheckList extends React.Component {
@@ -68,7 +71,7 @@ class CheckList extends React.Component {
               />
               <div className={classes.listItemButton}>
                 {item.value}
-                {item.containsSwitchNetworkButton && <Button>test</Button>}
+                {item.hasStyledText && <NetworkBox />}
               </div>
             </ListItem>
           ))}

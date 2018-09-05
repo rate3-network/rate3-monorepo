@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { observer, inject } from 'mobx-react';
 import { withStyles } from '@material-ui/core/styles';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import DemoButton from './DemoButton';
+import BlueButton from './BlueButton';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
@@ -25,7 +26,7 @@ const tutorialSteps = [
     label: 'Set up Wallet',
     list: [{ value: 'Install Metamask on your browser' },
       { value: 'Sign in and unlock your metamask' },
-      { value: 'Switch to a test network', containsSwitchNetworkButton: true },
+      { value: 'Switch to a test network', hasStyledText: true },
       { value: 'Obtain some test ether' },
     ],
   },
@@ -34,13 +35,14 @@ const tutorialSteps = [
 const styles = theme => ({
   header: {
     fontWeight: '900',
-    fontSize: '5vw',
+    fontSize: '3.5em',
     color: identityBlue,
   },
   text: {
     fontWeight: 'normal',
     lineHeight: '120%',
-    fontSize: '1.8vw',
+    fontSize: '1.3em',
+    letterSpacing: '0.01em',
     padding: '1em 0em 3em 0em',
   },
   buttonContainer: {
@@ -62,11 +64,11 @@ const styles = theme => ({
   },
   mobileStepper: {
     backgroundColor: 'white',
-    paddingTop: '2vh',
+    paddingTop: '1.5em',
   },
   dot: {
-    width: '1rem',
-    height: '1rem',
+    width: '0.6em',
+    height: '0.6em',
     marginRight: '0.8rem',
   },
   dotActive: {
@@ -78,6 +80,7 @@ const styles = theme => ({
   },
 });
 
+@inject('RootStore') @observer
 class OnboardStepper extends React.Component {
   state = {
     activeStep: 0,
@@ -85,6 +88,7 @@ class OnboardStepper extends React.Component {
   };
 
   handleNext = () => {
+    this.props.RootStore.commonStore.onboardNextStep();
     this.setState(prevState => ({
       activeStep: prevState.activeStep + 1,
     }));
@@ -98,20 +102,22 @@ class OnboardStepper extends React.Component {
 
   render() {
     const { classes, theme } = this.props;
-    const { activeStep } = this.state;
+    // const { activeStep } = this.state;
 
     const maxSteps = tutorialSteps.length;
-
+    const activeStep = this.props.RootStore.commonStore.getActiveOnboardStep() - 1;
+    console.log('stepper');
+    console.log(this.props.RootStore);
     return (
       <React.Fragment>
 
         <div className={classes.header}>{tutorialSteps[activeStep].label}</div>
         <div className={classes.text}>
           {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
-          {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} /> }
+          {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
         </div>
         <div className={classes.buttonContainer}>
-          <DemoButton />
+          <BlueButton handleClick={this.handleNext}/>
           {/* <Button
             variant="contained"
             size="large"

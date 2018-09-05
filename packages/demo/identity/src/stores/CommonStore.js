@@ -10,8 +10,9 @@ class CommonStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable isUser: Boolean = true;
   @observable isSetupDone: Boolean = false;
-  @observable activeOnboardStep: Number = 1;
+  @observable activeOnboardStep: Number = 3;
   @observable currentLanguage: String = 'en';
+  @observable currentNetwork: String = 'Main Ethereum Network';
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -48,6 +49,10 @@ class CommonStore {
 
   getCurrentLanguage() {
     return this.currentLanguage;
+  }
+
+  getCurrentNetwork() {
+    return this.currentNetwork;
   }
 
   /**
