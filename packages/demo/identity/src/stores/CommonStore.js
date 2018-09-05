@@ -90,6 +90,11 @@ class CommonStore {
     this.isUser = true;
   }
 
+  @action
+  toggleRole() {
+    this.isUser = !this.isUser;
+    console.log(this.isUser);
+  }
   /**
    * Change Setup status to done
    *

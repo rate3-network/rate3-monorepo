@@ -12,7 +12,10 @@ const styles = theme => ({
     fontWeight: 'bold',
     borderRadius: '50px',
     color: 'white',
-    boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 0 0',
+    '&:hover': {
+      boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
+    },
   },
 });
 
