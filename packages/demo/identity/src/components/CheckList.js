@@ -19,7 +19,7 @@ const styles = theme => ({
   },
   listItem: {
     padding: '0px 0px 0px 0px',
-    margin: '1em 0em 1em 0em',
+    margin: '0.5em 0em 0.5em 0em',
   },
   listItemButton: {
     display: 'flex',
@@ -57,10 +57,7 @@ class CheckList extends React.Component {
           {this.props.list.map(item => (
             <ListItem
               key={item.value}
-              role={undefined}
               dense
-              button
-              onClick={this.handleToggle(item.value)}   
               disableRipple
               className={classes.listItem}
             >

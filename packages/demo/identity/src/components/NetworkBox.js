@@ -17,6 +17,7 @@ const styles = theme => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: '0.5em',
   },
   icon: {
     height: '0.4em',

@@ -17,7 +17,6 @@ const styles = theme => ({
     flexGrow: 1,
     height: '100vh',
     zIndex: 1,
-    // overflow: 'hidden',
     display: 'flex',
   },
   content: {
