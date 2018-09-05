@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 
 import OnboardSideBar from './../components/OnboardSideBar';
 import OnboardStepper from './../components/OnboardStepper';
@@ -12,6 +13,7 @@ import OnboardImg2 from './../assets/OnboardImg2.svg';
 import OnboardImg3 from './../assets/OnboardImg3.svg';
 
 const onboardImgs = [OnboardImg1, OnboardImg2, OnboardImg3];
+
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -57,6 +59,10 @@ const styles = theme => ({
 });
 const Onboard = inject('RootStore')(observer((props) => {
   const { classes } = props;
+  const activeOnboardStep = props.RootStore.commonStore.getActiveOnboardStep();
+  // if (activeOnboardStep > 3) {
+  //   props.history.push('/');
+  // }
   return (
     <div className={classes.root}>
       <OnboardSideBar imageSrc={onboardImgs[props.RootStore.commonStore.getActiveOnboardStep() - 1]} />
@@ -78,4 +84,4 @@ Onboard.propTypes = {
 };
 
 
-export default withStyles(styles)(Onboard);
+export default withRouter(withStyles(styles)(Onboard));

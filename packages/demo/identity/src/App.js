@@ -47,7 +47,7 @@ class App extends React.Component {
                   exact
                   path="/"
                   render={() => {
-                    return !RootStore.commonStore.getIsSetupDone()
+                    return !RootStore.commonStore.getIsOnboardDone()
                     ? <Redirect to="/onboard" />
                     : <Home />;
                   }}

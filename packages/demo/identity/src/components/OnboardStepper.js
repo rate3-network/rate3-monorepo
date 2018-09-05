@@ -3,13 +3,10 @@ import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { withStyles } from '@material-ui/core/styles';
 import MobileStepper from '@material-ui/core/MobileStepper';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import BlueButton from './BlueButton';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import { translate } from 'react-i18next';
+import { withRouter } from 'react-router-dom';
 
+import BlueButton from './BlueButton';
 import { identityBlue, materialGrey } from './../constants/colors';
 import CheckList from './CheckList';
 
@@ -82,53 +79,50 @@ const styles = theme => ({
 
 @inject('RootStore') @observer
 class OnboardStepper extends React.Component {
-  state = {
-    activeStep: 0,
-    walletProgress: 0, // 0 means no step completed, 1 means step 1 completed, 4 means step 4 completed, etc
-  };
-
   handleNext = () => {
     this.props.RootStore.commonStore.onboardNextStep();
-    this.setState(prevState => ({
-      activeStep: prevState.activeStep + 1,
-    }));
-  };
+  }
 
-  handleBack = () => {
-    this.setState(prevState => ({
-      activeStep: prevState.activeStep - 1,
-    }));
-  };
+  directToHome = () => {
+    this.props.history.push('/');
+  }
 
   render() {
     const { classes, theme } = this.props;
-    // const { activeStep } = this.state;
-
     const maxSteps = tutorialSteps.length;
-    const activeStep = this.props.RootStore.commonStore.getActiveOnboardStep() - 1;
-    console.log('stepper');
-    console.log(this.props.RootStore);
+    const activeOnboardStep = this.props.RootStore.commonStore.getActiveOnboardStep();
+    
+    let buttonText;
+    let buttonAction;
+    switch (activeOnboardStep) {
+      case 1:
+        buttonText = this.props.t('begin');
+        buttonAction = this.handleNext;
+        break;
+      case 2:
+        buttonText = this.props.t('next');
+        buttonAction = this.handleNext;
+        break;
+      case 3:
+        buttonText = this.props.t('startDemo');
+        this.props.RootStore.commonStore.finishOnboard();
+        buttonAction = this.directToHome;
+        break;
+      default:
+        buttonText = this.props.t('next');
+    }
+
+    const finalButtonDisabled = activeOnboardStep === 3 && !this.props.RootStore.commonStore.isWalletSetupDone;
+    const activeStep = activeOnboardStep - 1;
     return (
       <React.Fragment>
-
         <div className={classes.header}>{tutorialSteps[activeStep].label}</div>
         <div className={classes.text}>
           {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
           {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
         </div>
         <div className={classes.buttonContainer}>
-          <BlueButton handleClick={this.handleNext}/>
-          {/* <Button
-            variant="contained"
-            size="large"
-            // color="primary"
-            className={classes.button}
-            classes={{
-              root: classes.colorInherit,
-            }}
-          >
-            Begin
-          </Button> */}
+          <BlueButton handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
           <MobileStepper
             steps={maxSteps}
             variant="dots"
@@ -139,21 +133,8 @@ class OnboardStepper extends React.Component {
             position="static"
             activeStep={activeStep}
             className={classes.mobileStepper}
-            // nextButton={
-            //   <Button size="small" onClick={this.handleNext} disabled={activeStep === maxSteps - 1}>
-            //     Next
-            //     {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-            //   </Button>
-            // }
-            // backButton={
-            //   <Button size="small" onClick={this.handleBack} disabled={activeStep === 0}>
-            //     {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            //     Back
-            //   </Button>
-            // }
           />
         </div>
-        
       </React.Fragment>
     );
   }
@@ -164,4 +145,4 @@ OnboardStepper.propTypes = {
   // theme: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(OnboardStepper);
+export default withRouter(translate('general')(withStyles(styles)(OnboardStepper)));

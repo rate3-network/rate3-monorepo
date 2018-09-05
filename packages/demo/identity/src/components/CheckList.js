@@ -3,12 +3,11 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import Button from '@material-ui/core/Button';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
+import { observer, inject } from 'mobx-react';
 
+import SelectedBox from '../assets/selectedBox.svg';
+import UnselectedBox from '../assets/unselectedBox.svg';
 import NetworkBox from './NetworkBox';
 
 const styles = theme => ({
@@ -25,45 +24,30 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column',
   },
+  checkboxIcon: {
+    height: '1em',
+  },
 });
 
+@inject('RootStore') @observer
 class CheckList extends React.Component {
-  state = {
-    checked: [0],
-  };
-
-  handleToggle = value => () => {
-    const { checked } = this.state;
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    this.setState({
-      checked: newChecked,
-    });
-  };
-
   render() {
     const { classes } = this.props;
 
     return (
       <div className={classes.root}>
         <List>
-          {this.props.list.map(item => (
+          {this.props.list.map((item, id) => (
             <ListItem
               key={item.value}
               dense
-              disableRipple
               className={classes.listItem}
             >
               <Checkbox
-                checked={this.state.checked.indexOf(item.value) !== -1}
-                tabIndex={-1}
+                checked={this.props.RootStore.commonStore.getSetupWalletProgress(id)}
+                checkedIcon={<img src={SelectedBox} alt="finished" className={classes.checkboxIcon} />}
+                icon={<img src={UnselectedBox} alt="not finished" className={classes.checkboxIcon} />}
+                // tabIndex={-1}
                 disableRipple
               />
               <div className={classes.listItemButton}>

@@ -2,6 +2,7 @@ import {
   configure,
   observable,
   action,
+  computed,
 } from 'mobx';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
@@ -9,15 +10,24 @@ configure({ enforceActions: 'always' }); // don't allow state modifications outs
 class CommonStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable isUser: Boolean = true;
-  @observable isSetupDone: Boolean = false;
-  @observable activeOnboardStep: Number = 3;
+  @observable isOnboardDone: Boolean = false;
+  @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
   @observable currentNetwork: String = 'Main Ethereum Network';
+  @observable setupWalletProgress: Array = [true, true, true, true]; // true: completed; false: not done;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
+
+  @computed get isWalletSetupDone() {
+    return this.setupWalletProgress.every(progress => (progress)); // check if every step is done
+  }
+
+  // @computed get isOnboardDone() {
+  //   return this.isOnboardDone
+  // }
 
   /* ************* Getters *************  */
   /**
@@ -39,8 +49,8 @@ class CommonStore {
    * @memberof CommonStore
    */
 
-  getIsSetupDone() {
-    return this.isSetupDone;
+  getIsOnboardDone() {
+    return this.isOnboardDone;
   }
 
   getActiveOnboardStep() {
@@ -55,6 +65,9 @@ class CommonStore {
     return this.currentNetwork;
   }
 
+  getSetupWalletProgress(id) {
+    return this.setupWalletProgress[id];
+  }
   /**
    * Change role to Verifier
    *
@@ -84,8 +97,8 @@ class CommonStore {
    * @memberof CommonStore
    */
   @action
-  finishSetup() {
-    this.isSetupDone = true;
+  finishOnboard() {
+    this.isOnboardDone = true;
   }
 
   @action
@@ -96,6 +109,11 @@ class CommonStore {
   @action
   setCurrentLanguage(l) {
     this.currentLanguage = l;
+  }
+
+  @action
+  completeSetupWalletProgress(id) {
+    this.setupWalletProgress[id] = true;
   }
 }
 

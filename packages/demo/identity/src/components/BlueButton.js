@@ -23,10 +23,11 @@ const BlueButton = (props) => {
       variant="contained"
       size="large"
       color="primary"
+      disabled={props.disabled}
       className={classes.button}
       onClick={props.handleClick}
     >
-      Begin
+      {props.buttonText}
     </Button>
   );
 };
