@@ -94,6 +94,7 @@ class OnboardStepper extends React.Component {
     
     let buttonText;
     let buttonAction;
+    // change button text and onClick action according which onboarding step use is on
     switch (activeOnboardStep) {
       case 1:
         buttonText = this.props.t('begin');
@@ -112,7 +113,7 @@ class OnboardStepper extends React.Component {
         buttonText = this.props.t('next');
     }
 
-    const finalButtonDisabled = activeOnboardStep === 3 && !this.props.RootStore.commonStore.isWalletSetupDone;
+    const finalButtonDisabled = (activeOnboardStep === 3 && !this.props.RootStore.commonStore.isWalletSetupDone);
     const activeStep = activeOnboardStep - 1;
     return (
       <React.Fragment>
