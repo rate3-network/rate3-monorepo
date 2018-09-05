@@ -12,6 +12,7 @@ import { tokenizeActions } from '../actions/Tokenize';
 import { withdrawActions } from '../actions/Withdraw';
 import { approveActions } from '../actions/Approve';
 import { finalizeActions } from '../actions/Finalize';
+import { toTokenAmount } from '../utils';
 
 const contracts = (db, web3) => {
   function* handleTokenize(action) {
@@ -25,7 +26,7 @@ const contracts = (db, web3) => {
       gasPrice,
     } = action;
 
-    const tx = operationsContract.methods.requestMint(amount).send({
+    const tx = operationsContract.methods.requestMint(toTokenAmount(amount)).send({
       from: currentDefaultAccount,
       gas: gasLimit,
       gasPrice: web3.utils.toWei(gasPrice, 'gwei'),
@@ -53,7 +54,7 @@ const contracts = (db, web3) => {
       gasPrice,
     } = action;
 
-    const tx = operationsContract.methods.requestBurn(amount).send({
+    const tx = operationsContract.methods.requestBurn(toTokenAmount(amount)).send({
       from: currentDefaultAccount,
       gas: gasLimit,
       gasPrice: web3.utils.toWei(gasPrice, 'gwei'),

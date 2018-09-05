@@ -11,6 +11,7 @@ import { walletActions } from '../actions/Wallet';
 import { transactionsActions } from '../actions/Transactions';
 import { txType, txStatus } from '../constants/enums';
 import { userInitialAmount, sgdrDecimalPlaces, sgdDecimalPlaces } from '../constants/defaults';
+import { fromTokenAmount } from '../utils';
 
 
 const wallet = (db, web3) => {
@@ -115,9 +116,12 @@ const wallet = (db, web3) => {
     let pendingWithdrawal;
 
     if (isUser) {
-      tokenBalance = new Decimal(yield call(
-        tokenContract.methods.balanceOf(userDefaultAccount).call,
-      )).toFixed(sgdrDecimalPlaces);
+      tokenBalance = fromTokenAmount(
+        yield call(
+          tokenContract.methods.balanceOf(userDefaultAccount).call,
+        ),
+        sgdrDecimalPlaces,
+      );
       pendingTokenization = db
         .select(transactionsTable, {
           from: userDefaultAccount,
@@ -125,7 +129,7 @@ const wallet = (db, web3) => {
           status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
         })
         .reduce(
-          (pending, txn) => pending.add(new Decimal(txn.amount)),
+          (pending, txn) => pending.add(fromTokenAmount(txn.amount)),
           new Decimal(0),
         )
         .toFixed(sgdDecimalPlaces);
@@ -136,7 +140,7 @@ const wallet = (db, web3) => {
           status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
         })
         .reduce(
-          (pending, txn) => pending.add(new Decimal(txn.amount)),
+          (pending, txn) => pending.add(fromTokenAmount(txn.amount)),
           new Decimal(0),
         )
         .toFixed(sgdrDecimalPlaces);
@@ -144,9 +148,12 @@ const wallet = (db, web3) => {
         .sub(new Decimal(tokenBalance))
         .sub(new Decimal(pendingTokenization));
     } else {
-      tokenBalance = new Decimal(yield call(
-        tokenContract.methods.totalSupply().call,
-      )).toFixed(sgdrDecimalPlaces);
+      tokenBalance = fromTokenAmount(
+        yield call(
+          tokenContract.methods.totalSupply().call,
+        ),
+        sgdrDecimalPlaces,
+      );
       pendingTokenization = db
         .select(transactionsTable, {
           to: operationsContract.options.address,
@@ -154,7 +161,7 @@ const wallet = (db, web3) => {
           status: value => (value !== txStatus.SUCCESS && value !== txStatus.FAILURE),
         })
         .reduce(
-          (pending, txn) => pending.add(new Decimal(txn.amount)),
+          (pending, txn) => pending.add(fromTokenAmount(txn.amount)),
           new Decimal(0),
         )
         .toFixed(sgdDecimalPlaces);

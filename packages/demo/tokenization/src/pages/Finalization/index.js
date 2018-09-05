@@ -26,7 +26,7 @@ import {
   renderAmount,
 } from '../Transactions';
 import { buttonTextPrimary } from '../../constants/colors';
-import { ethDecimalPlaces } from '../../constants/defaults';
+import { ethDecimalPlaces, sgdDecimalPlaces, sgdrDecimalPlaces } from '../../constants/defaults';
 import { trusteeTransactionsPath } from '../../constants/urls';
 
 import {
@@ -43,7 +43,7 @@ import {
   setPendingFinalizePage as setPendingFinalizePageAction,
   setPendingFinalizeRowsPerPage as setPendingFinalizeRowsPerPageAction,
 } from '../../actions/Transactions';
-import { compose } from '../../utils';
+import { compose, fromTokenAmount } from '../../utils';
 
 const styles = theme => ({
   root: {
@@ -256,7 +256,9 @@ class Finalize extends React.Component {
                 label: t('fields:amountToTokenizeLabel'),
                 value: selectedTransaction && (
                   <React.Fragment>
-                    {selectedTransaction.amount} <SgdPill />
+                    {fromTokenAmount(selectedTransaction.amount, sgdDecimalPlaces)}
+                    &nbsp;
+                    <SgdPill />
                   </React.Fragment>
                 ),
               },
@@ -264,7 +266,9 @@ class Finalize extends React.Component {
                 label: t('fields:amountToIssueLabel'),
                 value: selectedTransaction && (
                   <React.Fragment>
-                    {selectedTransaction.amount} <SgdrPill />
+                    {fromTokenAmount(selectedTransaction.amount, sgdrDecimalPlaces)}
+                    &nbsp;
+                    <SgdrPill />
                   </React.Fragment>
                 ),
               }),

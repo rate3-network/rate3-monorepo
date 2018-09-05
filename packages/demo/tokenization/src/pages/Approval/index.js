@@ -27,7 +27,7 @@ import {
 } from '../Transactions';
 import { txType } from '../../constants/enums';
 import { buttonTextPrimary } from '../../constants/colors';
-import { ethDecimalPlaces } from '../../constants/defaults';
+import { ethDecimalPlaces, sgdDecimalPlaces, sgdrDecimalPlaces } from '../../constants/defaults';
 import { trusteeTransactionsPath } from '../../constants/urls';
 
 import {
@@ -43,7 +43,12 @@ import {
   setPendingApprovalPage as setPendingApprovalPageAction,
   setPendingApprovalRowsPerPage as setPendingApprovalRowsPerPageAction,
 } from '../../actions/Transactions';
-import { compose, genStyle, getClass } from '../../utils';
+import {
+  compose,
+  genStyle,
+  getClass,
+  fromTokenAmount,
+} from '../../utils';
 
 const styles = theme => ({
   root: {
@@ -246,7 +251,9 @@ class Approval extends React.Component {
                 label: t('fields:amountToTokenizeLabel'),
                 value: transactionToApprove && (
                   <React.Fragment>
-                    {transactionToApprove.amount} <SgdPill />
+                    {fromTokenAmount(transactionToApprove.amount, sgdDecimalPlaces)}
+                    &nbsp;
+                    <SgdPill />
                   </React.Fragment>
                 ),
               },
@@ -254,7 +261,9 @@ class Approval extends React.Component {
                 label: t('fields:amountToIssueLabel'),
                 value: transactionToApprove && (
                   <React.Fragment>
-                    {transactionToApprove.amount} <SgdrPill />
+                    {fromTokenAmount(transactionToApprove.amount, sgdrDecimalPlaces)}
+                    &nbsp;
+                    <SgdrPill />
                   </React.Fragment>
                 ),
               },

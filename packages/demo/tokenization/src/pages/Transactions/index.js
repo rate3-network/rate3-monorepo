@@ -9,6 +9,7 @@ import Countdown from 'react-countdown-now';
 import FilterDropdown from '../../components/transactions/FilterDropdown';
 import Table from '../../components/transactions/Table';
 import { SgdPill, SgdrPill } from '../../components/CurrencyPill';
+import { EtherscanTxnLink, EtherscanAddrLink } from '../../components/EtherscanLink';
 
 import { txType, txStatus } from '../../constants/enums';
 import {
@@ -16,13 +17,13 @@ import {
   transactionSuccess,
   transactionError,
 } from '../../constants/colors';
+import { sgdDecimalPlaces, sgdrDecimalPlaces } from '../../constants/defaults';
 import {
   setCurrentPage as setCurrentPageAction,
   setCurrentRowsPerPage as setCurrentRowsPerPageAction,
   setCurrentFilter as setCurrentFilterAction,
 } from '../../actions/Transactions';
-import { compose } from '../../utils';
-import { EtherscanTxnLink, EtherscanAddrLink } from '../../components/EtherscanLink';
+import { compose, fromTokenAmount } from '../../utils';
 
 const styles = theme => ({
   root: {
@@ -83,7 +84,12 @@ export const renderDate = (txn) => {
 
 export const renderAmount = txn => (
   <div style={{ fontSize: '1.2em', whiteSpace: 'nowrap' }}>
-    <span style={{ fontWeight: 'bold' }}>{txn.amount}</span>
+    <span style={{ fontWeight: 'bold' }}>
+      {fromTokenAmount(
+        txn.amount,
+        txn.type === txType.TOKENIZE ? sgdDecimalPlaces : sgdrDecimalPlaces,
+      )}
+    </span>
     &nbsp;
     {txn.type === txType.TOKENIZE
       ? <SgdPill />
