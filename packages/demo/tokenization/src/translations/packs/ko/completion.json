@@ -1,0 +1,35 @@
+{
+  "tokenizeSubmittedHeader": "트랜잭션이 제출되었습니다.",
+  "tokenizeFailedHeader": "트랜잭션이 실패하였습니다.",
+  "withdrawSubmittedHeader": "출금신청이 제출되었습니다.",
+  "withdrawFailedHeader": "출금신청이 실패하였습니다.",
+  "approvalSubmittedHeader": "승인신청이 제출되었습니다.",
+  "approvalFailedHeader": "승인신청이 실패하였습니다.",
+  "finalizeSubmittedHeader": "토큰화가 완료되었습니다.",
+  "finalizeFailedHeader": "토큰화 완료에 실패하였습니다.",
+  "revokeSubmittedHeader": "토큰화가 취소되었습니다.",
+  "revokeFailedHeader": "토큰화 취소에 실패하였습니다.",
+
+  "txHashLabel": "TxHash:",
+  "pleaseTryAgainLater": "나중에다시 시도 해주세요",
+
+
+  "tokenizeSubmission": "트랜젝션 제출",
+  "withdrawSubmission": "트랜젝션 제출",
+  "approvalSubmission": "승인 제출",
+
+  "networkConfirmation": "네트워크 확인",
+
+  "trusteeApproval": "수탁자 승인",
+  "wireTransferCompleted": "온라인 송금 완료",
+  "tokensIssued": "토큰 발행됨",
+  "timeLock": "타임락",
+  "tokenizationFinalized": "토큰화 완료됨",
+  "tokenizationRevoked": "토큰화 취소됨",
+
+  "seeTransactions": "트랜젝션 내역",
+
+  "backToMainPage": "메인페이지로 돌아가기",
+  "backToTokenize": "토큰화로 돌아가기",
+  "backToWithdraw": "출금으로 돌아가기"
+}

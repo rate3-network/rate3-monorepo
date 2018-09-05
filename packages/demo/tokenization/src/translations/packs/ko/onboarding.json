@@ -1,0 +1,47 @@
+{
+  "tokenizationHeader": "토큰화",
+  "tokenizationDescription": "블록체인 상에서 자산의 권리를 디지털 토큰으로 전환하는 과정입니다. 이 트랜잭션은 일반적으로 사용자와 수탁자로 이루어집니다.",
+
+  "tokenize": "토큰화",
+  "tokenizeDesc": "SGD를 SGDR로 전환",
+  "withdraw": "출금",
+  "withdrawDesc": "SGDR을 SGD로 전환",
+
+  "approve": "승인",
+  "approveDesc": "사용자의 토큰화 요청 승인",
+  "monitor": "관찰",
+  "monitorDesc": "사용자의 트랙젝션 관찰",
+
+  "stepNumber": "<1>{{stepNumber}}</1> 단계:",
+  "chooseRole": "역할 선택",
+  "verifyBankAccount": "은행 계좌 검증",
+  "verifyTrustDetails": "수탁자 세부사항 검증",
+  "setUpTrusteeWallet": "수탁자 지갑 설정",
+  "setUpUserWallet": "사용자 지갑 설정",
+
+  "selectBankAccount": "은행 계좌 선택",
+  "trustAccount": "신탁 계좌",
+  "selectETHWallet": "이더리움 지갑 선택",
+
+  "verifyBankAccountDesc1": "당신의 은행 계좌는 <1>토큰화</1> 과정에서 <3>SGD를 신탁사로 송금하는데</3> 사용됩니다.",
+  "verifyBankAccountDesc2": "당신의 은행 계좌는 <1>출금</1> 과정에서 <3>SGD를 신탁사로부터 입금 받는데</3> 사용됩니다.",
+  "verifyBankAccountDesc1Short": "<1>토큰화</1> 과정에서 <3>SGD를 신탁사로 송금</3>",
+  "verifyBankAccountDesc2Short": "<1>출금</1> 과정에서 <3>SGD를 신탁사로부터 입금 받음</3>",
+
+  "verifyTrustDetailsDesc1": "<1>토큰화</1> 요청 과정에서 신탁사는 사용자로부터 <3>SGD를 입금 받습니다</3>.",
+  "verifyTrustDetailsDesc2": "<1>출금</1> 요청 과정에서 신탁사는 사용자에게 <3>SGD를 송금합니다</3>.",
+  "verifyTrustDetailsDesc1Short": "<1>토큰화</1> 하는 동안 사용자로부터 <3>SGD 받기</3>",
+  "verifyTrustDetailsDesc2Short": "<1>출금하는</1> 동안 사용자에게 <3>SGD 송금</3>",
+
+  "userSetUpWalletDesc1": "이더리움 지갑 주소는 <1>당신의 고유ID입니다</1>.",
+  "userSetUpWalletDesc2": "이더리움 지갑은 출금 요청 및 토큰화 제출을 위해 사용됩니다.",
+
+  "trusteeSetUpWalletDesc1": "이더리움 지갑 주소는 수탁자의 <1>고유 ID입니다</1>.",
+  "trusteeSetUpWalletDesc2": "이더리움 지갑은 출금 요청 및 토큰화를 위해 사용됩니다.",
+
+  "switchingToTrustee": "수탁자로 전환하시겠습니까?",
+  "switchingToUser": "사용자로 전환하시겠습니까?",
+  "switchToTrusteeMessage": "이 작업을 한 번만 수행하면 됩니다",
+  "switchToUserMessage": "개인 계좌와 이더리움 지갑을 설정해야 합니다. ",
+  "switchSubMessage": "이 과정은 한 번만 하시면 됩니다. "
+}

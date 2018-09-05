@@ -1,0 +1,27 @@
+{
+  "amountToWithdrawFieldLabel": "请输入提取额",
+  "amountToTokenizeFieldLabel": "请输入代币化金额",
+  "trustBankFieldLabel": "银行",
+  "trustSwiftCodeFieldLabel": "SWIFT代码",
+  "trustAccountFieldLabel": "账户名",
+  "gasLimitFieldLabel": "Gas限制",
+  "gasPriceFieldLabel": "Gas价格",
+
+  "receiveInReturn": "您将会获得 <1>{{amount}}</1> <2></2>。",
+
+  "addressLabel": "发送地址",
+  "txHashLabel": "交易哈希",
+  "amountToWithdrawLabel": "提取额",
+  "amountToReceiveLabel": "收到金额",
+  "amountToTokenizeLabel": "代币化金额",
+  "amountToIssueLabel": "发行额",
+  "trustBankLabel": "银行",
+  "trustSwiftCodeLabel": "SWIFT代码",
+  "trustAccountLabel": "账户名",
+  "gasLimitLabel": "Gas限制",
+  "gasPriceLabel": "Gas价格",
+  "maxFeeLabel": "费用上限",
+
+  "tokenizeAmountOverLimitError": "代币化金额不能超过银行账户的总额",
+  "withdrawAmountOverLimitError": "提取金额不能超过代币化金额"
+}

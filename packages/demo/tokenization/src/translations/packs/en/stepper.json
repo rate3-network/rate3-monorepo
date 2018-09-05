@@ -1,0 +1,7 @@
+{
+  "amountToTokenize": "Amount to tokenize",
+  "amountToWithdraw": "Amount to withdraw",
+  "wireTransferDetails": "Wire transfer details",
+  "gasLimitAndPrice": "Gas limit and price",
+  "confirmation": "Confirmation"
+}

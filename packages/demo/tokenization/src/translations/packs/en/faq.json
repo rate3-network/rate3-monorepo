@@ -1,0 +1,13 @@
+{
+  "qWhatIsThis": "What is this?",
+  "aWhatIsThisPara1": "This is a proof-of-concept demo to showcase the tokenization process, from the perspective of a user or a trustee. It is on <1>Ropsten</1>, <3>Rinkeby</3>, and <5>Kovan</5> Test Networks.",
+  "aWhatIsThisPara2": "A user refers to someone who wants to exchange his Singapore Dollars for SGDR tokens, or redeem SGDR tokens for Singapore Dollars. A trustee refers to someone who will approve any tokenization or withdrawal requests.",
+
+  "qHowToTry": "How do I try this out?",
+  "qHowToTryPoint1": "Start off with the 'User' perspective.",
+  "qHowToTryPoint2": "Choose how much you want to tokenize or withdraw, depending on your SGD (fiat) or SGDR (crypto) balance.",
+  "qHowToTryPoint3": "Once you have made various tokenization requests, swap to a Trustee and approve or reject the tokenization requests",
+
+  "qWhyIsThisImportant": "Why is this important?",
+  "qWhyIsThisImportantPara1": "This Proof-of-Concept showcases the entire flow for both users and trustees, within a beautiful and easy user experience. More importantly, it highlights the core technical elements of minting and burning tokens. We will continue to build upon this proof-of-concept demo with additional features, such as registry modules and compliance layer functionality, integrating RTE staking functionalities, and better handling of interactor contract approval/finalization."
+}
