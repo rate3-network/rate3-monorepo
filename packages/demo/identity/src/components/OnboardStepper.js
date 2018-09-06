@@ -6,6 +6,7 @@ import MobileStepper from '@material-ui/core/MobileStepper';
 import { translate } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 
+import RoleSelect from './RoleSelect';
 import BlueButton from './BlueButton';
 import { identityBlue, materialGrey } from './../constants/colors';
 import CheckList from './CheckList';
@@ -18,6 +19,7 @@ const tutorialSteps = [
   {
     label: 'Who are you?',
     text: 'Your role determines your actions but don’t worry, for this demo you can change it at any time.',
+    hasRoleSelect: true,
   },
   {
     label: 'Set up Wallet',
@@ -122,6 +124,16 @@ class OnboardStepper extends React.Component {
           {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
           {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
         </div>
+        
+        {tutorialSteps[activeStep].hasRoleSelect &&
+          <RoleSelect
+            leftText="User"
+            rightText="Verifier"
+            isUser={this.props.RootStore.commonStore.getIsUser()}
+            handleUserClick={this.props.RootStore.commonStore.changeToUser.bind(this.props.RootStore.commonStore)}
+            handleVerifierClick={this.props.RootStore.commonStore.changeToVerifier.bind(this.props.RootStore.commonStore)}
+        />
+        }
         <div className={classes.buttonContainer}>
           <BlueButton handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
           <MobileStepper

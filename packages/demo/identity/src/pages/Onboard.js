@@ -5,7 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 
-import OnboardRoleSwitch from './../components/OnboardRoleSwitch';
+import RoleSwitch from './../components/OnboardRoleSwitch';
 import OnboardSideBar from './../components/OnboardSideBar';
 import OnboardStepper from './../components/OnboardStepper';
 import { identityBlue } from './../constants/colors';
@@ -74,10 +74,11 @@ const Onboard = inject('RootStore')(observer((props) => {
           <ExpandMore className={classes.icon} />
         </div>
         <div className={classes.onboardDetailContainer}>
-          {/* <OnboardRoleSwitch
-            leftText="test"
-            rightText="test2"
-            isUser={true}
+          {/* <RoleSwitch
+            leftText="User"
+            rightText="Verifier"
+            isUser={props.RootStore.commonStore.getIsUser()}
+            onClick={props.RootStore.commonStore.toggleRole.bind(props.RootStore.commonStore)}
           /> */}
           <OnboardStepper />
         </div>

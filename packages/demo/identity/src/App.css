@@ -9,7 +9,6 @@ body {
   color: #ffffff !important;
 }
 .toggle-gradient-text {
-  font-size: 72px;
   background: linear-gradient(to right, #4392F1 0%,#56CBF9 100%);
   -webkit-background-clip: text;
   background-clip: text;

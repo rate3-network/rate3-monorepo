@@ -3,21 +3,21 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
-import { toggleGradient } from '../constants/colors';
 
+const animationDuration = '250ms';
 const styles = (theme) => {
   return {
     switchWrapper: {
       width: '100%',
       height: '100vh',
-      transition: 'background-color 100ms ease-out',
+      transition: `background-color ${animationDuration} ease-out`,
     },
     switch: {
       position: 'relative',
       width: '28rem',
       height: '5rem',
       borderRadius: '1%',
-      transition: 'background-color 100ms ease-out',
+      transition: `background-color ${animationDuration} ease-out`,
       zIndex: 1,
       boxShadow: 'inset 0 0 9px rgba(0, 0, 0, 0.2)',
       '&:before': {
@@ -47,7 +47,7 @@ const styles = (theme) => {
       height: '5rem',
       backgroundColor: '#EAF9FF',
       borderRadius: '0%',
-      transition: 'transform 100ms ease-in-out',
+      transition: `transform ${animationDuration} ease-in-out`,
       zIndex: '3',
       opacity: '0.99',
       top: '-0.05rem',
@@ -69,7 +69,7 @@ const styles = (theme) => {
       letterSpacing: '0.05rem',
       lineHeight: '5rem',
       fontWeight: '900',
-      transition: 'color 100ms ease-in-out',
+      transition: `color ${animationDuration} ease-in-out`,
       userSelect: 'none',
     },
     leftText: {
@@ -81,15 +81,15 @@ const styles = (theme) => {
 };
 
 
-const Switch = inject('RootStore')(withStyles(styles)((props) => {
+const Switch = withStyles(styles)((props) => {
   const { classes } = props;
   return (
     <div className={classes.switchWrapper}>
       <div
         className={classNames(
           classes.switch,
-            { [classes.switchIsOn]: props.RootStore.commonStore.getIsUser() },
-            { [classes.switchIsOff]: !props.RootStore.commonStore.getIsUser() },
+            { [classes.switchIsOn]: props.isUser },
+            { [classes.switchIsOff]: !props.isUser },
           )
         }
         onClick={props.handleToggle}
@@ -98,71 +98,59 @@ const Switch = inject('RootStore')(withStyles(styles)((props) => {
           className={classNames(
             classes.text,
             classes.leftText,
-            { 'toggle-gradient-text': props.RootStore.commonStore.getIsUser() },
+            { 'toggle-gradient-text': props.isUser },
             )
           }
-        >User
+        >{props.leftText}
         </span>
         <span
           className={classNames(
             classes.text,
             classes.rightText,
-            { 'toggle-gradient-text': !props.RootStore.commonStore.getIsUser() },
+            { 'toggle-gradient-text': !props.isUser },
             )
           }
-        >Verifier
+        >{props.rightText}
         </span>
-        <ToggleButton
-          isOn={props.RootStore.commonStore.getIsUser()}
-        />
+        <ToggleButton isUser={props.isUser} />
       </div>
     </div>
   );
-}));
+});
 
-const ToggleButton = inject('RootStore')(withStyles(styles)((props) => {
+const ToggleButton = withStyles(styles)((props) => {
   const { classes } = props;
   return (
     <div
       className={classNames(
         classes.toggleButton,
-          { [classes.toggleButtonPositionLeft]: props.RootStore.commonStore.getIsUser() },
-          { [classes.toggleButtonPositionRight]: !props.RootStore.commonStore.getIsUser() },
+          { [classes.toggleButtonPositionLeft]: props.isUser },
+          { [classes.toggleButtonPositionRight]: !props.isUser },
         )
       }
     />);
-}));
+});
 
-const FinalSwitch = inject('RootStore')(observer((props) => {
-  return (  
+const RoleSwitch = inject('RootStore')(observer(({
+  classes,
+  ...props
+}) => {
+  return (
     <Switch
-      turnedOn
-      test="black"
-      isOn={props.RootStore.commonStore.getIsUser()}
-      handleToggle={props.RootStore.commonStore.toggleRole.bind(props.RootStore.commonStore)}
+      isUser={props.isUser}
+      handleToggle={props.onClick}
+      leftText={props.leftText}
+      rightText={props.rightText}
     />
   );
 }));
 
-const CustomSwitch = observer(({
-  classes,
-  onChange,
-  isUser,
-  leftText,
-  rightText,
-  ...props
-}) => {
-  return (
-    <FinalSwitch />
-  );
-});
-
-CustomSwitch.propTypes = {
+RoleSwitch.propTypes = {
   classes: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
   isUser: PropTypes.bool.isRequired,
   leftText: PropTypes.string.isRequired,
   rightText: PropTypes.string.isRequired,
 };
 
-export default inject('RootStore')(withStyles(styles, { withTheme: true })(CustomSwitch));
+export default withStyles(styles)(RoleSwitch);
