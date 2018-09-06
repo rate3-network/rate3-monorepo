@@ -10,13 +10,5 @@ export const languageMenuSelectedText = '#FFFFFF';
 // Network Box
 export const networkBoxBg = '#EAF9FF';
 
-// Nav bar Toggle
-export const navToggleBoxShadow = 'rgba(0, 0, 0, 0.25)';
-export const userNavTogglePrimary = '#FFFFFF';
-export const userNavToggleSecondary = '#BEBEBE';
-export const userNavToggleEmphasis = '#203542';
-export const userNavToggleBg = '#FFFFFF';
-export const trusteeNavTogglePrimary = '#FFFFFF';
-export const trusteeNavToggleSecondary = '#C4C4C4';
-export const trusteeNavToggleEmphasis = '#63727B';
-export const trusteeNavToggleBg = '#F1F5F7';
+// Role Switch
+export const toggleGradient = 'linear-gradient(to right, #4392F1 0%,#56CBF9 100%)';

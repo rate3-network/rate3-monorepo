@@ -14,7 +14,8 @@ class CommonStore {
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
   @observable currentNetwork: String = 'Main Ethereum Network';
-  @observable setupWalletProgress: Array = [true, true, true, true]; // true: completed; false: not done;
+  // true: completed; false: not done;
+  @observable setupWalletProgress: Array = [true, true, true, true];
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -93,7 +94,6 @@ class CommonStore {
   @action
   toggleRole() {
     this.isUser = !this.isUser;
-    console.log(this.isUser);
   }
   /**
    * Change Setup status to done

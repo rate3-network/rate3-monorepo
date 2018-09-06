@@ -1,99 +1,149 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
-import Switch from '@material-ui/core/Switch';
+import classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { identityBlue } from '../constants/colors';
+import { toggleGradient } from '../constants/colors';
 
-const switchWidth = 200;
-const switchHeight = 50;
-
-// const styles = theme => ({
-//   container: {
-//     position: 'relative',
-//     width: switchWidth,
-//     margin: 'auto',
-//     cursor: 'pointer',
-//     userSelect: 'none',
-//     textTransform: 'uppercase',
-//     fontWeight: 'bold',
-//     fontSize: '0.9em',
-//     // backgroundColor: 'grey',
-//   },
-//   root: {
-//     backgroundColor: '#F3F3F3',
-//   },
-//   base: {
-//     // width: '100%',
-//     height: '100%',
-//     borderRadius: 0,
-//     alignItems: 'normal',
-//     justifyContent: 'normal',
-//     color: 'grey',
-//     backgroundColor: '#F3F3F3',
-//     '&:hover': {
-//       backgroundColor: '#F3F3F3',
-//     },
-//   },
-//   checked: {
-//     // color: 'pink',
-//     backgroundColor: '#F3F3F3',
-//   },
-//   icon: {
-//     borderRadius: 0,
-//     width: '50%',
-//     color: '#EAF9FF',
-//   },
-//   iconChecked: {
-//     borderRadius: 0,
-//     width: '50%',
-//     color: '#EAF9FF',
-//   },
-// });
-const styles = theme => ({
-  colorBar: {},
-  colorChecked: {},
-  iOSSwitchBase: {
-    '&$iOSChecked': {
-      color: theme.palette.common.white,
-      '& + $iOSBar': {
-        backgroundColor: '#F3F3F3',
+const styles = (theme) => {
+  return {
+    switchWrapper: {
+      width: '100%',
+      height: '100vh',
+      transition: 'background-color 100ms ease-out',
+    },
+    switch: {
+      position: 'relative',
+      width: '28rem',
+      height: '5rem',
+      borderRadius: '1%',
+      transition: 'background-color 100ms ease-out',
+      zIndex: 1,
+      boxShadow: 'inset 0 0 9px rgba(0, 0, 0, 0.2)',
+      '&:before': {
+        content: '',
+        position: 'absolute',
+        top: 0,
+        backgroundColor: 'inherit',
+        borderRadius: '50%',
+        width: '5rem',
+        height: '5rem',
+        zIndex: 2,
+        left: '-1rem',
+      },
+      '&:after': {
+        right: '-1rem',
       },
     },
-    
-  },
-  iOSChecked: {
-    transform: 'translateX(15px)',
-    '& + $iOSBar': {
-      opacity: 1,
-      border: 'none',
+    switchIsOff: {
+      backgroundColor: '#F3F3F3',
     },
-    '&:before': {
-      content: '"h"',
+    switchIsOn: {
+      backgroundColor: '#F3F3F3',
     },
-  },
-  iOSBar: {
-    borderRadius: 0,
-    width: 42,
-    height: 26,
-    marginTop: -13,
-    marginLeft: -21,
-    // border: 'solid 1px',
-    // borderColor: theme.palette.grey[400],
-    backgroundColor: '#F3F3F3',
-    opacity: 1,
-    // transition: theme.transitions.create(['background-color', 'border']),
-  },
-  iOSIcon: {
-    borderRadius: 0,
-    width: 24,
-    height: 24,
-  },
-  iOSIconChecked: {
-    boxShadow: theme.shadows[1],
-  },
-});
+    toggleButton: {
+      position: 'absolute',
+      width: '50%',
+      height: '5rem',
+      backgroundColor: '#EAF9FF',
+      borderRadius: '0%',
+      transition: 'transform 100ms ease-in-out',
+      zIndex: '3',
+      opacity: '0.99',
+      top: '-0.05rem',
+      boxShadow: '2px 0 9px rgba(0, 0, 0, 0.2)',
+    },
+    toggleButtonPositionLeft: {
+      transform: 'translateX(0rem)',
+    },
+    toggleButtonPositionRight: {
+      transform: 'translateX(14rem)',
+    },
+    text: {
+      fontSize: '2.1rem',
+      width: '50%',
+      height: '100%',
+      position: 'absolute',
+      zIndex: '5',
+      textAlign: 'center',
+      letterSpacing: '0.05rem',
+      lineHeight: '5rem',
+      fontWeight: '900',
+      transition: 'color 100ms ease-in-out',
+      userSelect: 'none',
+    },
+    leftText: {
+    },
+    rightText: {
+      marginLeft: '50%',
+    },
+  };
+};
+
+
+const Switch = inject('RootStore')(withStyles(styles)((props) => {
+  const { classes } = props;
+  return (
+    <div className={classes.switchWrapper}>
+      <div
+        className={classNames(
+          classes.switch,
+            { [classes.switchIsOn]: props.RootStore.commonStore.getIsUser() },
+            { [classes.switchIsOff]: !props.RootStore.commonStore.getIsUser() },
+          )
+        }
+        onClick={props.handleToggle}
+      >
+        <span
+          className={classNames(
+            classes.text,
+            classes.leftText,
+            { 'toggle-gradient-text': props.RootStore.commonStore.getIsUser() },
+            )
+          }
+        >User
+        </span>
+        <span
+          className={classNames(
+            classes.text,
+            classes.rightText,
+            { 'toggle-gradient-text': !props.RootStore.commonStore.getIsUser() },
+            )
+          }
+        >Verifier
+        </span>
+        <ToggleButton
+          isOn={props.RootStore.commonStore.getIsUser()}
+        />
+      </div>
+    </div>
+  );
+}));
+
+const ToggleButton = inject('RootStore')(withStyles(styles)((props) => {
+  const { classes } = props;
+  return (
+    <div
+      className={classNames(
+        classes.toggleButton,
+          { [classes.toggleButtonPositionLeft]: props.RootStore.commonStore.getIsUser() },
+          { [classes.toggleButtonPositionRight]: !props.RootStore.commonStore.getIsUser() },
+        )
+      }
+    />);
+}));
+
+const FinalSwitch = inject('RootStore')(observer((props) => {
+  return (  
+    <Switch
+      turnedOn
+      test="black"
+      isOn={props.RootStore.commonStore.getIsUser()}
+      handleToggle={props.RootStore.commonStore.toggleRole.bind(props.RootStore.commonStore)}
+    />
+  );
+}));
+
 const CustomSwitch = observer(({
   classes,
   onChange,
@@ -101,29 +151,11 @@ const CustomSwitch = observer(({
   leftText,
   rightText,
   ...props
-}) => (
-  <div className={classes.container} onClick={onChange}>
-  {/* <span>test</span> */}
-    <FormControlLabel
-      control={
-        <Switch
-          classes={{
-            switchBase: classes.iOSSwitchBase,
-            bar: classes.iOSBar,
-            icon: classes.iOSIcon,
-            iconChecked: classes.iOSIconChecked,
-            checked: classes.iOSChecked,
-          }}
-          disableRipple
-          checked={props.RootStore.commonStore.getIsUser()}
-          onChange={props.RootStore.commonStore.toggleRole.bind(props.RootStore.commonStore)}
-          value="checkedB"
-        />
-        }
-    />
-    {/* <h1>{props.RootStore.commonStore.getIsUser() ? 'true' : 'false'}</h1> */}
-  </div>
-));
+}) => {
+  return (
+    <FinalSwitch />
+  );
+});
 
 CustomSwitch.propTypes = {
   classes: PropTypes.object.isRequired,

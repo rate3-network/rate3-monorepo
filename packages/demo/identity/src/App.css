@@ -8,31 +8,10 @@ body {
 .white-text {
   color: #ffffff !important;
 }
-/* .App {
-  text-align: center;
+.toggle-gradient-text {
+  font-size: 72px;
+  background: linear-gradient(to right, #4392F1 0%,#56CBF9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-} */

@@ -68,16 +68,17 @@ const Onboard = inject('RootStore')(observer((props) => {
     <div className={classes.root}>
       <OnboardSideBar imageSrc={onboardImgs[props.RootStore.commonStore.getActiveOnboardStep() - 1]} />
       <div className={classes.content}>
-        <OnboardRoleSwitch 
-          leftText="test"
-          rightText="test2"
-          isUser={true}
-        />
+        
         <div className={classes.dropdownContainer}>
           <div className={classes.demoDropdown}>CROSS-CHAIN IDENTITY DEMO</div>
           <ExpandMore className={classes.icon} />
         </div>
         <div className={classes.onboardDetailContainer}>
+          {/* <OnboardRoleSwitch
+            leftText="test"
+            rightText="test2"
+            isUser={true}
+          /> */}
           <OnboardStepper />
         </div>
       </div>
