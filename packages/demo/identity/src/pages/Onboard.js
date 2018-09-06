@@ -5,7 +5,6 @@ import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
 
-import RoleSwitch from './../components/OnboardRoleSwitch';
 import OnboardSideBar from './../components/OnboardSideBar';
 import OnboardStepper from './../components/OnboardStepper';
 import { identityBlue } from './../constants/colors';

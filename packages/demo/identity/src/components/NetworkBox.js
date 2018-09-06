@@ -9,10 +9,10 @@ import { networkBoxBg, identityBlueLight } from '../constants/colors';
 const styles = theme => ({
   box: {
     backgroundColor: networkBoxBg,
-    height: '2.5em',
-    width: '15em',
+    height: '2.6em',
+    width: '14.5em',
     fontWeight: '500',
-    fontSize: '0.7em',
+    fontSize: '0.9em',
     borderRadius: '9px',
     display: 'flex',
     justifyContent: 'center',

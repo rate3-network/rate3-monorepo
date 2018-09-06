@@ -8,6 +8,7 @@ const styles = theme => ({
   button: {
     width: '13rem',
     height: '3.2rem',
+    minHeight: '3.2rem',
     fontSize: '1.5em',
     fontWeight: 'bold',
     borderRadius: '50px',

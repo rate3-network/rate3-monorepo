@@ -4,18 +4,20 @@ import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import { observer, inject } from 'mobx-react';
 
+import { toggleButtonBg, toggleGrey, identityBlue, buttonTextGrey } from '../constants/colors';
+
 const animationDuration = '250ms';
+const baseWidth = 16;
+
 const styles = (theme) => {
   return {
     switchWrapper: {
-      width: '100%',
-      height: '100vh',
       transition: `background-color ${animationDuration} ease-out`,
     },
     switch: {
       position: 'relative',
-      width: '28rem',
-      height: '5rem',
+      width: `${baseWidth}em`,
+      height: `${baseWidth / 5.35}em`,
       borderRadius: '1%',
       transition: `background-color ${animationDuration} ease-out`,
       zIndex: 1,
@@ -26,48 +28,47 @@ const styles = (theme) => {
         top: 0,
         backgroundColor: 'inherit',
         borderRadius: '50%',
-        width: '5rem',
-        height: '5rem',
+        // width: '1.25em',
+        // height: '3em',
         zIndex: 2,
-        left: '-1rem',
+        left: '-0.25em',
       },
       '&:after': {
-        right: '-1rem',
+        right: '-0.25em',
       },
     },
     switchIsOff: {
-      backgroundColor: '#F3F3F3',
+      backgroundColor: toggleGrey,
     },
     switchIsOn: {
-      backgroundColor: '#F3F3F3',
+      backgroundColor: toggleGrey,
     },
     toggleButton: {
       position: 'absolute',
       width: '50%',
-      height: '5rem',
-      backgroundColor: '#EAF9FF',
+      height: `${baseWidth / 5.35}em`,
+      backgroundColor: toggleButtonBg,
       borderRadius: '0%',
       transition: `transform ${animationDuration} ease-in-out`,
       zIndex: '3',
-      opacity: '0.99',
-      top: '-0.05rem',
-      boxShadow: '2px 0 9px rgba(0, 0, 0, 0.2)',
+      boxShadow: '1px 0 6px rgba(0, 0, 0, 0.2)',
     },
     toggleButtonPositionLeft: {
-      transform: 'translateX(0rem)',
+      transform: 'translateX(0em)',
     },
     toggleButtonPositionRight: {
-      transform: 'translateX(14rem)',
+      transform: `translateX(${baseWidth / 2}em)`,
     },
     text: {
-      fontSize: '2.1rem',
+      color: buttonTextGrey,
+      fontSize: '1.15em',
       width: '50%',
       height: '100%',
       position: 'absolute',
       zIndex: '5',
       textAlign: 'center',
-      letterSpacing: '0.05rem',
-      lineHeight: '5rem',
+      letterSpacing: '0.02em',
+      lineHeight: '2.6em',
       fontWeight: '900',
       transition: `color ${animationDuration} ease-in-out`,
       userSelect: 'none',
@@ -76,6 +77,9 @@ const styles = (theme) => {
     },
     rightText: {
       marginLeft: '50%',
+    },
+    activeText: {
+      color: identityBlue,
     },
   };
 };
@@ -98,7 +102,7 @@ const Switch = withStyles(styles)((props) => {
           className={classNames(
             classes.text,
             classes.leftText,
-            { 'toggle-gradient-text': props.isUser },
+            { [classes.activeText]: props.isUser },
             )
           }
         >{props.leftText}
@@ -107,7 +111,7 @@ const Switch = withStyles(styles)((props) => {
           className={classNames(
             classes.text,
             classes.rightText,
-            { 'toggle-gradient-text': !props.isUser },
+            { [classes.activeText]: !props.isUser },
             )
           }
         >{props.rightText}

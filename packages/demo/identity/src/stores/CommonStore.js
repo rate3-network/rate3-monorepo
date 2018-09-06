@@ -10,7 +10,7 @@ configure({ enforceActions: 'always' }); // don't allow state modifications outs
 class CommonStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable isUser: Boolean = true;
-  @observable isOnboardDone: Boolean = false;
+  @observable isOnboardDone: Boolean = true;
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
   @observable currentNetwork: String = 'Main Ethereum Network';

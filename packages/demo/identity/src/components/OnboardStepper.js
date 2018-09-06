@@ -48,7 +48,7 @@ const styles = theme => ({
     padding: '1em 0em 3em 0em',
   },
   buttonContainer: {
-    paddingTop: '10vh',
+    paddingTop: '8vh',
     alignSelf: 'flex-end',
     display: 'flex',
     flexDirection: 'column',
@@ -167,7 +167,7 @@ class OnboardStepper extends React.Component {
           />
         }
         <div className={classes.buttonContainer}>
-          <BlueButton handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
+          <BlueButton className={classes.blueButton} handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
           <MobileStepper
             steps={maxSteps}
             variant="dots"
