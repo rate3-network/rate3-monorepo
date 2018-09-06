@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { observer, inject } from 'mobx-react';
 import { withStyles } from '@material-ui/core/styles';
 import MobileStepper from '@material-ui/core/MobileStepper';
+import Slide from '@material-ui/core/Slide';
 import { translate } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 
@@ -114,17 +115,36 @@ class OnboardStepper extends React.Component {
       default:
         buttonText = this.props.t('next');
     }
-
+    const TransitionWrapper = (props) => {
+      return (
+        <Slide
+          timeout={{
+            enter: 350,
+            exit: 350,
+          }}
+          in
+          key={this.props.RootStore.commonStore.getActiveOnboardStep()} 
+          direction={props.direction}
+          mountOnEnter
+          unmountOnExit
+        >
+          {props.children}
+        </Slide>
+      );
+    };
     const finalButtonDisabled = (activeOnboardStep === 3 && !this.props.RootStore.commonStore.isWalletSetupDone);
     const activeStep = activeOnboardStep - 1;
     return (
       <React.Fragment>
-        <div className={classes.header}>{tutorialSteps[activeStep].label}</div>
-        <div className={classes.text}>
-          {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
-          {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
-        </div>
-        
+        <TransitionWrapper direction="left">
+          <div className={classes.header}>{tutorialSteps[activeStep].label}</div>
+        </TransitionWrapper>
+        <TransitionWrapper direction="left">
+          <div className={classes.text}>
+            {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
+            {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
+          </div>
+        </TransitionWrapper>
         {tutorialSteps[activeStep].hasRoleSelect &&
           <RoleSelect
             leftText="User"
@@ -132,7 +152,7 @@ class OnboardStepper extends React.Component {
             isUser={this.props.RootStore.commonStore.getIsUser()}
             handleUserClick={this.props.RootStore.commonStore.changeToUser.bind(this.props.RootStore.commonStore)}
             handleVerifierClick={this.props.RootStore.commonStore.changeToVerifier.bind(this.props.RootStore.commonStore)}
-        />
+          />
         }
         <div className={classes.buttonContainer}>
           <BlueButton handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
