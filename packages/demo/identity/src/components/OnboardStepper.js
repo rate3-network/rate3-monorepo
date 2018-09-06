@@ -12,6 +12,8 @@ import BlueButton from './BlueButton';
 import { identityBlue, materialGrey } from './../constants/colors';
 import CheckList from './CheckList';
 
+const animationDuration = 250;
+
 const tutorialSteps = [
   {
     label: 'Cross-Chain Identity',
@@ -116,17 +118,18 @@ class OnboardStepper extends React.Component {
         buttonText = this.props.t('next');
     }
     const TransitionWrapper = (props) => {
+
       return (
         <Slide
           timeout={{
-            enter: 350,
-            exit: 350,
+            enter: animationDuration,
+            exit: animationDuration,
           }}
           in
-          key={this.props.RootStore.commonStore.getActiveOnboardStep()} 
+          // key={this.props.RootStore.commonStore.getActiveOnboardStep()} 
           direction={props.direction}
-          mountOnEnter
-          unmountOnExit
+          // mountOnEnter
+          // unmountOnExit
         >
           {props.children}
         </Slide>
@@ -136,15 +139,24 @@ class OnboardStepper extends React.Component {
     const activeStep = activeOnboardStep - 1;
     return (
       <React.Fragment>
-        <TransitionWrapper direction="left">
+        {!this.props.RootStore.commonStore.getShouldRenderOnboardTransition() ?
+          <TransitionWrapper direction="left">
+            <div className={classes.header}>{tutorialSteps[activeStep].label}</div>
+          </TransitionWrapper> :
           <div className={classes.header}>{tutorialSteps[activeStep].label}</div>
-        </TransitionWrapper>
-        <TransitionWrapper direction="left">
+        }
+        {!this.props.RootStore.commonStore.getShouldRenderOnboardTransition() ?
+          <TransitionWrapper direction="left">
+            <div className={classes.text}>
+              {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
+              {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
+            </div>
+          </TransitionWrapper> :
           <div className={classes.text}>
             {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
             {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
           </div>
-        </TransitionWrapper>
+        }
         {tutorialSteps[activeStep].hasRoleSelect &&
           <RoleSelect
             leftText="User"

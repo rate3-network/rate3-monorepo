@@ -1,6 +1,7 @@
 body {
   font-family: 'Roboto', sans-serif;
   color: #818CA1;
+  overflow: hidden;
 }
 .blue-text {
   color: #4392F1 !important;

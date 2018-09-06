@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { observer, inject } from 'mobx-react';
 import { withStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import ToggleButton from '@material-ui/lab/ToggleButton';
@@ -11,7 +12,7 @@ import { identityBlue } from '../constants/colors';
 const animationDuration = '250ms';
 const styles = theme => ({
   container: {
-    width: '18rem',
+    width: '20rem',
     height: '4rem',
     // border: '1px solid red',
     transition: `color ${animationDuration} ease-out`,
@@ -41,28 +42,33 @@ const styles = theme => ({
     border: `2px solid ${identityBlue}`,
   },
 });
-
-const ToggleButtons = (props) => {
-  const { classes } = props;
-  return (
-    <div className={classes.container}>
-      <div className={classes.buttonGroup}>
-        <div
-          onClick={props.handleUserClick} 
-          className={ClassNames(classes.button, { [classes.buttonActive]: props.isUser })}
-        >
-          {props.leftText}
-        </div>
-        <div
-          onClick={props.handleVerifierClick} 
-          className={ClassNames(classes.button, { [classes.buttonActive]: !props.isUser })}
-        >
-          {props.rightText}
+@inject('RootStore') @observer
+class ToggleButtons extends React.Component {
+  componentWillUnmount() {
+    this.props.RootStore.commonStore.setFalseShouldRenderOnboardTransition();
+  }
+  render() {
+    const { classes } = this.props;
+    return (
+      <div className={classes.container}>
+        <div className={classes.buttonGroup}>
+          <div
+            onClick={this.props.handleUserClick} 
+            className={ClassNames(classes.button, { [classes.buttonActive]: this.props.isUser })}
+          >
+            {this.props.leftText}
+          </div>
+          <div
+            onClick={this.props.handleVerifierClick} 
+            className={ClassNames(classes.button, { [classes.buttonActive]: !this.props.isUser })}
+          >
+            {this.props.rightText}
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 
 ToggleButtons.propTypes = {

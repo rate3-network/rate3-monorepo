@@ -16,6 +16,7 @@ class CommonStore {
   @observable currentNetwork: String = 'Main Ethereum Network';
   // true: completed; false: not done;
   @observable setupWalletProgress: Array = [true, true, true, true];
+  @observable shouldRenderOnboardTransition: Boolean = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -54,6 +55,10 @@ class CommonStore {
     return this.isOnboardDone;
   }
 
+  getShouldRenderOnboardTransition() {
+    return this.shouldRenderOnboardTransition;
+  }
+
   getActiveOnboardStep() {
     return this.activeOnboardStep;
   }
@@ -77,6 +82,7 @@ class CommonStore {
    */
   @action
   changeToVerifier() {
+    this.setTrueShouldRenderOnboardTransition();
     this.isUser = false;
   }
 
@@ -88,6 +94,7 @@ class CommonStore {
    */
   @action
   changeToUser() {
+    this.setTrueShouldRenderOnboardTransition();
     this.isUser = true;
   }
 
@@ -119,6 +126,15 @@ class CommonStore {
   @action
   completeSetupWalletProgress(id) {
     this.setupWalletProgress[id] = true;
+  }
+
+  @action
+  setTrueShouldRenderOnboardTransition() {
+    this.shouldRenderOnboardTransition = true;
+  }
+  @action
+  setFalseShouldRenderOnboardTransition() {
+    this.shouldRenderOnboardTransition = false;
   }
 }
 
