@@ -7,7 +7,7 @@ import { withRouter } from 'react-router-dom';
 
 import OnboardSideBar from './../components/OnboardSideBar';
 import OnboardStepper from './../components/OnboardStepper';
-import { identityBlue } from './../constants/colors';
+import { identityBlue, materialGrey } from './../constants/colors';
 import OnboardImg1 from './../assets/OnboardImg1.svg';
 import OnboardImg2 from './../assets/OnboardImg2.svg';
 import OnboardImg3 from './../assets/OnboardImg3.svg';
@@ -20,6 +20,7 @@ const styles = theme => ({
     height: '100vh',
     zIndex: 1,
     display: 'flex',
+    color: materialGrey,
   },
   content: {
     width: '100%',

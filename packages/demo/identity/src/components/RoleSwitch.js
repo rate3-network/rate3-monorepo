@@ -18,7 +18,7 @@ const styles = (theme) => {
       position: 'relative',
       width: `${baseWidth}em`,
       height: `${baseWidth / 5.35}em`,
-      borderRadius: '1%',
+      borderRadius: '2%',
       transition: `background-color ${animationDuration} ease-out`,
       zIndex: 1,
       boxShadow: 'inset 0 0 9px rgba(0, 0, 0, 0.2)',
@@ -28,8 +28,6 @@ const styles = (theme) => {
         top: 0,
         backgroundColor: 'inherit',
         borderRadius: '50%',
-        // width: '1.25em',
-        // height: '3em',
         zIndex: 2,
         left: '-0.25em',
       },
@@ -46,6 +44,7 @@ const styles = (theme) => {
     toggleButton: {
       position: 'absolute',
       width: '50%',
+      borderRadius: '2%',
       height: `${baseWidth / 5.35}em`,
       backgroundColor: toggleButtonBg,
       borderRadius: '0%',
@@ -92,10 +91,9 @@ const Switch = withStyles(styles)((props) => {
       <div
         className={classNames(
           classes.switch,
-            { [classes.switchIsOn]: props.isUser },
-            { [classes.switchIsOff]: !props.isUser },
-          )
-        }
+          { [classes.switchIsOn]: props.isUser },
+          { [classes.switchIsOff]: !props.isUser },
+        )}
         onClick={props.handleToggle}
       >
         <span

@@ -22,3 +22,7 @@ export const buttonTextGrey = '#C4CAD6';
 
 // Homepage
 export const homeBg = '#F7FBFF';
+export const homeTextGreyUser = '#7B8292';
+export const homeTextWhiteVerifier = '#FFFFFF';
+export const homeSidebarBgColorUser = '#FFFFFF';
+export const homeSidebarBgColorVerifier = '#1E4465';

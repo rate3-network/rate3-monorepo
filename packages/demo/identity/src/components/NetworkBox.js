@@ -4,11 +4,12 @@ import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
 import Lens from '@material-ui/icons/Lens';
 
-import { networkBoxBg, identityBlueLight } from '../constants/colors';
+import { networkBoxBg, identityBlueLight, materialGrey } from '../constants/colors';
 
 const styles = theme => ({
   box: {
     backgroundColor: networkBoxBg,
+    color: materialGrey,
     height: '2.6em',
     width: '14.5em',
     fontWeight: '500',

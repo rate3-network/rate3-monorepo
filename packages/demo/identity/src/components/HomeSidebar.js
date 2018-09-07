@@ -1,22 +1,38 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Drawer from '@material-ui/core/Drawer';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, withTheme } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
+import classNames from 'classnames';
 
-import { identityBlue, sidebarShadow } from './../constants/colors';
+import { identityBlue, sidebarShadow, homeSidebarBgColorUser, homeSidebarBgColorVerifier  } from './../constants/colors';
 import NetworkBox from './NetworkBox';
 import RoleSwitch from './RoleSwitch';
 
-const styles = () => ({
+const bodyStyle = {
+  color: 'pink',
+  fontFamily: 'Roboto',
+  backgroundColor: 'pink',
+  fontSize: '40px',
+};
+
+const styles = theme => ({
   drawerPaper: {
-    backgroundColor: 'white',
+    // backgroundColor: theme.palette.primary.homeSidebarBgColor,
     position: 'relative',
     width: '20rem',
     height: '100vh',
     boxShadow: sidebarShadow,
   },
+  drawerPaperUser: {
+    backgroundColor: homeSidebarBgColorUser,
+  },
+  drawerPaperVerifier: {
+    backgroundColor: homeSidebarBgColorVerifier,
+  },
   container: {
+    // fontFamily: theme.typography.fontFamily,
+    // color: theme.typography.color,
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -70,7 +86,7 @@ const styles = () => ({
  
 const TopText = withStyles(styles)((props) => {
   const { classes } = props;
-  return <div className={classes.topText}>Want to browswe ident ities?</div>;
+  return <div className={classes.topText}>Want to browswe identities?</div>;
 });
 
 const UserInfo = withStyles(styles)((props) => {
@@ -113,7 +129,11 @@ const HomeSidebar = observer((props) => {
     <Drawer
       variant="permanent"
       classes={{
-        paper: classes.drawerPaper,
+        paper: classNames(
+          classes.drawerPaper,
+          { [classes.drawerPaperUser]: props.RootStore.commonStore.getIsUser() },
+          { [classes.drawerPaperVerifier]: !props.RootStore.commonStore.getIsUser() },
+        ),
       }}
     >
       <div className={classes.container}>
@@ -136,4 +156,4 @@ HomeSidebar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default inject('RootStore')((withStyles(styles)(HomeSidebar)));
+export default inject('RootStore')(withStyles(styles, { withTheme: true })(HomeSidebar));
