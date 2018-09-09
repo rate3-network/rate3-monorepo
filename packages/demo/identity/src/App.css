@@ -1,7 +1,8 @@
 body {
   /* font-family: 'Roboto', sans-serif;
   color: #818CA1; */
-  overflow: hidden;
+  /* overflow: hidden; */
+  margin: 0px;
 }
 .blue-text {
   color: #4392F1 !important;

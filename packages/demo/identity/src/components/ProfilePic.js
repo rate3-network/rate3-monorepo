@@ -26,7 +26,6 @@ const ProfilePic = inject('RootStore')(observer((props) => {
   return (
     <div className={classes.container}>
       <Blockies
-        className={classes.container}
         seed={seed}
         scale={10}
         size={11}

@@ -3,7 +3,7 @@ export const identityBlueLight = '#56CBF9';
 export const identityBlueDark = '#2e66a8';
 export const materialGrey = '#818CA1';
 
-export const sidebarShadow = '4px 4px 8px rgba(0, 0, 0, 0.15)';
+export const sidebarShadow = '2px 2px 8px rgba(0, 0, 0, 0.15)';
 
 // Language Menu
 export const languageMenuSelectedBg = '#203542';
