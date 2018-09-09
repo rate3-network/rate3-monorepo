@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Drawer from '@material-ui/core/Drawer';
 import { withStyles } from '@material-ui/core/styles';
+import Info from '@material-ui/icons/InfoOutlined';
 import { observer, inject } from 'mobx-react';
 import classNames from 'classnames';
 
@@ -107,6 +108,10 @@ const styles = theme => ({
   },
   keyName: {
     paddingTop: '1.2rem',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    whiteSpace: 'pre',
   },
   key: {
     fontWeight: 'bold',
@@ -115,6 +120,9 @@ const styles = theme => ({
   faqText: {
     fontWeight: 'bold',
     fontSize: '1.2em',
+  },
+  info: {
+    fontSize: '1em',
   },
 });
 
@@ -148,9 +156,9 @@ const Keys = withStyles(styles)((props) => {
         My Public Keys
       </div>
       <div>
-        <div className={classes.keyName}>Management Key</div>
+        <div className={classes.keyName}>Management Key  <Info className={classes.info} /></div>
         <div className={classes.key}>0xb423...b292</div>
-        <div className={classes.keyName}> ETH</div>
+        <div className={classes.keyName}>Signing Key  <Info className={classes.info} /></div>
         <div className={classes.key}>0xb423...b292</div>
       </div>
     </div>
