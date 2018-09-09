@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import { identityBlue, sidebarShadow, homeSidebarBgColorUser, homeSidebarBgColorVerifier  } from './../constants/colors';
 import NetworkBox from './NetworkBox';
 import RoleSwitch from './RoleSwitch';
+import ProfilePic from './ProfilePic';
 
 const bodyStyle = {
   color: 'pink',
@@ -39,6 +40,7 @@ const styles = theme => ({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: '1.5em 1em 2em 1.5em',
+    overflow: 'scroll',
     // color:
   },
   topText: {
@@ -138,6 +140,7 @@ const HomeSidebar = observer((props) => {
     >
       <div className={classes.container}>
         <TopText />
+        <ProfilePic />
         <UserInfo />
         <NetworkBox />
         <RoleSwitch

@@ -7,38 +7,40 @@ import ClassNames from 'classnames';
 import { identityBlue } from '../constants/colors';
 
 const animationDuration = '250ms';
-const styles = theme => ({
-  container: {
-    width: '20rem',
-    height: '4rem',
-    // border: '1px solid red',
-    transition: `color ${animationDuration} ease-out`,
-  },
-  buttonGroup: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    // border: '1px solid black',
-  },
-  button: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '50%',
-    fontWeight: '900',
-    fontSize: '1.5rem',
-    userSelect: 'none',
-    transition: `color ${animationDuration} ease-in-out`,
-    transition: `border ${animationDuration} ease-in-out`,
-  },
-  buttonActive: {
-    color: identityBlue,
-    border: `2px solid ${identityBlue}`,
-  },
-});
+const styles = (theme) => {
+  return ({
+    container: {
+      width: '20rem',
+      height: '4rem',
+      // border: '1px solid red',
+      transition: `color ${animationDuration} ease-out`,
+    },
+    buttonGroup: {
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      // border: '1px solid black',
+    },
+    button: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '50%',
+      fontWeight: '900',
+      fontSize: '1.5rem',
+      userSelect: 'none',
+      transition: `color ${animationDuration} ease-in-out`,
+      transition: `border ${animationDuration} ease-in-out`,
+    },
+    buttonActive: {
+      color: identityBlue,
+      border: `2px solid ${identityBlue}`,
+    },
+  });
+};
 @inject('RootStore') @observer
 class ToggleButtons extends React.Component {
   componentWillUnmount() {
