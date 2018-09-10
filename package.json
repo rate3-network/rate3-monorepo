@@ -1,0 +1,15 @@
+{
+  "name": "wallet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "stellarGenAcc.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-forge": "^0.7.6",
+    "stellar-hd-wallet": "0.0.8"
+  }
+}
