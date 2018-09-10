@@ -53,6 +53,9 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    width: '13rem',
+    height: '3.2rem',
+    minHeight: '3.2rem',
   },
   button: {
     width: '17vw',
@@ -167,7 +170,7 @@ class OnboardStepper extends React.Component {
           />
         }
         <div className={classes.buttonContainer}>
-          <BlueButton className={classes.blueButton} handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
+          <BlueButton className={classes.blueButton} fontWeight="bold" handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
           <MobileStepper
             steps={maxSteps}
             variant="dots"

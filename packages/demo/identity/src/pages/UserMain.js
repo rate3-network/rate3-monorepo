@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import ExpandablePanel from '../components/ExpandablePanel';
+import FixedPanel from '../components/FixedPanel';
 
 const styles = (theme) => {
   return ({
@@ -28,7 +29,8 @@ const UserMain = (props) => {
       <h1 className={classes.title}>My Identity</h1>
       <div className={classes.descriptionBox}>
         <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
-        <ExpandablePanel>test</ExpandablePanel>
+        <ExpandablePanel title="Name" numOfAction={1} actionName={'Verification'}>test</ExpandablePanel>
+        <FixedPanel></FixedPanel>
       </div>
       
     </div>

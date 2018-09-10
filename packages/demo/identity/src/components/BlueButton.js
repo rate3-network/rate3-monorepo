@@ -6,11 +6,11 @@ import Button from '@material-ui/core/Button';
 
 const styles = theme => ({
   button: {
-    width: '13rem',
-    height: '3.2rem',
-    minHeight: '3.2rem',
-    fontSize: '1.5em',
-    fontWeight: 'bold',
+    width: '100%',
+    height: '100%',
+    minHeight: '100%',
+    fontSize: '1.5rem',
+    // fontWeight: 'bold',
     borderRadius: '50px',
     color: 'white',
     boxShadow: '0 0 0',
@@ -21,7 +21,7 @@ const styles = theme => ({
 });
 
 const BlueButton = (props) => {
-  const { classes } = props;
+  let { classes } = props;
   return (
     <Button
       variant="contained"
@@ -30,6 +30,7 @@ const BlueButton = (props) => {
       disabled={props.disabled}
       className={classes.button}
       onClick={props.handleClick}
+      style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.fontSize }}
     >
       {props.buttonText}
     </Button>

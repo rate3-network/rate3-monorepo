@@ -2,15 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 
-import { identityBlue } from '../constants/colors';
+import { disabledGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
 
@@ -21,24 +17,11 @@ const styles = theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
   },
-  secondaryHeading: {
-    fontSize: theme.typography.pxToRem(15),
-    color: theme.palette.text.secondary,
-  },
-  icon: {
-    // verticalAlign: 'bottom',
-    color: 'black',
-    height: '1.5em',
-    width: '1.5em',
-  },
-  details: {
-    alignItems: 'center',
-  },
   header: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    width: '50%',
+    width: '40%',
     // flexBasis: '33.33%',
   },
   image: {
@@ -46,30 +29,29 @@ const styles = theme => ({
   },
   textGroup: {
     height: '60%',
+    width: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-around',
     padding: '1em 0 1em 1em',
     // alignItems: 'center',
   },
-  helper: {
-    borderLeft: `2px solid ${theme.palette.divider}`,
-    padding: `${theme.spacing.unit}px ${theme.spacing.unit * 2}px`,
-  },
-  link: {
-    color: theme.palette.primary.main,
-    textDecoration: 'none',
-    '&:hover': {
-      textDecoration: 'underline',
-    },
-  },
   title: {
     fontWeight: 'bold',
     fontSize: '1em',
   },
   verificationStatus: {
-    color: identityBlue,
+    color: disabledGrey,
     fontWeight: 'bold',
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '4em',
+    height: '1.3em',
+    // minHeight: '2em',
+    marginRight: '1em',
   },
   iconButton: {
     // width: '200px',
@@ -79,41 +61,29 @@ const styles = theme => ({
 
 const ArrowIcon = withStyles(styles)((props) => {
   const { classes } = props;
-  return <ExpandMoreIcon className={classes.icon} />;
+  return <ExpandMoreIcon />;
 });
 
 const RegisterButton = withStyles(styles)((props) => {
   const { classes } = props;
-  return <BlueButton className={classes.icon} />;
-}); 
+  return <div className={classes.buttonContainer}><BlueButton fontSize={'0.7em'} fontWeight={500} buttonText="Register" /></div>;
+});
+
 
 const DetailedExpansionPanel = (props) => {
   const { classes } = props;
   return (
     <div className={classes.root}>
-      <ExpansionPanel>
-        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
+      <ExpansionPanel expanded={false}>
+        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<RegisterButton />}>
           <div className={classes.header}>
             <img src={identityIcon} className={classes.image} alt="Identity Icon" />
             <div className={classes.textGroup}>
               <Typography className={classes.title}>Name</Typography>
-              <Typography className={classes.verificationStatus}>1 Verification</Typography>
+              <Typography className={classes.verificationStatus}>0 Verification</Typography>
             </div>
           </div>
-          <div className={classes.header}>
-            {/* <Typography className={classes.secondaryHeading}>Select trip destination</Typography> */}
-          </div>
         </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.details}>
-          {props.children}
-        </ExpansionPanelDetails>
-        <Divider />
-        <ExpansionPanelActions>
-          <Button size="small">Cancel</Button>
-          <Button size="small" color="primary">
-            Save
-          </Button>
-        </ExpansionPanelActions>
       </ExpansionPanel>
     </div>
   );
