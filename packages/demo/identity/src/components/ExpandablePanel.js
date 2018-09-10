@@ -7,11 +7,12 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import SelectedBox from '../assets/selectedBox.svg';
-import UnselectedBox from '../assets/unselectedBox.svg';
 import { identityBlue, disabledGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
+import SubPanel from './SubPanel';
+
+import { PENDING, VERIFIED } from '../constants/general';
 
 const styles = theme => ({
   root: {
@@ -36,13 +37,16 @@ const styles = theme => ({
     width: '1.5em',
   },
   details: {
-    alignItems: 'center',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    display: 'flex',
+    flexDirection: 'column',
   },
   header: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    width: '50%',
+    width: '100%',
     // flexBasis: '33.33%',
   },
   image: {
@@ -55,6 +59,10 @@ const styles = theme => ({
     justifyContent: 'space-around',
     padding: '1em 0 1em 1em',
     // alignItems: 'center',
+  },
+  titleInOneRow: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   helper: {
     borderLeft: `2px solid ${theme.palette.divider}`,
@@ -85,9 +93,6 @@ const styles = theme => ({
     // width: '200px',
     marginRight: '2em',
   },
-  selectIcon: {
-    height: '1em',
-  },
 });
 
 const ArrowIcon = withStyles(styles)((props) => {
@@ -102,6 +107,8 @@ const RegisterButton = withStyles(styles)((props) => {
 
 const DetailedExpansionPanel = (props) => {
   const { classes } = props;
+  const noVerified = props.items.filter(item => item.status === VERIFIED).length;
+  const noPending = props.items.filter(item => item.status === PENDING).length;
   return (
     <div className={classes.root}>
       <ExpansionPanel className={classes.paper}>
@@ -109,20 +116,19 @@ const DetailedExpansionPanel = (props) => {
           <div className={classes.header}>
             <img src={identityIcon} className={classes.image} alt="Identity Icon" />
             <div className={classes.textGroup}>
-              <Typography className={classes.title}>Name</Typography>
-              <Typography className={classes.verificationStatus}>
-                <img className={classes.selectIcon} src={SelectedBox} alt="Unselected Icon" />  1 Verification
-              </Typography>
-              {/* <Typography className={classes.disabledVerificationStatus}>
-                <img className={classes.selectIcon} src={UnselectedBox} alt="Unselected Icon" />  0 Verification
-              </Typography> */}
+              <Typography className={classes.title}>{props.title}</Typography>
+              <div className={classes.titleInOneRow}>
+                {noVerified > 0 && <Typography className={classes.verificationStatus}>{noVerified} Verification </Typography>}
+                {noPending > 0 && <Typography className={classes.disabledVerificationStatus}> {noPending} Pending</Typography>}
+              </div>
             </div>
           </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.details}>
-          {props.children}
+          {props.items.map( (item) => {
+            return (<SubPanel />);
+          })}
         </ExpansionPanelDetails>
-      
       </ExpansionPanel>
     </div>
   );
@@ -130,8 +136,6 @@ const DetailedExpansionPanel = (props) => {
 
 DetailedExpansionPanel.propTypes = {
   classes: PropTypes.object.isRequired,
-  children: PropTypes.any.isRequired,
-
 };
 
 export default withStyles(styles)(DetailedExpansionPanel);

@@ -6,7 +6,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import UnselectedBox from '../assets/unselectedBox.svg';
 import { disabledGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
@@ -64,9 +63,7 @@ const styles = theme => ({
     // width: '200px',
     marginRight: '2em',
   },
-  selectIcon: {
-    height: '1em',
-  },
+
 });
 
 const ArrowIcon = withStyles(styles)((props) => {
@@ -89,9 +86,9 @@ const DetailedExpansionPanel = (props) => {
           <div className={classes.header}>
             <img src={identityIcon} className={classes.image} alt="Identity Icon" />
             <div className={classes.textGroup}>
-              <Typography className={classes.title}>Name</Typography>
+              <Typography className={classes.title}>{props.title}</Typography>
               <Typography className={classes.verificationStatus}>
-                <img className={classes.selectIcon} src={UnselectedBox} alt="Unselected Icon" />  0 Verification
+                0 Verification
               </Typography>
             </div>
           </div>
@@ -103,8 +100,6 @@ const DetailedExpansionPanel = (props) => {
 
 DetailedExpansionPanel.propTypes = {
   classes: PropTypes.object.isRequired,
-  children: PropTypes.any.isRequired,
-
 };
 
 export default withStyles(styles)(DetailedExpansionPanel);

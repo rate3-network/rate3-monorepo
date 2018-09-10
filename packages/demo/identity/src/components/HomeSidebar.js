@@ -28,7 +28,7 @@ const styles = theme => ({
     width: '20rem',
     height: '100vh',
     boxShadow: sidebarShadow,
-    transition: 'background-color 0.5s ease-in-out',
+    transition: 'background-color 0.1s ease',
   },
   drawerPaperUser: {
     backgroundColor: homeSidebarBgColorUser,
