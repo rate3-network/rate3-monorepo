@@ -4,19 +4,23 @@ import { withStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 
-import { identityBlue } from '../constants/colors';
+import SelectedBox from '../assets/selectedBox.svg';
+import UnselectedBox from '../assets/unselectedBox.svg';
+import { identityBlue, disabledGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
 
 const styles = theme => ({
   root: {
     width: '130%',
+  },
+  paper: {
+    marginTop: '0.1em',
+    boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.19)',
+    borderRadius: '2px !important',
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -70,10 +74,19 @@ const styles = theme => ({
   verificationStatus: {
     color: identityBlue,
     fontWeight: 'bold',
+    whiteSpace: 'pre',
+  },
+  disabledVerificationStatus: {
+    color: disabledGrey,
+    fontWeight: 'bold',
+    whiteSpace: 'pre',
   },
   iconButton: {
     // width: '200px',
     marginRight: '2em',
+  },
+  selectIcon: {
+    height: '1em',
   },
 });
 
@@ -91,29 +104,25 @@ const DetailedExpansionPanel = (props) => {
   const { classes } = props;
   return (
     <div className={classes.root}>
-      <ExpansionPanel>
+      <ExpansionPanel className={classes.paper}>
         <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
           <div className={classes.header}>
             <img src={identityIcon} className={classes.image} alt="Identity Icon" />
             <div className={classes.textGroup}>
               <Typography className={classes.title}>Name</Typography>
-              <Typography className={classes.verificationStatus}>1 Verification</Typography>
+              <Typography className={classes.verificationStatus}>
+                <img className={classes.selectIcon} src={SelectedBox} alt="Unselected Icon" />  1 Verification
+              </Typography>
+              {/* <Typography className={classes.disabledVerificationStatus}>
+                <img className={classes.selectIcon} src={UnselectedBox} alt="Unselected Icon" />  0 Verification
+              </Typography> */}
             </div>
-          </div>
-          <div className={classes.header}>
-            {/* <Typography className={classes.secondaryHeading}>Select trip destination</Typography> */}
           </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.details}>
           {props.children}
         </ExpansionPanelDetails>
-        <Divider />
-        <ExpansionPanelActions>
-          <Button size="small">Cancel</Button>
-          <Button size="small" color="primary">
-            Save
-          </Button>
-        </ExpansionPanelActions>
+      
       </ExpansionPanel>
     </div>
   );

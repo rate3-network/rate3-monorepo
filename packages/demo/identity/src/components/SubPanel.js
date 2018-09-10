@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import UnselectedBox from '../assets/unselectedBox.svg';
 import { disabledGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
@@ -16,9 +16,8 @@ const styles = theme => ({
     width: '130%',
   },
   paper: {
-    marginTop: '0.1em',
+    borderRadius: '10px !important',
     boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.19)',
-    borderRadius: '2px !important',
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -46,37 +45,35 @@ const styles = theme => ({
     fontWeight: 'bold',
     fontSize: '1em',
   },
-  verificationStatus: {
-    color: disabledGrey,
-    fontWeight: 'bold',
-    whiteSpace: 'pre',
-  },
-  buttonContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: '4em',
-    height: '1.3em',
-    // minHeight: '2em',
-    marginRight: '1em',
+  icon: {
+    color: 'black',
+    height: '1.5em',
+    width: '1.5em',
   },
   iconButton: {
     // width: '200px',
     marginRight: '2em',
   },
-  selectIcon: {
-    height: '1em',
+  content: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingLeft: '3em',
+  },
+  contentCol: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  data: {
+    paddingLeft: '3em',
+  },
+  signature: {
+    paddingLeft: '3em',
   },
 });
 
 const ArrowIcon = withStyles(styles)((props) => {
   const { classes } = props;
-  return <ExpandMoreIcon />;
-});
-
-const RegisterButton = withStyles(styles)((props) => {
-  const { classes } = props;
-  return <div className={classes.buttonContainer}><BlueButton fontSize={'0.7em'} fontWeight={500} buttonText="Register" /></div>;
+  return <ExpandMoreIcon className={classes.icon} />;
 });
 
 
@@ -84,18 +81,31 @@ const DetailedExpansionPanel = (props) => {
   const { classes } = props;
   return (
     <div className={classes.root}>
-      <ExpansionPanel className={classes.paper} expanded={false}>
-        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<RegisterButton />}>
-          <div className={classes.header}>
-            <img src={identityIcon} className={classes.image} alt="Identity Icon" />
-            <div className={classes.textGroup}>
-              <Typography className={classes.title}>Name</Typography>
-              <Typography className={classes.verificationStatus}>
-                <img className={classes.selectIcon} src={UnselectedBox} alt="Unselected Icon" />  0 Verification
-              </Typography>
+      <ExpansionPanel
+        className={classes.paper}
+      >
+        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
+          <div className={classes.paperContainer}>
+            <div className={classes.title}>
+              Rand
+            </div>
+            <div className={classes.status}>
+              Pending Review
             </div>
           </div>
         </ExpansionPanelSummary>
+        <ExpansionPanelDetails className={classes.details}>
+          <div className={classes.content}>
+            <div className={classes.contentCol}>
+              <div>Data</div>
+              <div>Signature</div>
+            </div>
+            <div className={classes.contentCol}>
+              <div className={classes.data}>123 Seasame Street, 235123</div>
+              <div className={classes.signature}>Pending</div>
+            </div>
+          </div>
+        </ExpansionPanelDetails>
       </ExpansionPanel>
     </div>
   );
@@ -103,8 +113,6 @@ const DetailedExpansionPanel = (props) => {
 
 DetailedExpansionPanel.propTypes = {
   classes: PropTypes.object.isRequired,
-  children: PropTypes.any.isRequired,
-
 };
 
 export default withStyles(styles)(DetailedExpansionPanel);

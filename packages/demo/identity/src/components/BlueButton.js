@@ -13,9 +13,9 @@ const styles = theme => ({
     // fontWeight: 'bold',
     borderRadius: '50px',
     color: 'white',
-    boxShadow: '0 0 0',
+    boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
     '&:hover': {
-      boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
+      boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.25)',
     },
   },
 });
