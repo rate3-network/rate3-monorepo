@@ -26,7 +26,7 @@ contract BaseAdminInteractor is Claimable {
         _;
     }
 
-    constructor(TokenizeTemplateToken _token) {
+    constructor(TokenizeTemplateToken _token) public {
         admin1 = msg.sender;
         admin2 = msg.sender;
         token = _token;
@@ -34,6 +34,7 @@ contract BaseAdminInteractor is Claimable {
 
     function setToken(TokenizeTemplateToken _newTokenContract) public onlyOwner {
         token = _newTokenContract;
+        token.claimOwnership();
     }
 
     function setFirstAdmin(address _newAdminAddress) public onlyOwner {
@@ -44,10 +45,6 @@ contract BaseAdminInteractor is Claimable {
     function setSecondAdmin(address _newAdminAddress) public onlyOwner {
         require(_newAdminAddress != address(0), "Admin cannot be 0x0 address");
         admin2 = _newAdminAddress;
-    }
-
-    function claimTokenOwnership(TokenizeTemplateToken _newTokenContract) public onlyOwner {
-        token.claimOwnership();
     }
 }
 
