@@ -126,7 +126,7 @@ const DetailedExpansionPanel = (props) => {
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.details}>
           {props.items.map( (item) => {
-            return (<SubPanel />);
+            return (<SubPanel item={item} />);
           })}
         </ExpansionPanelDetails>
       </ExpansionPanel>

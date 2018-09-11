@@ -10,12 +10,15 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { disabledGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
+import { PENDING, VERIFIED } from '../constants/general';
 
 const styles = theme => ({
   root: {
-    width: '130%',
+    width: '92%',
+    paddingLeft: '4%',
   },
   paper: {
+    marginTop: '0.2em',
     borderRadius: '10px !important',
     boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.19)',
   },
@@ -27,7 +30,6 @@ const styles = theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     width: '40%',
-    // flexBasis: '33.33%',
   },
   image: {
     width: '4.5em',
@@ -39,7 +41,6 @@ const styles = theme => ({
     flexDirection: 'column',
     justifyContent: 'space-around',
     padding: '1em 0 1em 1em',
-    // alignItems: 'center',
   },
   title: {
     fontWeight: 'bold',
@@ -51,7 +52,6 @@ const styles = theme => ({
     width: '1.5em',
   },
   iconButton: {
-    // width: '200px',
     marginRight: '2em',
   },
   content: {
@@ -87,10 +87,10 @@ const DetailedExpansionPanel = (props) => {
         <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
           <div className={classes.paperContainer}>
             <div className={classes.title}>
-              Rand
+              {props.item.value}
             </div>
             <div className={classes.status}>
-              Pending Review
+              {props.item.status === VERIFIED ? 'Added' : 'Pending Review'}
             </div>
           </div>
         </ExpansionPanelSummary>

@@ -24,7 +24,7 @@ const styles = theme => ({
     color: homeTextWhiteVerifier,
   },
   drawerPaper: {
-    position: 'relative',
+    position: 'fixed',
     width: '20rem',
     height: '100vh',
     boxShadow: sidebarShadow,
@@ -178,6 +178,7 @@ const HomeSidebar = observer((props) => {
   return (
     <Drawer
       variant="permanent"
+      // style={{ position: 'fixed' }}
       classes={{
         paper: classNames(
           classes.drawerPaper,
