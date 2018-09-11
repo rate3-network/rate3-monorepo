@@ -11,14 +11,17 @@ import { disabledGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
 import { PENDING, VERIFIED } from '../constants/general';
+import Rate3LogoSmall from '../assets/Rate3LogoSmall.svg';
+import addedIcon from '../assets/addedIcon.svg';
+import pendingIcon from '../assets/pendingIcon.svg';
 
 const styles = theme => ({
   root: {
     width: '92%',
     paddingLeft: '4%',
+    marginTop: '0.2em',
   },
   paper: {
-    marginTop: '0.2em',
     borderRadius: '10px !important',
     boxShadow: '0px 0px 5px rgba(0, 0, 0, 0.19)',
   },
@@ -43,8 +46,17 @@ const styles = theme => ({
     padding: '1em 0 1em 1em',
   },
   title: {
-    fontWeight: 'bold',
+    fontWeight: '500',
     fontSize: '1em',
+    color: 'black',
+    whiteSpace: 'pre',
+  },
+  smallLogo: {
+    height: '0.8em',
+  },
+  status: {
+    fontSize: '0.8em',
+    fontWeight: '500',
   },
   icon: {
     color: 'black',
@@ -65,8 +77,11 @@ const styles = theme => ({
   },
   data: {
     paddingLeft: '3em',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '10em',
   },
-  signature: {
+  pending: {
     paddingLeft: '3em',
   },
 });
@@ -87,22 +102,30 @@ const DetailedExpansionPanel = (props) => {
         <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
           <div className={classes.paperContainer}>
             <div className={classes.title}>
-              {props.item.value}
+              {props.item.value} <img className={classes.smallLogo} src={Rate3LogoSmall} alt="Rate3 Logo Small" />
             </div>
             <div className={classes.status}>
-              {props.item.status === VERIFIED ? 'Added' : 'Pending Review'}
+              {props.item.status === VERIFIED ?
+                <div><img className={classes.smallLogo} src={selectedIcon} alt="icon" />Added</div> :
+                <div><img className={classes.smallLogo} src={pendingIcon} alt="icon" />Pending Review</div>
+              }
             </div>
           </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.details}>
           <div className={classes.content}>
             <div className={classes.contentCol}>
+              {props.item.status === VERIFIED && <div>TxHsh</div>}
               <div>Data</div>
               <div>Signature</div>
             </div>
             <div className={classes.contentCol}>
-              <div className={classes.data}>123 Seasame Street, 235123</div>
-              <div className={classes.signature}>Pending</div>
+              {props.item.status === VERIFIED && <div className={classes.data}>{props.item.txHash}</div>}
+              <div className={classes.data}>{props.item.value}</div>
+              {props.item.status === VERIFIED ?
+                <div className={classes.data}>{props.item.signature}</div> :
+                <div className={classes.pending}>Pending</div>
+              }
             </div>
           </div>
         </ExpansionPanelDetails>
@@ -113,6 +136,7 @@ const DetailedExpansionPanel = (props) => {
 
 DetailedExpansionPanel.propTypes = {
   classes: PropTypes.object.isRequired,
+  item: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(DetailedExpansionPanel);

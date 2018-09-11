@@ -11,8 +11,20 @@ configure({ enforceActions: 'always' }); // don't allow state modifications outs
 
 class UserStore {
   /* JSDOC: MARK START OBSERVABLE */
-  @observable identityNames: Array = [{ id: 0, status: VERIFIED, value: 'John Snow' }];
-  @observable identityAddresses: Array = [{ id: 0, status: VERIFIED, value: '123 Ochard Road' }, { id: 1, status: PENDING, value: '001 Changi Road' }];
+  @observable identityNames: Array = [{
+    id: 0,
+    status: VERIFIED,
+    value: 'John Snow',
+    txHash: '0x825e1e0c57700b327dff98d2b04b17ba8fe3d2ea729acd79a4d2fe1a2912935b',
+    signature: '0x4d3a5de2bfa0bb3d35fecd82d6d3c1deb396580f',
+  }];
+  @observable identityAddresses: Array = [{
+    id: 0,
+    status: VERIFIED,
+    value: '123 Ochard Road',
+    txHash: '0x825e1e0c57700b327dff98d2b04b17ba8fe3d2ea729acd79a4d2fe1a2912935b',
+    signature: '0x4d3a5de2bfa0bb3d35fecd82d6d3c1deb396580f',
+  }, { id: 1, status: PENDING, value: '001 Changi Road' }];
   @observable identitySocialIds: Array = [];
   /* JSDOC: MARK END OBSERVABLE */
 
