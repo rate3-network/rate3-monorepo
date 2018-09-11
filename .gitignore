@@ -1,6 +1,9 @@
 # npm modules
 node_modules/
 
+# jsdoc files
+out/
+
 # encrypted data
 *.enc
  

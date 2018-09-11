@@ -2,14 +2,16 @@
   "name": "wallet",
   "version": "1.0.0",
   "description": "",
-  "main": "stellarGenAcc.js",
+  "main": "sum.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "jest": "^23.5.0",
     "node-forge": "^0.7.6",
-    "stellar-hd-wallet": "0.0.8"
+    "stellar-hd-wallet": "0.0.8",
+    "yarn": "^1.9.4"
   }
 }
