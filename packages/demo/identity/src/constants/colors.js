@@ -28,3 +28,7 @@ export const homeTextGreyUser = '#7B8292';
 export const homeTextWhiteVerifier = '#FFFFFF';
 export const homeSidebarBgColorUser = '#FFFFFF';
 export const homeSidebarBgColorVerifier = '#1E4465';
+
+// User Main
+export const identityHeavyGrey = '#697180';
+export const actionRequiredBoxBg = 'rgba(249, 173, 84, 0.25)';

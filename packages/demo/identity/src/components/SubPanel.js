@@ -7,10 +7,10 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { disabledGrey } from '../constants/colors';
+import { disabledGrey, identityHeavyGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
-import { PENDING, VERIFIED } from '../constants/general';
+import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import Rate3LogoSmall from '../assets/Rate3LogoSmall.svg';
 import addedIcon from '../assets/addedIcon.svg';
 import pendingIcon from '../assets/pendingIcon.svg';
@@ -28,11 +28,11 @@ const styles = theme => ({
   heading: {
     fontSize: theme.typography.pxToRem(15),
   },
-  header: {
+  paperContainer: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    width: '40%',
+    width: '100%',
   },
   image: {
     width: '4.5em',
@@ -57,6 +57,7 @@ const styles = theme => ({
   status: {
     fontSize: '0.8em',
     fontWeight: '500',
+    whiteSpace: 'pre',
   },
   icon: {
     color: 'black',
@@ -74,69 +75,127 @@ const styles = theme => ({
   contentCol: {
     display: 'flex',
     flexDirection: 'column',
+    fontSize: '0.8em',
+    fontWeight: '500',
+  },
+  contentHeaderCol: {
+    display: 'flex',
+    flexDirection: 'column',
+    fontSize: '0.8em',
   },
   data: {
     paddingLeft: '3em',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     maxWidth: '10em',
+    color: identityHeavyGrey,
   },
   pending: {
     paddingLeft: '3em',
   },
+  addButton: {
+    marginLeft: '50%',
+  },
+  buttonContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '4em',
+    height: '1.3em',
+    marginRight: '1em',
+  },
 });
 
-const ArrowIcon = withStyles(styles)((props) => {
-  const { classes } = props;
-  return <ExpandMoreIcon className={classes.icon} />;
-});
 
+class SubPanel extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false,
+    };
+  }
 
-const DetailedExpansionPanel = (props) => {
-  const { classes } = props;
-  return (
-    <div className={classes.root}>
-      <ExpansionPanel
-        className={classes.paper}
-      >
-        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
-          <div className={classes.paperContainer}>
-            <div className={classes.title}>
-              {props.item.value} <img className={classes.smallLogo} src={Rate3LogoSmall} alt="Rate3 Logo Small" />
-            </div>
-            <div className={classes.status}>
-              {props.item.status === VERIFIED ?
-                <div><img className={classes.smallLogo} src={selectedIcon} alt="icon" />Added</div> :
-                <div><img className={classes.smallLogo} src={pendingIcon} alt="icon" />Pending Review</div>
+  handleAdd() {
+    console.log('add identity');
+  }
+
+  handleExpand() {
+    this.setState({
+      expanded: !this.state.expanded,
+    });
+  }
+
+  render() {
+    const { classes } = this.props;
+
+    const ArrowIcon = withStyles(styles)((props) => {
+      return <ExpandMoreIcon onClick={this.handleExpand.bind(this)} className={classes.icon} />;
+    });
+    
+    const AddButton = withStyles(styles)((props) => {
+      return <div className={classes.buttonContainer}><BlueButton fontSize={'0.7em'} fontWeight={500} buttonText="add" /></div>;
+    });
+    
+    return (
+      <div className={classes.root}>
+        <ExpansionPanel
+          className={classes.paper}
+          expanded={this.state.expanded}
+        >
+          <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
+            <div className={classes.paperContainer}>
+              <div>
+                <div className={classes.title}>
+                  {this.props.item.value} <img className={classes.smallLogo} src={Rate3LogoSmall} alt="Rate3 Logo Small" />
+                </div>
+                <div className={classes.status}>
+                  {this.props.item.status === VERIFIED &&
+                    <div><img className={classes.smallLogo} src={addedIcon} alt="icon" /> Added</div>
+                  }
+                  {this.props.item.status === PENDING_REVIEW &&
+                    <div><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Pending Review</div>
+                  }
+                  {this.props.item.status === PENDING_ADD &&
+                    <div><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Ready to Add</div>
+                  }
+                </div>
+              </div>
+              {this.props.item.status === PENDING_ADD &&
+                <div onClick={this.handleAdd} className={classes.addButton}><AddButton /></div>
               }
             </div>
-          </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.details}>
-          <div className={classes.content}>
-            <div className={classes.contentCol}>
-              {props.item.status === VERIFIED && <div>TxHsh</div>}
-              <div>Data</div>
-              <div>Signature</div>
-            </div>
-            <div className={classes.contentCol}>
-              {props.item.status === VERIFIED && <div className={classes.data}>{props.item.txHash}</div>}
-              <div className={classes.data}>{props.item.value}</div>
-              {props.item.status === VERIFIED ?
-                <div className={classes.data}>{props.item.signature}</div> :
-                <div className={classes.pending}>Pending</div>
-              }
-            </div>
-          </div>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    </div>
-  );
-};
+            
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails className={classes.details}>
+            <div className={classes.content}>
+              <div className={classes.contentHeaderCol}>
+                {this.props.item.status === VERIFIED ?
+                  <React.Fragment><div>TxHsh</div><div>Data</div><div>Signature</div></React.Fragment> :
+                  <React.Fragment> <div>Data</div><div>Signature</div></React.Fragment>
+                }
 
-DetailedExpansionPanel.propTypes = {
+              </div>
+              <div className={classes.contentCol}>
+                {this.props.item.status === VERIFIED && <div className={classes.data}>{this.props.item.txHash}</div>}
+                <div className={classes.data}>{this.props.item.value}</div>
+                {this.props.item.status === PENDING_REVIEW &&
+                  <div className={classes.pending}>Pending</div>
+                }
+                {this.props.item.status === PENDING_ADD &&
+                  <div className={classes.data}>{this.props.item.signature}</div>
+                }
+              </div>
+            </div>
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      </div>
+    );
+  }
+}
+
+SubPanel.propTypes = {
   classes: PropTypes.object.isRequired,
   item: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DetailedExpansionPanel);
+export default withStyles(styles)(SubPanel);

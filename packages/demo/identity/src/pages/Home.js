@@ -12,13 +12,13 @@ const styles = theme => ({
   root: {
     display: 'flex',
     flexDirection: 'row',
-    height: '100vh',
+    overflow: 'auto',
+    height: '100%',
+    backgroundColor: homeBg,
   },
   main: {
     padding: '5.5em 4em 10em 4em',
     marginLeft: '20rem',
-    overflow: 'auto',
-    backgroundColor: homeBg,
   },
 });
 

@@ -7,16 +7,16 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import { identityBlue, disabledGrey } from '../constants/colors';
-import BlueButton from './BlueButton';
+import { identityBlue, disabledGrey, actionRequiredBoxBg } from '../constants/colors';
 import identityIcon from '../assets/identityIcon.svg';
 import SubPanel from './SubPanel';
 
-import { PENDING, VERIFIED } from '../constants/general';
+import { VERIFIED, PENDING_ADD, PENDING_REVIEW } from '../constants/general';
 
 const styles = theme => ({
   root: {
     width: '130%',
+    maxWidth: '40em',
   },
   paper: {
     marginTop: '0.1em',
@@ -93,6 +93,15 @@ const styles = theme => ({
     // width: '200px',
     marginRight: '2em',
   },
+  actionRequiredBox: {
+    marginLeft: 'auto',
+    marginRight: '8%',
+    padding: '0 0.8em 0 0.8em',
+    borderRadius: '0.3em',
+    backgroundColor: actionRequiredBoxBg,
+    fontSize: '0.8em',
+    fontStyle: 'italic',
+  },
 });
 
 const ArrowIcon = withStyles(styles)((props) => {
@@ -100,15 +109,11 @@ const ArrowIcon = withStyles(styles)((props) => {
   return <ExpandMoreIcon className={classes.icon} />;
 });
 
-const RegisterButton = withStyles(styles)((props) => {
-  const { classes } = props;
-  return <BlueButton className={classes.icon} />;
-}); 
-
 const DetailedExpansionPanel = (props) => {
   const { classes } = props;
   const noVerified = props.items.filter(item => item.status === VERIFIED).length;
-  const noPending = props.items.filter(item => item.status === PENDING).length;
+  const noPending = props.items.filter(item => item.status === PENDING_ADD || item.status === PENDING_REVIEW).length;
+  const needAction = props.items.filter(item => item.status === PENDING_ADD).length > 0;
   return (
     <div className={classes.root}>
       <ExpansionPanel className={classes.paper}>
@@ -120,8 +125,10 @@ const DetailedExpansionPanel = (props) => {
               <div className={classes.titleInOneRow}>
                 {noVerified > 0 && <Typography className={classes.verificationStatus}>{noVerified} Verification </Typography>}
                 {noPending > 0 && <Typography className={classes.disabledVerificationStatus}> {noPending} Pending</Typography>}
+                
               </div>
             </div>
+            {needAction && <div className={classes.actionRequiredBox}>Action Required</div>}
           </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.details}>
