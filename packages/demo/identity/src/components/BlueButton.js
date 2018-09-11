@@ -18,6 +18,9 @@ const styles = theme => ({
       boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.25)',
     },
   },
+  whitespaces: {
+    whiteSpace: 'pre',
+  },
 });
 
 const BlueButton = (props) => {
@@ -32,7 +35,7 @@ const BlueButton = (props) => {
       onClick={props.handleClick}
       style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.lineHeight }}
     >
-      {props.buttonText}{props.buttonIcon && props.buttonIcon}
+      {props.buttonText}{props.buttonIcon && <div className={classes.whitespaces}>  <img style={{ height: props.iconHeight }} src={props.buttonIcon} alt="ether" /></div>}
     </Button>
   );
 };

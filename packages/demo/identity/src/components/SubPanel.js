@@ -14,6 +14,7 @@ import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import Rate3LogoSmall from '../assets/Rate3LogoSmall.svg';
 import addedIcon from '../assets/addedIcon.svg';
 import pendingIcon from '../assets/pendingIcon.svg';
+import ether from '../assets/ether.svg';
 
 const styles = theme => ({
   root: {
@@ -136,11 +137,12 @@ class SubPanel extends React.Component {
       <div>
         <BlueButton 
           className={classes.buttonContainer}
-          fontSize={'0.7em'}
-          lineHeight={'0.7em'}
+          fontSize="0.7em"
+          lineHeight="1em"
           fontWeight={500}
           buttonText="add"
-          buttonIcon={''}
+          buttonIcon={ether}
+          iconHeight="0.8em"
         />
       </div>);
     });
