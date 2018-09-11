@@ -46,6 +46,14 @@ const styles = (theme) => {
   });
 };
 
+const Test = (props) => {
+  return (
+    props.page === 1 ?
+    <div><h1>test</h1><h2>test2</h2></div> :
+    <div><h1>test3</h1><h2>test4</h2></div>
+  );
+};
+
 const InstructionModal = (props) => {
   const { classes } = props;
   return (
