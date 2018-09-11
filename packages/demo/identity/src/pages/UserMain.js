@@ -20,6 +20,7 @@ const styles = (theme) => {
       fontSize: '1.2em',
       lineHeight: '1.55em',
       fontWeight: '400',
+      marginBottom: '5em',
     },
   });
 };
@@ -39,7 +40,7 @@ const UserMain = inject('RootStore')(observer((props) => {
           <FixedPanel title="Address"></FixedPanel>
         }
         {props.RootStore.userStore.getIdentitySocialIds().length > 0 ?
-          <ExpandablePanel title="Social ID" items={props.RootStore.userStore.getIdentityNames()} /> :
+          <ExpandablePanel title="Social ID" items={props.RootStore.userStore.getIdentitySocialIds()} /> :
           <FixedPanel title="Social ID"></FixedPanel>
         }
       </div>

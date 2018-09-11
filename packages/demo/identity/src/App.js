@@ -33,6 +33,7 @@ const styles = themes => ({
     fontFamily: 'Roboto',
     overflow: 'hidden',
     color: homeTextGreyUser,
+    height: '100vh',
   },
 });
 

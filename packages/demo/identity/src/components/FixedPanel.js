@@ -54,7 +54,7 @@ const styles = theme => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: '4em',
+    width: '3em',
     height: '1.3em',
     // minHeight: '2em',
     marginRight: '1em',
