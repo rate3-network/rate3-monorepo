@@ -184,7 +184,6 @@ class SubPanel extends React.Component {
                   <React.Fragment><div>TxHsh</div><div>Data</div><div>Signature</div></React.Fragment> :
                   <React.Fragment> <div>Data</div><div>Signature</div></React.Fragment>
                 }
-
               </div>
               <div className={classes.contentCol}>
                 {this.props.item.status === VERIFIED && <div className={classes.data}>{this.props.item.txHash}</div>}

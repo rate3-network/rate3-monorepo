@@ -18,6 +18,8 @@ social3.approveIdentity('0x4d3a5de2bfa0bb3d35fecd82d6d3c1deb396580f');
 social3.addIdentity('0x825e1e0c57700b327dff98d2b04b17ba8fe3d2ea729acd79a4d2fe1a2912935b');
 class UserStore {
   /* JSDOC: MARK START OBSERVABLE */
+  @observable userModalIsShowing = true;
+  @observable userModalHasBeenViewed = false;
   @observable identityNames: Array = [];
   @observable identityAddresses: Array = [{ id: 1, status: PENDING_REVIEW, value: '001 Changi Road' }];
   @observable identitySocialIds: Array = [social1, social2, social3];
@@ -37,6 +39,10 @@ class UserStore {
     return this.identitySocialIds;
   }
 
+  getUserModalIsShowing() {
+    return this.userModalIsShowing;
+  }
+
   @action
   addToNames(name) {
     const id = this.identityNames.length;
@@ -46,6 +52,17 @@ class UserStore {
       value: name,
     };
     this.identityNames.push(newIdentityName);
+  }
+
+  @action
+  openModal() {
+    this.userModalIsShowing = true;
+  }
+
+  @action
+  closeModal() {
+    this.userModalIsShowing = false;
+    console.log(this.userModalIsShowing);
   }
 }
 
