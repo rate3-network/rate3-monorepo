@@ -73,7 +73,7 @@ const ArrowIcon = withStyles(styles)((props) => {
 
 const RegisterButton = withStyles(styles)((props) => {
   const { classes } = props;
-  return <div className={classes.buttonContainer}><BlueButton fontSize={'0.7em'} fontWeight={500} buttonText="Register" /></div>;
+  return <div><BlueButton className={classes.buttonContainer} fontSize={'0.7em'} lineHeight={'1em'} fontWeight={500} buttonText="Register" /></div>;
 });
 
 

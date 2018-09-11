@@ -30,9 +30,9 @@ const BlueButton = (props) => {
       disabled={props.disabled}
       className={classes.button}
       onClick={props.handleClick}
-      style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.fontSize }}
+      style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.lineHeight }}
     >
-      {props.buttonText}
+      {props.buttonText}{props.buttonIcon && props.buttonIcon}
     </Button>
   );
 };

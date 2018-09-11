@@ -57,16 +57,6 @@ const styles = theme => ({
     height: '3.2rem',
     minHeight: '3.2rem',
   },
-  button: {
-    width: '17vw',
-    height: '7vh',
-    fontSize: '2em',
-    fontWeight: 'bold',
-    borderRadius: '50px',
-    backgroundColor: identityBlue,
-    color: 'white',
-    boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
-  },
   mobileStepper: {
     backgroundColor: 'white',
     paddingTop: '1.5em',
@@ -170,7 +160,7 @@ class OnboardStepper extends React.Component {
           />
         }
         <div className={classes.buttonContainer}>
-          <BlueButton className={classes.blueButton} fontWeight="bold" handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
+          <BlueButton fontWeight="bold" handleClick={buttonAction} buttonText={buttonText} disabled={finalButtonDisabled} />
           <MobileStepper
             steps={maxSteps}
             variant="dots"

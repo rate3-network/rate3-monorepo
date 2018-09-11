@@ -94,7 +94,7 @@ const styles = theme => ({
     paddingLeft: '3em',
   },
   addButton: {
-    marginLeft: '50%',
+    marginLeft: '40%',
   },
   buttonContainer: {
     display: 'flex',
@@ -105,7 +105,6 @@ const styles = theme => ({
     marginRight: '1em',
   },
 });
-
 
 class SubPanel extends React.Component {
   constructor(props) {
@@ -133,7 +132,17 @@ class SubPanel extends React.Component {
     });
     
     const AddButton = withStyles(styles)((props) => {
-      return <div className={classes.buttonContainer}><BlueButton fontSize={'0.7em'} fontWeight={500} buttonText="add" /></div>;
+      return (
+      <div>
+        <BlueButton 
+          className={classes.buttonContainer}
+          fontSize={'0.7em'}
+          lineHeight={'0.7em'}
+          fontWeight={500}
+          buttonText="add"
+          buttonIcon={''}
+        />
+      </div>);
     });
     
     return (
