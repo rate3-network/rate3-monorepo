@@ -7,7 +7,8 @@ const testPassword = 'qwerty123456'
 
 test('generateSeedPhrases', () => {
   const seedPhrases = wallet.generateSeedPhrases()
-  expect(seedPhrases).not.toBe(3);
+  expect(seedPhrases.length).toBeGreaterThan(80);
+  expect(seedPhrases.length).toBeLessThan(200);
 });
 
 test('generateWallet', () => {

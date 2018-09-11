@@ -12,6 +12,7 @@
     "jest": "^23.5.0",
     "node-forge": "^0.7.6",
     "stellar-hd-wallet": "0.0.8",
+    "stellar-sdk": "^0.10.3",
     "yarn": "^1.9.4"
   }
 }
