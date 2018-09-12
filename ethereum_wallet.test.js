@@ -1,10 +1,11 @@
 let ethereum_wallet = require('./ethereum_wallet');
 
-const testSeedPhrase = 'rail reward idle hour evil online enforce credit thumb minimum finish leg'
+const testSeedPhrase = 'focus shoulder huge sniff unknown adjust scrub shrug company response bargain inform'
 //const testSeedHex = 'e67b04748412748efef0471b7e7c72a645aad84b5f87be771fcbd30a5913b7eccc3d7418a331e54fe2e19c5258fcc751172de8bd2464b3abaf89e36bfbc2f38e'
-const testPrivateKey = 'SDSQFGH6U4AMVFNBCDZDOEVLA7CD4U56XQKERSZFLIBYOXZURR4FRGM5'
+const testPrivateKey = '0xb4a76267823fa9147b436726ff22147448d486ed692b0eda6c664016f95295a4'
 const testPassword = 'qwerty123456'
-const testAddress = '0xc0300eb995c1a9645b7946afb1ac7ceac449ade6'
+const testAddress = '0x8b1b30bfe8e88300cd08bff9018a24353a567b5a'
+const testPublicAddress = '0x099efadf7a33241621e8e9b177001b0df27b0a68b8f8e512a0cc73c0e9512570bd11b0be17634535c5167d1e18bf9c2e16fd1f2260609192eaa2f1272a05b579'
 
 test('generateSeedPhrases', () => {
   const seedPhrases = ethereum_wallet.generateSeedPhrases()
@@ -13,5 +14,5 @@ test('generateSeedPhrases', () => {
 });
 
 test('generateWallet', () => {
-  expect(ethereum_wallet.generateWallet(testSeedPhrase).generateAddresses(1)[0]).toBe(testAddress);
+  expect(ethereum_wallet.generateWallet(testSeedPhrase).getAddressString()).toBe(testAddress);
 });
