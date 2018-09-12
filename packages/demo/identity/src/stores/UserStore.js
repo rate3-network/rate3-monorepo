@@ -79,6 +79,10 @@ class UserStore {
   handleModalNext() {
     this.modalPage += 1;
   }
+  @action
+  handleModalBack() {
+    this.modalPage -= 1;
+  }
 }
 
 export default UserStore;

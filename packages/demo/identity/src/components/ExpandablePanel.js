@@ -132,8 +132,8 @@ const DetailedExpansionPanel = (props) => {
           </div>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails className={classes.details}>
-          {props.items.map( (item) => {
-            return (<SubPanel item={item} />);
+          {props.items.map((item) => {
+            return (<SubPanel key={JSON.stringify(item)} item={item} />);
           })}
         </ExpansionPanelDetails>
       </ExpansionPanel>

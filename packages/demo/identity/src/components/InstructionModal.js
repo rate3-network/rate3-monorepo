@@ -5,6 +5,8 @@ import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 
 import { identityBlue, backdropColor, modalShadow } from './../constants/colors';
+import leftArrow from '../assets/leftArrow.svg';
+import rightArrow from '../assets/rightArrow.svg';
 
 const styles = (theme) => {
   return ({
@@ -50,6 +52,9 @@ const styles = (theme) => {
     arrow: {
       alignSelf: 'center',
     },
+    image: {
+      width: '50%',
+    },
   });
 };
 
@@ -73,26 +78,37 @@ const InstructionModal = (props) => {
         <div className={classes.modal}>
           <div className={classes.paper}>
             <div className={classes.content}>
-              <div className={classes.arrow}>
-                {'<'}
+              <div className={classes.arrow} onClick={props.handleBack}>
+                {props.activeStep > 0 && <img className={classes.image} src={leftArrow} alt="" />}
               </div>
               {props.children}
-              <div className={classes.arrow}>
-                {'>'}
+              <div className={classes.arrow} onClick={props.handleNext}>
+                {props.activeStep < props.maxSteps - 1 && <img className={classes.image} src={rightArrow} alt="" />}
               </div>
             </div>
           </div>
           <div className={classes.footer}>
-            <Button 
-              size="small" 
-              onClick={props.handleNext} 
-              disabled={props.activeStep >= props.maxSteps - 1}
-              classes={{
-                text: classes.buttonText,
-              }}
-            >
-              Next
-            </Button>
+            {props.activeStep < props.maxSteps - 1 ?
+              <Button
+                size="small"
+                onClick={props.handleNext} 
+                disabled={props.activeStep >= props.maxSteps - 1}
+                classes={{
+                  text: classes.buttonText,
+                }}
+              >
+                Next
+              </Button> :
+              <Button
+                size="small"
+                onClick={props.onClose}
+                classes={{
+                  text: classes.buttonText,
+                }}
+              >
+                Get Started
+              </Button>
+            }
           </div>
         </div>
       </Modal>

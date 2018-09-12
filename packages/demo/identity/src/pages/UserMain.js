@@ -36,6 +36,7 @@ const UserMain = inject('RootStore')(observer((props) => {
         open={props.RootStore.userStore.getUserModalIsShowing()}
         onClose={props.RootStore.userStore.closeModal.bind(props.RootStore.userStore)}
         handleNext={props.RootStore.userStore.handleModalNext.bind(props.RootStore.userStore)}
+        handleBack={props.RootStore.userStore.handleModalBack.bind(props.RootStore.userStore)}
         activeStep={props.RootStore.userStore.getModalPage()}
         maxSteps={instructionLength}
       >

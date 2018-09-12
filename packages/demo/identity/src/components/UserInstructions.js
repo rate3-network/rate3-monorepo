@@ -2,14 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import MobileStepper from '@material-ui/core/MobileStepper';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
-import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 import SwipeableViews from 'react-swipeable-views';
 import { identityBlue, dotActiveBgColor, dotBgColor } from '../constants/colors';
 
+import userInstruction1 from '../assets/userInstruction1.svg';
+import userInstruction2 from '../assets/userInstruction2.svg';
+import userInstruction3 from '../assets/userInstruction3.svg';
 
 const styles = theme => ({
   root: {
@@ -71,6 +69,14 @@ const styles = theme => ({
   },
   stepBox: {
     width: '13em',
+    marginBlockStart: 0,
+  },
+  contentStepTitle: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  image: {
+    width: '80%',
   },
 });
 
@@ -111,9 +117,6 @@ class SwipeableTextMobileStepper extends React.Component {
           enableMouseEvents
           className={classes.swiper}
         >
-          {/* {this.props.instructionSteps.map(step => (
-            <div className={classes.content}><h3>{step.label}</h3><img key={step.label} className={classes.img} src={step.imgPath} alt="" /></div>
-          ))} */}
           <div className={classes.contentWrapper}>
             <div className={classes.content}>
               <p className={classes.contentTitle}>Hello,</p>
@@ -123,23 +126,20 @@ class SwipeableTextMobileStepper extends React.Component {
           </div>
           <div className={classes.contentWrapper}>
             <div className={classes.contentWithImage}>
-              <ol>
-                <li><p className={classes.stepBox}>Start by <b><i>registering</i></b> for a verification</p></li>
-              </ol>
+              <div className={classes.contentStepTitle}><span>1. </span><p className={classes.stepBox}>Start by <b><i>registering</i></b> for a verification</p></div>
+              <img className={classes.image} src={userInstruction1} alt="" />
             </div>
           </div>
           <div className={classes.contentWrapper}>
             <div className={classes.contentWithImage}>
-              <ol>
-                <li><p className={classes.stepBox}><b><i>Wait</i></b> for the verification to be sent back to you</p></li>
-              </ol>
+              <div className={classes.contentStepTitle}><span>2. </span><p className={classes.stepBox}><b><i>Wait</i></b> for the verification to be sent back to you</p></div>
+              <img className={classes.image} src={userInstruction2} alt="" />
             </div>
           </div>
           <div className={classes.contentWrapper}>
             <div className={classes.contentWithImage}>
-              <ol>
-                <li><p className={classes.stepBox}><b><i>Add</i></b> your verification to the blockchain</p></li>
-              </ol>
+              <div className={classes.contentStepTitle}><span>3. </span><p className={classes.stepBox}><b><i>Add</i></b> your verification to the blockchain</p></div>
+              <img className={classes.image} src={userInstruction3} alt="" />
             </div>
           </div>
         </SwipeableViews>
