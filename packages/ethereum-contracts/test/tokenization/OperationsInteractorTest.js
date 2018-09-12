@@ -19,7 +19,7 @@ contract('OperationsInteractor Tests', function(accounts) {
         await advanceBlock();
     });
 
-    const [owner, admin, ...rest] = accounts;
+    const [owner, admin1, admin2, ...rest] = accounts;
 
     describe('Test - mint request operations', function() {
         beforeEach(async function() {
@@ -35,7 +35,8 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
 
-            await this.interactor.setAdmin(admin, { from: owner });
+            await this.interactor.setFirstAdmin(admin1, { from: owner });
+            await this.interactor.setSecondAdmin(admin2, { from: owner });
         });
     });
 
@@ -52,22 +53,26 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.token.setBalanceModule(this.balanceModule.address);
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
+            await this.interactor.setToken(this.token.address, { from: owner });
+            await this.interactor.claimTokenOwnership({ from: owner });
 
-            await this.interactor.setAdmin(admin, { from: owner });
+            await this.interactor.setFirstAdmin(admin1, { from: owner });
+            await this.interactor.setSecondAdmin(admin2, { from: owner });
         });
 
-        it('owner can approve mint request', async function() {
+        it('owner cannot approve mint request', async function() {
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveMint(rest[0], 0, { from: owner }).should.be.fulfilled;
+            await this.interactor.approveMint(rest[0], 0, { from: owner }).should.be.rejected;
         });
 
-        it('admin can approve mint request', async function() {
+        it('admin1 can approve mint request', async function() {
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveMint(rest[0], 0, { from: admin }).should.be.fulfilled;
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.fulfilled;
         });
 
-        it('non-owner/admin cannot approve mint request', async function() {
+        it('non-owner/admin2 cannot approve mint request', async function() {
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.approveMint(rest[0], 0, { from: admin2 }).should.be.rejected;
             await this.interactor.approveMint(rest[0], 0, { from: rest[0] }).should.be.rejected;
             await this.interactor.approveMint(rest[0], 0, { from: rest[1] }).should.be.rejected;
         });
@@ -86,37 +91,31 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.token.setBalanceModule(this.balanceModule.address);
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
-            await this.interactor.claimTokenOwnership(this.token.address, { from: owner });
+            await this.interactor.setToken(this.token.address, { from: owner });
+            await this.interactor.claimTokenOwnership({ from: owner });
 
-            await this.interactor.setAdmin(admin, { from: owner });
-
-            this.finalizeTime = latestTime() + duration.hours(12);
+            await this.interactor.setFirstAdmin(admin1, { from: owner });
+            await this.interactor.setSecondAdmin(admin2, { from: owner });
         });
 
-        it('owner can finalize mint request immediately', async function() {
+        it('owner cannot finalize mint request', async function() {
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveMint(rest[0], 0, { from: owner });
-            await this.interactor.finalizeMint(rest[0], 0, { from: owner }).should.be.fulfilled;
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 });
+            await this.interactor.finalizeMint(rest[0], 0, { from: owner }).should.be.rejected;
         });
 
-        it('admin can finalize mint request after delay', async function() {
+        it('admin2 can finalize mint request', async function() {
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveMint(rest[0], 0, { from: admin });
-            await this.interactor.finalizeMint(rest[0], 0, { from: admin }).should.be.rejected;
-
-            await increaseTimeTo(this.finalizeTime);
-
-            await this.interactor.finalizeMint(rest[0], 0, { from: admin }).should.be.fulfilled;
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 });
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.fulfilled;
         });
 
-        it('non-owner/admin cannot finalize mint request', async function() {
+        it('non-owner/admin1 cannot finalize mint request', async function() {
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveMint(rest[0], 0, { from: admin });
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 });
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin1 }).should.be.rejected;
             await this.interactor.finalizeMint(rest[0], 0, { from: rest[0] }).should.be.rejected;
-
-            await increaseTimeTo(this.finalizeTime);
-
-            await this.interactor.finalizeMint(rest[0], 0, { from: rest[0] }).should.be.rejected;
+            await this.interactor.finalizeMint(rest[0], 0, { from: rest[1] }).should.be.rejected;
         });
     });
 });

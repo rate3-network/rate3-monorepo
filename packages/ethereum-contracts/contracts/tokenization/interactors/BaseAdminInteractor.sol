@@ -34,6 +34,9 @@ contract BaseAdminInteractor is Claimable {
 
     function setToken(TokenizeTemplateToken _newTokenContract) public onlyOwner {
         token = _newTokenContract;
+    }
+
+    function claimTokenOwnership() public onlyOwner {
         token.claimOwnership();
     }
 
