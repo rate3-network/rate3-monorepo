@@ -1,9 +1,12 @@
 pragma solidity ^0.4.24;
 
+import "./BaseAdminInteractor.sol";
+
 contract Multisig2of3OwnerInteractor {
     /**
      * Storage
      */
+    BaseAdminInteractor public interactor;
 
     mapping(address => bool) public isOwner;
     address[3] public owners;
@@ -20,6 +23,12 @@ contract Multisig2of3OwnerInteractor {
     /**
      * Events
      */
+
+    event TransactionExecuted();
+    event TransactionConfirmed();
+    event TransactionRevoked();
+    event TransactionAdded();
+    event TransactionRemoved();
 
     /**
      * Modifiers
@@ -69,31 +78,41 @@ contract Multisig2of3OwnerInteractor {
         owners[2] = _owners[2];
     }
 
-    function confirmTransaction()
+    function confirmTransaction(bytes32 _hash)
         public
         onlyOwner
         hasPendingTransaction
         notConfirmedTransaction
+        hashMatches(_hash)
     {
         confirmations[msg.sender] = true;
         currentPendingTransaction.confirmationCount += 1;
+        emit TransactionConfirmed();
     }
 
     function executeTransaction(bytes32 _hash)
         public
         onlyOwner
-        hasPendingTransaction {
-
+        hasPendingTransaction
+        hashMatches(_hash)
+    {
+        require(currentPendingTransaction.confirmationCount >= 2, "Need at least 2 confirmations");
+        // execute
+        require(address(interactor).call(currentPendingTransaction.data), "Execute Failure");
+        emit TransactionExecuted();
+        _removeTransaction();
     }
 
-    function revokeTransaction(uint256 _hash)
+    function revokeTransaction(bytes32 _hash)
         public
         onlyOwner
         hasPendingTransaction
         hasConfirmedTransaction
+        hashMatches(_hash)
     {
         confirmations[msg.sender] = false;
         currentPendingTransaction.confirmationCount -= 1;
+        emit TransactionRevoked();
 
         if (currentPendingTransaction.confirmationCount == 0) {
             _removeTransaction();
@@ -114,6 +133,8 @@ contract Multisig2of3OwnerInteractor {
             pending: true,
             confirmationCount: 1
         });
+        confirmations[msg.sender] = true;
+        emit TransactionAdded();
     }
 
     function _removeTransaction()
@@ -124,6 +145,8 @@ contract Multisig2of3OwnerInteractor {
         delete confirmations[owners[0]];
         delete confirmations[owners[1]];
         delete confirmations[owners[2]];
+
+        emit TransactionRemoved();
     }
 
     /**
