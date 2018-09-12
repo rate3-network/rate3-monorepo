@@ -186,6 +186,18 @@ function encryptAndSave(password, rawString, fileName) {
     return true
   }
 
+  /**
+   * Perform telegated signing
+   * @param {string} URI - The input URI, start with web+stellar:
+   */
+  function parseURIandSendLumen(URI) {
+    //parse uri
+
+    //send lumen
+    //sendLumens(...)
+    return true
+  }
+
 // exports the variables and functions above so that other modules can use them
 module.exports.generateSeedPhrases = generateSeedPhrases;  
 module.exports.generateWallet = generateWallet;  
