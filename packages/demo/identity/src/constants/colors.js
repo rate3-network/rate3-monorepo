@@ -4,6 +4,10 @@ export const identityBlueDark = '#2e66a8';
 export const materialGrey = '#818CA1';
 export const disabledGrey = '#9C9C9C';
 
+// Buttons
+export const buttonShadow = '4px 4px 10px rgba(0, 0, 0, 0.1)';
+export const buttonHoverShadow = '4px 4px 10px rgba(0, 0, 0, 0.25)';
+
 // Sidebar
 export const sidebarShadow = '2px 2px 8px rgba(0, 0, 0, 0.15)';
 
@@ -25,13 +29,19 @@ export const buttonTextGrey = '#C4CAD6';
 // Homepage
 export const homeBg = '#F7FBFF';
 export const homeTextGreyUser = '#7B8292';
+export const homeTextGreyVerifier = '#697180';
 export const homeTextWhiteVerifier = '#FFFFFF';
 export const homeSidebarBgColorUser = '#FFFFFF';
 export const homeSidebarBgColorVerifier = '#1E4465';
 
+
 // User Main
 export const identityHeavyGrey = '#697180';
 export const actionRequiredBoxBg = 'rgba(249, 173, 84, 0.25)';
+
+// Verifier Main
+export const searchBarShadow = '2.76px 2.76px 6.91px rgba(0, 0, 0, 0.1)';
+export const searchBarButtonColor = '#4AA5F4';
 
 // Modal
 export const backdropColor = 'rgba(0, 0, 0, 0.32)';

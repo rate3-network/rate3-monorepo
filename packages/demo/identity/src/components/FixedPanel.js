@@ -13,6 +13,7 @@ import identityIcon from '../assets/identityIcon.svg';
 const styles = theme => ({
   root: {
     width: '130%',
+    maxWidth: '40em',
   },
   paper: {
     marginTop: '0.1em',

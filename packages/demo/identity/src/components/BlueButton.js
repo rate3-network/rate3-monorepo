@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
+import { buttonShadow, buttonHoverShadow } from '../constants/colors';
 
 const styles = theme => ({
   button: {
@@ -13,9 +14,9 @@ const styles = theme => ({
     // fontWeight: 'bold',
     borderRadius: '50px',
     color: 'white',
-    boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
+    boxShadow: buttonShadow,
     '&:hover': {
-      boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.25)',
+      boxShadow: buttonHoverShadow,
     },
   },
   whitespaces: {

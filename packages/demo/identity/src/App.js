@@ -3,6 +3,7 @@ import React from 'react';
 import { Provider, observer } from 'mobx-react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
+import classNames from 'classnames';
 
 import './App.css';
 
@@ -14,7 +15,7 @@ import TranslationHandler from './translation/TranslationHandler';
 /* Stores */
 import RootStore from './stores/RootStore';
 
-import { identityBlue, homeTextGreyUser } from './constants/colors';
+import { identityBlue, homeTextGreyUser, homeTextGreyVerifier } from './constants/colors';
 
 const i18next = TranslationHandler.init();
 
@@ -29,10 +30,16 @@ const theme = createMuiTheme({
 });
 
 const styles = themes => ({
-  rootStyle: {
+  userRootStyle: {
     fontFamily: 'Roboto',
     overflow: 'hidden',
     color: homeTextGreyUser,
+    height: '100vh',
+  },
+  verifierRootStyle: {
+    fontFamily: 'Roboto',
+    overflow: 'hidden',
+    color: homeTextGreyVerifier,
     height: '100vh',
   },
 });
@@ -61,7 +68,11 @@ class App extends React.Component {
   render() {
     const { classes } = this.props;
     return (
-      <div className={classes.rootStyle}>
+      <div className={classNames(
+        { [classes.userRootStyle]: RootStore.commonStore.getIsUser() },
+        { [classes.verifierRootStyle]: !RootStore.commonStore.getIsUser() },
+      )}
+      >
         <I18nextProvider i18n={i18next}>
           <Provider {...stores}>
             <MuiThemeProvider theme={theme}>
