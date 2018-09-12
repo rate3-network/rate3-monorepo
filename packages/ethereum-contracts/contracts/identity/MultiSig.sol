@@ -1,7 +1,6 @@
 pragma solidity 0.4.24;
 
 import "./lifecycle/KeyPausable.sol";
-import "./ERC/ERC725.sol";
 
 
 /**
@@ -26,11 +25,10 @@ contract MultiSig is KeyPausable {
         address to;
         uint256 value;
         bytes data;
-        uint256 needsApprove;
+        address[] approvals;
     }
 
     mapping (uint256 => Execution) public execution;
-    mapping (uint256 => address[]) public approved;
 
     /**
      * @dev Generate a unique ID for an execution request
@@ -43,43 +41,38 @@ contract MultiSig is KeyPausable {
         whenNotPaused
         returns (uint256 executionId)
     {
-        bool senderApproved = false;
+        executionId = executionNonce++;
+        address[] storage approvals = execution[executionId].approvals;
+
         uint threshold;
         if (_to == address(this)) {
-            if (msg.sender == address(this)) {
+            threshold = managementThreshold;
+            if (msg.sender == address(this)) { // solhint-disable-line no-empty-blocks
                 // Contract calling itself to act on itself
-                threshold = managementThreshold;
             } else {
                 // Only management keys can operate on this contract
                 require(allKeys.find(addrToKey(msg.sender), MANAGEMENT_KEY));
-                threshold = managementThreshold - 1;
-                senderApproved = true;
+                approvals.push(msg.sender);
             }
         } else {
             require(_to != address(0));
-            if (msg.sender == address(this)) {
+            threshold = actionThreshold;
+            if (msg.sender == address(this)) { // solhint-disable-line no-empty-blocks
                 // Contract calling itself to act on other address
-                threshold = actionThreshold;
             } else {
                 // Action keys can operate on other addresses
                 require(allKeys.find(addrToKey(msg.sender), ACTION_KEY));
-                threshold = actionThreshold - 1;
-                senderApproved = true;
+                approvals.push(msg.sender);
             }
         }
 
-        executionId = executionNonce++;
         emit ExecutionRequested(executionId, _to, _value, _data);
 
-        Execution memory e = Execution(_to, _value, _data, threshold);
-        if (threshold == 0) { // Threshold reached immediately after 1 approval
-            _execute(executionId, e, false);
+        Execution memory e = Execution(_to, _value, _data, approvals);
+        if (approvals.length >= threshold) { // Threshold reached immediately after 1 approval
+            _execute(executionId, e);
         } else {
             execution[executionId] = e;
-            delete approved[executionId];
-            if (senderApproved) {
-                approved[executionId].push(msg.sender);
-            }
         }
 
         return executionId;
@@ -87,16 +80,16 @@ contract MultiSig is KeyPausable {
 
     /**
      * @dev Approves an execution.
-     *  If the execution is being approved multiple times, it will throw an
-     *  error.
+     *  Approving multiple times will work i.e. used to trigger an execution if
+     *  it failed the first time.
      *  Disapproving multiple times will work i.e. not do anything.
      *  The approval could potentially trigger an execution (if the threshold is met).
      * @param _id Execution ID
      * @param _approve `true` if it's an approval, `false` if it's a disapproval
      * @return `false` if it's a disapproval and there's no previous approval from the sender OR
      *  if it's an approval that triggered a failed execution. `true` if it's a disapproval that
-     *  undos a previous approval from the sender OR if it's an approval that succeded OR
-     *  if it's an approval that triggered a succesful execution
+     *  undos a previous approval from the sender OR if it's an approval that succeeded OR
+     *  if it's an approval that triggered a successful execution
      */
     function approve(uint256 _id, bool _approve)
         public
@@ -108,42 +101,25 @@ contract MultiSig is KeyPausable {
         // Must exist
         require(e.to != address(0));
 
+        uint threshold;
         // Must be approved with the right key
         if (e.to == address(this)) {
             require(allKeys.find(addrToKey(msg.sender), MANAGEMENT_KEY));
+            threshold = managementThreshold;
         } else {
             require(allKeys.find(addrToKey(msg.sender), ACTION_KEY));
+            threshold = actionThreshold;
         }
 
         emit Approved(_id, _approve);
 
-        address[] storage approvals = approved[_id];
         if (!_approve) {
-            // Find in approvals
-            for (uint i = 0; i < approvals.length; i++) {
-                if (approvals[i] == msg.sender) {
-                    // Undo approval
-                    approvals[i] = approvals[approvals.length - 1];
-                    delete approvals[approvals.length - 1];
-                    approvals.length--;
-                    e.needsApprove += 1;
-                    return true;
-                }
-            }
-            return false;
+            return _removeApproval(_id, msg.sender);
         } else {
-            // Only approve once
-            for (i = 0; i < approvals.length; i++) {
-                require(approvals[i] != msg.sender);
-            }
-
-            // Approve
-            approvals.push(msg.sender);
-            e.needsApprove -= 1;
-
+            _addApproval(_id, msg.sender);
             // Do we need more approvals?
-            if (e.needsApprove == 0) {
-                return _execute(_id, e, true);
+            if (e.approvals.length >= threshold) {
+                return _execute(_id, e);
             }
             return true;
         }
@@ -184,13 +160,61 @@ contract MultiSig is KeyPausable {
     }
 
     /**
+     * @dev Adds an address from list of approvers
+     * @param _id Execution ID
+     * @param _approver Address to add
+     * @return `true` if added successfully, `false` otherwise
+     */
+    function _addApproval(uint256 _id, address _approver)
+        private
+        returns (bool)
+    {
+        address[] storage approvals = execution[_id].approvals;
+
+        // Only approve once
+        for (uint i = 0; i < approvals.length; i++) {
+            if (approvals[i] == _approver) {
+                return false;
+            }
+        }
+
+        // Approve
+        approvals.push(_approver);
+        return true;
+    }
+
+    /**
+     * @dev Removes an address from list of approvers
+     * @param _id Execution ID
+     * @param _approver Address to remove
+     * @return `true` if removed successfully, `false` otherwise
+     */
+    function _removeApproval(uint256 _id, address _approver)
+        private
+        returns (bool)
+    {
+        address[] storage approvals = execution[_id].approvals;
+
+        // Find in approvals
+        for (uint i = 0; i < approvals.length; i++) {
+            if (approvals[i] == _approver) {
+                // Undo approval
+                approvals[i] = approvals[approvals.length - 1];
+                delete approvals[approvals.length - 1];
+                approvals.length--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @dev Executes an action on other contracts, or itself, or a transfer of ether
      * @param _id Execution ID
      * @param e Execution data
-     * @param clean `true` if the internal state should be cleaned up after the execution
      * @return `true` if the execution succeeded, `false` otherwise
      */
-    function _execute(uint256 _id, Execution e, bool clean)
+    function _execute(uint256 _id, Execution e)
         private
         returns (bool)
     {
@@ -203,12 +227,7 @@ contract MultiSig is KeyPausable {
             return false;
         }
         emit Executed(_id, e.to, e.value, e.data);
-        // Clean up
-        if (!clean) {
-            return true;
-        }
         delete execution[_id];
-        delete approved[_id];
         return true;
     }
 }
