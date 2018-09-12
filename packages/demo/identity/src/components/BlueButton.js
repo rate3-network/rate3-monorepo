@@ -35,7 +35,9 @@ const BlueButton = (props) => {
       onClick={props.handleClick}
       style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.lineHeight }}
     >
-      {props.buttonText}{props.buttonIcon && <div className={classes.whitespaces}>  <img style={{ height: props.iconHeight }} src={props.buttonIcon} alt="ether" /></div>}
+      {props.buttonText}{props.buttonIcon &&
+        <div className={classes.whitespaces}>  <img style={{ height: props.iconHeight }} src={props.buttonIcon} alt="ether" /></div>
+      }
     </Button>
   );
 };

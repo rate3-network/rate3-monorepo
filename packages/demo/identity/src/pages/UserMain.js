@@ -28,36 +28,37 @@ const styles = (theme) => {
   });
 };
 const UserMain = inject('RootStore')(observer((props) => {
-  const { classes, t } = props;
+  const { classes, t, RootStore } = props;
+  const { userStore } = RootStore;
   const instructionLength = 4;
   return (
     <div className={classes.container}>
       <InstructionModal
-        open={props.RootStore.userStore.getUserModalIsShowing()}
-        onClose={props.RootStore.userStore.closeModal.bind(props.RootStore.userStore)}
-        handleNext={props.RootStore.userStore.handleModalNext.bind(props.RootStore.userStore)}
-        handleBack={props.RootStore.userStore.handleModalBack.bind(props.RootStore.userStore)}
-        activeStep={props.RootStore.userStore.getModalPage()}
+        open={userStore.getUserModalIsShowing()}
+        onClose={userStore.closeModal.bind(userStore)}
+        handleNext={userStore.handleModalNext.bind(userStore)}
+        handleBack={userStore.handleModalBack.bind(userStore)}
+        activeStep={userStore.getModalPage()}
         maxSteps={instructionLength}
       >
         <UserInstructions
-          activeStep={props.RootStore.userStore.getModalPage()}
-          onChangeIndex={props.RootStore.userStore.handleModalIndexChange.bind(props.RootStore.userStore)}
+          activeStep={userStore.getModalPage()}
+          onChangeIndex={userStore.handleModalIndexChange.bind(userStore)}
         />
       </InstructionModal>
       <h1 className={classes.title}>My Identity</h1>
       <div className={classes.descriptionBox}>
         <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
-        {props.RootStore.userStore.getIdentityNames().length > 0 ?
-          <ExpandablePanel title="Name" items={props.RootStore.userStore.getIdentityNames()} /> :
+        {userStore.getIdentityNames().length > 0 ?
+          <ExpandablePanel title="Name" items={userStore.getIdentityNames()} /> :
           <FixedPanel title="Name" />
         }
-        {props.RootStore.userStore.getIdentityAddresses().length > 0 ?
-          <ExpandablePanel title="Address" items={props.RootStore.userStore.getIdentityAddresses()} /> :
+        {userStore.getIdentityAddresses().length > 0 ?
+          <ExpandablePanel title="Address" items={userStore.getIdentityAddresses()} /> :
           <FixedPanel title="Address" />
         }
-        {props.RootStore.userStore.getIdentitySocialIds().length > 0 ?
-          <ExpandablePanel title="Social ID" items={props.RootStore.userStore.getIdentitySocialIds()} /> :
+        {userStore.getIdentitySocialIds().length > 0 ?
+          <ExpandablePanel title="Social ID" items={userStore.getIdentitySocialIds()} /> :
           <FixedPanel title="Social ID" />
         }
       </div>

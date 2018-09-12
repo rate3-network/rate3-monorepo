@@ -9,7 +9,7 @@ configure({ enforceActions: 'always' }); // don't allow state modifications outs
 
 class CommonStore {
   /* JSDOC: MARK START OBSERVABLE */
-  @observable isUser: Boolean = true;
+  @observable isUser: Boolean = false;
   @observable isOnboardDone: Boolean = true;
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
@@ -101,6 +101,7 @@ class CommonStore {
   @action
   toggleRole() {
     this.isUser = !this.isUser;
+    // window.localStorage.setItem('isUser', this.isUser);
   }
   /**
    * Change Setup status to done

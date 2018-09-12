@@ -10,8 +10,6 @@ import Select from '@material-ui/core/Select';
 
 import TranslationsHandler from '../translation/TranslationHandler';
 
-const language = 'lang';
-
 const styles = (theme) => {
   return ({
     inputRoot: {

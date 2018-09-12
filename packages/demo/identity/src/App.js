@@ -44,6 +44,19 @@ const stores = {
 @observer
 class App extends React.Component {
   componentDidMount() {
+    // if (!window.localStorage.isUser) {
+    //   RootStore.commonStore.changeToUser();
+    // }
+    // console.log('isUser');
+    // console.log(window.localStorage.isUser);
+    // if (window.localStorage.isUser.toString() === true.toString()) {
+    //   console.log('fire at true');
+    //   RootStore.commonStore.changeToUser();
+    // } 
+    // if (window.localStorage.isUser.toString() === false.toString()) {
+    //   console.log('fire at false');
+    //   RootStore.commonStore.changeToVerifier();
+    // }
   }
   render() {
     const { classes } = this.props;
