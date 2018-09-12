@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
+import Button from '@material-ui/core/Button';
 
 import { identityBlue, backdropColor, modalShadow } from './../constants/colors';
 
@@ -26,33 +27,32 @@ const styles = (theme) => {
     },
     content: {
       color: 'white',
-      width: '80%',
-      height: '80%',
-      padding: '3em 0 3em 5em',
+      width: 'calc(100% - 4em)',
+      height: 'calc(100% - 2.5em)',
       display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-      justifyContent: 'space-around',
+      padding: '2em 2em 0.5em 2em',
     },
     footer: {
       backgroundColor: 'white',
       width: '35rem',
-      height: '2rem',
+      height: '3rem',
       borderRadius: '0 0 0.5em 0.5em',
+      display: 'flex',
+      flexDirection: 'row-reverse',
     },
     backdrop: {
       backgroundColor: backdropColor,
-    }
+    },
+    buttonText: {
+      color: identityBlue,
+      fontSize: 'bold',
+    },
+    arrow: {
+      alignSelf: 'center',
+    },
   });
 };
 
-const Test = (props) => {
-  return (
-    props.page === 1 ?
-    <div><h1>test</h1><h2>test2</h2></div> :
-    <div><h1>test3</h1><h2>test4</h2></div>
-  );
-};
 
 const InstructionModal = (props) => {
   const { classes } = props;
@@ -73,16 +73,26 @@ const InstructionModal = (props) => {
         <div className={classes.modal}>
           <div className={classes.paper}>
             <div className={classes.content}>
-              <div>
-                Text in a modal
+              <div className={classes.arrow}>
+                {'<'}
               </div>
-              <div>
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+              {props.children}
+              <div className={classes.arrow}>
+                {'>'}
               </div>
             </div>
           </div>
           <div className={classes.footer}>
-            test
+            <Button 
+              size="small" 
+              onClick={props.handleNext} 
+              disabled={props.activeStep >= props.maxSteps - 1}
+              classes={{
+                text: classes.buttonText,
+              }}
+            >
+              Next
+            </Button>
           </div>
         </div>
       </Modal>
@@ -90,7 +100,7 @@ const InstructionModal = (props) => {
   );
 };
 
-Modal.propTypes = {
+InstructionModal.propTypes = {
   
 };
 

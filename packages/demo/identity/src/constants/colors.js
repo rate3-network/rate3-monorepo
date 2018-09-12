@@ -36,3 +36,5 @@ export const actionRequiredBoxBg = 'rgba(249, 173, 84, 0.25)';
 // Modal
 export const backdropColor = 'rgba(0, 0, 0, 0.32)';
 export const modalShadow = '0px 0px 7px rgba(0, 0, 0, 0.19)';
+export const dotBgColor = '#62A5F5';
+export const dotActiveBgColor = '#3669C8';

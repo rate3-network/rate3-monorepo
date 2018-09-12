@@ -20,6 +20,7 @@ class UserStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable userModalIsShowing = true;
   @observable userModalHasBeenViewed = false;
+  @observable modalPage: Number = 0;
   @observable identityNames: Array = [];
   @observable identityAddresses: Array = [{ id: 1, status: PENDING_REVIEW, value: '001 Changi Road' }];
   @observable identitySocialIds: Array = [social1, social2, social3];
@@ -27,6 +28,10 @@ class UserStore {
 
   constructor(rootStore) {
     this.rootStore = rootStore;
+  }
+
+  getModalPage() {
+    return this.modalPage;
   }
 
   getIdentityNames() {
@@ -63,6 +68,16 @@ class UserStore {
   closeModal() {
     this.userModalIsShowing = false;
     console.log(this.userModalIsShowing);
+  }
+
+  @action
+  handleModalIndexChange(step) {
+    this.modalPage = step;
+  }
+
+  @action
+  handleModalNext() {
+    this.modalPage += 1;
   }
 }
 

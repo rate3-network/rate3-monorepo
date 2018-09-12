@@ -14,25 +14,7 @@ import CheckList from './CheckList';
 
 const animationDuration = 250;
 
-const tutorialSteps = [
-  {
-    label: 'Cross-Chain Identity',
-    text: 'A unified cross-chain identity framework for real-world entities to share identity information.',
-  },
-  {
-    label: 'Who are you?',
-    text: 'Your role determines your actions but don’t worry, for this demo you can change it at any time.',
-    hasRoleSelect: true,
-  },
-  {
-    label: 'Set up Wallet',
-    list: [{ value: 'Install Metamask on your browser' },
-      { value: 'Sign in and unlock your metamask' },
-      { value: 'Switch to a test network', hasStyledText: true },
-      { value: 'Obtain some test ether' },
-    ],
-  },
-];
+
 
 const styles = theme => ({
   header: {
@@ -86,6 +68,26 @@ class OnboardStepper extends React.Component {
   }
 
   render() {
+    const tutorialSteps = [
+      {
+        label: 'Cross-Chain Identity',
+        text: 'A unified cross-chain identity framework for real-world entities to share identity information.',
+      },
+      {
+        label: 'Who are you?',
+        text: 'Your role determines your actions but don’t worry, for this demo you can change it at any time.',
+        hasRoleSelect: true,
+      },
+      {
+        label: 'Set up Wallet',
+        list: [{ value: 'Install Metamask on your browser' },
+          { value: 'Sign in and unlock your metamask' },
+          { value: 'Switch to a test network', hasStyledText: true },
+          { value: 'Obtain some test ether' },
+        ],
+      },
+    ];
+    
     const { classes, theme } = this.props;
     const maxSteps = tutorialSteps.length;
     const activeOnboardStep = this.props.RootStore.commonStore.getActiveOnboardStep();
