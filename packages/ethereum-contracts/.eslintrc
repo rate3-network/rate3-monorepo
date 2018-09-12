@@ -1,0 +1,10 @@
+{
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 6
+  },
+  "parser": "babel-eslint",
+  "rules": {
+    "indent": ["warn", 4]
+  }
+}
