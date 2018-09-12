@@ -152,16 +152,15 @@ contract Multisig2of3OwnerInteractor {
     /**
      * External functions
      */
-    function setToken(address _newTokenContract) public onlyOwner {
+    function setToken(address _newTokenContract) external onlyOwner {
         _addTransaction();
     }
 
-    function setFirstAdmin(address _newAdminAddress) public onlyOwner {
+    function setFirstAdmin(address _newAdminAddress) external onlyOwner {
         _addTransaction();
     }
 
-    function setSecondAdmin(address _newAdminAddress) public onlyOwner {
+    function setSecondAdmin(address _newAdminAddress) external onlyOwner {
         _addTransaction();
     }
-
 }
