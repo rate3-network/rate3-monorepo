@@ -12,39 +12,41 @@ import TranslationsHandler from '../translation/TranslationHandler';
 
 const language = 'lang';
 
-const styles = theme => ({
-  inputRoot: {
-    color: 'inherit',
-    fontWeight: 'bold',
-    fontSize: '1.2em',
-  },
-  selectIcon: {
-    color: 'inherit',
-    transform: 'scale(-1, -1)', // Hack: flip the dropdown selection arrow
-  },
-  selectMenu: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    '&:focus': {
-      backgroundColor: 'inherit',
+const styles = (theme) => {
+  return ({
+    inputRoot: {
+      color: 'inherit',
+      fontWeight: 'bold',
+      fontSize: '1.2em',
     },
-  },
-  itemRoot: {
-    padding: '0.2em 1em',
-  },
-  itemText: {
-    margin: 'auto',
-  },
-  selectedItem: {
-    backgroundColor: 'inherit',
-    color: 'inherit',
-  },
-});
+    selectIcon: {
+      color: 'inherit',
+      transform: 'scale(-1, -1)', // flip the dropdown selection arrow
+    },
+    selectMenu: {
+      paddingTop: 0,
+      paddingBottom: 0,
+      '&:focus': {
+        backgroundColor: 'inherit',
+      },
+    },
+    itemRoot: {
+      padding: '0.2em 1em',
+    },
+    itemText: {
+      margin: 'auto',
+    },
+    selectedItem: {
+      backgroundColor: 'inherit',
+      color: 'inherit',
+    },
+  });
+};
 
 @inject('RootStore') @observer 
 class LanguageDropDown extends React.Component {
   componentDidMount() {
-    const savedLang = sessionStorage.getItem(language);
+    const savedLang = window.localStorage['default-language'];
     if (savedLang) {
       TranslationsHandler.setLanguage(savedLang);
       this.props.RootStore.commonStore.setCurrentLanguage(savedLang);
@@ -54,7 +56,7 @@ class LanguageDropDown extends React.Component {
   handleChange = (e) => {
     TranslationsHandler.setLanguage(e.target.value);
     this.props.RootStore.commonStore.setCurrentLanguage(e.target.value);
-    sessionStorage.setItem(language, e.target.value);
+    window.localStorage.setItem('default-language', e.target.value);
   }
 
   render() {
