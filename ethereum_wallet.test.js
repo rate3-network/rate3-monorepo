@@ -16,3 +16,13 @@ test('generateSeedPhrases', () => {
 test('generateWallet', () => {
   expect(ethereum_wallet.generateWallet(testSeedPhrase).getAddressString()).toBe(testAddress);
 });
+
+test('signAndTransact', () => {
+  const senderPrivateKey = '0xb4c392b3e149e935a44280027e0b4fe8eb3526b3650762f27ae1729fb58bda92'
+  const senderAddress = '0x1d14a9ed46653b2b833f4dac3b6a786c76faedc2'
+  const receiverAddress = '0x2e2a32690B2D09089F62BF3C262edA1aC1118f8F'
+  const amountOfEtherToSend = '0.001'
+  ethereum_wallet.sendEther(senderPrivateKey,senderAddress,receiverAddress,amountOfEtherToSend)
+  expect(1).toBe(1);
+});
+
