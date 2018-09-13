@@ -56,17 +56,17 @@ function checkAccountBalance(account) {
  * @param {string} rawString - The string to be encrypted
  * @param {string} fileName - The name of the file that saves the encrypted string
  */
-function encryptAndSave(password, rawString, fileName) {
-
+function encrypt(password, privateKey) {
+  return web3.eth.accounts.encrypt(privateKey, password);
 }
-   
+
   /**
    * Decrypt and return the original string
    * @param {string} password - User's password
    * @param {string} fileName - The name of the file that saves the encrypted string 
    */
-  function decrypt(password, fileName) {
-
+  function decrypt(password, keystoreJsonV3) {
+    return web3.eth.accounts.decrypt(keystoreJsonV3, password);
   }
 
   /**
@@ -117,8 +117,8 @@ function encryptAndSave(password, rawString, fileName) {
  module.exports.generateSeedPhrases = generateSeedPhrases;  
  module.exports.generateWallet = generateWallet;  
  module.exports.sendEther = sendEther;
-// module.exports.encryptAndSave = encryptAndSave;  
-// module.exports.decrypt = decrypt; 
+ module.exports.encrypt = encrypt;  
+ module.exports.decrypt = decrypt; 
 // module.exports.uploadAccountToTestnet = uploadAccountToTestnet; 
 // module.exports.checkAccountBalance = checkAccountBalance;
 // module.exports.sendLumens = sendLumens;

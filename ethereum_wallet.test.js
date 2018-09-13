@@ -26,3 +26,29 @@ test('signAndTransact', () => {
   expect(1).toBe(1);
 });
 
+test('encrypt', () => {
+  const privateKey = '0xb4c392b3e149e935a44280027e0b4fe8eb3526b3650762f27ae1729fb58bda92'
+  const address = '0x1d14a9ed46653b2b833f4dac3b6a786c76faedc2'
+  const password = 'qwerty'
+  const version = 3
+  const cipher = 'aes-128-ctr'
+  const kdf = 'scrypt'
+  keystoreV3 = ethereum_wallet.encrypt(password, privateKey)
+  expect(keystoreV3.version).toBe(version);
+  expect('0x' + keystoreV3.address).toBe(address)
+  expect(keystoreV3.crypto.cipher).toBe(cipher)
+  expect(keystoreV3.crypto.kdf).toBe(kdf)
+});
+
+test('decrypt', () => {
+  const privateKey = '0xb4c392b3e149e935a44280027e0b4fe8eb3526b3650762f27ae1729fb58bda92'
+  const password = 'qwerty'
+  keystoreV3 = ethereum_wallet.encrypt(password, privateKey)
+  decrypted = ethereum_wallet.decrypt(password, keystoreV3)
+  expect(decrypted.address).toMatch(/0x1[d|D]14[a|A]9[e|E][d|D]46653[b|B]2[b|B]833[f|F]4[d|D][a|A][c|C]3[b|B]6[a|A]786[c|C]76[f|F][a|A][e|E][d|D][c|C]2/);// address case insensitive
+  expect(decrypted.privateKey).toBe(privateKey)
+  decryptedWithWrongPw = ethereum_wallet.decrypt(password+'1', keystoreV3)
+
+});
+
+
