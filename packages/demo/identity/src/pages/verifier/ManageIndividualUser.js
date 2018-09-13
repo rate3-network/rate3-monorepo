@@ -15,6 +15,10 @@ const styles = (theme) => {
       alignItems: 'center',
       left: '-1.5em',
       position: 'relative',
+      justifyContent: 'flex-start',
+    },
+    userAddr: {
+      paddingLeft: '0.5em',
     },
     label: {
       fontSize: '1.5em',
@@ -44,7 +48,8 @@ class ManageIndividualUser extends Component {
             onClick={this.props.RootStore.verifierStore.resetUserSelected.bind(this.props.RootStore.verifierStore)}>
             <ChevronLeft className={classes.label} />
           </IconButton>
-          <div><ProfilePic size={7} seed={this.props.RootStore.verifierStore.getUserSelected()} />{this.props.RootStore.verifierStore.getUserSelected()}</div>
+          <div><ProfilePic size={7} seed={this.props.RootStore.verifierStore.getUserSelected()} /></div>
+          <div className={classes.userAddr}>{this.props.RootStore.verifierStore.getUserSelected()}</div>
         </h1>
         <div className={classes.descriptionBox}>
           <p>You can approve this user’s verifications if he/she has registered. You can also add verifications for the user.</p>

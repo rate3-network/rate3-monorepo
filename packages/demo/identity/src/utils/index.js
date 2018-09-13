@@ -26,4 +26,4 @@ export const getRandomColor = (s) => {
   return color;
 };
 
-export { hex_md5, b64_md5 } from './md5';
+export { b64Md5 } from './md5';
