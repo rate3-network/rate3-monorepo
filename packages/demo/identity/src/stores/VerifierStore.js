@@ -19,13 +19,16 @@ social3.addIdentity('0x825e1e0c57700b327dff98d2b04b17ba8fe3d2ea729acd79a4d2fe1a2
 class UserStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable userSelected: Number = null;
-
+  @observable currentTab: Number = 0;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
 
+  getCurrentTab() {
+    return this.currentTab;
+  }
   getUserSelected() {
     return this.userSelected;
   }
@@ -38,6 +41,10 @@ class UserStore {
   resetUserSelected(value) {
     this.userSelected = null;
     console.log('resetUserSelected');
+  }
+  @action
+  setCurrentTab(value) {
+    this.currentTab = value;
   }
 }
 

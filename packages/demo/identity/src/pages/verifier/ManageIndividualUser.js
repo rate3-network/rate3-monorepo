@@ -5,6 +5,8 @@ import { inject, observer } from 'mobx-react';
 import ChevronLeft from '@material-ui/icons/ChevronLeftRounded';
 import IconButton from '@material-ui/core/IconButton';
 
+import ProfilePic from '../../components/ProfilePic';
+
 const styles = (theme) => {
   return ({
     title: {
@@ -42,7 +44,7 @@ class ManageIndividualUser extends Component {
             onClick={this.props.RootStore.verifierStore.resetUserSelected.bind(this.props.RootStore.verifierStore)}>
             <ChevronLeft className={classes.label} />
           </IconButton>
-          <div>{this.props.RootStore.verifierStore.getUserSelected()}</div>
+          <div><ProfilePic size={7} seed={this.props.RootStore.verifierStore.getUserSelected()} />{this.props.RootStore.verifierStore.getUserSelected()}</div>
         </h1>
         <div className={classes.descriptionBox}>
           <p>You can approve this user’s verifications if he/she has registered. You can also add verifications for the user.</p>

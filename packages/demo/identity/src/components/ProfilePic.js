@@ -5,6 +5,7 @@ import Blockies from 'react-blockies';
 import { observer, inject } from 'mobx-react';
 
 import { userBlockieSeed, verifierBlockieSeed } from '../constants/general';
+import { hashCode, b64_md5 } from '../utils/index';
 
 const styles = (theme) => {
   return ({
@@ -27,7 +28,8 @@ const ProfilePic = inject('RootStore')(observer((props) => {
     <div className={classes.container}>
       <Blockies
         className={classes.icon}
-        seed={props.seed ? props.seed : seed}
+        seed={props.seed ? b64_md5(props.seed).toString() : seed}
+        // color={getRandomColor(props.seed)}
         scale={props.size - 1}
         size={props.size}
       />

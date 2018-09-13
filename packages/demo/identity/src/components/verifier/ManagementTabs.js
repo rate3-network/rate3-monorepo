@@ -6,22 +6,10 @@ import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
+import { inject, observer } from 'mobx-react';
 
 import { modalShadow, searchBarButtonColor, toggleGrey, identityHeavyGrey, tabsUnselectedText, rippleColor } from '../../constants/colors';
 import PendingUserTable from './PendingUserTable';
-
-function TabContainer({ children, dir }) {
-  return (
-    <div>
-      {children}
-    </div>
-  );
-}
-
-TabContainer.propTypes = {
-  children: PropTypes.node.isRequired,
-  dir: PropTypes.string.isRequired,
-};
 
 const styles = theme => ({
   root: {
@@ -30,6 +18,9 @@ const styles = theme => ({
     backgroundColor: toggleGrey,
     borderRadius: '0.7em 0.7em 0.7em 0.7em',
     boxShadow: modalShadow,
+  },
+  swiper: {
+    borderRadius: '0em 0em 0.7em 0.7em',
   },
   tabsRoot: {
     borderRadius: '0.7em 0.7em 0 0',
@@ -80,28 +71,30 @@ function createData(blockie, address, num) {
   return result;
 }
 
+@inject('RootStore') @observer
 class ManagementTabs extends React.Component {
   state = {
     value: 0,
   };
 
   handleChange = (event, value) => {
-    this.setState({ value });
+    this.props.RootStore.verifierStore.setCurrentTab(value);
   };
 
   handleChangeIndex = (index) => {
-    this.setState({ value: index });
+    this.props.RootStore.verifierStore.setCurrentTab(index);
   };
 
   render() {
     const { classes, theme } = this.props;
     const pendingUserList = createData('pic-', 'address', 3);
     const verifiedUserList = createData('pic-', 'verified', 13);
+    const value = this.props.RootStore.verifierStore.getCurrentTab();
     return (
       <div className={classes.root}>
 
         <Tabs
-          value={this.state.value}
+          value={value}
           onChange={this.handleChange}
           indicatorColor="primary"
           fullWidth
@@ -112,16 +105,17 @@ class ManagementTabs extends React.Component {
         </Tabs>
 
         <SwipeableViews
+          className={classes.swiper}
           axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-          index={this.state.value}
+          index={value}
           onChangeIndex={this.handleChangeIndex}
         >
-          <TabContainer dir={theme.direction}>
-            {this.state.value === 0 && <PendingUserTable pendingList={pendingUserList} />}
-          </TabContainer>
-          <TabContainer dir={theme.direction}>
-            {this.state.value === 1 && <PendingUserTable pendingList={verifiedUserList} />}
-          </TabContainer>
+          <div>
+            {value === 0 && <PendingUserTable pendingList={pendingUserList} />}
+          </div>
+          <div>
+            {value === 1 && <PendingUserTable pendingList={verifiedUserList} />}
+          </div>
         </SwipeableViews>
       </div>
     );

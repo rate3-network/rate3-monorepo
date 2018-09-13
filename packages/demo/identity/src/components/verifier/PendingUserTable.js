@@ -80,7 +80,7 @@ class PendingUserTable extends React.Component {
     this.setState({ page });
   };
 
-  handleChangeRowsPerPage = event => {
+  handleChangeRowsPerPage = (event) => {
     this.setState({ rowsPerPage: event.target.value });
   };
 
@@ -96,7 +96,11 @@ class PendingUserTable extends React.Component {
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
-                  <TableRow onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row.address); }} className={classes.rowRoot} key={row.address}>
+                  <TableRow
+                    onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row.address); }}
+                    className={classes.rowRoot}
+                    key={row.address}
+                  >
                     <TableCell className={classes.profilePicContainer} padding="checkbox" scope="row">
                       <ProfilePic size={6} seed={row.address} />
                     </TableCell>
