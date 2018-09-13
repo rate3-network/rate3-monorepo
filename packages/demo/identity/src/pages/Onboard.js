@@ -74,12 +74,6 @@ const Onboard = inject('RootStore')(observer((props) => {
           <ExpandMore className={classes.icon} />
         </div>
         <div className={classes.onboardDetailContainer}>
-          {/* <RoleSwitch
-            leftText="User"
-            rightText="Verifier"
-            isUser={props.RootStore.commonStore.getIsUser()}
-            onClick={props.RootStore.commonStore.toggleRole.bind(props.RootStore.commonStore)}
-          /> */}
           <OnboardStepper />
         </div>
       </div>

@@ -5,6 +5,7 @@ import { withStyles } from '@material-ui/core/styles';
 import Info from '@material-ui/icons/InfoOutlined';
 import { observer, inject } from 'mobx-react';
 import classNames from 'classnames';
+import { withRouter } from 'react-router-dom';
 
 import { sidebarShadow, homeSidebarBgColorUser, homeSidebarBgColorVerifier, homeTextGreyUser, homeTextWhiteVerifier } from './../constants/colors';
 import NetworkBox from './NetworkBox';
@@ -172,7 +173,8 @@ const Faq = withStyles(styles)((props) => {
       FAQ
     </span>
   );
-})
+});
+
 const HomeSidebar = observer((props) => {
   const { classes } = props;
   return (
@@ -200,7 +202,11 @@ const HomeSidebar = observer((props) => {
             leftText="USER"
             rightText="VERIFIER"
             isUser={props.RootStore.commonStore.getIsUser()}
-            onClick={props.RootStore.commonStore.toggleRole.bind(props.RootStore.commonStore)}
+            onClick={() => {
+              props.RootStore.commonStore.toggleRole(); // Change role when click on switch
+              props.history.push(props.RootStore.commonStore.getIsUser() ? '/user' : '/verifier'); // Change routes when click on switch
+              }
+            }
           />
         </div>
         <Keys />
@@ -214,4 +220,4 @@ HomeSidebar.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default inject('RootStore')(withStyles(styles, { withTheme: true })(HomeSidebar));
+export default inject('RootStore')(withStyles(styles, { withTheme: true })(withRouter(HomeSidebar)));

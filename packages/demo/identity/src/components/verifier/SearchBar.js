@@ -54,7 +54,7 @@ const SearchBar = (props) => {
         placeholder="ETH Wallet Address"
         className={classes.textField}
         classes={{ input: classes.inputRoot }}
-        margin="normal"
+        // margin="normal"
         disableUnderline
         fullWidth
       />

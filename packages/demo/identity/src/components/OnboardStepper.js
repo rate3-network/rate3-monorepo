@@ -64,9 +64,14 @@ class OnboardStepper extends React.Component {
   }
 
   directToHome = () => {
-    this.props.history.push('/');
+    this.props.history.push(this.props.RootStore.commonStore.getIsUser() ? '/user' : 'verifier');
   }
 
+  componentDidMoun() {
+    if (this.props.RootStore.commonStore.getIsUserOnboardDone() || this.props.RootStore.commonStore.getIsVerifierOnboardDone()) {
+      this.props.RootStore.commonStore.goToLastOnboardStep();
+    }
+  }
   render() {
     const tutorialSteps = [
       {
@@ -106,7 +111,11 @@ class OnboardStepper extends React.Component {
         break;
       case 3:
         buttonText = this.props.t('startDemo');
-        this.props.RootStore.commonStore.finishOnboard();
+        if (this.props.RootStore.commonStore.getIsUser()) {
+          this.props.RootStore.commonStore.finishUserOnboard();
+        } else {
+          this.props.RootStore.commonStore.finishVerifierOnboard();
+        }
         buttonAction = this.directToHome;
         break;
       default:
@@ -121,10 +130,7 @@ class OnboardStepper extends React.Component {
             exit: animationDuration,
           }}
           in
-          // key={this.props.RootStore.commonStore.getActiveOnboardStep()} 
           direction={props.direction}
-          // mountOnEnter
-          // unmountOnExit
         >
           {props.children}
         </Slide>
@@ -145,11 +151,13 @@ class OnboardStepper extends React.Component {
             <div className={classes.text}>
               {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
               {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
+              {(activeStep === 2 && !this.props.RootStore.commonStore.getIsUser()) && <p>Option for Verifier to choose between a <b>Fixed</b> or <b>Own</b> account</p>}
             </div>
           </TransitionWrapper> :
           <div className={classes.text}>
             {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
             {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
+            {(activeStep === 2 && !this.props.RootStore.commonStore.getIsUser()) && <p>Option for Verifier to choose between a <b>Fixed</b> or <b>Own</b> account</p>}
           </div>
         }
         {tutorialSteps[activeStep].hasRoleSelect &&

@@ -23,18 +23,33 @@ const styles = (theme) => {
     },
   });
 };
-const VerifierMain = inject('RootStore')(observer((props) => {
-  const { classes } = props;
-  return (
-    <div className={classes.container}>
-      <h1 className={classes.title}>Manage Users</h1>
-      <div className={classes.descriptionBox}>
-        <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
-        <SearchBar />
+
+@inject('RootStore') @observer
+class VerifierMain extends React.Component {
+  componentDidMount() {
+    if (this.props.RootStore.commonStore.getIsUser()) {
+      console.log('u');
+      this.props.history.push('/user');
+    } else {
+      console.log('v');
+      this.props.history.push('/verifier');
+    }
+  }
+
+  render() {
+    const { classes } = this.props;
+    return (
+      <div className={classes.container}>
+        <h1 className={classes.title}>Manage Users</h1>
+        <div className={classes.descriptionBox}>
+          <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
+          <SearchBar />
+        </div>
       </div>
-    </div>
-  );
-}));
+    );
+  }
+}
+
 
 VerifierMain.propTypes = {
   

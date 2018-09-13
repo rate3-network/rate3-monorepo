@@ -50,20 +50,22 @@ const stores = {
 
 @observer
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    if (window.localStorage.isUserOnboardDone === true.toString()) {
+      RootStore.commonStore.finishUserOnboard();
+    }
+    if (window.localStorage.isVerifierOnboardDone === true.toString()) {
+      RootStore.commonStore.finishVerifierOnboard();
+    }
+    if (localStorage.isUser === true.toString()) {
+      RootStore.commonStore.changeToUser();
+    }
+    if (localStorage.isUser === false.toString()) {
+      RootStore.commonStore.changeToVerifier();
+    }
+  }
   componentDidMount() {
-    // if (!window.localStorage.isUser) {
-    //   RootStore.commonStore.changeToUser();
-    // }
-    // console.log('isUser');
-    // console.log(window.localStorage.isUser);
-    // if (window.localStorage.isUser.toString() === true.toString()) {
-    //   console.log('fire at true');
-    //   RootStore.commonStore.changeToUser();
-    // } 
-    // if (window.localStorage.isUser.toString() === false.toString()) {
-    //   console.log('fire at false');
-    //   RootStore.commonStore.changeToVerifier();
-    // }
   }
   render() {
     const { classes } = this.props;
@@ -76,18 +78,20 @@ class App extends React.Component {
         <I18nextProvider i18n={i18next}>
           <Provider {...stores}>
             <MuiThemeProvider theme={theme}>
-              <BrowserRouter basename="/#/">
+              <BrowserRouter basename="#">
                 <Switch>
                   <Route
-                    exact
                     path="/"
                     render={() => {
-                      return !RootStore.commonStore.getIsOnboardDone()
-                      ? <Redirect to="/onboard" />
-                      : <Home />;
+                      if (RootStore.commonStore.getIsUser() && RootStore.commonStore.getIsUserOnboardDone()) {
+                        return <Home />;
+                      }
+                      if (!RootStore.commonStore.getIsUser() && RootStore.commonStore.getIsVerifierOnboardDone()) {
+                        return <Home />;
+                      }
+                      return <Onboard />;
                     }}
                   />
-                  <Route exact path="/onboard" component={Onboard} />
                 </Switch>
               </BrowserRouter>
             </MuiThemeProvider>

@@ -19,6 +19,7 @@ const styles = theme => ({
   listItem: {
     padding: '0px 0px 0px 0px',
     margin: '0.5em 0em 0.5em 0em',
+    alignItems: 'flex-start',
   },
   listItemButton: {
     display: 'flex',
@@ -26,6 +27,10 @@ const styles = theme => ({
   },
   checkboxIcon: {
     height: '1em',
+  },
+  checkboxRoot: {
+    display: 'flex',
+    alignItems: 'flex-start',
   },
 });
 
@@ -47,7 +52,7 @@ class CheckList extends React.Component {
                 checked={this.props.RootStore.commonStore.getSetupWalletProgress(id)}
                 checkedIcon={<img src={SelectedBox} alt="finished" className={classes.checkboxIcon} />}
                 icon={<img src={UnselectedBox} alt="not finished" className={classes.checkboxIcon} />}
-                // tabIndex={-1}
+                classes={{ root: classes.checkboxRoot }}
                 disableRipple
               />
               <div className={classes.listItemButton}>

@@ -9,8 +9,9 @@ configure({ enforceActions: 'always' }); // don't allow state modifications outs
 
 class CommonStore {
   /* JSDOC: MARK START OBSERVABLE */
-  @observable isUser: Boolean = false;
-  @observable isOnboardDone: Boolean = true;
+  @observable isUser: Boolean = true;
+  @observable isUserOnboardDone: Boolean = false;
+  @observable isVerifierOnboardDone: Boolean = false;
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
   @observable currentNetwork: String = 'Main Ethereum Network';
@@ -51,8 +52,12 @@ class CommonStore {
    * @memberof CommonStore
    */
 
-  getIsOnboardDone() {
-    return this.isOnboardDone;
+  getIsUserOnboardDone() {
+    return this.isUserOnboardDone;
+  }
+
+  getIsVerifierOnboardDone() {
+    return this.isVerifierOnboardDone;
   }
 
   getShouldRenderOnboardTransition() {
@@ -84,6 +89,7 @@ class CommonStore {
   changeToVerifier() {
     this.setTrueShouldRenderOnboardTransition();
     this.isUser = false;
+    window.localStorage.setItem('isUser', this.isUser);
   }
 
   /**
@@ -96,12 +102,13 @@ class CommonStore {
   changeToUser() {
     this.setTrueShouldRenderOnboardTransition();
     this.isUser = true;
+    window.localStorage.setItem('isUser', this.isUser);
   }
 
   @action
   toggleRole() {
     this.isUser = !this.isUser;
-    // window.localStorage.setItem('isUser', this.isUser);
+    window.localStorage.setItem('isUser', this.isUser);
   }
   /**
    * Change Setup status to done
@@ -110,8 +117,15 @@ class CommonStore {
    * @memberof CommonStore
    */
   @action
-  finishOnboard() {
-    this.isOnboardDone = true;
+  finishUserOnboard() {
+    this.isUserOnboardDone = true;
+    window.localStorage.setItem('isUserOnboardDone', true);
+  }
+
+  @action
+  finishVerifierOnboard() {
+    this.isVerifierOnboardDone = true;
+    window.localStorage.setItem('isVerifierOnboardDone', true);
   }
 
   @action
@@ -136,6 +150,11 @@ class CommonStore {
   @action
   setFalseShouldRenderOnboardTransition() {
     this.shouldRenderOnboardTransition = false;
+  }
+
+  @action
+  goToLastOnboardStep() {
+    this.activeOnboardStep = 3;
   }
 }
 
