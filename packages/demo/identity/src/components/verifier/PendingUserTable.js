@@ -8,8 +8,13 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import { inject } from 'mobx-react';
+import ChevronRight from '@material-ui/icons/ChevronRightRounded';
 
+import ProfilePic from '../ProfilePic';
 import TablePaginationActions from './TablePaginationActions';
+import { toggleGrey, modalShadow, identityHeavyGrey } from '../../constants/colors';
+
 
 const styles = theme => ({
   root: {
@@ -18,6 +23,15 @@ const styles = theme => ({
   },
   table: {
     minWidth: 500,
+    minHeight: 350,
+  },
+  rowRoot: {
+    minHeight: '4em',
+    maxHeight: '4em',
+    height: '4em',
+    '&:hover': {
+      boxShadow: modalShadow,
+    },
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -37,8 +51,24 @@ const styles = theme => ({
   caption: {
     fontWeight: '500',
   },
+  profilePicContainer: {
+    paddingLeft: '2em',
+    width: '1rem',
+  },
+  textCell: {
+    fontSize: '1em',
+    fontWeight: 500,
+    paddingLeft: '0.5em',
+    color: identityHeavyGrey,
+  },
+  arrowCell: {
+    paddingRight: '0px !important',
+    color: identityHeavyGrey,
+    width: '4em',
+  },
 });
 
+@inject('RootStore')
 class PendingUserTable extends React.Component {
   state = {
     rows: this.props.pendingList,
@@ -66,13 +96,24 @@ class PendingUserTable extends React.Component {
             <TableBody>
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
-                  <TableRow key={row.address}>
-                    <TableCell component="th" scope="row">
-                      {row.blockie}{row.address}
+                  <TableRow onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row.address); }} className={classes.rowRoot} key={row.address}>
+                    <TableCell className={classes.profilePicContainer} padding="checkbox" scope="row">
+                      <ProfilePic size={6} seed={row.address} />
+                    </TableCell>
+                    <TableCell className={classes.textCell} component="td" scope="row">
+                      {row.address}
+                    </TableCell>
+                    <TableCell className={classes.arrowCell} component="td" scope="row">
+                      <ChevronRight />
                     </TableCell>
                   </TableRow>
                 );
               })}
+              {emptyRows > 0 && (
+                <TableRow style={{ backgroundColor: toggleGrey, height: `calc(4em * ${emptyRows})` }}>
+                  <TableCell colSpan={6} />
+                </TableRow>
+              )}
             </TableBody>
             <TableFooter>
               <TableRow>

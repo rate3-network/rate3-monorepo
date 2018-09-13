@@ -49,6 +49,8 @@ const styles = theme => ({
   },
   profilePic: {
     paddingTop: '3.5rem',
+    width: '6.3rem',
+    height: '6.3rem',
   },
   userInfo: {
     paddingTop: '3rem',
@@ -194,7 +196,7 @@ const HomeSidebar = observer((props) => {
     >
       <div className={classes.container}>
         <TopText />
-        <div className={classes.profilePic}><ProfilePic /></div>
+        <div className={classes.profilePic}><ProfilePic size={11} /></div>
         <div className={classes.userInfo}><UserInfo /></div>
         <div className={classes.networkBox}><NetworkBox /></div>
         <div className={classes.roleSwitch}>

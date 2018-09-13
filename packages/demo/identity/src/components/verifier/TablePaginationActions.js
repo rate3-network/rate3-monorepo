@@ -11,8 +11,7 @@ import { paginationFooterColor } from '../../constants/colors';
 
 const styles = theme => ({
   root: {
-    flexShrink: 0,
-    color: theme.palette.text.secondary,
+    // flexShrink: 0,
     // display: 'flex',
     justifyContent: 'space-between',
   },

@@ -7,7 +7,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 
-import { searchBarButtonColor, toggleGrey, identityHeavyGrey, tabsUnselectedText, rippleColor } from '../../constants/colors';
+import { modalShadow, searchBarButtonColor, toggleGrey, identityHeavyGrey, tabsUnselectedText, rippleColor } from '../../constants/colors';
 import PendingUserTable from './PendingUserTable';
 
 function TabContainer({ children, dir }) {
@@ -29,6 +29,7 @@ const styles = theme => ({
     flexGrow: 1,
     backgroundColor: toggleGrey,
     borderRadius: '0.7em 0.7em 0.7em 0.7em',
+    boxShadow: modalShadow,
   },
   tabsRoot: {
     borderRadius: '0.7em 0.7em 0 0',
@@ -68,11 +69,17 @@ const styles = theme => ({
     backgroundColor: rippleColor,
   },
 });
-let counter = 100;
-function createData(blockie, address) {
-  counter += 1;
-  return { blockie, address: `${address}-${counter}` };
+
+function createData(blockie, address, num) {
+  let counter = 0;
+  const result = [];
+  for (let i = 0; i < num; i += 1) {
+    counter += 1;
+    result.push({ blockie, address: `${address}-${counter}` });
+  }
+  return result;
 }
+
 class ManagementTabs extends React.Component {
   state = {
     value: 0,
@@ -82,14 +89,14 @@ class ManagementTabs extends React.Component {
     this.setState({ value });
   };
 
-  handleChangeIndex = index => {
+  handleChangeIndex = (index) => {
     this.setState({ value: index });
   };
 
   render() {
-    console.log('rendered');
     const { classes, theme } = this.props;
-    const pendingUserList = [createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add'),createData('bl', 'add')];
+    const pendingUserList = createData('pic-', 'address', 3);
+    const verifiedUserList = createData('pic-', 'verified', 13);
     return (
       <div className={classes.root}>
 
@@ -110,9 +117,11 @@ class ManagementTabs extends React.Component {
           onChangeIndex={this.handleChangeIndex}
         >
           <TabContainer dir={theme.direction}>
-            <PendingUserTable pendingList={pendingUserList} />
+            {this.state.value === 0 && <PendingUserTable pendingList={pendingUserList} />}
           </TabContainer>
-          <TabContainer dir={theme.direction}>Item Two</TabContainer>
+          <TabContainer dir={theme.direction}>
+            {this.state.value === 1 && <PendingUserTable pendingList={verifiedUserList} />}
+          </TabContainer>
         </SwipeableViews>
       </div>
     );

@@ -19,7 +19,7 @@ const styles = theme => ({
     backgroundColor: homeBg,
   },
   main: {
-    padding: '5.5em 4em 10em 4em',
+    padding: '5.5em 4em 10em 5em',
     marginLeft: '20rem',
   },
 });

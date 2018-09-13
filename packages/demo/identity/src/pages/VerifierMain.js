@@ -5,6 +5,7 @@ import { observer, inject } from 'mobx-react';
 
 import SearchBar from '../components/verifier/SearchBar';
 import ManagementTabs from '../components/verifier/ManagementTabs';
+import ManageIndividualUser from './verifier/ManageIndividualUser';
 
 const styles = (theme) => {
   return ({
@@ -27,26 +28,37 @@ const styles = (theme) => {
 
 @inject('RootStore') @observer
 class VerifierMain extends React.Component {
+
   componentDidMount() {
     if (this.props.RootStore.commonStore.getIsUser()) {
-      console.log('u');
       this.props.history.push('/user');
     } else {
-      console.log('v');
       this.props.history.push('/verifier');
     }
+    
   }
-
+  // onUserItemClick(value) {
+  //   console.log('clicked');
+    
+  //   this.props.RootStore.verifierStore.setUserSelected(value);
+  //   console.log(this.props.RootStore.verifierStore.getUserSelected());
+  // }
   render() {
     const { classes } = this.props;
     return (
       <div className={classes.container}>
-        <h1 className={classes.title}>Manage Users</h1>
-        <div className={classes.descriptionBox}>
-          <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
-          <SearchBar />
-          <ManagementTabs />
-        </div>
+        {this.props.RootStore.verifierStore.getUserSelected() !== null ?
+          <ManageIndividualUser />
+          :
+          <div>
+            <h1 className={classes.title}>Manage Users</h1>
+            <div className={classes.descriptionBox}>
+              <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
+              <SearchBar />
+              <ManagementTabs onUserItemClick={this.onUserItemClick} />
+            </div>
+          </div>
+        }
       </div>
     );
   }

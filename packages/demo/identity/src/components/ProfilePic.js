@@ -10,8 +10,8 @@ const styles = (theme) => {
   return ({
     container: {
       overflow: 'hidden',
-      width: '6.3rem',
-      height: '6.3rem',
+      width: '100%',
+      height: '100%',
       borderRadius: '50%',
       display: 'flex',
       alignItems: 'center',
@@ -26,9 +26,10 @@ const ProfilePic = inject('RootStore')(observer((props) => {
   return (
     <div className={classes.container}>
       <Blockies
-        seed={seed}
-        scale={10}
-        size={11}
+        className={classes.icon}
+        seed={props.seed ? props.seed : seed}
+        scale={props.size - 1}
+        size={props.size}
       />
     </div>
   );
