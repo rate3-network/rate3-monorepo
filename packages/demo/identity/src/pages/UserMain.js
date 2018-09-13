@@ -33,14 +33,11 @@ const styles = (theme) => {
 class UserMain extends React.Component {
   componentDidMount() {
     if (this.props.RootStore.commonStore.getIsUser()) {
-      console.log('u');
       this.props.history.push('/user');
     } else {
-      console.log('v');
       this.props.history.push('/verifier');
     }
   }
-
   render() {
     const { classes, t, RootStore } = this.props;
     const { userStore } = RootStore;

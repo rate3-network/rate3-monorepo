@@ -48,3 +48,8 @@ export const backdropColor = 'rgba(0, 0, 0, 0.32)';
 export const modalShadow = '0px 0px 7px rgba(0, 0, 0, 0.19)';
 export const dotBgColor = '#62A5F5';
 export const dotActiveBgColor = '#3669C8';
+
+// Tabs
+export const tabsUnselectedText = '#CACACA';
+export const rippleColor = 'rgba(67, 146, 241, 0.12)';
+export const paginationFooterColor = '#494848 !important';

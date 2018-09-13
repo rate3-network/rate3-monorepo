@@ -4,6 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
 
 import SearchBar from '../components/verifier/SearchBar';
+import ManagementTabs from '../components/verifier/ManagementTabs';
 
 const styles = (theme) => {
   return ({
@@ -44,6 +45,7 @@ class VerifierMain extends React.Component {
         <div className={classes.descriptionBox}>
           <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
           <SearchBar />
+          <ManagementTabs />
         </div>
       </div>
     );
