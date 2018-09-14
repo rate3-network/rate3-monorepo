@@ -42,7 +42,6 @@ class UserMain extends React.Component {
     const { classes, t, RootStore } = this.props;
     const { userStore } = RootStore;
     const instructionLength = 4;
-    console.log('user main');
     return (
       <div className={classes.container}>
         <InstructionModal
@@ -81,7 +80,12 @@ class UserMain extends React.Component {
 
 
 UserMain.propTypes = {
-  
+  history: PropTypes.object.isRequired,
+  classes: PropTypes.object.isRequired,
+  t: PropTypes.func.isRequired,
+};
+UserMain.wrappedComponent.propTypes = {
+  RootStore: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(translate('general')(withRouter(UserMain)));

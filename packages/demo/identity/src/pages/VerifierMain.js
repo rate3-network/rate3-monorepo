@@ -6,6 +6,8 @@ import { observer, inject } from 'mobx-react';
 import SearchBar from '../components/verifier/SearchBar';
 import ManagementTabs from '../components/verifier/ManagementTabs';
 import ManageIndividualUser from './verifier/ManageIndividualUser';
+import InstructionModal from '../components/InstructionModal';
+import VerifierInstructions from '../components/VerifierInstructions';
 
 const styles = (theme) => {
   return ({
@@ -44,9 +46,24 @@ class VerifierMain extends React.Component {
   //   console.log(this.props.RootStore.verifierStore.getUserSelected());
   // }
   render() {
-    const { classes } = this.props;
+    const { classes, t, RootStore } = this.props;
+    const { verifierStore } = RootStore;
+    const instructionLength = 4;
     return (
       <div className={classes.container}>
+        <InstructionModal
+          open={verifierStore.getVerifierModalIsShowing()}
+          onClose={verifierStore.closeModal.bind(verifierStore)}
+          handleNext={verifierStore.handleModalNext.bind(verifierStore)}
+          handleBack={verifierStore.handleModalBack.bind(verifierStore)}
+          activeStep={verifierStore.getModalPage()}
+          maxSteps={instructionLength}
+        >
+          <VerifierInstructions
+            activeStep={verifierStore.getModalPage()}
+            onChangeIndex={verifierStore.handleModalIndexChange.bind(verifierStore)}
+          />
+        </InstructionModal>
         {this.props.RootStore.verifierStore.getUserSelected() !== null ?
           <ManageIndividualUser />
           :

@@ -20,6 +20,9 @@ class UserStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable userSelected: Number = null;
   @observable currentTab: Number = 0;
+  @observable verifierModalIsShowing = true;
+  @observable verifierModalHasBeenViewed = false;
+  @observable modalPage: Number = 0;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -31,6 +34,36 @@ class UserStore {
   }
   getUserSelected() {
     return this.userSelected;
+  }
+  getModalPage() {
+    return this.modalPage;
+  }
+  getVerifierModalIsShowing() {
+    return this.verifierModalIsShowing;
+  }
+  @action
+  openModal() {
+    this.verifierModalIsShowing = true;
+  }
+
+  @action
+  closeModal() {
+    this.verifierModalIsShowing = false;
+    console.log(this.verifierModalIsShowing);
+  }
+
+  @action
+  handleModalIndexChange(step) {
+    this.modalPage = step;
+  }
+
+  @action
+  handleModalNext() {
+    this.modalPage += 1;
+  }
+  @action
+  handleModalBack() {
+    this.modalPage -= 1;
   }
 
   @action

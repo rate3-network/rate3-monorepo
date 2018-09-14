@@ -139,7 +139,7 @@ const UserInfo = withStyles(styles)((props) => {
   return (
     <div>
       <div className={classes.userName}>
-        USER
+        {props.isUser ? 'USER' : 'VERIFIER'}
       </div>
       <div>
         <span className={classes.walletNameText}>ETH wallet</span>
@@ -197,7 +197,7 @@ const HomeSidebar = observer((props) => {
       <div className={classes.container}>
         <TopText />
         <div className={classes.profilePic}><ProfilePic size={11} /></div>
-        <div className={classes.userInfo}><UserInfo /></div>
+        <div className={classes.userInfo}><UserInfo isUser={props.RootStore.commonStore.getIsUser()} /></div>
         <div className={classes.networkBox}><NetworkBox /></div>
         <div className={classes.roleSwitch}>
           <RoleSwitch

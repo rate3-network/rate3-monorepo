@@ -6,6 +6,8 @@ import ChevronLeft from '@material-ui/icons/ChevronLeftRounded';
 import IconButton from '@material-ui/core/IconButton';
 
 import ProfilePic from '../../components/ProfilePic';
+import ExpandablePanel from '../../components/ExpandablePanel';
+import FixedPanel from '../../components/FixedPanel';
 
 const styles = (theme) => {
   return ({
@@ -37,10 +39,12 @@ const styles = (theme) => {
 @inject('RootStore') @observer
 class ManageIndividualUser extends Component {
   componentDidMount() {
+    // use backbutton
     window.onpopstate = this.props.RootStore.verifierStore.resetUserSelected.bind(this.props.RootStore.verifierStore);
   }
   render() {
-    const { classes } = this.props;
+    const { classes, RootStore } = this.props;
+    const { userStore } = RootStore;
     return (
       <div>
         <h1 className={classes.title}>
@@ -54,6 +58,18 @@ class ManageIndividualUser extends Component {
         <div className={classes.descriptionBox}>
           <p>You can approve this user’s verifications if he/she has registered. You can also add verifications for the user.</p>
         </div>
+        {userStore.getIdentityNames().length > 0 ?
+            <ExpandablePanel title="Name" items={userStore.getIdentityNames()} /> :
+            <FixedPanel title="Name" />
+          }
+          {userStore.getIdentityAddresses().length > 0 ?
+            <ExpandablePanel title="Address" items={userStore.getIdentityAddresses()} /> :
+            <FixedPanel title="Address" />
+          }
+          {userStore.getIdentitySocialIds().length > 0 ?
+            <ExpandablePanel title="Social ID" items={userStore.getIdentitySocialIds()} /> :
+            <FixedPanel title="Social ID" />
+          }
       </div>
     );
   }

@@ -45,15 +45,9 @@ class Home extends React.Component {
         <HomeSidebar />
         <div className={classes.main}>
           <Switch>
-            <Route path="/user" component={UserMain} />
-            <Route path="/verifier" component={VerifierMain} />
+            <Route exact path="/user" component={UserMain} />
+            <Route exact path="/verifier" component={VerifierMain} />
           </Switch>
-          {/* {props.RootStore.commonStore.getIsUser()
-          ?
-            <UserMain />
-          :
-            <VerifierMain />
-          } */}
         </div>
       </div>
     );

@@ -69,6 +69,7 @@ class OnboardStepper extends React.Component {
 
   componentDidMoun() {
     if (this.props.RootStore.commonStore.getIsUserOnboardDone() || this.props.RootStore.commonStore.getIsVerifierOnboardDone()) {
+      console.log('should go to last step');
       this.props.RootStore.commonStore.goToLastOnboardStep();
     }
   }

@@ -6,9 +6,9 @@ import MobileStepper from '@material-ui/core/MobileStepper';
 import SwipeableViews from 'react-swipeable-views';
 import { identityBlue, dotActiveBgColor, dotBgColor } from '../constants/colors';
 
-import userInstruction1 from '../assets/userInstruction1.svg';
-import userInstruction2 from '../assets/userInstruction2.svg';
-import userInstruction3 from '../assets/userInstruction3.svg';
+import verifierInstruction1 from '../assets/userInstruction1.svg';
+import verifierInstruction2 from '../assets/userInstruction2.svg';
+import verifierInstruction3 from '../assets/userInstruction3.svg';
 
 const styles = theme => ({
   root: {
@@ -71,10 +71,12 @@ const styles = theme => ({
   stepBox: {
     width: '13em',
     marginBlockStart: 0,
+    textAlign: 'center',
   },
   contentStepTitle: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   image: {
     width: '80%',
@@ -83,7 +85,7 @@ const styles = theme => ({
 const BoldItalic = (props) => {
   return (<b><i>{props.children}</i></b>);
 };
-class UserInstructions extends React.Component {
+class VerifierInstructions extends React.Component {
   state = {
     activeStep: 0,
   };
@@ -105,7 +107,7 @@ class UserInstructions extends React.Component {
   };
 
   render() {
-    const { classes, theme } = this.props;
+    const { classes, theme, t } = this.props;
     const { activeStep } = this.state;
 
     const MAX_STEP = 4;
@@ -123,36 +125,39 @@ class UserInstructions extends React.Component {
         >
           <div className={classes.contentWrapper}>
             <div className={classes.content}>
-              <p className={classes.contentTitle}><Trans i18nKey="userInstruction1_1" /></p>
-              <p><Trans i18nKey="userInstruction1_2"><BoldItalic>user</BoldItalic></Trans></p>
-              <p><Trans i18nKey="userInstruction1_3"><BoldItalic>verifications</BoldItalic></Trans></p>
+              <p className={classes.contentTitle}><Trans i18nKey="verifierInstruction1_1" /></p>
+              <p><Trans i18nKey="verifierInstruction1_2"><BoldItalic>verifer</BoldItalic></Trans></p>
+              <p><Trans i18nKey="verifierInstruction1_3"><BoldItalic>Manage</BoldItalic></Trans></p>
             </div>
           </div>
           <div className={classes.contentWrapper}>
             <div className={classes.contentWithImage}>
               <div className={classes.contentStepTitle}>
-                <span>1. </span>
-                <p className={classes.stepBox}><Trans i18nKey='userInstruction2'><BoldItalic>registering</BoldItalic></Trans></p>
+                <div>{t('feature')} 1</div>
+                <br />
+                <p className={classes.stepBox}><Trans i18nKey='verifierInstruction2'><BoldItalic>verify</BoldItalic></Trans></p>
               </div>
-              <img className={classes.image} src={userInstruction1} alt="" />
+              <img className={classes.image} src={verifierInstruction1} alt="" />
             </div>
           </div>
           <div className={classes.contentWrapper}>
             <div className={classes.contentWithImage}>
               <div className={classes.contentStepTitle}>
-                <span>2. </span>
-                <p className={classes.stepBox}><Trans i18nKey='userInstruction3'><BoldItalic>wait</BoldItalic></Trans></p>
+                <div>{t('feature')} 2</div>
+                <br />
+                <p className={classes.stepBox}><Trans i18nKey='verifierInstruction3'><BoldItalic>revoke</BoldItalic></Trans></p>
               </div>
-              <img className={classes.image} src={userInstruction2} alt="" />
+              <img className={classes.image} src={verifierInstruction2} alt="" />
             </div>
           </div>
           <div className={classes.contentWrapper}>
             <div className={classes.contentWithImage}>
               <div className={classes.contentStepTitle}>
-                <span>3. </span>
-                <p className={classes.stepBox}><Trans i18nKey='userInstruction4'><BoldItalic>Add</BoldItalic></Trans></p>
+                <div>{t('feature')} 3</div>
+                <br />
+                <p className={classes.stepBox}><Trans i18nKey='verifierInstruction4'><BoldItalic>add</BoldItalic></Trans></p>
               </div>
-              <img className={classes.image} src={userInstruction3} alt="" />
+              <img className={classes.image} src={verifierInstruction3} alt="" />
             </div>
           </div>
         </SwipeableViews>
@@ -171,9 +176,9 @@ class UserInstructions extends React.Component {
   }
 }
 
-UserInstructions.propTypes = {
+VerifierInstructions.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired,
 };
 
-export default translate('instructions')(withStyles(styles, { withTheme: true })(UserInstructions));
+export default translate('instructions')(withStyles(styles, { withTheme: true })(VerifierInstructions));
