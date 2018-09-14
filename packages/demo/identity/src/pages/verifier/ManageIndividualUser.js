@@ -57,8 +57,8 @@ class ManageIndividualUser extends Component {
         </h1>
         <div className={classes.descriptionBox}>
           <p>You can approve this user’s verifications if he/she has registered. You can also add verifications for the user.</p>
-        </div>
-        {userStore.getIdentityNames().length > 0 ?
+        
+          {userStore.getIdentityNames().length > 0 ?
             <ExpandablePanel title="Name" items={userStore.getIdentityNames()} /> :
             <FixedPanel title="Name" />
           }
@@ -70,6 +70,7 @@ class ManageIndividualUser extends Component {
             <ExpandablePanel title="Social ID" items={userStore.getIdentitySocialIds()} /> :
             <FixedPanel title="Social ID" />
           }
+        </div>
       </div>
     );
   }
