@@ -6,17 +6,20 @@ import "../../lib/lifecycle/Pausable.sol";
 import "./ERC20.sol";
 import "./AllowanceModule.sol";
 import "./BalanceModule.sol";
+import "./RegistryModule.sol";
 
 contract ModularToken is ERC20, Claimable, Pausable {
     using SafeMath for uint256;
 
     BalanceModule public balanceModule;
     AllowanceModule public allowanceModule;
+    RegistryModule public registryModule;
 
     uint256 totalSupply_;
 
     event BalanceModuleSet(address indexed moduleAddress);
     event AllowanceModuleSet(address indexed moduleAddress);
+    event RegistryModuleSet(address indexed moduleAddress);
     event Burn(address indexed burner, uint256 value);
     event Mint(address indexed to, uint256 value);
 
@@ -42,6 +45,18 @@ contract ModularToken is ERC20, Claimable, Pausable {
         emit AllowanceModuleSet(_moduleAddress);
         return true;
     }
+
+    /**
+     * @dev Set the RegistryModule.
+     * @param _moduleAddress The address of the RegistryModule.
+     */
+    function setRegistryModule(address _moduleAddress) public onlyOwner returns (bool) {
+        registryModule = RegistryModule(_moduleAddress);
+        registryModule.claimOwnership();
+        emit RegistryModuleSet(_moduleAddress);
+        return true;
+    }
+
 
     /**
      * @dev ERC20 functionality - Gets the total number of tokens in existence.
@@ -191,5 +206,28 @@ contract ModularToken is ERC20, Claimable, Pausable {
         emit Mint(_to, _value);
         emit Transfer(address(0), _to, _value);
         return true;
+    }
+
+    function setKeyDataRecord(
+        address _forAddress,
+        string _key,
+        uint256 _integerValue,
+        string _stringValue,
+        address _addressValue,
+        bool _booleanValue,
+        address _managerAddress
+    )
+        public
+        onlyOwner
+    {
+        registryModule.setKeyDataRecord(
+            _forAddress,
+            _key,
+            _integerValue,
+            _stringValue,
+            _addressValue,
+            _booleanValue,
+            _managerAddress  
+        );
     }
 }
