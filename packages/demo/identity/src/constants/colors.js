@@ -5,7 +5,7 @@ export const materialGrey = '#818CA1';
 export const disabledGrey = '#9C9C9C';
 
 // Buttons
-export const buttonShadow = '4px 4px 10px rgba(0, 0, 0, 0.1)';
+export const buttonShadow = '4px 4px 10px rgba(0, 0, 0, 0.05)';
 export const buttonHoverShadow = '4px 4px 10px rgba(0, 0, 0, 0.25)';
 
 // Sidebar
@@ -48,6 +48,8 @@ export const backdropColor = 'rgba(0, 0, 0, 0.32)';
 export const modalShadow = '0px 0px 7px rgba(0, 0, 0, 0.19)';
 export const dotBgColor = '#62A5F5';
 export const dotActiveBgColor = '#3669C8';
+
+export const inputBorderGrey = 'rgba(129, 140, 161, 0.6)';
 
 // Tabs
 export const tabsUnselectedText = '#CACACA';

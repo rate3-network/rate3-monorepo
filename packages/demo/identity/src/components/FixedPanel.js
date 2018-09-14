@@ -74,16 +74,16 @@ const ArrowIcon = withStyles(styles)((props) => {
 
 const RegisterButton = withStyles(styles)((props) => {
   const { classes } = props;
-  return <div><BlueButton className={classes.buttonContainer} fontSize={'0.7em'} lineHeight={'1em'} fontWeight={500} buttonText="Register" /></div>;
+  return <BlueButton handleClick={props.handleClick} className={classes.buttonContainer} fontSize={'0.7em'} lineHeight={'1em'} fontWeight={500} buttonText="Register" />;
 });
 
 
-const DetailedExpansionPanel = (props) => {
+const FixedPanel = (props) => {
   const { classes } = props;
   return (
     <div className={classes.root}>
       <ExpansionPanel className={classes.paper} expanded={false}>
-        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<RegisterButton />}>
+        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<RegisterButton {...props} />}>
           <div className={classes.header}>
             <img src={identityIcon} className={classes.image} alt="Identity Icon" />
             <div className={classes.textGroup}>
@@ -99,8 +99,8 @@ const DetailedExpansionPanel = (props) => {
   );
 };
 
-DetailedExpansionPanel.propTypes = {
+FixedPanel.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DetailedExpansionPanel);
+export default withStyles(styles)(FixedPanel);

@@ -18,16 +18,32 @@ social3.approveIdentity('0x4d3a5de2bfa0bb3d35fecd82d6d3c1deb396580f');
 social3.addIdentity('0x825e1e0c57700b327dff98d2b04b17ba8fe3d2ea729acd79a4d2fe1a2912935b');
 class UserStore {
   /* JSDOC: MARK START OBSERVABLE */
-  @observable userModalIsShowing = true;
+  @observable userModalIsShowing = false;
   @observable userModalHasBeenViewed = false;
   @observable modalPage: Number = 0;
   @observable identityNames: Array = [];
   @observable identityAddresses: Array = [{ id: 1, status: PENDING_REVIEW, value: '001 Changi Road' }];
   @observable identitySocialIds: Array = [social1, social2, social3];
+
+  @observable registerModalIsShowing = true;
+
+  // Modal Form
+  @observable verifierList: Array = ['Pikachu', 'Eevee', 'Squirtle', 'Snorlax'];
+  @observable verifierSelected: String = '_placeholder_';
+  @observable formTextInputValue: String = '';
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
+  }
+  getFormTextInputValue() {
+    return this.formTextInputValue;
+  }
+  getVerifierSelected() {
+    return this.verifierSelected;
+  }
+  getVerifierList() {
+    return this.verifierList;
   }
 
   getModalPage() {
@@ -48,6 +64,9 @@ class UserStore {
     return this.userModalIsShowing;
   }
 
+  getRegisterModalIsShowing() {
+    return this.registerModalIsShowing;
+  }
   @action
   addToNames(name) {
     const id = this.identityNames.length;
@@ -82,6 +101,22 @@ class UserStore {
   @action
   handleModalBack() {
     this.modalPage -= 1;
+  }
+  @action
+  openRegisterModal() {
+    this.registerModalIsShowing = true;
+  }
+  @action
+  closeRegisterModal() {
+    this.registerModalIsShowing = false;
+  }
+  @action
+  setVerifierSelected(v) {
+    this.verifierSelected = v;
+  }
+  @action
+  setFormTextInputValue(v) {
+    this.formTextInputValue = v;
   }
 }
 

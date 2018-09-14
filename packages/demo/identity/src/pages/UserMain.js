@@ -8,7 +8,8 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import ExpandablePanel from '../components/ExpandablePanel';
 import FixedPanel from '../components/FixedPanel';
 import InstructionModal from '../components/InstructionModal';
-import UserInstructions from '../components/UserInstructions';
+import UserInstructions from '../components/user/UserInstructions';
+import RegistrationModal from '../components/user/RegistrationModal';
 
 const styles = (theme) => {
   return ({
@@ -57,12 +58,22 @@ class UserMain extends React.Component {
             onChangeIndex={userStore.handleModalIndexChange.bind(userStore)}
           />
         </InstructionModal>
+        <RegistrationModal
+          open={userStore.getRegisterModalIsShowing()}
+          onClose={userStore.closeRegisterModal.bind(userStore)}
+          handleClick={(e) => { userStore.setVerifierSelected(e.target.value); }}
+          textInputValue={userStore.getFormTextInputValue()}
+          handleChange={(e) => { userStore.setFormTextInputValue(e.target.value); }}
+          verifierList={userStore.getVerifierList()}
+          verifier={userStore.getVerifierSelected()}
+        />
+
         <h1 className={classes.title}>My Identity</h1>
         <div className={classes.descriptionBox}>
           <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
           {userStore.getIdentityNames().length > 0 ?
             <ExpandablePanel title="Name" items={userStore.getIdentityNames()} /> :
-            <FixedPanel title="Name" />
+            <FixedPanel handleClick={userStore.openRegisterModal.bind(userStore)} title="Name" />
           }
           {userStore.getIdentityAddresses().length > 0 ?
             <ExpandablePanel title="Address" items={userStore.getIdentityAddresses()} /> :

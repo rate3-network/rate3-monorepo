@@ -4,11 +4,11 @@ import { withStyles } from '@material-ui/core/styles';
 import { translate, Trans } from 'react-i18next';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import SwipeableViews from 'react-swipeable-views';
-import { identityBlue, dotActiveBgColor, dotBgColor } from '../constants/colors';
+import { identityBlue, dotActiveBgColor, dotBgColor } from '../../constants/colors';
 
-import userInstruction1 from '../assets/userInstruction1.svg';
-import userInstruction2 from '../assets/userInstruction2.svg';
-import userInstruction3 from '../assets/userInstruction3.svg';
+import userInstruction1 from '../../assets/userInstruction1.svg';
+import userInstruction2 from '../../assets/userInstruction2.svg';
+import userInstruction3 from '../../assets/userInstruction3.svg';
 
 const styles = theme => ({
   root: {
