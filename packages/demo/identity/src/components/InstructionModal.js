@@ -77,11 +77,11 @@ const InstructionModal = (props) => {
       <div className={classes.modal}>
         <div className={classes.paper}>
           <div className={classes.content}>
-            <div className={classes.arrow} onClick={props.handleBack}>
+            <div style={{ cursor: 'pointer' }} className={classes.arrow} onClick={props.handleBack}>
               {props.activeStep > 0 && <img className={classes.image} src={leftArrow} alt="" />}
             </div>
             {props.children}
-            <div className={classes.arrow} onClick={props.handleNext}>
+            <div style={{ cursor: 'pointer' }} className={classes.arrow} onClick={props.handleNext}>
               {props.activeStep < props.maxSteps - 1 && <img className={classes.image} src={rightArrow} alt="" />}
             </div>
           </div>

@@ -168,14 +168,14 @@ const Keys = withStyles(styles)((props) => {
   );
 });
 
-const Faq = withStyles(styles)((props) => {
+const Faq = withRouter(withStyles(styles)((props) => {
   const { classes } = props;
   return (
-    <span className={classes.faqText}>
+    <span style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/faq'); }} className={classes.faqText}>
       FAQ
     </span>
   );
-});
+}));
 
 const HomeSidebar = observer((props) => {
   const { classes } = props;

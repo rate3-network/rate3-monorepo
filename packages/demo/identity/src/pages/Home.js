@@ -9,6 +9,7 @@ import HomeSidebar from '../components/HomeSidebar';
 import { homeBg } from '../constants/colors';
 import UserMain from './UserMain';
 import VerifierMain from './VerifierMain';
+import Faq from './Faq';
 
 const styles = theme => ({
   root: {
@@ -27,13 +28,13 @@ const styles = theme => ({
 @inject('RootStore') @observer
 class Home extends React.Component {
   componentDidMount() {
-    if (this.props.RootStore.commonStore.getIsUser()) {
-      console.log('u');
-      this.props.history.push('/user');
-    } else {
-      console.log('v');
-      this.props.history.push('/verifier');
-    }
+    // if (this.props.RootStore.commonStore.getIsUser()) {
+    //   console.log('u');
+    //   this.props.history.push('/user');
+    // } else {
+    //   console.log('v');
+    //   this.props.history.push('/verifier');
+    // }
   }
   render() {
     if (this.props.location.pathname === '/') {
@@ -45,8 +46,9 @@ class Home extends React.Component {
         <HomeSidebar />
         <div className={classes.main}>
           <Switch>
-            <Route exact path="/user" component={UserMain} />
-            <Route exact path="/verifier" component={VerifierMain} />
+            <Route path="/user" component={UserMain} />
+            <Route path="/verifier" component={VerifierMain} />
+            <Route path="/faq" component={Faq} />
           </Switch>
         </div>
       </div>

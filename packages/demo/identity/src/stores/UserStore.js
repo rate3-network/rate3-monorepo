@@ -25,7 +25,7 @@ class UserStore {
   @observable identityAddresses: Array = [{ id: 1, status: PENDING_REVIEW, value: '001 Changi Road' }];
   @observable identitySocialIds: Array = [social1, social2, social3];
 
-  @observable registerModalIsShowing = true;
+  @observable registerModalIsShowing = false;
 
   // Modal Form
   @observable verifierList: Array = ['Pikachu', 'Eevee', 'Squirtle', 'Snorlax'];

@@ -164,8 +164,7 @@ const RegistrationModal = inject('RootStore')(observer((props) => {
                 </Select>
               </FormControl>
             </div>
-            <div className={classes.buttonContainer}><BlueButton disabled={!props.textInputValue || props.verifier === '_placeholder_'} buttonText="Register" /></div>
-            
+            <div className={classes.buttonContainer}><BlueButton disabled={!props.textInputValue || props.verifier === '_placeholder_'} buttonText="Register" /></div>     
           </div>
         </div>
       </div>

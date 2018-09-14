@@ -30,14 +30,13 @@ const styles = (theme) => {
 
 @inject('RootStore') @observer
 class VerifierMain extends React.Component {
-
-  componentDidMount() {
+  constructor(props) {
+    super(props);
     if (this.props.RootStore.commonStore.getIsUser()) {
       this.props.history.push('/user');
-    } else {
-      this.props.history.push('/verifier');
     }
-    
+  }
+  componentDidMount() {
   }
   // onUserItemClick(value) {
   //   console.log('clicked');

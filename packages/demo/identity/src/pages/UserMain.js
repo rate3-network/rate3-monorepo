@@ -32,12 +32,13 @@ const styles = (theme) => {
 
 @inject('RootStore') @observer
 class UserMain extends React.Component {
-  componentDidMount() {
-    if (this.props.RootStore.commonStore.getIsUser()) {
-      this.props.history.push('/user');
-    } else {
+  constructor(props) {
+    super(props);
+    if (!this.props.RootStore.commonStore.getIsUser()) {
       this.props.history.push('/verifier');
     }
+  }
+  componentDidMount() {
   }
   render() {
     const { classes, t, RootStore } = this.props;
