@@ -5,6 +5,7 @@ import { advanceBlock } from '../helpers/advanceToBlock';
 const TokenizeTemplateToken = artifacts.require("./tokenization/TokenizeTemplateToken.sol");
 const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
+const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.sol");
 const TokenizeTemplateInteractor = artifacts.require("./tokenization/TokenizeTemplateInteractor.sol");
 
 require('chai')
@@ -28,15 +29,22 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
+            this.registryModule = await RegistryModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
+            await this.registryModule.transferOwnership(this.token.address, { from: owner });
             await this.token.setAllowanceModule(this.allowanceModule.address);
             await this.token.setBalanceModule(this.balanceModule.address);
+            await this.token.setRegistryModule(this.registryModule.address);
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
+            await this.interactor.setToken(this.token.address, { from: owner });
+            await this.interactor.claimTokenOwnership({ from: owner });
 
             await this.interactor.setFirstAdmin(admin1, { from: owner });
             await this.interactor.setSecondAdmin(admin2, { from: owner });
+
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
         });
     });
 
@@ -47,10 +55,13 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
+            this.registryModule = await RegistryModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
+            await this.registryModule.transferOwnership(this.token.address, { from: owner });
             await this.token.setAllowanceModule(this.allowanceModule.address);
             await this.token.setBalanceModule(this.balanceModule.address);
+            await this.token.setRegistryModule(this.registryModule.address);
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.setToken(this.token.address, { from: owner });
@@ -58,6 +69,8 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             await this.interactor.setFirstAdmin(admin1, { from: owner });
             await this.interactor.setSecondAdmin(admin2, { from: owner });
+
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
         });
 
         it('owner cannot approve mint request', async function() {
@@ -85,10 +98,13 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
+            this.registryModule = await RegistryModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
+            await this.registryModule.transferOwnership(this.token.address, { from: owner });
             await this.token.setAllowanceModule(this.allowanceModule.address);
             await this.token.setBalanceModule(this.balanceModule.address);
+            await this.token.setRegistryModule(this.registryModule.address);
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.setToken(this.token.address, { from: owner });
@@ -96,6 +112,8 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             await this.interactor.setFirstAdmin(admin1, { from: owner });
             await this.interactor.setSecondAdmin(admin2, { from: owner });
+
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
         });
 
         it('owner cannot finalize mint request', async function() {
