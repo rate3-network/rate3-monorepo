@@ -47,7 +47,7 @@ test('decrypt', () => {
   decrypted = ethereum_wallet.decrypt(password, keystoreV3)
   expect(decrypted.address).toMatch(/0x1[d|D]14[a|A]9[e|E][d|D]46653[b|B]2[b|B]833[f|F]4[d|D][a|A][c|C]3[b|B]6[a|A]786[c|C]76[f|F][a|A][e|E][d|D][c|C]2/);// address case insensitive
   expect(decrypted.privateKey).toBe(privateKey)
-  decryptedWithWrongPw = ethereum_wallet.decrypt(password+'1', keystoreV3)
+  expect(ethereum_wallet.decrypt(password+'1', keystoreV3)).toBeFalsy()
 
 });
 

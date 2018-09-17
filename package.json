@@ -1,8 +1,8 @@
 {
   "name": "wallet",
   "version": "1.0.0",
-  "description": "",
-  "main": "sum.js",
+  "description": "a wrapper over stellar, ethereum, and possibly others",
+  "main": "account.js",
   "scripts": {
     "test": "jest"
   },

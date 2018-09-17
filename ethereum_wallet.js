@@ -8,6 +8,12 @@ const EthUtil = require('ethereumjs-util');
 var Tx = require('ethereumjs-tx');
 var Web3 = require('web3');
 var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
+w1 = web3.eth.accounts.wallet.create()
+a1 = web3.eth.accounts.create()
+//console.log(w1)
+//console.log(a1)
+w1.add(a1)
+//console.log(w1)
 /** 
  * Returns seed phrases (mnemonic)
  */
@@ -27,19 +33,6 @@ function generateWallet(mnemonic) {
   const privateKeyBuffer = EthUtil.toBuffer(pkWithHexPrefix);
   return ethereum_wallet.fromPrivateKey(privateKeyBuffer)
 }
-
-//seedPhrases = generateSeedPhrases()
-//my_pk = 'b4c392b3e149e935a44280027e0b4fe8eb3526b3650762f27ae1729fb58bda92'
-//wallet = ethereum_wallet.fromPrivateKey(EthUtil.toBuffer(EthUtil.addHexPrefix(my_pk)));
-//console.log(wallet.getAddressString())
-//console.log(web3_account);
-// web3.eth.accounts.signTransaction({
-//   from: '0x1d14a9ed46653b2b833f4dac3b6a786c76faedc2',
-//   to: '0x2e2a32690B2D09089F62BF3C262edA1aC1118f8F',
-//   value: '200000', // in wei
-//   gas: 210000
-// }, EthUtil.addHexPrefix(my_pk))
-// .then(console.log);
 
 /**
  * Prints the account and its balance.
@@ -66,7 +59,13 @@ function encrypt(password, privateKey) {
    * @param {string} fileName - The name of the file that saves the encrypted string 
    */
   function decrypt(password, keystoreJsonV3) {
-    return web3.eth.accounts.decrypt(keystoreJsonV3, password);
+    try {
+      return web3.eth.accounts.decrypt(keystoreJsonV3, password);
+    }
+    catch (err) {
+      return false
+    }
+
   }
 
   /**
@@ -94,13 +93,7 @@ function encrypt(password, privateKey) {
       .catch(err => console.error(err));
 
   }
-
-  // const senderPrivateKey = '0xb4c392b3e149e935a44280027e0b4fe8eb3526b3650762f27ae1729fb58bda92'
-  // const senderAddress = '0x1d14a9ed46653b2b833f4dac3b6a786c76faedc2'
-  // const receiverAddress = '0x2e2a32690B2D09089F62BF3C262edA1aC1118f8F'
-  // const amountOfEtherToSend = '0.001'
-  // sendEther(senderPrivateKey,senderAddress,receiverAddress,amountOfEtherToSend)
-
+  
   /**
    * Perform telegated signing
    * @param {string} URI - The input URI, start with web+stellar:
