@@ -1,7 +1,6 @@
 pragma solidity 0.4.24;
 
 import "./lifecycle/KeyPausable.sol";
-import "./ERC/ERC725.sol";
 
 
 /**
@@ -45,6 +44,15 @@ contract KeyManager is KeyPausable {
     {
         if (!allKeys.find(_key, _purpose)) {
             return false;
+        }
+        if (_purpose == MANAGEMENT_KEY) {
+            require(
+                getKeysByPurpose(_purpose).length - 1 >= managementThreshold
+            );
+        } else if (_purpose == ACTION_KEY) {
+            require(
+                getKeysByPurpose(_purpose).length - 1 >= actionThreshold
+            );
         }
         uint256 keyType = allKeys.remove(_key, _purpose);
         emit KeyRemoved(_key, _purpose, keyType);
