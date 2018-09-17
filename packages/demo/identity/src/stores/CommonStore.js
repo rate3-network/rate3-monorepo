@@ -3,11 +3,7 @@ import {
   observable,
   action,
   computed,
-  autorun,
-  when,
-  runInAction,
 } from 'mobx';
-
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
@@ -18,16 +14,15 @@ class CommonStore {
   @observable isVerifierOnboardDone: Boolean = false;
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
+  @observable currentNetwork: String = 'Main Ethereum Network';
   // true: completed; false: not done;
   @observable setupWalletProgress: Array = [false, false, false, false];
   @observable shouldRenderOnboardTransition: Boolean = false;
-
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
-
 
   @computed get isWalletSetupDone() {
     return this.setupWalletProgress.every(progress => (progress)); // check if every step is done
@@ -77,6 +72,9 @@ class CommonStore {
     return this.currentLanguage;
   }
 
+  getCurrentNetwork() {
+    return this.currentNetwork;
+  }
 
   getSetupWalletProgress(id) {
     return this.setupWalletProgress[id];
@@ -142,7 +140,6 @@ class CommonStore {
 
   @action
   completeSetupWalletProgress(id) {
-    console.log('complete ' + id);
     this.setupWalletProgress[id] = true;
   }
 
@@ -160,6 +157,15 @@ class CommonStore {
     this.activeOnboardStep = 3;
   }
 
+  // @action
+  // updateUserNetwork() {
+  //   if (this.getIsUser()) {
+  //     this.rootStore.userStore.initMetamaskNetwork();
+  //     if (this.rootStore.userStore.isMetaMaskEnabled) this.completeSetupWalletProgress(0);
+  //     if (this.rootStore.userStore.isMetaMaskLoggedIn) this.completeSetupWalletProgress(1);
+  //     if (this.rootStore.userStore.currentNetwork === 'Ropsten' || this.rootStore.userStore.currentNetwork === 'Rinkeby' || this.rootStore.userStore.currentNetwork === 'Kovan') this.completeSetupWalletProgress(2);
+  //   }
+  // }
 }
 
 export default CommonStore;

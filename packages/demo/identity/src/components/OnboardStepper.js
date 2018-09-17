@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { observer, inject } from 'mobx-react';
+import { observer, inject, autorun } from 'mobx-react';
 import { withStyles } from '@material-ui/core/styles';
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Slide from '@material-ui/core/Slide';
@@ -57,6 +57,17 @@ const styles = theme => ({
 
 @inject('RootStore') @observer
 class OnboardStepper extends React.Component {
+
+  componentDidMount() {
+    if (this.props.RootStore.commonStore.getIsUserOnboardDone() || this.props.RootStore.commonStore.getIsVerifierOnboardDone()) {
+      console.log('should go to last step');
+      this.props.RootStore.commonStore.goToLastOnboardStep();
+    }
+    if (this.props.RootStore.commonStore.getIsUser()) {
+      this.props.RootStore.userStore.initMetamaskNetwork();
+    }
+    // this.props.RootStore.commonStore.updateUserNetwork();
+  }
   handleNext = () => {
     this.props.RootStore.commonStore.onboardNextStep();
   }
@@ -70,26 +81,7 @@ class OnboardStepper extends React.Component {
     }
   }
 
-  componentDidMount() {
-    if (this.props.RootStore.commonStore.getIsUserOnboardDone() || this.props.RootStore.commonStore.getIsVerifierOnboardDone()) {
-      console.log('should go to last step');
-      this.props.RootStore.commonStore.goToLastOnboardStep();
-    }
-  }
   render() {
-    let metaMaskInstalled = false;
-    let metaMaskLoggedIn = false;
-    let isOnTestNet = false;
-    let hasTestEther = false;
-    if (this.props.RootStore.commonStore.getIsUser()) {
-      this.props.RootStore.userStore.initMetamaskNetwork();
-      metaMaskInstalled = this.props.RootStore.userStore.isMetaMaskEnabled;
-      metaMaskLoggedIn = this.props.RootStore.userStore.isMetaMaskLoggedIn;
-      isOnTestNet = this.props.RootStore.userStore.currentNetwork === 'Ropsten' || this.props.RootStore.userStore.currentNetwork === 'Rinkeby' || this.props.RootStore.userStore.currentNetwork === 'Kovan';
-    }
-    if (metaMaskInstalled) this.props.RootStore.commonStore.completeSetupWalletProgress(0);
-    if (metaMaskLoggedIn) this.props.RootStore.commonStore.completeSetupWalletProgress(1);
-    if (isOnTestNet) this.props.RootStore.commonStore.completeSetupWalletProgress(2);
     const onboardSteps = [
       {
         label: 'Cross-Chain Identity',

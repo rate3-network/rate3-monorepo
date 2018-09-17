@@ -178,9 +178,20 @@ const Faq = withRouter(withStyles(styles)((props) => {
   );
 }));
 const networks = [
-  { value: 'rinkeby', label: 'rinkeby test net' },
-  { value: 'ropsten', label: 'ropsten test net' },
+  { value: 'Rinkeby', label: 'rinkeby test net' },
+  { value: 'Ropsten', label: 'ropsten test net' },
 ];
+
+const NetworkThingy = withStyles(styles)(inject('RootStore')(observer((props) => {
+  const { classes } = props;
+  if (!props.RootStore.commonStore.getIsUser()) {
+    return <div className={classes.networkBox}><NetworkDropdown buttonText="text" currentNetwork="rinkeby" networks={networks} /></div>;
+  }
+  if (props.RootStore.userStore.isOnFixedAccount) {
+    return <div className={classes.networkBox}><NetworkDropdown buttonText="text" currentNetwork="rinkeby" networks={networks} /></div>;
+  }
+  return <div className={classes.networkBox}><NetworkBox /></div>;
+})));
 const HomeSidebar = observer((props) => {
   const { classes } = props;
   return (
@@ -202,8 +213,7 @@ const HomeSidebar = observer((props) => {
         <TopText />
         <div className={classes.profilePic}><ProfilePic size={11} /></div>
         <div className={classes.userInfo}><UserInfo isUser={props.RootStore.commonStore.getIsUser()} /></div>
-        {/* <div className={classes.networkBox}><NetworkBox /></div> */}
-        <div className={classes.networkBox}><NetworkDropdown buttonText="text" currentNetwork="rinkeby" networks={networks} /></div>
+        <NetworkThingy />
         <div className={classes.roleSwitch}>
           <RoleSwitch
             leftText="USER"

@@ -38,6 +38,8 @@ class UserStore {
   @observable currentNetwork: String = 'Detecting Network...';
   @observable isMetaMaskLoggedIn: Boolean = false;
   @observable isOnFixedAccount: Boolean = false;
+
+  @observable fixedUserAcctNetwork: String = 'Ropsten';
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -46,6 +48,11 @@ class UserStore {
 
   @computed get isMetaMaskEnabled() {
     return (typeof window.web3 !== 'undefined');
+  }
+
+  @action
+  changeFixedUserAcctNetwork(v) {
+    this.fixedUserAcctNetwork = v;
   }
 
   @action
@@ -58,30 +65,34 @@ class UserStore {
       this.currentNetwork = 'Please enable MetaMask browser extension';
       return;
     }
+    this.rootStore.commonStore.completeSetupWalletProgress(0);
+    
     const web3 = new Web3(window.web3.currentProvider);
     window.web3 = web3;
     web3.eth.getAccounts((err, accounts) => {
-      console.log('hello');
       runInAction(() => {
         if (err != null) console.error('An error occurred while detecting MetaMask login status');
         else if (accounts.length === 0) console.log('User is not logged in to MetaMask');
         else {
           this.isMetaMaskLoggedIn = true;
+          this.rootStore.commonStore.completeSetupWalletProgress(1);
         }
       });
     });
     web3.eth.net.getNetworkType((err, network) => {
       runInAction(() => {
-        console.log(network);
         switch (network) {
           case 'ropsten':
             this.currentNetwork = 'Ropsten';
+            this.rootStore.commonStore.completeSetupWalletProgress(2);
             return;
           case 'rinkeby':
             this.currentNetwork = 'Rinkeby';
+            this.rootStore.commonStore.completeSetupWalletProgress(2);
             return;
           case 'kovan':
             this.currentNetwork = 'Kovan';
+            this.rootStore.commonStore.completeSetupWalletProgress(2);
             return;
           default:
             this.currentNetwork = 'Others';

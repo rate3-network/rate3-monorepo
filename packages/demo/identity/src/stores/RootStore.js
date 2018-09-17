@@ -2,6 +2,7 @@
 import {
   computed,
   observable,
+  autorun,
 } from 'mobx';
 
 import CommonStore from './CommonStore';
@@ -23,4 +24,20 @@ class RootStore {
 
 const SingletonRootStore = new RootStore();
 
+// detect
+// const detectMetaMaskNetwork = autorun(() => {
+//   let metaMaskInstalled = false;
+//   let metaMaskLoggedIn = false;
+//   let isOnTestNet = false;
+//   let hasTestEther = false;
+//   if (SingletonRootStore.commonStore.getIsUser()) {
+//     SingletonRootStore.userStore.initMetamaskNetwork();
+//     metaMaskInstalled = SingletonRootStore.userStore.isMetaMaskEnabled;
+//     metaMaskLoggedIn = SingletonRootStore.userStore.isMetaMaskLoggedIn;
+//     isOnTestNet = SingletonRootStore.userStore.currentNetwork === 'Ropsten' || SingletonRootStore.userStore.currentNetwork === 'Rinkeby' || SingletonRootStore.userStore.currentNetwork === 'Kovan';
+//   }
+//   if (metaMaskInstalled) SingletonRootStore.commonStore.completeSetupWalletProgress(0);
+//   if (metaMaskLoggedIn) SingletonRootStore.commonStore.completeSetupWalletProgress(1);
+//   if (isOnTestNet) SingletonRootStore.commonStore.completeSetupWalletProgress(2);
+// });
 export default SingletonRootStore;

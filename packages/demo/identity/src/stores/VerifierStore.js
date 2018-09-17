@@ -23,6 +23,8 @@ class UserStore {
   @observable verifierModalIsShowing = true;
   @observable verifierModalHasBeenViewed = false;
   @observable modalPage: Number = 0;
+
+  @observable verifierNetwork: String = 'verifier';
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
