@@ -20,6 +20,19 @@ const styles = theme => ({
     alignItems: 'center',
     marginTop: '0.5em',
   },
+  slelectableBox: {
+    backgroundColor: networkBoxBg,
+    color: materialGrey,
+    height: '2.6em',
+    width: '15.5em',
+    fontWeight: '500',
+    fontSize: '0.9em',
+    borderRadius: '9px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: '0.5em',
+  },
   ropsten: {
     backgroundColor: `${ropstenBg} !important`,
   },
@@ -42,10 +55,33 @@ const styles = theme => ({
     height: '0.4em',
     color: identityBlueLight,
   },
+  expandIcon: {
+    paddingLeft: '0.5em',
+    fontSize: '1.7em',
+  },
 });
 const NetworkBox = inject('RootStore')(observer((props) => {
   const { classes } = props;
-
+  if (props.variant === 'selectable') {
+    return (
+      <div className={classNames(
+        classes.slelectableBox,
+        { [classes.ropsten]: props.RootStore.currentNetwork === 'Ropsten' },
+        { [classes.rinkeby]: props.RootStore.currentNetwork === 'Rinkeby' },
+        { [classes.kovan]: props.RootStore.currentNetwork === 'Kovan' },
+        )}
+      >
+        <Lens className={classNames(
+        classes.icon,
+        { [classes.ropstenDot]: props.RootStore.currentNetwork === 'Ropsten' },
+        { [classes.rinkebyDot]: props.RootStore.currentNetwork === 'Rinkeby' },
+        { [classes.kovanDot]: props.RootStore.currentNetwork === 'Kovan' },
+        )}
+        />
+        {`${props.RootStore.currentNetwork} Test Network`}
+      </div>
+    );
+  }
   return (
     <div className={classNames(
       classes.box,

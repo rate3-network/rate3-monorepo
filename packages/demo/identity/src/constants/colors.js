@@ -23,6 +23,12 @@ export const rinkebyBg = '#faefd8';
 export const rinkebyDot = '#ebb33f';
 export const kovanBg = '#e8b9fd';
 export const kovanDot = '#690496';
+
+export const networkMenuButtonText = '#494848';
+export const networkMenuItemSelectedBg = '#203542';
+export const networkMenuItemSelectedText = '#FFFFFF';
+
+
 // Role Select
 export const toggleGradient = 'linear-gradient(to right, #4392F1 0%,#56CBF9 100%)';
 

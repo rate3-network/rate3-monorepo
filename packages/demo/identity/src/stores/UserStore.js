@@ -63,12 +63,10 @@ class UserStore {
     web3.eth.getAccounts((err, accounts) => {
       console.log('hello');
       runInAction(() => {
-        if (err != null) console.error("An error occurred: "+err);
-        else if (accounts.length == 0) console.log("User is not logged in to MetaMask");
+        if (err != null) console.error('An error occurred while detecting MetaMask login status');
+        else if (accounts.length === 0) console.log('User is not logged in to MetaMask');
         else {
           this.isMetaMaskLoggedIn = true;
-          console.log("User is logged in to MetaMask");
-          console.log(this.isMetaMaskLoggedIn);
         }
       });
     });

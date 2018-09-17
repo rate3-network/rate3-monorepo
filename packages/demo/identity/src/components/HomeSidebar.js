@@ -9,6 +9,7 @@ import { withRouter } from 'react-router-dom';
 
 import { sidebarShadow, homeSidebarBgColorUser, homeSidebarBgColorVerifier, homeTextGreyUser, homeTextWhiteVerifier } from './../constants/colors';
 import NetworkBox from './NetworkBox';
+import NetworkDropdown from './NetworkDropdown';
 import RoleSwitch from './RoleSwitch';
 import ProfilePic from './ProfilePic';
 import LanguageDropdown from './LanguageDropdown';
@@ -176,7 +177,10 @@ const Faq = withRouter(withStyles(styles)((props) => {
     </span>
   );
 }));
-
+const networks = [
+  { value: 'rinkeby', label: 'rinkeby test net' },
+  { value: 'ropsten', label: 'ropsten test net' },
+];
 const HomeSidebar = observer((props) => {
   const { classes } = props;
   return (
@@ -198,7 +202,8 @@ const HomeSidebar = observer((props) => {
         <TopText />
         <div className={classes.profilePic}><ProfilePic size={11} /></div>
         <div className={classes.userInfo}><UserInfo isUser={props.RootStore.commonStore.getIsUser()} /></div>
-        <div className={classes.networkBox}><NetworkBox /></div>
+        {/* <div className={classes.networkBox}><NetworkBox /></div> */}
+        <div className={classes.networkBox}><NetworkDropdown buttonText="text" currentNetwork="rinkeby" networks={networks} /></div>
         <div className={classes.roleSwitch}>
           <RoleSwitch
             leftText="USER"
