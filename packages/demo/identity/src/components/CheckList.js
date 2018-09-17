@@ -37,7 +37,6 @@ const styles = theme => ({
 class CheckList extends React.Component {
   render() {
     const { classes } = this.props;
-
     return (
       <div className={classes.root}>
         <List>

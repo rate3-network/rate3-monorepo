@@ -1,8 +1,7 @@
 /* Root store that contains all domain stores */
 import {
-  configure,
+  computed,
   observable,
-  action,
 } from 'mobx';
 
 import CommonStore from './CommonStore';
@@ -13,6 +12,13 @@ class RootStore {
   @observable commonStore = new CommonStore(this);
   @observable userStore = new UserStore(this);
   @observable verifierStore = new VerifierStore(this);
+
+  @computed get currentNetwork() {
+    if (this.commonStore.getIsUser()) {
+      return this.userStore.currentNetwork;
+    }
+    return 'verifier network selection';
+  }
 }
 
 const SingletonRootStore = new RootStore();

@@ -17,7 +17,12 @@ export const languageMenuSelectedText = '#FFFFFF';
 
 // Network Box
 export const networkBoxBg = '#EAF9FF';
-
+export const ropstenBg = '#fad0db';
+export const ropstenDot = '#e91550';
+export const rinkebyBg = '#faefd8';
+export const rinkebyDot = '#ebb33f';
+export const kovanBg = '#e8b9fd';
+export const kovanDot = '#690496';
 // Role Select
 export const toggleGradient = 'linear-gradient(to right, #4392F1 0%,#56CBF9 100%)';
 

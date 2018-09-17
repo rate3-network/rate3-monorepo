@@ -18,23 +18,16 @@ class CommonStore {
   @observable isVerifierOnboardDone: Boolean = false;
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
-  // @observable currentNetwork: String = 'Detecting Network...';
   // true: completed; false: not done;
-  @observable setupWalletProgress: Array = [true, true, true, true];
+  @observable setupWalletProgress: Array = [false, false, false, false];
   @observable shouldRenderOnboardTransition: Boolean = false;
 
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-    console.log('common store constructed');
   }
 
-  @computed get currentNetwork() {
-    if (this.isUser) {
-      return this.rootStore.userStore.currentNetwork;
-    }
-  }
 
   @computed get isWalletSetupDone() {
     return this.setupWalletProgress.every(progress => (progress)); // check if every step is done
@@ -84,9 +77,6 @@ class CommonStore {
     return this.currentLanguage;
   }
 
-  getCurrentNetwork() {
-    return this.currentNetwork;
-  }
 
   getSetupWalletProgress(id) {
     return this.setupWalletProgress[id];
@@ -152,6 +142,7 @@ class CommonStore {
 
   @action
   completeSetupWalletProgress(id) {
+    console.log('complete ' + id);
     this.setupWalletProgress[id] = true;
   }
 
@@ -169,10 +160,6 @@ class CommonStore {
     this.activeOnboardStep = 3;
   }
 
-  @action
-  setCurrentNetwork(network) {
-    this.currentNetwork = network;
-  }
 }
 
 export default CommonStore;

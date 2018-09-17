@@ -4,6 +4,7 @@ import {
   action,
   computed,
   runInAction,
+  when,
 } from 'mobx';
 import Web3 from 'web3';
 import Identity from '../utils/Identity';
@@ -35,17 +36,18 @@ class UserStore {
 
   // Wallet properties
   @observable currentNetwork: String = 'Detecting Network...';
+  @observable isMetaMaskLoggedIn: Boolean = false;
   @observable isOnFixedAccount: Boolean = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-    console.log('user store constructed');
   }
 
   @computed get isMetaMaskEnabled() {
     return (typeof window.web3 !== 'undefined');
   }
+
   @action
   initMetamaskNetwork() {
     if (this.isOnFixedAccount) {
@@ -58,21 +60,33 @@ class UserStore {
     }
     const web3 = new Web3(window.web3.currentProvider);
     window.web3 = web3;
+    web3.eth.getAccounts((err, accounts) => {
+      console.log('hello');
+      runInAction(() => {
+        if (err != null) console.error("An error occurred: "+err);
+        else if (accounts.length == 0) console.log("User is not logged in to MetaMask");
+        else {
+          this.isMetaMaskLoggedIn = true;
+          console.log("User is logged in to MetaMask");
+          console.log(this.isMetaMaskLoggedIn);
+        }
+      });
+    });
     web3.eth.net.getNetworkType((err, network) => {
       runInAction(() => {
         console.log(network);
         switch (network) {
           case 'ropsten':
-            this.currentNetwork = 'Ropsten Test Network';
+            this.currentNetwork = 'Ropsten';
             return;
           case 'rinkeby':
-            this.currentNetwork = 'Rinkeby Test Network';
+            this.currentNetwork = 'Rinkeby';
             return;
           case 'kovan':
-            this.currentNetwork = 'Kovan Test Network';
+            this.currentNetwork = 'Kovan';
             return;
           default:
-            this.currentNetwork = 'Please Use a Test Network';
+            this.currentNetwork = 'Others';
         }
       });
     });

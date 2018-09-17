@@ -63,16 +63,34 @@ class OnboardStepper extends React.Component {
 
   directToHome = () => {
     this.props.history.push(this.props.RootStore.commonStore.getIsUser() ? '/user' : 'verifier');
+    if (this.props.RootStore.commonStore.getIsUser()) {
+      this.props.RootStore.commonStore.finishUserOnboard();
+    } else {
+      this.props.RootStore.commonStore.finishVerifierOnboard();
+    }
   }
 
-  componentDidMoun() {
+  componentDidMount() {
     if (this.props.RootStore.commonStore.getIsUserOnboardDone() || this.props.RootStore.commonStore.getIsVerifierOnboardDone()) {
       console.log('should go to last step');
       this.props.RootStore.commonStore.goToLastOnboardStep();
     }
   }
   render() {
-    const tutorialSteps = [
+    let metaMaskInstalled = false;
+    let metaMaskLoggedIn = false;
+    let isOnTestNet = false;
+    let hasTestEther = false;
+    if (this.props.RootStore.commonStore.getIsUser()) {
+      this.props.RootStore.userStore.initMetamaskNetwork();
+      metaMaskInstalled = this.props.RootStore.userStore.isMetaMaskEnabled;
+      metaMaskLoggedIn = this.props.RootStore.userStore.isMetaMaskLoggedIn;
+      isOnTestNet = this.props.RootStore.userStore.currentNetwork === 'Ropsten' || this.props.RootStore.userStore.currentNetwork === 'Rinkeby' || this.props.RootStore.userStore.currentNetwork === 'Kovan';
+    }
+    if (metaMaskInstalled) this.props.RootStore.commonStore.completeSetupWalletProgress(0);
+    if (metaMaskLoggedIn) this.props.RootStore.commonStore.completeSetupWalletProgress(1);
+    if (isOnTestNet) this.props.RootStore.commonStore.completeSetupWalletProgress(2);
+    const onboardSteps = [
       {
         label: 'Cross-Chain Identity',
         text: 'A unified cross-chain identity framework for real-world entities to share identity information.',
@@ -93,7 +111,7 @@ class OnboardStepper extends React.Component {
     ];
     
     const { classes, theme } = this.props;
-    const maxSteps = tutorialSteps.length;
+    const maxSteps = onboardSteps.length;
     const activeOnboardStep = this.props.RootStore.commonStore.getActiveOnboardStep();
     
     let buttonText;
@@ -110,11 +128,6 @@ class OnboardStepper extends React.Component {
         break;
       case 3:
         buttonText = this.props.t('startDemo');
-        if (this.props.RootStore.commonStore.getIsUser()) {
-          this.props.RootStore.commonStore.finishUserOnboard();
-        } else {
-          this.props.RootStore.commonStore.finishVerifierOnboard();
-        }
         buttonAction = this.directToHome;
         break;
       default:
@@ -141,25 +154,25 @@ class OnboardStepper extends React.Component {
       <React.Fragment>
         {!this.props.RootStore.commonStore.getShouldRenderOnboardTransition() ?
           <TransitionWrapper direction="left">
-            <div className={classes.header}>{tutorialSteps[activeStep].label}</div>
+            <div className={classes.header}>{onboardSteps[activeStep].label}</div>
           </TransitionWrapper> :
-          <div className={classes.header}>{tutorialSteps[activeStep].label}</div>
+          <div className={classes.header}>{onboardSteps[activeStep].label}</div>
         }
         {!this.props.RootStore.commonStore.getShouldRenderOnboardTransition() ?
           <TransitionWrapper direction="left">
             <div className={classes.text}>
-              {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
-              {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
-              {(activeStep === 2 && !this.props.RootStore.commonStore.getIsUser()) && <p>Option for Verifier to choose between a <b>Fixed</b> or <b>Own</b> account</p>}
+              {onboardSteps[activeStep].text && onboardSteps[activeStep].text }
+              {onboardSteps[activeStep].list && <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} /> }
+              {(activeStep === 2 && this.props.RootStore.commonStore.getIsUser()) && <p>Option for User to choose between a <b>Fixed</b> or <b>Own</b> account</p>}
             </div>
           </TransitionWrapper> :
           <div className={classes.text}>
-            {tutorialSteps[activeStep].text && tutorialSteps[activeStep].text }
-            {tutorialSteps[activeStep].list && <CheckList list={tutorialSteps[activeStep].list} network={this.props.RootStore.commonStore.getCurrentNetwork()} /> }
-            {(activeStep === 2 && !this.props.RootStore.commonStore.getIsUser()) && <p>Option for Verifier to choose between a <b>Fixed</b> or <b>Own</b> account</p>}
+            {onboardSteps[activeStep].text && onboardSteps[activeStep].text }
+            {onboardSteps[activeStep].list && <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} /> }
+            {(activeStep === 2 && this.props.RootStore.commonStore.getIsUser()) && <p>Option for User to choose between a <b>Fixed</b> or <b>Own</b> account</p>}
           </div>
         }
-        {tutorialSteps[activeStep].hasRoleSelect &&
+        {onboardSteps[activeStep].hasRoleSelect &&
           <RoleSelect
             leftText="User"
             rightText="Verifier"
