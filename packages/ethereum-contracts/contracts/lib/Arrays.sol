@@ -51,12 +51,12 @@ library Arrays {
     function remove(uint256NoDup storage self, uint256 value)
         public
     {
-        require(!contains(self, value));
+        require(contains(self, value));
         uint256 idx = self.valueIdx[value];
         self.values[idx] = self.values[self.values.length - 1];
+        self.valueIdx[self.values[idx]] = idx;
         delete self.values[self.values.length - 1];
         self.values.length--;
-        self.valueIdx[self.values[idx]] = idx;
     }
 
     // solhint-disable-next-line contract-name-camelcase
@@ -103,11 +103,11 @@ library Arrays {
     function remove(bytes32NoDup storage self, bytes32 value)
         public
     {
-        require(!contains(self, value));
+        require(contains(self, value));
         uint256 idx = self.valueIdx[value];
         self.values[idx] = self.values[self.values.length - 1];
+        self.valueIdx[self.values[idx]] = idx;
         delete self.values[self.values.length - 1];
         self.values.length--;
-        self.valueIdx[self.values[idx]] = idx;
     }
 }
