@@ -26,6 +26,9 @@ const styles = theme => ({
     boxShadow: `${buttonShadow} !important`,
     color: 'white !important',
   },
+  root: {
+
+  },
 });
 
 const BlueButton = (props) => {
@@ -37,7 +40,10 @@ const BlueButton = (props) => {
       color="primary"
       disabled={props.disabled}
       className={classes.button}
-      classes={props.classes ? props.classes : { disabled: classes.disabled }}
+      classes={{
+        disabled: props.classes.disabled ? props.classes.disabled : classes.disabled,
+        root: props.classes.root ? props.classes.root : classes.button,
+      }}
       onClick={props.handleClick}
       style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.lineHeight }}
     >

@@ -36,6 +36,7 @@ class UserStore {
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
+
   getFormTextInputValue() {
     return this.formTextInputValue;
   }
@@ -130,5 +131,4 @@ class UserStore {
     this.formTextInputValue = v;
   }
 }
-
 export default UserStore;

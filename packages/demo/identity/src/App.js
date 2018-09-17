@@ -1,10 +1,10 @@
 import { I18nextProvider } from 'react-i18next';
 import React from 'react';
-import { Provider, observer } from 'mobx-react';
+import { Provider, observer, autorun } from 'mobx-react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-
+import Web3 from 'web3';
 import './App.css';
 
 import Onboard from './pages/Onboard';
@@ -66,6 +66,11 @@ class App extends React.Component {
     }
   }
   componentDidMount() {
+    // const web3 = new Web3(Web3.givenProvider);
+    // web3.eth.net.getNetworkType((err, network) => {
+    //   RootStore.commonStore.setCurrentNetwork(network);
+    //   console.log(RootStore.commonStore.getCurrentNetwork());
+    // });
   }
   render() {
     const { classes } = this.props;

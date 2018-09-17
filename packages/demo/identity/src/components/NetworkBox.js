@@ -25,17 +25,17 @@ const styles = theme => ({
     color: identityBlueLight,
   },
 });
-const NetworkBox = (props) => {
+const NetworkBox = inject('RootStore')(observer((props) => {
   const { classes } = props;
   return (
     <div className={classes.box}>
-      <Lens className={classes.icon} /> {props.RootStore.commonStore.getCurrentNetwork()}
+      <Lens className={classes.icon} /> {props.RootStore.commonStore.currentNetwork}
     </div>
   );
-};
+}));
 
 NetworkBox.propTypes = {
   
 };
 
-export default inject('RootStore')(observer((withStyles(styles)(NetworkBox))));
+export default withStyles(styles)(NetworkBox);
