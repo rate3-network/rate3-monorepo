@@ -10,7 +10,6 @@ const forge = require('node-forge');
 const fs = require('fs');
 const StellarSdk = require('stellar-sdk');
 const bip39 = require('bip39')
-const ethereum_wallet = require('ethereumjs-wallet')
 
 /**
  * This is a wrapper class over stellar and ethereum
@@ -54,30 +53,14 @@ class wallet_manager{
         console.log(this.seed)
     }
 
-    setWallet() {
-        var hdkey = require('ethereumjs-wallet/hdkey')
-        switch(this.network) {
-            case 'stellar': 
-                this.wallet = stellarHDWallet.fromMnemonic(this.seed)
-                break
-            case 'ethereum':
-                this.wallet = hdkey.fromMasterSeed(this.seed)
-                console.log(this.wallet)
-                console.log('---------------------')
-                for (var i = 0; i < 10; i++) {
-                    console.log(this.wallet.deriveChild(i).privateExtendedKey())
-                }
-                break;
-            default:
-                console.log('The seed is not specified or not valid.')
-        } 
+    setWallet(mnemonic) {
+        return stellarHDWallet.fromMnemonic(mnemonic)
     }
 
     //set
 }
 
-let acc = new wallet_manager('ethereum')
+let acc = new account('ethereum')
 acc.setSeed()
 acc.getSeed()
-acc.setWallet()
 

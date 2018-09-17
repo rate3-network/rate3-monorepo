@@ -2,7 +2,7 @@
   "name": "wallet",
   "version": "1.0.0",
   "description": "a wrapper over stellar, ethereum, and possibly others",
-  "main": "account.js",
+  "main": "wallet_manager.js",
   "scripts": {
     "test": "jest"
   },
