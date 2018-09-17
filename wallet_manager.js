@@ -93,6 +93,15 @@ class wallet_manager{
         return this.wallet
     }
 
+    /**
+     * If called without a parameter,
+     * If the wallet is also not set, generate a random accoun;
+     * If the wallet is set, generate the first (0) account in the wallet;
+     * If the parameter is a number,
+     * Generate the account in the wallet. Its index is the number.
+     * If the parameter is a string,
+     * Use it as the private/public key to generate the account
+     */
     getAccount () {
         if (arguments.length == 0){
             if(this.wallet == null) {
@@ -107,7 +116,7 @@ class wallet_manager{
                     default:
                         console.log('The network is not set.')
                 }
-            } else{
+            } else {
                 switch(this.network) {
                     case 'stellar':
                         this.account = this.wallet.getKeypair(0)
@@ -117,25 +126,55 @@ class wallet_manager{
                         return this.account
                     default:
                         console.log('The network is not set.')
+                        return null
                 }
                 //generate the 0th account in the wallet 
             }
-        } else if (arguments.length === 1 && Number.isInteger(arguments[1]) && arguments[1] > 1) {
+        } else if (arguments.length === 1 && Number.isInteger(arguments[0]) && arguments[0] > 1) {
+            //generate the account of the wallet at the specified index
             switch(this.network) {
                 case 'stellar':
-                    this.account = this.wallet.getKeypair(arguments[1])
+                    this.account = this.wallet.getKeypair(arguments[0])
                     return this.account
                     break
                 case 'ethereum':
-                    this.account = this.wallet.deriveChild(arguments[1])
+                    this.account = this.wallet.deriveChild(arguments[0])
                     return this.account
                     break
                 default:
                     console.log('The network has not been set.')
             }
-            //generate the account of the wallet at the specified index
+
+        } else if (arguments.length === 1 && typeof(arguments[0]) === 'string') {
+            try {
+                switch(this.network) {
+                    case 'stellar':
+                        if(arguments[0].charAt(0) == 'S') {
+                            // generate account from private key
+                            this.account = StellarSdk.Keypair.fromSecret(arguments[0])
+                            return this.account
+                        } else if (arguments[0].charAt(0) == 'G') {
+                            this.account = StellarSdk.Keypair.fromPublicKey(arguments[0]);
+                            return this.account
+                        } else {
+                            console.log('The starting char must be S (private key) or G (public key)')
+                            return null
+                        }
+                        case 'ethereum':
+                            this.account = web3.eth.accounts.privateKeyToAccount(arguments[0])
+                            return this.account
+                        default:
+                            console.log('The network has not been set.')
+                            return null
+                    }   
+                }
+                catch (err) {
+                    console.log('The input is not a valid private/public key.')
+                    return null
+                }  
         } else {
             console.log('The argument must be empty, or 0,1,2,...')
+            return null
         }
 
     }
@@ -143,8 +182,10 @@ class wallet_manager{
     //set
 }
 
-let acc = new wallet_manager('ethereum')
-acc.setSeed()
-acc.getSeed()
-acc.setWallet()
-console.log(acc.getAccount())
+module.exports = wallet_manager
+
+// let acc = new wallet_manager('ethereum')
+// acc.setSeed()
+// acc.getSeed()
+// acc.setWallet()
+// console.log(acc.getAccount())
