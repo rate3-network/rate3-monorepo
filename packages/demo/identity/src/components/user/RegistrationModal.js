@@ -7,7 +7,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import { observer, inject } from 'mobx-react';
-import { inputBorderGrey, identityBlue, homeBg, backdropColor, modalShadow, homeTextGreyVerifier, searchBarShadow } from '../../constants/colors';
+import { inputBorderGrey, identityBlue, homeBg, backdropColor, modalShadow, homeTextGreyVerifier, materialGrey, buttonTextGrey } from '../../constants/colors';
 import BlueButton from '../BlueButton';
 
 const styles = (theme) => {
@@ -27,7 +27,7 @@ const styles = (theme) => {
       height: '100%',
       backgroundColor: homeBg,
       boxShadow: modalShadow,
-      borderRadius: '0.5em 0.5em 0 0',
+      borderRadius: '0.5em',
     },
     content: {
       // color: 'white',
@@ -37,6 +37,10 @@ const styles = (theme) => {
       flexDirection: 'column',
       alignItems: 'center',
       padding: '2em 2em 2em 2em',
+      '& h1': {
+        color: identityBlue,
+        marginBlockEnd: '0.1em',
+      },
     },
     backdrop: {
       backgroundColor: backdropColor,
@@ -48,8 +52,6 @@ const styles = (theme) => {
       marginTop: 0,
       marginBottom: 0,
       padding: '0px 0px 0px 0px',
-      borderRadius: '0.5em',
-      border: `0.08em solid ${inputBorderGrey}`,
     },
     inputRoot: {
       fontSize: '1.1rem',
@@ -60,6 +62,12 @@ const styles = (theme) => {
       '&::placeholder': {
         fontWeight: 'bold',
       },
+      borderRadius: '0.5em',
+      border: `0.08em solid ${inputBorderGrey}`,
+      '&:focus': {
+        border: `0.1em solid ${identityBlue} !important`,
+        borderRadius: '0.5em',
+      },
     },
     selectContainer: {
       backgroundColor: 'white',
@@ -69,8 +77,15 @@ const styles = (theme) => {
       marginBottom: 0,
       padding: '0px 0px 0px 0px',
       borderRadius: '0.5em',
-      border: `0.08em solid ${inputBorderGrey}`,
-      borderStyle: 'solid',
+      border: '0em',
+      '&:focus': {
+        border: `0.1em solid ${identityBlue} !important`,
+        borderRadius: '0.7em',
+      },
+      '&:focus-within': {
+        border: `0.1em solid ${identityBlue} !important`,
+        borderRadius: '0.7em',
+      },
     },
     formControl: {
       width: '100%',
@@ -83,6 +98,7 @@ const styles = (theme) => {
     select: {
       fontSize: '1.1rem',
       fontWeight: '500',
+      height: '100%',
       '&:focus': {
         backgroundColor: 'transparent',
       },
@@ -90,6 +106,21 @@ const styles = (theme) => {
     buttonContainer: {
       width: '50%',
       height: '3.5em',
+      paddingTop: '3.5em',
+    },
+    buttonDisabled: {
+      backgroundColor: `${buttonTextGrey} !important`,
+    },
+    inputLabel: {
+      paddingTop: '1.5em',
+      width: '80%',
+      color: materialGrey,
+      fontWeight: 500,
+      '& p': {
+        alignSelf: 'flex-start',
+        marginBlockEnd: '0.5em',
+        paddingLeft: '0.2em',
+      },
     },
   });
 };
@@ -112,7 +143,8 @@ const RegistrationModal = inject('RootStore')(observer((props) => {
       <div className={classes.modal}>
         <div className={classes.paper}>
           <div className={classes.content}>
-            Registration
+            <h1>Registration</h1>
+            <div className={classes.inputLabel}><p>Address</p></div>
             <Input
               placeholder="Your Address"
               className={classes.textField}
@@ -122,6 +154,7 @@ const RegistrationModal = inject('RootStore')(observer((props) => {
               value={props.textInputValue}
               onChange={props.handleChange}
             />
+            <div className={classes.inputLabel}><p>Verifier</p></div>
             <div className={classes.selectContainer}>
               <FormControl className={classes.formControl}>
                 <Select
@@ -164,7 +197,14 @@ const RegistrationModal = inject('RootStore')(observer((props) => {
                 </Select>
               </FormControl>
             </div>
-            <div className={classes.buttonContainer}><BlueButton disabled={!props.textInputValue || props.verifier === '_placeholder_'} buttonText="Register" /></div>     
+            <div className={classes.buttonContainer}>
+              <BlueButton 
+                classes={{ 
+                  disabled: classes.buttonDisabled,
+                }}
+                disabled={!props.textInputValue || props.verifier === '_placeholder_'}
+                buttonText="Register" />
+            </div>
           </div>
         </div>
       </div>

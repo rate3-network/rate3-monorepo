@@ -14,8 +14,6 @@ import CheckList from './CheckList';
 
 const animationDuration = 250;
 
-
-
 const styles = theme => ({
   header: {
     fontWeight: '900',
