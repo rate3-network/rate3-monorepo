@@ -5,7 +5,7 @@ import { advanceBlock } from '../helpers/advanceToBlock';
 const TokenizeTemplateToken = artifacts.require("./tokenization/TokenizeTemplateToken.sol");
 const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
-const OperationsInteractor = artifacts.require("./tokenization/interactors/OperationsInteractor.sol");
+const TokenizeTemplateInteractor = artifacts.require("./tokenization/TokenizeTemplateInteractor.sol");
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -24,7 +24,7 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - mint request operations', function() {
         beforeEach(async function() {
             this.token = await TokenizeTemplateToken.new({ from: owner });
-            this.interactor = await OperationsInteractor.new(this.token.address, { from: owner });
+            this.interactor = await TokenizeTemplateInteractor.new(this.token.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
@@ -43,7 +43,7 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - mint approve operations', function() {
         beforeEach(async function() {
             this.token = await TokenizeTemplateToken.new({ from: owner });
-            this.interactor = await OperationsInteractor.new(this.token.address, { from: owner });
+            this.interactor = await TokenizeTemplateInteractor.new(this.token.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
@@ -81,7 +81,7 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - mint finalize operations', function() {
         beforeEach(async function() {
             this.token = await TokenizeTemplateToken.new({ from: owner });
-            this.interactor = await OperationsInteractor.new(this.token.address, { from: owner });
+            this.interactor = await TokenizeTemplateInteractor.new(this.token.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });

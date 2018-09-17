@@ -39,14 +39,6 @@ contract OperationsInteractor is BaseAdminInteractor {
     event MintOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
     event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
 
-    constructor(
-        TokenizeTemplateToken _token
-    ) 
-        public
-        BaseAdminInteractor(_token)
-    {
-    }
-
     function requestMint(uint256 _value) public {
         uint256 requestTimestamp = block.timestamp;
         MintRequestOperation memory mintRequestOperation = MintRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0);
