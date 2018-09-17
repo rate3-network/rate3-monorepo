@@ -26,25 +26,33 @@ class wallet_manager{
         } else {
             console.log('The name of the network must be stellar or ethereum.')
         }
-        this.accountSet = new Set()
     }
 
+    /**
+     * Change to a new network. If the input is invalid, it will not change. 
+     * @param {string} network - The name of the network, 'stellar' or 'ethereum'
+     */
     changeNetwork(network) {
         if (network == 'stellar') {
             this.network = 'stellar'
-            console.log('Current network is stellar.')
         } else if (network == 'ethereum') {
             this.network = 'ethereum'
-            console.log('Current network is ethereum.')
         } else {
             console.log('The name of the network must be stellar or ethereum.')
         }
     }
 
+    /**
+     * Return the name of the current network
+     */
     getNetwork() {
         return this.network
     }
 
+    /**
+     * If the argument is empty, generate random seed phrases
+     * If the argument is a string of seed phrases, use it.
+     */
     setSeed() {
         if (arguments.length == 0){
             //generate seed
@@ -56,11 +64,14 @@ class wallet_manager{
                     this.seed = bip39.generateMnemonic()
                     break
                 default:
+                    this.seed = null
                     console.log('The network has not been set.')
             }
-        } else if (arguments.length === 1 && typeof(arguments[1]) === 'string') {
-            if (bip39.validateMnemonic(arguments[1])) {
-                this.seed = arguments[1];
+            return this.seed
+        } else if (arguments.length === 1 && typeof(arguments[0]) === 'string') {
+            if (bip39.validateMnemonic(arguments[0])) {
+                this.seed = arguments[0];
+                return this.seed
             } else {
                 console.log('The input is not a set of valid seed phrases.')
             }
@@ -68,13 +79,19 @@ class wallet_manager{
         } else {
             console.log('The argument must be empty or valid seed phrases.')
         }
-
+        return this.seed
     }
 
+    /**
+     * Return the current seed
+     */
     getSeed() {
         return this.seed
     }
 
+    /**
+     * Generate the wallet based on the seed
+     */
     setWallet() {
         var hdkey = require('ethereumjs-wallet/hdkey')
         switch(this.network) {
@@ -85,10 +102,15 @@ class wallet_manager{
                 this.wallet = hdkey.fromMasterSeed(this.seed)
                 break;
             default:
+                this.wallet = null
                 console.log('The seed is not specified or not valid.')
         } 
+        return this.wallet
     }
 
+    /**
+     * Return the current wallet
+     */
     getWallet() {
         return this.wallet
     }
@@ -135,16 +157,15 @@ class wallet_manager{
             switch(this.network) {
                 case 'stellar':
                     this.account = this.wallet.getKeypair(arguments[0])
-                    return this.account
                     break
                 case 'ethereum':
                     this.account = this.wallet.deriveChild(arguments[0])
-                    return this.account
                     break
                 default:
+                    this.account = null
                     console.log('The network has not been set.')
             }
-
+            return this.account
         } else if (arguments.length === 1 && typeof(arguments[0]) === 'string') {
             try {
                 switch(this.network) {
@@ -152,26 +173,24 @@ class wallet_manager{
                         if(arguments[0].charAt(0) == 'S') {
                             // generate account from private key
                             this.account = StellarSdk.Keypair.fromSecret(arguments[0])
-                            return this.account
                         } else if (arguments[0].charAt(0) == 'G') {
                             this.account = StellarSdk.Keypair.fromPublicKey(arguments[0]);
-                            return this.account
                         } else {
+                            this.account = null
                             console.log('The starting char must be S (private key) or G (public key)')
-                            return null
                         }
-                        case 'ethereum':
-                            this.account = web3.eth.accounts.privateKeyToAccount(arguments[0])
-                            return this.account
-                        default:
-                            console.log('The network has not been set.')
-                            return null
-                    }   
+                    case 'ethereum':
+                        this.account = web3.eth.accounts.privateKeyToAccount(arguments[0])
+                    default:
+                        this.account = null
+                        console.log('The network has not been set.')
                 }
-                catch (err) {
-                    console.log('The input is not a valid private/public key.')
-                    return null
-                }  
+                return null   
+            }
+            catch (err) {
+                console.log('The input is not a valid private/public key.')
+                return null
+            }  
         } else {
             console.log('The argument must be empty, or 0,1,2,...')
             return null
