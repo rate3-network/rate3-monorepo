@@ -10,6 +10,7 @@ import FixedPanel from '../components/FixedPanel';
 import InstructionModal from '../components/InstructionModal';
 import UserInstructions from '../components/user/UserInstructions';
 import RegistrationModal from '../components/user/RegistrationModal';
+import SuccessModal from '../components/SuccessModal';
 
 const styles = (theme) => {
   return ({
@@ -40,6 +41,10 @@ class UserMain extends React.Component {
   }
   componentDidMount() {
   }
+  onRegisterSuccess() {
+    this.props.RootStore.userStore.closeRegisterModal();
+    this.props.RootStore.userStore.openRegisterSuccessModal();
+  }
   render() {
     const { classes, t, RootStore } = this.props;
     const { userStore } = RootStore;
@@ -67,8 +72,12 @@ class UserMain extends React.Component {
           handleChange={(e) => { userStore.setFormTextInputValue(e.target.value); }}
           verifierList={userStore.getVerifierList()}
           verifier={userStore.getVerifierSelected()}
+          onRegisterSuccess={this.onRegisterSuccess.bind(this)}
         />
-
+        <SuccessModal
+          open={userStore.getRegisterSuccessModalIsShowing()}
+          onClose={userStore.closeRegisterSuccessModal.bind(userStore)}
+        />
         <h1 className={classes.title}>My Identity</h1>
         <div className={classes.descriptionBox}>
           <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>

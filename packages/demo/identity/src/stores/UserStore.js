@@ -25,8 +25,8 @@ class UserStore {
   @observable identityAddresses: Array = [{ id: 1, status: PENDING_REVIEW, value: '001 Changi Road' }];
   @observable identitySocialIds: Array = [social1, social2, social3];
 
-  @observable registerModalIsShowing = true;
-
+  @observable registerModalIsShowing = false;
+  @observable registerSuccessModalIsShowing = false;
   // Modal Form
   @observable verifierList: Array = ['Pikachu', 'Eevee', 'Squirtle', 'Snorlax'];
   @observable verifierSelected: String = '_placeholder_';
@@ -66,6 +66,9 @@ class UserStore {
 
   getRegisterModalIsShowing() {
     return this.registerModalIsShowing;
+  }
+  getRegisterSuccessModalIsShowing() {
+    return this.registerSuccessModalIsShowing;
   }
   @action
   addToNames(name) {
@@ -109,6 +112,14 @@ class UserStore {
   @action
   closeRegisterModal() {
     this.registerModalIsShowing = false;
+  }
+  @action
+  openRegisterSuccessModal() {
+    this.registerSuccessModalIsShowing = true;
+  }
+  @action
+  closeRegisterSuccessModal() {
+    this.registerSuccessModalIsShowing = false;
   }
   @action
   setVerifierSelected(v) {

@@ -7,7 +7,7 @@ import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import { observer, inject } from 'mobx-react';
-import { inputBorderGrey, identityBlue, homeBg, backdropColor, modalShadow, homeTextGreyVerifier, materialGrey, buttonTextGrey } from '../../constants/colors';
+import { inputBorderGrey, buttonShadow, identityBlue, homeBg, backdropColor, modalShadow, homeTextGreyVerifier, materialGrey, buttonTextGrey } from '../../constants/colors';
 import BlueButton from '../BlueButton';
 
 const styles = (theme) => {
@@ -110,6 +110,7 @@ const styles = (theme) => {
     },
     buttonDisabled: {
       backgroundColor: `${buttonTextGrey} !important`,
+      boxShadow: `${buttonShadow} !important`,
     },
     inputLabel: {
       paddingTop: '1.5em',
@@ -198,12 +199,14 @@ const RegistrationModal = inject('RootStore')(observer((props) => {
               </FormControl>
             </div>
             <div className={classes.buttonContainer}>
-              <BlueButton 
-                classes={{ 
+              <BlueButton
+                classes={{
                   disabled: classes.buttonDisabled,
                 }}
                 disabled={!props.textInputValue || props.verifier === '_placeholder_'}
-                buttonText="Register" />
+                buttonText="Register"
+                handleClick={props.onRegisterSuccess}
+              />
             </div>
           </div>
         </div>

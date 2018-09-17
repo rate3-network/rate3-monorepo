@@ -37,10 +37,9 @@ const BlueButton = (props) => {
       color="primary"
       disabled={props.disabled}
       className={classes.button}
-      classes={{ disabled: classes.disabled }}
+      classes={props.classes ? props.classes : { disabled: classes.disabled }}
       onClick={props.handleClick}
       style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.lineHeight }}
-      {...props}
     >
       {props.buttonText}{props.buttonIcon &&
         <div className={classes.whitespaces}>  <img style={{ height: props.iconHeight }} src={props.buttonIcon} alt="ether" /></div>
