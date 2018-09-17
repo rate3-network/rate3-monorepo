@@ -4,9 +4,10 @@ import {
   action,
   computed,
   autorun,
+  when,
   runInAction,
 } from 'mobx';
-import Web3 from 'web3';
+
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
@@ -17,37 +18,23 @@ class CommonStore {
   @observable isVerifierOnboardDone: Boolean = false;
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
-  @observable currentNetwork: String = 'Detecting Network...';
+  // @observable currentNetwork: String = 'Detecting Network...';
   // true: completed; false: not done;
   @observable setupWalletProgress: Array = [true, true, true, true];
   @observable shouldRenderOnboardTransition: Boolean = false;
+
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
+    console.log('common store constructed');
   }
 
-  getMetamaskNetwork = autorun(() => {
-    const web3 = new Web3(Web3.givenProvider);
-    window.web3 = web3;
-    web3.eth.net.getNetworkType((err, network) => {
-      runInAction(() => {
-        switch (network) {
-          case 'ropsten':
-            this.currentNetwork = 'Ropsten Test Network';
-            return;
-          case 'rinkeby':
-            this.currentNetwork = 'Rinkeby Test Network';
-            return;
-          case 'kovan':
-            this.currentNetwork = 'Kovan Test Network';
-            return;
-          default:
-            this.currentNetwork = 'Please Use a Test Network';
-        }
-      });
-    });
-  });
+  @computed get currentNetwork() {
+    if (this.isUser) {
+      return this.rootStore.userStore.currentNetwork;
+    }
+  }
 
   @computed get isWalletSetupDone() {
     return this.setupWalletProgress.every(progress => (progress)); // check if every step is done

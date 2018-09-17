@@ -4,7 +4,6 @@ import { Provider, observer, autorun } from 'mobx-react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import Web3 from 'web3';
 import './App.css';
 
 import Onboard from './pages/Onboard';

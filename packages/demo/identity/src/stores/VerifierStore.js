@@ -27,6 +27,7 @@ class UserStore {
 
   constructor(rootStore) {
     this.rootStore = rootStore;
+    console.log('verifier store constructed');
   }
 
   getCurrentTab() {

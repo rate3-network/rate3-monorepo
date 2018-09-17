@@ -40,6 +40,7 @@ class UserMain extends React.Component {
     }
   }
   componentDidMount() {
+    this.props.RootStore.userStore.initMetamaskNetwork();
   }
   onRegisterSuccess() {
     this.props.RootStore.userStore.closeRegisterModal();

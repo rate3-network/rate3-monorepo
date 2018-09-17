@@ -3,8 +3,9 @@ import {
   observable,
   action,
   computed,
+  runInAction,
 } from 'mobx';
-
+import Web3 from 'web3';
 import Identity from '../utils/Identity';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
@@ -31,10 +32,50 @@ class UserStore {
   @observable verifierList: Array = ['Pikachu', 'Eevee', 'Squirtle', 'Snorlax'];
   @observable verifierSelected: String = '_placeholder_';
   @observable formTextInputValue: String = '';
+
+  // Wallet properties
+  @observable currentNetwork: String = 'Detecting Network...';
+  @observable isOnFixedAccount: Boolean = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
+    console.log('user store constructed');
+  }
+
+  @computed get isMetaMaskEnabled() {
+    return (typeof window.web3 !== 'undefined');
+  }
+  @action
+  initMetamaskNetwork() {
+    if (this.isOnFixedAccount) {
+      this.currentNetwork = 'user is on a fixed network';
+      return;
+    }
+    if (!this.isMetaMaskEnabled) {
+      this.currentNetwork = 'Please enable MetaMask browser extension';
+      return;
+    }
+    const web3 = new Web3(window.web3.currentProvider);
+    window.web3 = web3;
+    web3.eth.net.getNetworkType((err, network) => {
+      runInAction(() => {
+        console.log(network);
+        switch (network) {
+          case 'ropsten':
+            this.currentNetwork = 'Ropsten Test Network';
+            return;
+          case 'rinkeby':
+            this.currentNetwork = 'Rinkeby Test Network';
+            return;
+          case 'kovan':
+            this.currentNetwork = 'Kovan Test Network';
+            return;
+          default:
+            this.currentNetwork = 'Please Use a Test Network';
+        }
+      });
+    });
   }
 
   getFormTextInputValue() {
