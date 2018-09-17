@@ -35,7 +35,7 @@ contract RegistryInteractor is BaseAdminInteractor {
         );
     }
 
-    function whitelistFoTransfer(address _address, bool _bool) public onlyAdmin {
+    function whitelistForTransfer(address _address, bool _bool) public onlyAdmin {
         token.setKeyDataRecord(
             _address,
             WHITELISTED_FOR_TRANSFER,
