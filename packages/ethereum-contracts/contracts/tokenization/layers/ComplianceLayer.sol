@@ -68,4 +68,18 @@ contract ComplianceLayer is ModularToken {
     {
         super.transfer(_to, _value);
     }
+
+    function transferFrom(
+        address _from,
+        address _to,
+        uint256 _value
+    )
+        public
+        whitelistedForTransfer(_from, _to)
+        notBlacklisted(_from)
+        notBlacklisted(_to)
+        returns (bool)
+    {
+        super.transferFrom(_from, _to, _value);
+    }
 }
