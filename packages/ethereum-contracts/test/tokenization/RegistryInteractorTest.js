@@ -207,6 +207,9 @@ contract('RegistryInteractor Tests', function(accounts) {
             await this.interactor.approveMint(rest[1], 0, { from: admin1 });
             await this.interactor.finalizeMint(rest[1], 0, { from: admin2 });
 
+            this.token.approve(rest[0], new web3.BigNumber('10000e+18'), { from: rest[0] });
+            this.token.approve(rest[1], new web3.BigNumber('10000e+18'), { from: rest[1] });
+
             this.token.transferFrom(rest[0], rest[1], new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
             this.token.transferFrom(rest[1], rest[0], new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.rejected;
 
