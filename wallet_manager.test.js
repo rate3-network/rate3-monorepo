@@ -18,7 +18,7 @@ test('setSeedPhrases', () => {
     expect(wallet_manager.getSeed()).toBe(seed_phrases);
   });  
 
-test('setWallet', () => {
+test('setWalletETH', () => {
     let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
     const wallet_manager = new wallet_manager_module('ethereum')
     wallet_manager.setSeed(seed_phrases)
@@ -27,12 +27,37 @@ test('setWallet', () => {
     expect(wallet_manager.getWallet().privateExtendedKey()).toBe(privateExtendedKey);
   });   
 
-test('setWallet', () => {
+test('setWalletStellar', () => {
+    let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+    const wallet_manager = new wallet_manager_module('stellar')
+    wallet_manager.setSeed(seed_phrases)
+    wallet_manager.setWallet()
+    let seedHex = '00f014c45065a22e90993dec1a6ea5ec0d71aa7b556f72649814a7169861a0d4adc745570dafac9d925df4007d113ad43372886dce61ec62644441b7a072f3e2'
+    expect(wallet_manager.getWallet().seedHex).toBe(seedHex);
+  }); 
+
+
+test('setAccountETH', () => {
+    var Web3 = require('web3');
+    var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
     let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
     const wallet_manager = new wallet_manager_module('ethereum')
     wallet_manager.setSeed(seed_phrases)
     wallet_manager.setWallet()
-    let privateKey = 'd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
-    expect(wallet_manager.getAccount()._hdkey._privateKey.toString('hex')).toBe(privateKey);
+    let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
+    let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
+    let account = wallet_manager.getAccount()
+    expect(account.address).toBe(expectedAddress);
+    expect(account.privateKey).toBe(expectedPrivateKey)
   });  
 
+test('setAccountStellar', () => {
+    let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+    const wallet_manager = new wallet_manager_module('stellar')
+    wallet_manager.setSeed(seed_phrases)
+    wallet_manager.setWallet()
+    let expectedPrivateKey = 'SDJNCBWIH4GU377ICXYL7NEI5Z2GWOR2Y3PAQVI2HJHJ7MSB42PP4KVW'
+    let expectedPublicKey = 'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'
+    expect(wallet_manager.getAccount().secret()).toBe(expectedPrivateKey);
+    expect(wallet_manager.getAccount().publicKey()).toBe(expectedPublicKey);
+  });  

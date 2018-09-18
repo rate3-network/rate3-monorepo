@@ -116,8 +116,8 @@ class wallet_manager{
     }
 
     /**
-     * If called without a parameter,
-     * If the wallet is also not set, generate a random accoun;
+     * Before generating accounts, the seed and wallet MUST be there.
+     * i.e., random account generatation is NOT allowed. 
      * If the wallet is set, generate the first (0) account in the wallet;
      * If the parameter is a number,
      * Generate the account in the wallet. Its index is the number.
@@ -127,24 +127,16 @@ class wallet_manager{
     getAccount () {
         if (arguments.length == 0){
             if(this.wallet == null) {
-                //generate a standalone account
-                switch(this.network) {
-                    case 'stellar':
-                        this.account = StellarSdk.Keypair.random()
-                        return this.account
-                    case 'ethereum':
-                        this.account = web3.eth.accounts.create();
-                        return this.account
-                    default:
-                        console.log('The network is not set.')
-                }
+                console.log('The wallet is not initialized.')
+                return null
             } else {
                 switch(this.network) {
                     case 'stellar':
                         this.account = this.wallet.getKeypair(0)
                         return this.account
                     case 'ethereum':
-                        this.account = this.wallet.deriveChild(0)
+                        let privateKey = '0x' + this.wallet.deriveChild(0).getWallet()._privKey.toString('hex')
+                        this.account = web3.eth.accounts.privateKeyToAccount(privateKey)
                         return this.account
                     default:
                         console.log('The network is not set.')
@@ -159,7 +151,8 @@ class wallet_manager{
                     this.account = this.wallet.getKeypair(arguments[0])
                     break
                 case 'ethereum':
-                    this.account = this.wallet.deriveChild(arguments[0])
+                    let privateKey = '0x' + this.wallet.deriveChild(arguments[0]).getWallet()._privKey.toString('hex')
+                    this.account = web3.eth.accounts.privateKeyToAccount(privateKey)
                     break
                 default:
                     this.account = null
@@ -173,11 +166,9 @@ class wallet_manager{
                         if(arguments[0].charAt(0) == 'S') {
                             // generate account from private key
                             this.account = StellarSdk.Keypair.fromSecret(arguments[0])
-                        } else if (arguments[0].charAt(0) == 'G') {
-                            this.account = StellarSdk.Keypair.fromPublicKey(arguments[0]);
                         } else {
                             this.account = null
-                            console.log('The starting char must be S (private key) or G (public key)')
+                            console.log('The starting char must be S (private key)')
                         }
                     case 'ethereum':
                         this.account = web3.eth.accounts.privateKeyToAccount(arguments[0])
