@@ -5,17 +5,21 @@ https://www.npmjs.com/package/node-forge for encryption, decryption
 https://www.stellar.org/developers/guides/ for uploading accounts to testnet, transaction
 */
 
-const stellarHDWallet = require('stellar-hd-wallet') 
+const bip39 = require('bip39')
 const forge = require('node-forge');
 const fs = require('fs');
+const stellarHDWallet = require('stellar-hd-wallet') 
 const StellarSdk = require('stellar-sdk');
-const bip39 = require('bip39')
 const ethereum_wallet = require('ethereumjs-wallet')
+const ethUtil = require('ethereumjs-util');
+const tx = require('ethereumjs-tx');
 var Web3 = require('web3');
 var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 
+let account = require('./account')
+
 /**
- * This is a wrapper class over stellar and ethereum
+ * This is a wrapper class over stellar and ethereum wallets
  */
 class wallet_manager{
     constructor(network) {
@@ -50,7 +54,8 @@ class wallet_manager{
     }
 
     /**
-     * If the argument is empty, generate random seed phrases
+     * If the argument is empty, generate random seed phrases (12 words).
+     * If the arugment is a number, generate that number of seed phrases.
      * If the argument is a string of seed phrases, use it.
      */
     setSeed() {
@@ -152,11 +157,13 @@ class wallet_manager{
             } else {
                 switch(this.network) {
                     case 'stellar':
-                        this.account = this.wallet.getKeypair(0)
+                        this.account = new account(this.network)
+                        this.account.setAccount(this.wallet.getKeypair(0))
                         return this.account
                     case 'ethereum':
                         let privateKey = '0x' + this.wallet.deriveChild(0).getWallet()._privKey.toString('hex')
-                        this.account = web3.eth.accounts.privateKeyToAccount(privateKey)
+                        this.account = new account(this.network)
+                        this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey))
                         return this.account
                     default:
                         console.log('The network is not set.')
@@ -168,11 +175,13 @@ class wallet_manager{
             //generate the account of the wallet at the specified index
             switch(this.network) {
                 case 'stellar':
-                    this.account = this.wallet.getKeypair(arguments[0])
+                    this.account = new account(this.network)
+                    this.account.setAccount(this.wallet.getKeypair(arguments[0]))
                     break
                 case 'ethereum':
                     let privateKey = '0x' + this.wallet.deriveChild(arguments[0]).getWallet()._privKey.toString('hex')
-                    this.account = web3.eth.accounts.privateKeyToAccount(privateKey)
+                    this.account = new account(this.network)
+                    this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey))
                     break
                 default:
                     this.account = null
@@ -185,13 +194,15 @@ class wallet_manager{
                     case 'stellar':
                         if(arguments[0].charAt(0) == 'S') {
                             // generate account from private key
-                            this.account = StellarSdk.Keypair.fromSecret(arguments[0])
+                            this.account = new account(this.network)
+                            this.account.setAccount(StellarSdk.Keypair.fromSecret(arguments[0]))
                         } else {
                             this.account = null
                             console.log('The starting char must be S (private key)')
                         }
                     case 'ethereum':
-                        this.account = web3.eth.accounts.privateKeyToAccount(arguments[0])
+                        this.account = new account(this.network)
+                        this.account.setAccount(web3.eth.accounts.privateKeyToAccount(arguments[0]))
                     default:
                         this.account = null
                         console.log('The network has not been set.')
@@ -213,9 +224,3 @@ class wallet_manager{
 }
 
 module.exports = wallet_manager
-
-// let acc = new wallet_manager('ethereum')
-// acc.setSeed()
-// acc.getSeed()
-// acc.setWallet()
-// console.log(acc.getAccount())

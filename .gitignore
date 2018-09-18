@@ -3,6 +3,7 @@ node_modules/
 
 # jsdoc files
 out/
+wallet_back_up/
 
 # encrypted data
 *.enc

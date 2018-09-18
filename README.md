@@ -14,7 +14,7 @@ Run `npm test` to run all the tests.
 
 ## Documentation
 Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.
-To generate documentation, run `jsdoc -d=your_path wallet.js` or `jsdoc -d=your_path ethereum_wallet.js`.
+To generate documentation, run `jsdoc -d=your_path wallet_manager.js`.
 ## Built With
 * [stellar-hd-wallet](https://www.npmjs.com/package/stellar-hd-wallet) - Key derivation for Stellar (SEP-0005)
 * [forge](https://www.npmjs.com/package/node-forge) - A native implementation of TLS (and various other cryptographic tools)
