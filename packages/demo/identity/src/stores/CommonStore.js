@@ -177,6 +177,12 @@ class CommonStore {
   }
 
   @action
+  completeSetupWallet() {
+    console.error('comletinggggg');
+    this.setupWalletProgress = [true, true, true, true];
+  }
+
+  @action
   initCommonNetwork() {
     console.log('init common network');
     const web3 = new Web3(ropsten.endpoint);

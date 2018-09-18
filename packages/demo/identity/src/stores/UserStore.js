@@ -48,19 +48,14 @@ class UserStore {
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
-
-  @computed get isMetaMaskEnabled() {
-    console.log('isMetaMaskEnabled from userstore ');
-    if (typeof window.web3 !== 'undefined' && (
+  web3HasMetamaskProvider() {
+    return (
       (window.web3.givenProvider !== null && typeof window.web3.givenProvider !== 'undefined' && window.web3.givenProvider.isMetaMask === true) ||
-      (window.web3.currentProvider !== null && typeof window.web3.currentProvider !== 'undefined' && window.web3.currentProvider.isMetaMask === true))
-    ) {
-      console.log('passed');
-      return true;
-    }
-    console.log('failed');
-    return false;
-    // return (typeof window.web3 !== 'undefined' && window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true);
+      (window.web3.currentProvider !== null && typeof window.web3.currentProvider !== 'undefined' && window.web3.currentProvider.isMetaMask === true));
+  }
+  isMetaMaskEnabled() {
+    console.log('isMetaMaskEnabled from userstore ');
+    return (typeof window.web3 !== 'undefined' && this.web3HasMetamaskProvider());
   }
 
   @action
@@ -77,7 +72,7 @@ class UserStore {
       console.log('quit init metamask coz on fixed account');
       return;
     }
-    if (!this.isMetaMaskEnabled) {
+    if (!this.isMetaMaskEnabled()) {
       this.currentNetwork = 'Please enable MetaMask browser extension';
       return;
     }
@@ -112,15 +107,15 @@ class UserStore {
           case 'ropsten':
             this.currentNetwork = 'Ropsten';
             this.rootStore.commonStore.completeSetupWalletProgress(2);
-            return;
+            break;
           case 'rinkeby':
             this.currentNetwork = 'Rinkeby';
             this.rootStore.commonStore.completeSetupWalletProgress(2);
-            return;
+            break;
           case 'kovan':
             this.currentNetwork = 'Kovan';
             this.rootStore.commonStore.completeSetupWalletProgress(2);
-            return;
+            break;
           default:
             this.currentNetwork = 'Others';
         }
@@ -128,26 +123,18 @@ class UserStore {
     } catch (err) {
       console.error('An error occurred while detecting MetaMask network type');
     }
-    const account = this.metamaskAccount;
-    this.rootStore.commonStore.completeSetupWalletProgress(3);
-    // web3.eth.getBalance(account).then((b) => {
-    //   console.log(b);
-    //   this.rootStore.commonStore.completeSetupWalletProgress(2);
-    //   // runInAction(() => {
-    //   //   this.metamaskBalance = b;
-    //   //   this.rootStore.commonStore.completeSetupWalletProgress(3);
-    //   // });
-    // });
-    // try {
-    //   // const account = this.metamaskAccounts;
-    //   // const balance = await web3.eth.getBalance(this.metamaskAccounts);
-    //   // console.log(account);
-    //   runInAction(() => {
-    //     this.rootStore.commonStore.completeSetupWalletProgress(3);
-    //   });
-    // } catch (err) {
-    //   console.error('An error occurred while checking balance');
-    // }
+
+    try {
+      const account = this.metamaskAccount;
+      const balance = await web3.eth.getBalance(account);
+      runInAction(() => {
+        this.metamaskBalance = balance;
+        console.log(balance);
+        this.rootStore.commonStore.completeSetupWalletProgress(3);
+      });
+    } catch (err) {
+      console.error('An error occurred while checking balance');
+    }
   }
 
   getFormTextInputValue() {

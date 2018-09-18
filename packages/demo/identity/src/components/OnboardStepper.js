@@ -137,6 +137,7 @@ class OnboardStepper extends React.Component {
         </Slide>
       );
     };
+
     const finalButtonDisabled = (activeOnboardStep === 3 && !this.props.RootStore.commonStore.isWalletSetupDone);
     const activeStep = activeOnboardStep - 1;
     return (

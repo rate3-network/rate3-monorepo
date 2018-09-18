@@ -21,15 +21,15 @@ const styles = (theme) => {
       alignItems: 'center',
       marginTop: '0.5em',
     },
-    ropsten: {
-      backgroundColor: `${ropstenBg} !important`,
-    },
-    rinkeby: {
-      backgroundColor: `${rinkebyBg} !important`,
-    },
-    kovan: {
-      backgroundColor: `${kovanBg} !important`,
-    },
+    // ropsten: {
+    //   borderColor: `${ropstenBg} !important`,
+    // },
+    // rinkeby: {
+    //   borderColor: `${rinkebyBg} !important`,
+    // },
+    // kovan: {
+    //   borderColor: `${kovanBg} !important`,
+    // },
     ropstenDot: {
       color: `${ropstenDot} !important`,
     },
@@ -52,7 +52,6 @@ const styles = (theme) => {
 @inject('RootStore') @observer
 class NetworkBox extends React.Component {
   componentDidMount() {
-    this.props.RootStore.userStore.initMetamaskNetwork();
   }
   render() {
     const { classes } = this.props;
