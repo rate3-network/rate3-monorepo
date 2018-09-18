@@ -14,7 +14,7 @@ export const ropsten = {
   id: 3,
   name: 'Ropsten',
   // endpoint: 'https://ropsten.infura.io',
-  endpoint: 'HTTP://127.0.0.1:7545',
+  endpoint: 'HTTP://127.0.0.1:8545',
   faucet: 'http://faucet.ropsten.be:3001',
   token: '0x1379d4b96c7a6e33ba6d3e69881849bb4da0ec6a',
   operations: '0x1825576515f60ad4e9177417ad6d2118491f081c',

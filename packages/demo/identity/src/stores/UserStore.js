@@ -37,9 +37,12 @@ class UserStore {
   // Wallet properties
   @observable currentNetwork: String = 'Detecting Network...';
   @observable isMetaMaskLoggedIn: Boolean = false;
-  @observable isOnFixedAccount: Boolean = true; // if on fixed account, use network settings from commonstore
+  @observable isOnFixedAccount: Boolean = false; // if on fixed account, use network settings from commonstore
 
   @observable fixedUserAcctNetwork: String = 'Ropsten';
+
+  @observable metamaskAccount: String = '';
+  @observable metamaskBalance: String = '';
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -47,7 +50,17 @@ class UserStore {
   }
 
   @computed get isMetaMaskEnabled() {
-    return (typeof window.web3 !== 'undefined');
+    console.log('isMetaMaskEnabled from userstore ');
+    if (typeof window.web3 !== 'undefined' && (
+      (window.web3.givenProvider !== null && typeof window.web3.givenProvider !== 'undefined' && window.web3.givenProvider.isMetaMask === true) ||
+      (window.web3.currentProvider !== null && typeof window.web3.currentProvider !== 'undefined' && window.web3.currentProvider.isMetaMask === true))
+    ) {
+      console.log('passed');
+      return true;
+    }
+    console.log('failed');
+    return false;
+    // return (typeof window.web3 !== 'undefined' && window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true);
   }
 
   @action
@@ -68,9 +81,16 @@ class UserStore {
       this.currentNetwork = 'Please enable MetaMask browser extension';
       return;
     }
+
     this.rootStore.commonStore.completeSetupWalletProgress(0);
 
-    const web3 = new Web3(window.web3.currentProvider);
+    let web3;
+    if (window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true) {
+      console.log('from user store: is meta mask');
+      web3 = new Web3(window.web3.currentProvider);
+    } else {
+      web3 = new Web3(this.rootStore.browserProvider);
+    }
     window.web3 = web3;
     try {
       const accounts = await web3.eth.getAccounts();
@@ -78,6 +98,7 @@ class UserStore {
       if (accounts.length > 0) {
         runInAction(() => {
           this.isMetaMaskLoggedIn = true;
+          this.metamaskAccount = accounts[0];
           this.rootStore.commonStore.completeSetupWalletProgress(1);
         });
       }
@@ -107,6 +128,26 @@ class UserStore {
     } catch (err) {
       console.error('An error occurred while detecting MetaMask network type');
     }
+    const account = this.metamaskAccount;
+    this.rootStore.commonStore.completeSetupWalletProgress(3);
+    // web3.eth.getBalance(account).then((b) => {
+    //   console.log(b);
+    //   this.rootStore.commonStore.completeSetupWalletProgress(2);
+    //   // runInAction(() => {
+    //   //   this.metamaskBalance = b;
+    //   //   this.rootStore.commonStore.completeSetupWalletProgress(3);
+    //   // });
+    // });
+    // try {
+    //   // const account = this.metamaskAccounts;
+    //   // const balance = await web3.eth.getBalance(this.metamaskAccounts);
+    //   // console.log(account);
+    //   runInAction(() => {
+    //     this.rootStore.commonStore.completeSetupWalletProgress(3);
+    //   });
+    // } catch (err) {
+    //   console.error('An error occurred while checking balance');
+    // }
   }
 
   getFormTextInputValue() {

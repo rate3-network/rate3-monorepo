@@ -2,25 +2,59 @@
 import {
   computed,
   observable,
-  autorun,
+  action,
 } from 'mobx';
 
 import CommonStore from './CommonStore';
 import UserStore from './UserStore';
 import VerifierStore from './VerifierStore';
+import { userPrivKey, verifierPrivKey } from '../constants/defaults';
 
 class RootStore {
   @observable commonStore = new CommonStore(this);
   @observable userStore = new UserStore(this);
   @observable verifierStore = new VerifierStore(this);
 
+  @observable browserProvider = null;
+
   @computed get currentNetwork() {
     if (this.commonStore.getIsUser()) {
-      return this.userStore.currentNetwork;
+      if (!this.userStore.isOnFixedAccount) return this.userStore.currentNetwork;
+      return this.commonStore.commonNetwork;
     }
-    return 'verifier network selection';
+    return this.commonStore.commonNetwork;
   }
 
+  @action
+  initNetwork() {
+    // for user using own account, must detect metamask first
+    if (this.commonStore.getIsUser()) {
+      if (typeof window.web3 === 'undefined') {
+        console.error('no web3 is installed or metamask not enabled');
+        return;
+      }
+    }
+    if (typeof window.web3 !== 'undefined' && window.web3.currentProvider.isMetaMask === true) {
+      console.log('store metamask in root store');
+      this.browserProvider = window.web3.currentProvider;
+    }
+    if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
+      console.log('init metamask from root store');
+      this.userStore.initMetamaskNetwork();
+      return;
+    }
+    if (this.commonStore.getIsUser() && this.userStore.isOnFixedAccount) {
+      this.commonStore.initCommonNetwork();
+      window.web3.eth.accounts.wallet.add(userPrivKey);
+      console.log('init user fixed network from root store');
+      return;
+    }
+    if (!this.commonStore.getIsUser()) {
+      this.commonStore.initCommonNetwork();
+      window.web3.eth.accounts.wallet.add(verifierPrivKey);
+      console.log('init verifier fixed network from root store');
+    }
+  }
 }
 
 const SingletonRootStore = new RootStore();

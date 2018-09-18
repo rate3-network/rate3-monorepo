@@ -66,15 +66,7 @@ class App extends React.Component {
     }
   }
   componentDidMount() {
-    // const web3 = new Web3(Web3.givenProvider);
-    // web3.eth.net.getNetworkType((err, network) => {
-    //   RootStore.commonStore.setCurrentNetwork(network);
-    //   console.log(RootStore.commonStore.getCurrentNetwork());
-    // });
-    if (!RootStore.commonStore.getIsUser()) { RootStore.commonStore.initCommonNetwork(); window.web3ForCommonNetwork.eth.accounts.wallet.add(verifierPrivKey); }
-
-    if (RootStore.commonStore.getIsUser() && RootStore.userStore.isOnFixedAccount) { RootStore.commonStore.initCommonNetwork(); window.web3ForCommonNetwork.eth.accounts.wallet.add(userPrivKey); }
-    if (RootStore.commonStore.getIsUser() && !RootStore.userStore.isOnFixedAccount) RootStore.userStore.initMetamaskNetwork();
+    RootStore.initNetwork();
   }
   render() {
     const { classes } = this.props;

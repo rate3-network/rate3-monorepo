@@ -41,7 +41,7 @@ const styles = (theme) => {
   });
 };
 
-@inject('RootStore') @observer 
+@inject('RootStore') @observer
 class LanguageDropDown extends React.Component {
   componentDidMount() {
     const savedLang = window.localStorage['default-language'];
@@ -110,5 +110,7 @@ class LanguageDropDown extends React.Component {
 LanguageDropDown.propTypes = {
   classes: PropTypes.object.isRequired,
 };
-
+LanguageDropDown.wrappedComponent.propTypes = {
+  RootStore: PropTypes.object.isRequired,
+};
 export default withStyles(styles, { withTheme: true })(LanguageDropDown);

@@ -167,7 +167,7 @@ class CommonStore {
   @action
   changeCommonNetwork(network) {
     this.commonNetwork = network;
-    window.web3ForCommonNetwork.setProvider(contractAddresses[network].endpoint);
+    window.web3.setProvider(contractAddresses[network].endpoint);
     window.localStorage.setItem('commonNetwork', this.commonNetwork);
   }
 
@@ -179,9 +179,9 @@ class CommonStore {
   @action
   initCommonNetwork() {
     console.log('init common network');
-    const web3ForCommonNetwork = new Web3(ropsten.endpoint);
-    window.web3ForCommonNetwork = web3ForCommonNetwork;
-    console.log(`web3js version: ${window.web3ForCommonNetwork.version}`);
+    const web3 = new Web3(ropsten.endpoint);
+    window.web3 = web3;
+    console.log(`web3js version: ${window.web3.version}`);
     if (typeof localStorage.commonNetwork !== 'undefined') {
       this.changeCommonNetwork(localStorage.commonNetwork);
     } else {

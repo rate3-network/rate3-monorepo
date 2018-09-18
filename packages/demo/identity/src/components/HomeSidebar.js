@@ -213,6 +213,7 @@ const HomeSidebar = observer((props) => {
             isUser={props.RootStore.commonStore.getIsUser()}
             onClick={() => {
               props.RootStore.commonStore.toggleRole(); // Change role when click on switch
+              props.RootStore.initNetwork();
               props.history.push(props.RootStore.commonStore.getIsUser() ? '/user' : '/verifier'); // Change routes when click on switch
               }
             }

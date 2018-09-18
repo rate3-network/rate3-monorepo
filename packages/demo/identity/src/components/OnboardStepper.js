@@ -166,8 +166,8 @@ class OnboardStepper extends React.Component {
             leftText="User"
             rightText="Verifier"
             isUser={this.props.RootStore.commonStore.getIsUser()}
-            handleUserClick={this.props.RootStore.commonStore.changeToUser.bind(this.props.RootStore.commonStore)}
-            handleVerifierClick={this.props.RootStore.commonStore.changeToVerifier.bind(this.props.RootStore.commonStore)}
+            handleUserClick={() => { this.props.RootStore.commonStore.changeToUser(); this.props.RootStore.initNetwork(); }}
+            handleVerifierClick={() => { this.props.RootStore.commonStore.changeToVerifier(); this.props.RootStore.initNetwork(); }}
           />
         }
         <div className={classes.buttonContainer}>

@@ -60,10 +60,7 @@ const styles = theme => ({
 });
 const Onboard = inject('RootStore')(observer((props) => {
   const { classes } = props;
-  const activeOnboardStep = props.RootStore.commonStore.getActiveOnboardStep();
-  // if (activeOnboardStep > 3) {
-  //   props.history.push('/');
-  // }
+
   return (
     <div className={classes.root}>
       <OnboardSideBar imageSrc={onboardImgs[props.RootStore.commonStore.getActiveOnboardStep() - 1]} />
@@ -85,5 +82,7 @@ Onboard.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-
+Onboard.wrappedComponent.propTypes = {
+  RootStore: PropTypes.object.isRequired,
+};
 export default withRouter(withStyles(styles)(Onboard));
