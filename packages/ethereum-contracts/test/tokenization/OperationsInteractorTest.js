@@ -46,6 +46,24 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
         });
+
+        it('anyone can submit as many mint requests', async function() {
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.fulfilled;
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+        });
+
+        it('mint requests are indexed', async function() {
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.fulfilled;
+            await this.interactor.approveMint(rest[0], 1, { from: admin1 }).should.be.fulfilled;
+            await this.interactor.approveMint(rest[0], 2, { from: admin1 }).should.be.fulfilled;
+            await this.interactor.approveMint(rest[0], new web3.BigNumber('3'), { from: admin1 }).should.be.fulfilled;
+        });
     });
 
     describe('Test - mint approve operations', function() {
