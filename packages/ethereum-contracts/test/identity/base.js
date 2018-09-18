@@ -43,10 +43,12 @@ export const assertKeyCount = async (identity, purpose, count) => {
     assert.equal(keys.length, count);
 };
 
+export const addrToBytes32 = addr => `0x${addr.substring(2).padStart(64, '0')}`;
+
 export class Account {
     constructor(addr) {
         this.addr = addr;
-        this.key = `0x${addr.substring(2).padStart(64, '0')}`;
+        this.key = addrToBytes32(addr);
     }
 }
 
