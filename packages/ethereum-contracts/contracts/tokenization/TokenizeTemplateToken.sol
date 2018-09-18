@@ -1,9 +1,10 @@
 pragma solidity ^0.4.24;
 
 import "../lib/math/SafeMath.sol";
+import "./layers/ComplianceLayer.sol";
 import "./modules/ModularToken.sol";
 
-contract TokenizeTemplateToken is ModularToken {
+contract TokenizeTemplateToken is ComplianceLayer {
     using SafeMath for uint256;
 
     string public name = "Tokenized Template Token";
