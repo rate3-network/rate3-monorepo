@@ -17,7 +17,10 @@ var Web3 = require('web3');
 var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 
 /**
- * This is a wrapper class over stellar and ethereum accounts
+ * This is a wrapper class over stellar and ethereum accounts.
+ * For those fields/methods that are already there when the original
+ * account is passed in, this class simply extracts them;
+ * Otherwise, the fields/methods are created and saved in this class. 
  */
 class account{
     constructor(network) {
@@ -30,8 +33,31 @@ class account{
         }
     }
 
+    /**
+     * 
+     * @param {object} account - A stellar or ethereum account
+     */
     setAccount (account) {
-        this.account = account
+        if (this.network == null) {
+            console.log('The network of this account must be set first.')
+            return null
+        } else {
+            this.account = account
+            return this.account
+        }
+    }
+
+    /**
+     * Return the network where the account is.
+     */
+    getNetwork() {
+        return this.network
+    }
+
+    /**
+     * Get the account that is passed into this wrapper class.
+     */
+    getOriginalAccount() {
         return this.account
     }
 
@@ -60,6 +86,7 @@ class account{
                 return null //If the network is not set correctly
         }
     }
+
 }
 
 module.exports = account

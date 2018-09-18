@@ -220,6 +220,98 @@ class wallet_manager{
 
     }
 
+    /**
+     * @param {object} account - The account to be encrypted. Only the private key will be encrypted.
+     * @param {string} password - The password string used to encrypt the private key
+     * If on stellar, return the encrypted private key;
+     * If on ethereum, return the keystore V3 JSON.
+     * Plus all the auxiliary fields
+     */
+    encrypt(account, password) {
+        switch(account.network) {
+            case 'stellar':
+                // AES key and IV sizes
+                const keySize = 24;
+                const ivSize = 8;
+            
+                // get derived bytes
+                const salt = forge.random.getBytesSync(8);
+                const derivedBytes = forge.pbe.opensslDeriveBytes(
+                password, salt, keySize + ivSize/*, md*/);
+                const buffer = forge.util.createBuffer(derivedBytes);
+                const key = buffer.getBytes(keySize);
+                const iv = buffer.getBytes(ivSize);
+            
+                let cipher = forge.cipher.createCipher('AES-CBC', key);
+                cipher.start({iv: iv});
+                cipher.update(forge.util.createBuffer(account.getPrivateKey(), 'binary'));
+                cipher.finish();
+            
+                let output = forge.util.createBuffer();
+            
+                // if using a salt, prepend this to the output:
+                if(salt !== null) {
+                output.putBytes('Salted__'); // (add to match openssl tool output)
+                output.putBytes(salt);
+                }
+                output.putBuffer(cipher.output);
+                return {original: output, network: this.network}
+            case 'ethereum':
+                return {original: web3.eth.accounts.encrypt(account.getPrivateKey(), password), network: this.network}    
+            //return this.getOriginalAccount().encrypt(this.getPrivateKey(), password)
+            default:
+                console.log('The network is not correctly set')
+                return null
+        }
+    }
+
+    /**
+     * 
+     * @param {object} cipher - The encrypted object 
+     * @param {string} password - The password that is used to encrypt the account
+     * Return an account, reconstructed from the cipher
+     * The fields remain the same, but methods are not.
+     * However, these methods will not be used, i.e. will use web3/stellar libraries.
+     */
+    decrypt(cipher, password) {
+        switch(this.network) {
+            case 'stellar':    
+                // parse salt from input
+                let input = forge.util.createBuffer(cipher.original, 'binary');
+                // skip "Salted__" (if known to be present)
+                input.getBytes('Salted__'.length);
+                // read 8-byte salt
+                const salt = input.getBytes(8);
+            
+                // AES key and IV sizes
+                const keySize = 24;
+                const ivSize = 8;
+            
+                const derivedBytes = forge.pbe.opensslDeriveBytes(
+                password, salt, keySize + ivSize);
+                const buffer = forge.util.createBuffer(derivedBytes);
+                const key = buffer.getBytes(keySize);
+                const iv = buffer.getBytes(ivSize);
+            
+                let decipher = forge.cipher.createDecipher('AES-CBC', key);
+                decipher.start({iv: iv});
+                decipher.update(input);
+                const result = decipher.finish(); // check 'result' for true/false
+            
+                let decryptedPrivateKey = decipher.output.data;
+                let decryptedStellarAccount = new account(cipher.network)
+                decryptedStellarAccount.setAccount(StellarSdk.Keypair.fromSecret(decryptedPrivateKey))
+                return decryptedStellarAccount
+            case 'ethereum':
+                let decryptedAccount = new account(cipher.network)
+                decryptedAccount.setAccount(web3.eth.accounts.decrypt(cipher.original, password))
+                return decryptedAccount
+            default:
+                console.log('The network is not correctly set')
+                return null
+        }
+    }
+
     //set
 }
 

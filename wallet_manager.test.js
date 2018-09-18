@@ -90,3 +90,38 @@ test('setAccountStellar', () => {
     expect(account.getPrivateKey()).toBe(expectedPrivateKey);
     expect(account.getAddress()).toBe(expectedPublicKey);
   });  
+
+  test('encryptAndDecryptAccountETH', () => {
+    var Web3 = require('web3');
+    var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
+    let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+    const wallet_manager = new wallet_manager_module('ethereum')
+    wallet_manager.setSeed(seed_phrases)
+    wallet_manager.setWallet()
+
+    let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
+    let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
+    let account = wallet_manager.getAccount()
+    let password = 'qwerty'
+    let encrypted = wallet_manager.encrypt(account, password)
+    let decryptedAccount = wallet_manager.decrypt(encrypted, password)
+    expect(decryptedAccount.getAddress()).toEqual(account.getAddress())
+    expect(decryptedAccount.getPrivateKey()).toEqual(account.getPrivateKey())
+    expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork())
+  })
+
+  test('encryptAndDecryptAccountStellar', () => {
+    let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+    const wallet_manager = new wallet_manager_module('stellar')
+    wallet_manager.setSeed(seed_phrases)
+    wallet_manager.setWallet()
+    let expectedPrivateKey = 'SDJNCBWIH4GU377ICXYL7NEI5Z2GWOR2Y3PAQVI2HJHJ7MSB42PP4KVW'
+    let expectedPublicKey = 'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'
+    let account = wallet_manager.getAccount()
+    let password = 'qwerty'
+    let encrypted = wallet_manager.encrypt(account, password)
+    let decryptedAccount = wallet_manager.decrypt(encrypted, password)
+    expect(decryptedAccount.getAddress()).toEqual(account.getAddress())
+    expect(decryptedAccount.getPrivateKey()).toEqual(account.getPrivateKey())
+    expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork())
+  });  
