@@ -55,29 +55,49 @@ class wallet_manager{
      */
     setSeed() {
         if (arguments.length == 0){
-            //generate seed
+            //generate seed; both network uses the same bip39 module to generate seed phrases
             switch(this.network) {
                 case 'stellar':
-                    this.seed = stellarHDWallet.generateMnemonic()// bip39 is the underlying module 
-                    break
                 case 'ethereum':
                     this.seed = bip39.generateMnemonic()
+                    //default strength = 128, 12 words
+                    //160 - 18 words; 224 - 21 words; 256 - 24 words
                     break
                 default:
                     this.seed = null
                     console.log('The network has not been set.')
             }
-            return this.seed
-        } else if (arguments.length === 1 && typeof(arguments[0]) === 'string') {
-            if (bip39.validateMnemonic(arguments[0])) {
-                this.seed = arguments[0];
-                return this.seed
+        } else if (arguments.length === 1) {
+            if ([12,18,21,24].includes(arguments[0])) {
+                let strength = (function(number_of_words) {
+                    switch(number_of_words) {
+                        case 12:
+                            return 128
+                        case 18: 
+                            return 160
+                        case 21:
+                            return 224
+                        case 24:
+                            return 256
+                        default:
+                            return 128
+                    }
+                })(arguments[0]);
+                this.seed = bip39.generateMnemonic(strength)
+            } else if (typeof(arguments[0]) === 'string') {
+                if (bip39.validateMnemonic(arguments[0])) {
+                    this.seed = arguments[0];
+                } else {
+                    this.seed = null
+                    console.log('The input is not a set of valid seed phrases.')
+                }
             } else {
-                console.log('The input is not a set of valid seed phrases.')
+                this.seed = null
+                console.log('The number of seed phrases must be one of 12, 18, 21, 24.')
             }
 
         } else {
-            console.log('The argument must be empty or valid seed phrases.')
+            console.log('The argument must be empty, number of seed phrases, or valid seed phrases.')
         }
         return this.seed
     }
