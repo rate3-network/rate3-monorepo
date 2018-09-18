@@ -9,6 +9,7 @@ import { observer, inject } from 'mobx-react';
 import SelectedBox from '../assets/selectedBox.svg';
 import UnselectedBox from '../assets/unselectedBox.svg';
 import NetworkBox from './NetworkBox';
+import NetworkDropdown from './NetworkDropdown';
 
 const styles = theme => ({
   root: {
@@ -55,7 +56,10 @@ class CheckList extends React.Component {
               />
               <div className={classes.listItemButton}>
                 {item.value}
-                {item.hasStyledText && <NetworkBox />}
+                {this.props.RootStore.commonStore.shouldUseCommonNetwork ?
+                  item.hasStyledText && <NetworkDropdown buttonText="text" /> :
+                  item.hasStyledText && <NetworkBox />
+                }
               </div>
             </ListItem>
           ))}

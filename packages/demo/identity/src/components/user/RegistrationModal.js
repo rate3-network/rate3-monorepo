@@ -172,7 +172,6 @@ const RegistrationModal = inject('RootStore')(observer((props) => {
                   }}
                   classes={{
                     selectMenu: classes.selectMenu,
-                    icon: classes.selectIcon,
                     root: classes.inputRoot,
                     select: classes.select,
                   }}

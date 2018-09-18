@@ -63,9 +63,6 @@ class OnboardStepper extends React.Component {
       console.log('should go to last step');
       this.props.RootStore.commonStore.goToLastOnboardStep();
     }
-    if (this.props.RootStore.commonStore.getIsUser()) {
-      this.props.RootStore.userStore.initMetamaskNetwork();
-    }
     // this.props.RootStore.commonStore.updateUserNetwork();
   }
   handleNext = () => {
@@ -192,9 +189,13 @@ class OnboardStepper extends React.Component {
   }
 }
 
-OnboardStepper.propTypes = {
+OnboardStepper.wrappedComponent.propTypes = {
   // classes: PropTypes.object.isRequired,
   // theme: PropTypes.object.isRequired,
+  RootStore: PropTypes.object.isRequired,
+};
+OnboardStepper.propTypes = {
+  classes: PropTypes.object.isRequired,
 };
 
 export default withRouter(translate('general')(withStyles(styles)(OnboardStepper)));

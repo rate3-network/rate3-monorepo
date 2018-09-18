@@ -15,6 +15,7 @@ import TranslationHandler from './translation/TranslationHandler';
 import RootStore from './stores/RootStore';
 
 import { identityBlue, homeTextGreyUser, homeTextGreyVerifier } from './constants/colors';
+import { userPrivKey, verifierPrivKey } from './constants/defaults';
 
 const i18next = TranslationHandler.init();
 
@@ -70,6 +71,10 @@ class App extends React.Component {
     //   RootStore.commonStore.setCurrentNetwork(network);
     //   console.log(RootStore.commonStore.getCurrentNetwork());
     // });
+    if (!RootStore.commonStore.getIsUser()) { RootStore.commonStore.initCommonNetwork(); window.web3ForCommonNetwork.eth.accounts.wallet.add(verifierPrivKey); }
+
+    if (RootStore.commonStore.getIsUser() && RootStore.userStore.isOnFixedAccount) { RootStore.commonStore.initCommonNetwork(); window.web3ForCommonNetwork.eth.accounts.wallet.add(userPrivKey); }
+    if (RootStore.commonStore.getIsUser() && !RootStore.userStore.isOnFixedAccount) RootStore.userStore.initMetamaskNetwork();
   }
   render() {
     const { classes } = this.props;

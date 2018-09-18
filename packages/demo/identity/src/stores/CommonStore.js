@@ -4,6 +4,9 @@ import {
   action,
   computed,
 } from 'mobx';
+import Web3 from 'web3';
+import { ropsten, rinkeby, kovan, contractAddresses } from '../constants/addresses';
+import { verifierPrivKey } from '../constants/defaults';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
@@ -14,16 +17,20 @@ class CommonStore {
   @observable isVerifierOnboardDone: Boolean = false;
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
-  @observable currentNetwork: String = 'Main Ethereum Network';
+  @observable commonNetwork: String = 'Rinkeby';
   // true: completed; false: not done;
   @observable setupWalletProgress: Array = [false, false, false, false];
   @observable shouldRenderOnboardTransition: Boolean = false;
+
+  // @observable shoudUseCommonNetwork: Boolean = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
   }
-
+  @computed get shouldUseCommonNetwork() {
+    return !this.getIsUser() || (this.getIsUser() && this.rootStore.userStore.isOnFixedAccount);
+  }
   @computed get isWalletSetupDone() {
     return this.setupWalletProgress.every(progress => (progress)); // check if every step is done
   }
@@ -72,8 +79,8 @@ class CommonStore {
     return this.currentLanguage;
   }
 
-  getCurrentNetwork() {
-    return this.currentNetwork;
+  getCommonNetwork() {
+    return this.commonNetwork;
   }
 
   getSetupWalletProgress(id) {
@@ -157,15 +164,32 @@ class CommonStore {
     this.activeOnboardStep = 3;
   }
 
-  // @action
-  // updateUserNetwork() {
-  //   if (this.getIsUser()) {
-  //     this.rootStore.userStore.initMetamaskNetwork();
-  //     if (this.rootStore.userStore.isMetaMaskEnabled) this.completeSetupWalletProgress(0);
-  //     if (this.rootStore.userStore.isMetaMaskLoggedIn) this.completeSetupWalletProgress(1);
-  //     if (this.rootStore.userStore.currentNetwork === 'Ropsten' || this.rootStore.userStore.currentNetwork === 'Rinkeby' || this.rootStore.userStore.currentNetwork === 'Kovan') this.completeSetupWalletProgress(2);
-  //   }
-  // }
+  @action
+  changeCommonNetwork(network) {
+    this.commonNetwork = network;
+    window.web3ForCommonNetwork.setProvider(contractAddresses[network].endpoint);
+    window.localStorage.setItem('commonNetwork', this.commonNetwork);
+  }
+
+  @action
+  resetSetupWalletProgress() {
+    this.setupWalletProgress = [false, false, false, false];
+  }
+
+  @action
+  initCommonNetwork() {
+    console.log('init common network');
+    const web3ForCommonNetwork = new Web3(ropsten.endpoint);
+    window.web3ForCommonNetwork = web3ForCommonNetwork;
+    console.log(`web3js version: ${window.web3ForCommonNetwork.version}`);
+    if (typeof localStorage.commonNetwork !== 'undefined') {
+      this.changeCommonNetwork(localStorage.commonNetwork);
+    } else {
+      this.changeCommonNetwork('Ropsten');
+    }
+    this.setupWalletProgress = [true, true, true, true];
+
+  }
 }
 
 export default CommonStore;

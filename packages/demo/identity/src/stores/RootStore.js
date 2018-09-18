@@ -20,6 +20,7 @@ class RootStore {
     }
     return 'verifier network selection';
   }
+
 }
 
 const SingletonRootStore = new RootStore();

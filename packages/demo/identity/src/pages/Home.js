@@ -28,13 +28,6 @@ const styles = theme => ({
 @inject('RootStore') @observer
 class Home extends React.Component {
   componentDidMount() {
-    // if (this.props.RootStore.commonStore.getIsUser()) {
-    //   console.log('u');
-    //   this.props.history.push('/user');
-    // } else {
-    //   console.log('v');
-    //   this.props.history.push('/verifier');
-    // }
   }
   render() {
     if (this.props.location.pathname === '/') {

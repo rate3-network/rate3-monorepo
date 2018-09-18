@@ -8,6 +8,7 @@ import ManagementTabs from '../components/verifier/ManagementTabs';
 import ManageIndividualUser from './verifier/ManageIndividualUser';
 import InstructionModal from '../components/InstructionModal';
 import VerifierInstructions from '../components/VerifierInstructions';
+import { verifierPrivKey } from '../constants/defaults';
 
 const styles = (theme) => {
   return ({
@@ -37,6 +38,8 @@ class VerifierMain extends React.Component {
     }
   }
   componentDidMount() {
+    // console.log(verifierPrivKey);
+    // window.web3ForCommonNetwork.eth.accounts.wallet.add(verifierPrivKey);
   }
   // onUserItemClick(value) {
   //   console.log('clicked');

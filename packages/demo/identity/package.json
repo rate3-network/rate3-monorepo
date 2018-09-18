@@ -29,6 +29,9 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
+    "@babel/core": "^7.1.0",
+    "@babel/polyfill": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "babel-eslint": "^8.2.1",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-preset-react-native-stage-0": "^1.0.1",

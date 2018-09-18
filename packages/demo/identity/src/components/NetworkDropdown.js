@@ -10,6 +10,8 @@ import FormControl from '@material-ui/core/FormControl';
 import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
 import Typography from '@material-ui/core/Typography';
 import { inject, observer } from 'mobx-react';
+import Lens from '@material-ui/icons/Lens';
+import classNames from 'classnames';
 
 import {
   networkMenuButtonText,
@@ -17,6 +19,7 @@ import {
   networkMenuItemSelectedText,
   networkBoxBg, identityBlue, materialGrey, ropstenBg, ropstenDot, rinkebyBg, rinkebyDot, kovanBg, kovanDot,
 } from '../constants/colors';
+import { verifierPrivKey, userPrivKey } from '../constants/defaults';
 
 
 const styles = theme => ({
@@ -33,24 +36,6 @@ const styles = theme => ({
     alignItems: 'center',
     marginTop: '0.5em',
   },
-  selectContainer: {
-    backgroundColor: 'white',
-    width: '80%',
-    height: '2.5em',
-    marginTop: 0,
-    marginBottom: 0,
-    padding: '0px 0px 0px 0px',
-    borderRadius: '0.5em',
-    border: '0em',
-    '&:focus': {
-      border: `0.1em solid ${identityBlue} !important`,
-      borderRadius: '0.7em',
-    },
-    '&:focus-within': {
-      border: `0.1em solid ${identityBlue} !important`,
-      borderRadius: '0.7em',
-    },
-  },
   formControl: {
     width: '100%',
     height: '100%',
@@ -60,21 +45,57 @@ const styles = theme => ({
     color: 'inherit',
   },
   select: {
-    fontSize: '1.1rem',
+    fontSize: '0.9rem',
     fontWeight: '500',
     height: '100%',
+    textAlign: 'center',
     color: materialGrey,
     '&:focus': {
       backgroundColor: 'transparent',
     },
   },
+
+  ropstenDot: {
+  color: `${ropstenDot} !important`,
+  },
+  rinkebyDot: {
+    color: `${rinkebyDot} !important`,
+  },
+  kovanDot: {
+    color: `${kovanDot} !important`,
+  },
+  icon: {
+    height: '0.4em',
+  },
+  menuIconWithText: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  selectMenu: {
+    padding: '0.7em 2.5em 0 0',
+  },
+  selectIcon: {
+    padding: '0.15em 0.5em',
+  }
 });
 
+const networkList = [
+  { value: 'Rinkeby', label: 'rinkeby test net' },
+  { value: 'Ropsten', label: 'ropsten test net' },
+];
 @inject('RootStore') @observer
 class NetworkDropdown extends React.Component {
-
+  componentDidMount() {
+    this.props.RootStore.commonStore.initCommonNetwork();
+    if (this.props.RootStore.commonStore.getIsUser()) {
+      window.web3ForCommonNetwork.eth.accounts.wallet.add(userPrivKey);
+    } else {
+      window.web3ForCommonNetwork.eth.accounts.wallet.add(verifierPrivKey);
+    }
+  }
   handleClick = (e) => {
-    this.props.RootStore.userStore.changeFixedUserAcctNetwork(e.target.value);
+    this.props.RootStore.commonStore.changeCommonNetwork(e.target.value);
   };
 
 
@@ -85,12 +106,11 @@ class NetworkDropdown extends React.Component {
       <div className={classes.box}>
         <FormControl className={classes.formControl}>
           <Select
-            className={classes.select}
-            value={this.props.RootStore.userStore.fixedUserAcctNetwork}
+            className={classes.inputRoot}
+            value={this.props.RootStore.commonStore.getCommonNetwork()}
             onChange={this.handleClick}
-            input={(
-              <Input disableUnderline />
-            )}
+            input={(<Input disableUnderline />)}
+            IconComponent={KeyboardArrowDown}
             MenuProps={{
               PaperProps: {
                 square: false,
@@ -99,14 +119,10 @@ class NetworkDropdown extends React.Component {
             classes={{
               selectMenu: classes.selectMenu,
               icon: classes.selectIcon,
-              root: classes.inputRoot,
               select: classes.select,
             }}
           >
-            <MenuItem value="_placeholder_" disabled>
-              Choose a Verifier
-            </MenuItem>
-            {this.props.networks.map((item) => {
+            {networkList.map((item) => {
                 return (
                   <MenuItem
                     key={item.value}
@@ -116,7 +132,16 @@ class NetworkDropdown extends React.Component {
                       selected: classes.selectedItem,
                     }}
                   >
-                    <div className={classes.itemText}>{item.label}</div>
+                    <div className={classes.menuIconWithText}>
+                      <Lens className={classNames(
+                      classes.icon,
+                      { [classes.ropstenDot]: item.value === 'Ropsten' },
+                      { [classes.rinkebyDot]: item.value === 'Rinkeby' },
+                      { [classes.kovanDot]: item.value === 'Kovan' },
+                      )}
+                      />
+                      <div className={classes.itemText}>{item.label}</div>
+                    </div>
                   </MenuItem>
                 );
               })
@@ -124,55 +149,6 @@ class NetworkDropdown extends React.Component {
           </Select>
         </FormControl>
       </div>
-      // <div className={classes.box}>
-      //   <div className={classes.networkButtonContainer}>
-      //     <Button
-      //       variant="contained"
-      //       color="primary"
-      //       disableRipple
-      //       disableFocusRipple
-      //       disableTouchRipple
-      //       onClick={this.handleClick}
-      //       classes={{
-      //         root: classes.networkButtonRoot,
-      //         label: classes.networkButtonLabel,
-      //       }}
-      //     >
-      //       <div className={classes.networkBullet} />
-      //       <Typography classes={{ root: classes.buttonText }}>
-      //         {buttonText}
-      //       </Typography>
-      //       <KeyboardArrowDown />
-      //     </Button>
-      //   </div>
-      //   <Menu
-      //     id="network-selection-mnenu"
-      //     anchorEl={anchorEl}
-      //     open={open}
-      //     onClose={this.handleClose}
-      //     MenuListProps={{
-      //       disablePadding: true,
-      //     }}
-      //     classes={{
-      //       paper: classes.menuPaper,
-      //     }}
-      //   >
-      //     {
-      //       networks.map(network => (
-      //         <MenuItem
-      //           key={network.value}
-      //           onClick={this.handleSelect(network.value)}
-      //           selected={network.value === currentNetwork}
-      //           classes={{
-      //             selected: classes.selectedItem,
-      //           }}
-      //         >
-      //           {network.label}
-      //         </MenuItem>
-      //       ))
-      //     }
-      //   </Menu>
-      // </div>
     );
   }
 }
@@ -180,16 +156,9 @@ class NetworkDropdown extends React.Component {
 NetworkDropdown.propTypes = {
   classes: PropTypes.object.isRequired,
   buttonText: PropTypes.node.isRequired,
-  onChange: PropTypes.func,
-  currentNetwork: PropTypes.any.isRequired,
-  networks: PropTypes.arrayOf(PropTypes.shape({
-    label: PropTypes.node.isRequired,
-    value: PropTypes.any.isRequired,
-  })).isRequired,
 };
 
 NetworkDropdown.defaultProps = {
-  onChange: () => null,
 };
 
 export default withStyles(styles, { withTheme: true })(NetworkDropdown);

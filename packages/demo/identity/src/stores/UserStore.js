@@ -37,7 +37,7 @@ class UserStore {
   // Wallet properties
   @observable currentNetwork: String = 'Detecting Network...';
   @observable isMetaMaskLoggedIn: Boolean = false;
-  @observable isOnFixedAccount: Boolean = false;
+  @observable isOnFixedAccount: Boolean = true; // if on fixed account, use network settings from commonstore
 
   @observable fixedUserAcctNetwork: String = 'Ropsten';
   /* JSDOC: MARK END OBSERVABLE */
@@ -56,9 +56,12 @@ class UserStore {
   }
 
   @action
-  initMetamaskNetwork() {
+  async initMetamaskNetwork() {
+    console.log('init metamask network');
+    this.rootStore.commonStore.resetSetupWalletProgress();
     if (this.isOnFixedAccount) {
       this.currentNetwork = 'user is on a fixed network';
+      console.log('quit init metamask coz on fixed account');
       return;
     }
     if (!this.isMetaMaskEnabled) {
@@ -66,22 +69,25 @@ class UserStore {
       return;
     }
     this.rootStore.commonStore.completeSetupWalletProgress(0);
-    
+
     const web3 = new Web3(window.web3.currentProvider);
     window.web3 = web3;
-    web3.eth.getAccounts((err, accounts) => {
-      runInAction(() => {
-        if (err != null) console.error('An error occurred while detecting MetaMask login status');
-        else if (accounts.length === 0) console.log('User is not logged in to MetaMask');
-        else {
+    try {
+      const accounts = await web3.eth.getAccounts();
+      if (accounts.length === 0) console.log('User is not logged in to MetaMask');
+      if (accounts.length > 0) {
+        runInAction(() => {
           this.isMetaMaskLoggedIn = true;
           this.rootStore.commonStore.completeSetupWalletProgress(1);
-        }
-      });
-    });
-    web3.eth.net.getNetworkType((err, network) => {
+        });
+      }
+    } catch (err) {
+      console.error('An error occurred while detecting MetaMask login status');
+    }
+    try {
+      const networkType = await web3.eth.net.getNetworkType();
       runInAction(() => {
-        switch (network) {
+        switch (networkType) {
           case 'ropsten':
             this.currentNetwork = 'Ropsten';
             this.rootStore.commonStore.completeSetupWalletProgress(2);
@@ -98,7 +104,9 @@ class UserStore {
             this.currentNetwork = 'Others';
         }
       });
-    });
+    } catch (err) {
+      console.error('An error occurred while detecting MetaMask network type');
+    }
   }
 
   getFormTextInputValue() {
