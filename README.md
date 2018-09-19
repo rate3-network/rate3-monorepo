@@ -13,9 +13,9 @@ This repository does not reflect true development progress of the project.
 
 ## Roadmap
 
-We are currently in Proteus testnet stage. Please refer to our [roadmap](https://medium.com/official-rate3/rate3-roadmap-update-1716851383c6) update for more details.
+We are currently in the _Proteus_ testnet stage. Please refer to our [roadmap](https://medium.com/official-rate3/rate3-roadmap-update-1716851383c6) update for more details.
 
-In this Proteus testnet stage, we aim to use lightweight prototypes to demonstrate feasibility of various ideas surrounding Rate3 Protocol.
+In this _Proteus_ testnet stage, we aim to use lightweight prototypes to demonstrate feasibility of various ideas surrounding Rate3 Protocol.
 
 
 ### Projects
@@ -32,7 +32,7 @@ Cross-chain Atomic Swap - [Source](https://github.com/rate-engineering/rate3-cro
 ## Upcoming
 
 
-#### Proteus
+### Proteus
 _General_
 - Interface apps for participants of Rate3 network
 
@@ -48,10 +48,12 @@ _General_
 - Basic Implementation of Tokenization and Identity Procotol on Ethereum and Stellar
 - Community will be able to test some features via interface apps
 
-_Eden_
+### Eden
+_General_
 - Rate3 blockchain explorer
 
 ### Ether-Stellar
+_General_
 - Ethereum X Stellar SDK
 
 
