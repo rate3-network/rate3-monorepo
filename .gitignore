@@ -3,7 +3,12 @@ node_modules/
 
 # jsdoc files
 out/
+
+# old js files
 wallet_back_up/
+
+# vscode files
+.vscode/launch.json
 
 # encrypted data
 *.enc

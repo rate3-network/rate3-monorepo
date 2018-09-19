@@ -62,9 +62,14 @@ test('setAccountETH', () => {
 
     let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
     let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
+    let expectedBalance = '0'
     let account = wallet_manager.getAccount()
     expect(account.getAddress()).toBe(expectedAddress);
     expect(account.getPrivateKey()).toBe(expectedPrivateKey)
+    setTimeout(() => {
+      console.log(account.balance, 'this.account.balance')
+      expect(account.getBalance()).toBe(expectedBalance)
+  }, 10000);
 
     expectedAddress = '0x2d8Cce8A8B308a077Eb0e39331258c355c55d04e'
     expectedPrivateKey = '0xb1cf5f0991e165de0e832bb3304846f0e902c0fdef39deece4c14f6625dc5a61'
@@ -80,15 +85,25 @@ test('setAccountStellar', () => {
     wallet_manager.setWallet()
     let expectedPrivateKey = 'SDJNCBWIH4GU377ICXYL7NEI5Z2GWOR2Y3PAQVI2HJHJ7MSB42PP4KVW'
     let expectedPublicKey = 'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'
+    let expectedBalance = '10000.0000000'
     let account = wallet_manager.getAccount()
+
     expect(account.getPrivateKey()).toBe(expectedPrivateKey);
     expect(account.getAddress()).toBe(expectedPublicKey);
+    setTimeout(() => {
+        //console.log(account.balance, 'this.account.balance')
+        expect(account.getBalance()).toBe(expectedBalance)
+    }, 10000);
 
     expectedPrivateKey = 'SCHDEOGWKZYYHDTCQFEXMQ3VVDCOZIUBVSJN4DGTOCB5FCCKBYQEG4PA'
     expectedPublicKey = 'GCUTV7FC4GITQI6KJASMKH7WX3NTDLNUBHFZNXVJB4DJGGTUL6I7XAVT'
     account = wallet_manager.getAccount(10)
     expect(account.getPrivateKey()).toBe(expectedPrivateKey);
     expect(account.getAddress()).toBe(expectedPublicKey);
+    setTimeout(() => {
+      //console.log(account.balance, 'this.account.balance')
+      expect(account.getBalance()).toBe(expectedBalance)
+  }, 10000);
   });  
 
   test('encryptAndDecryptAccountETH', () => {

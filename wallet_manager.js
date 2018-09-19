@@ -177,6 +177,10 @@ class wallet_manager{
                 case 'stellar':
                     this.account = new account(this.network)
                     this.account.setAccount(this.wallet.getKeypair(arguments[0]))
+                    // console.log(this.account.balance, 'this.account.balance')
+                    // setTimeout(() => {
+                    //     console.log(this.account.balance, 'this.account.balance')
+                    // }, 10000);
                     break
                 case 'ethereum':
                     let privateKey = '0x' + this.wallet.deriveChild(arguments[0]).getWallet()._privKey.toString('hex')

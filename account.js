@@ -38,12 +38,60 @@ class account{
      * @param {object} account - A stellar or ethereum account
      */
     setAccount (account) {
+        var request = require('request');
         if (this.network == null) {
             console.log('The network of this account must be set first.')
             return null
-        } else {
+        } else if (this.network == 'stellar') {
+            //check if the account is already on testnet
             this.account = account
-            return this.account
+            this.balance = '-1'
+            var self = this
+            request('https://horizon-testnet.stellar.org' + '/accounts/' + this.getAddress(), function (error, response, body) {
+                if (response.statusCode == 200) {
+                    // the account is alreay on the testnet
+                    // retrieve the balance value and set it here, in string
+                    self.balance = JSON.parse(body).balances[0].balance
+                } else {
+                    //the account is not on the testnet
+                    // load it to test net and then retrieve the balance
+                    request.get({
+                        url: 'https://friendbot.stellar.org',
+                        qs: { addr: account.publicKey() },
+                        json: true
+                        }, function(error, response, body) {
+                            if (error || response.statusCode !== 200) {
+                                console.error('ERROR!', error || body);
+                            }
+                            else {
+                                console.log('SUCCESS! You have a new account :)\n', body);
+                                // retrieve the balance value and set it here
+                                request('https://horizon-testnet.stellar.org' + '/accounts/' + account.publicKey(), function (error, response, body) {
+                                    if (response.statusCode == 200) {
+                                        self.balance = JSON.parse(body).balances[0].balance
+                                    } else {
+                                        console.log('error:', error)
+                                    }
+                                });
+                            }
+                    
+                    });
+                }
+            });
+        } else if (this.network == 'ethereum') {
+            this.account = account
+            this.balance = '-1'
+            var self = this
+            web3.eth.getBalance(account.address, function(err, val) {
+                if (err != null) {
+                    console.log('Cannot get the eth balance')
+                } else {
+                    self.balance = val
+                }
+            });
+        } else {
+            this.account = null
+            console.log('The account network is not correctly set.')
         }
     }
 
@@ -52,6 +100,10 @@ class account{
      */
     getNetwork() {
         return this.network
+    }
+
+    getBalance() {
+        return this.balance
     }
 
     /**
@@ -90,3 +142,12 @@ class account{
 }
 
 module.exports = account
+
+// let wallet_manager_module = require('./wallet_manager')
+// let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+// const wallet_manager = new wallet_manager_module('stellar')
+// wallet_manager.setSeed(seed_phrases)
+// wallet_manager.setWallet()
+// let expectedPrivateKey = 'SDJNCBWIH4GU377ICXYL7NEI5Z2GWOR2Y3PAQVI2HJHJ7MSB42PP4KVW'
+// let expectedPublicKey = 'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'
+// let acc = wallet_manager.getAccount(13)
