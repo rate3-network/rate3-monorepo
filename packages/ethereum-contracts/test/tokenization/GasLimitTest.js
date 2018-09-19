@@ -4,6 +4,9 @@ import { advanceBlock } from '../helpers/advanceToBlock';
 
 const TokenizeTemplateToken = artifacts.require("./tokenization/TokenizeTemplateToken.sol");
 const TokenizeTemplateInteractor = artifacts.require("./tokenization/TokenizeTemplateInteractor.sol");
+const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
+const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
+const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.sol");
 
 require('chai')
   .use(require('chai-as-promised'))
