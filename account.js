@@ -95,6 +95,15 @@ class account{
         }
     }
 
+    sign(data) {
+        if(this.network == 'stellar') {
+            //sign
+        } else if (this.network == 'ethereum') {
+            return web3.eth.accounts.sign(data, this.getPrivateKey())
+        }
+
+    }
+
     /**
      * Return the network where the account is.
      */

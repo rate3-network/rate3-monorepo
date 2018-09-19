@@ -140,3 +140,28 @@ test('setAccountStellar', () => {
     expect(decryptedAccount.getPrivateKey()).toEqual(account.getPrivateKey())
     expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork())
   });  
+
+  test('signETH', () => {
+    var Web3 = require('web3');
+    var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
+    let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+    const wallet_manager = new wallet_manager_module('ethereum')
+    wallet_manager.setSeed(seed_phrases)
+    wallet_manager.setWallet()
+
+    let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
+    let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
+    //let expectedSignedDataJSON ="{ 'message': 'test'}"//," +
+    //"messageHash: '0x4a5c5d454721bbbb25540c3317521e71c373ae36458f960d2ad46ef088110e95'," +
+    //"v: '0x1b',"+
+    //"r: '0xc381a96085965fa17411546b655332428a63886c912af4b5bf9c215e5d4a96a9'," +
+    //"s: '0x5e0a2e96a0187e55933b34bec263fc5d77a7c6017b954384bbd23e9ee55ed61a'," +
+    //"signature: '0xc381a96085965fa17411546b655332428a63886c912af4b5bf9c215e5d4a96a95e0a2e96a0187e55933b34bec263fc5d77a7c6017b954384bbd23e9ee55ed61a1b' }";
+    //let expectedData = JSON.parse(expectedSignedDataJSON)
+    let account = wallet_manager.getAccount()
+    //let signedData = JSON.parse(account.sign('test'))
+    console.log(account.sign('test').message)
+    console.log(signedData)
+    //expect(signedData).toBe(expectedData)
+
+  });  
