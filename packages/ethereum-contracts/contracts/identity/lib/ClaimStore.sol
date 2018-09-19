@@ -80,7 +80,7 @@ library ClaimStore {
      * @return `true` if the claim is found
      */
     function exists(Claims storage self, bytes32 _claimId)
-        internal
+        public
         view
         returns (bool)
     {
@@ -107,7 +107,7 @@ library ClaimStore {
         bytes _data,
         string _uri
     )
-        internal
+        public
         returns (
             bytes32 claimId,
             bool isNew
@@ -148,7 +148,7 @@ library ClaimStore {
      * @return `true` if the claim is found and removed
      */
     function remove(Claims storage self, bytes32 _claimId)
-        internal
+        public
         returns (bool success)
     {
         Claim memory c = self.claims[_claimId];
@@ -170,7 +170,7 @@ library ClaimStore {
      * @return (topic, scheme, issuer, signature, data, uri) tuple with claim data
      */
     function get(Claims storage self, bytes32 _claimId)
-        internal
+        public
         view
         returns (
             uint256 topic,
@@ -197,7 +197,7 @@ library ClaimStore {
      * @return array of claim IDs
      */
     function getClaimIdsByTopic(Claims storage self, uint256 _topic)
-        internal
+        public
         view
         returns(bytes32[])
     {

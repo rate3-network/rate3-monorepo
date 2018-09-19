@@ -1,6 +1,7 @@
 pragma solidity 0.4.24;
 
 import "./Identity.sol";
+import "./constants/KeyEnums.sol";
 
 
 /**
@@ -11,6 +12,12 @@ import "./Identity.sol";
 contract IdentityRegistry {
 
     event NewIdentity(address senderAddress, address identityAddress);
+
+    KeyEnums private keyEnums;
+
+    constructor(KeyEnums _keyEnums) public {
+        keyEnums = _keyEnums;
+    }
 
     // Mapping from ethereum wallet to ERC725 + ERC735 identity
     mapping(address => address) public identities;
@@ -23,7 +30,7 @@ contract IdentityRegistry {
         returns (address)
     {
         require(identities[msg.sender] == address(0), "Identity exists");
-        Identity newIdentity = new Identity(msg.sender);
+        Identity newIdentity = new Identity(msg.sender, keyEnums);
         identities[msg.sender] = newIdentity;
         emit NewIdentity(msg.sender, newIdentity);
 

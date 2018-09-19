@@ -10,6 +10,7 @@ import {
 
 const IdentityRegistry = artifacts.require('./identity/IdentityRegistry.sol');
 const Identity = artifacts.require('./identity/Identity.sol');
+const KeyEnums = artifacts.require('./identity/constants/KeyEnums.sol');
 
 contract('IdentityRegistry', async (addrs) => {
     let registry;
@@ -17,7 +18,8 @@ contract('IdentityRegistry', async (addrs) => {
     afterEach('print gas', printTestGas);
 
     beforeEach('new contract', async () => {
-        registry = await IdentityRegistry.new();
+        const keyEnums = await KeyEnums.deployed();
+        registry = await IdentityRegistry.new(keyEnums.address);
     });
     const findIdentityAddress = r => (
         r.logs.find(e => e.event === 'NewIdentity').args.identityAddress

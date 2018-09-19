@@ -6,6 +6,7 @@ import {
 } from './util';
 
 const Identity = artifacts.require('./identity/Identity.sol');
+const KeyEnums = artifacts.require('./identity/constants/KeyEnums.sol');
 const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 
 // Constants
@@ -157,9 +158,12 @@ export const setupTest = async (
     // Check block gas limit is appropriate
     assertBlockGasLimit(blockGasLimit);
 
+    const keyEnums = await KeyEnums.deployed();
+
     // Use deployed identity for another identity
     const anotherIdentity = await Identity.new(
         accountsSetupConfig.anotherAccount.addr,
+        keyEnums.address,
         { from: accountsSetupConfig.anotherAccount.addr, gas: blockGasLimit },
     );
     measureTx(anotherIdentity.transactionHash);
@@ -168,6 +172,7 @@ export const setupTest = async (
 
     const identity = await Identity.new(
         accountsSetupConfig.identityAccount.addr,
+        keyEnums.address,
         { from: accountsSetupConfig.identityAccount.addr, gas: blockGasLimit },
     );
     measureTx(anotherIdentity.transactionHash);

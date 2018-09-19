@@ -11,6 +11,7 @@ import {
 
 const TestContract = artifacts.require('./identity/TestContract.sol');
 const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
+const KeyStore = artifacts.require('./identity/lib/KeyStore.sol');
 
 contract('Identity', async (addrs) => {
     let identity;
@@ -86,8 +87,9 @@ contract('Identity', async (addrs) => {
         // I recover address from signature
         // Using contract helper function here, but any implementation of ECRecover will do
         const claimStore = await ClaimStore.deployed();
+        const keyStore = await KeyStore.deployed();
         const signedBy = await claimStore.getSignatureAddress(challenge, signature);
-        const signedByKey = await identity.addrToKey(signedBy);
+        const signedByKey = await keyStore.addrToKey(signedBy);
         // Check if this is an action key in the identity you claim
         assert.isTrue(await identity.keyHasPurpose(signedByKey, Purpose.ACTION));
     });

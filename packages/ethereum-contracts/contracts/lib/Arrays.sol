@@ -39,7 +39,7 @@ library Arrays {
     function add(uint256NoDup storage self, uint256 value)
         public
     {
-        require(!contains(self, value));
+        require(!contains(self, value), "Duplicate element");
         uint256 idx = self.values.push(value) - 1;
         self.valueIdx[value] = idx;
     }
@@ -51,12 +51,20 @@ library Arrays {
     function remove(uint256NoDup storage self, uint256 value)
         public
     {
-        require(contains(self, value));
+        require(contains(self, value), "Element does not exist");
         uint256 idx = self.valueIdx[value];
-        self.values[idx] = self.values[self.values.length - 1];
-        self.valueIdx[self.values[idx]] = idx;
-        delete self.values[self.values.length - 1];
-        self.values.length--;
+        uint256 last = self.values.length - 1;
+        if (idx == last) {
+            self.valueIdx[value] = 0;
+            delete self.values[last];
+            self.values.length--;
+        } else {
+            self.valueIdx[value] = 0;
+            self.values[idx] = self.values[last];
+            self.valueIdx[self.values[idx]] = idx;
+            delete self.values[last];
+            self.values.length--;
+        }
     }
 
     // solhint-disable-next-line contract-name-camelcase
@@ -91,7 +99,7 @@ library Arrays {
     function add(bytes32NoDup storage self, bytes32 value)
         public
     {
-        require(!contains(self, value));
+        require(!contains(self, value), "Duplicate element");
         uint256 idx = self.values.push(value) - 1;
         self.valueIdx[value] = idx;
     }
@@ -103,11 +111,19 @@ library Arrays {
     function remove(bytes32NoDup storage self, bytes32 value)
         public
     {
-        require(contains(self, value));
+        require(contains(self, value), "Element does not exist");
         uint256 idx = self.valueIdx[value];
-        self.values[idx] = self.values[self.values.length - 1];
-        self.valueIdx[self.values[idx]] = idx;
-        delete self.values[self.values.length - 1];
-        self.values.length--;
+        uint256 last = self.values.length - 1;
+        if (idx == last) {
+            self.valueIdx[value] = 0;
+            delete self.values[last];
+            self.values.length--;
+        } else {
+            self.valueIdx[value] = 0;
+            self.values[idx] = self.values[last];
+            self.valueIdx[self.values[idx]] = idx;
+            delete self.values[last];
+            self.values.length--;
+        }
     }
 }
