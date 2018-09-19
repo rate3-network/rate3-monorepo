@@ -1,9 +1,12 @@
+import { advanceBlock } from '../helpers/advanceToBlock';
 import {
     getAndClearGas,
     assertBlockGasLimit,
+    measureTx,
 } from './util';
 
 const Identity = artifacts.require('./identity/Identity.sol');
+const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 
 // Constants
 export const Purpose = {
@@ -140,7 +143,7 @@ export class AccountsSetupConfig {
 export const setupTest = async (
     accountsSetupConfig,
     claims = [],
-    blockGasLimit = 20000000,
+    blockGasLimit = 4700000,
 ) => {
     assert(
         accountsSetupConfig.identityAccount != null,
@@ -159,22 +162,34 @@ export const setupTest = async (
         accountsSetupConfig.anotherAccount.addr,
         { from: accountsSetupConfig.anotherAccount.addr, gas: blockGasLimit },
     );
+    measureTx(anotherIdentity.transactionHash);
+
+    await advanceBlock();
 
     const identity = await Identity.new(
         accountsSetupConfig.identityAccount.addr,
         { from: accountsSetupConfig.identityAccount.addr, gas: blockGasLimit },
     );
+    measureTx(anotherIdentity.transactionHash);
 
-    await Promise.all(Object.keys(accountsSetupConfig.accountsToAdd).map(purpose => (
-        Promise.all(accountsSetupConfig.accountsToAdd[purpose].map(acc => (
-            identity.addKey(acc.key, purpose, KeyType.ECDSA, {
-                from: accountsSetupConfig.identityAccount.addr,
-            })
-        )))
-    )));
+    await advanceBlock();
+
+    const addKeyTxns = await Promise.all(
+        Object.keys(accountsSetupConfig.accountsToAdd).map(purpose => (
+            Promise.all(accountsSetupConfig.accountsToAdd[purpose].map(acc => (
+                identity.addKey(acc.key, purpose, KeyType.ECDSA, {
+                    from: accountsSetupConfig.identityAccount.addr,
+                })
+            )))
+        )),
+    );
+    addKeyTxns.forEach(txns => txns.forEach(tx => measureTx(tx.tx)));
+
+    await advanceBlock();
 
     // Init self-claims to be sent in constructor
     if (claims.length > 0) {
+        const claimStore = await ClaimStore.deployed();
         await Promise.all(claims.map(async ({
             topic,
             data,
@@ -182,7 +197,7 @@ export const setupTest = async (
             self,
         }) => {
             // Claim hash
-            const claimHash = await identity.claimToSign(identity.address, topic, data);
+            const claimHash = await claimStore.claimToSign(identity.address, topic, data);
             // Sign using CLAIM_SIGNER_KEY
             const claimSigner = self
                 ? accountsSetupConfig.identityAccount.addr
@@ -197,15 +212,17 @@ export const setupTest = async (
                 data,
                 uri,
             );
+            measureTx(r.tx);
 
             const { args: { claimRequestId } } = r.logs
                 .find(e => e.event === 'ClaimRequested');
 
-            return identity.approve(
+            const a = await identity.approve(
                 claimRequestId,
                 true,
                 { from: accountsSetupConfig.identityAccount.addr },
             );
+            measureTx(a.tx);
         }));
     }
 

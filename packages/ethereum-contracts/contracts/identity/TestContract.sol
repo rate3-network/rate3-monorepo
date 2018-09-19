@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-import "./ERC/ERC165Query.sol";
+import "./lib/ERC165Query.sol";
 import "./ERC/ERC735.sol";
 
 

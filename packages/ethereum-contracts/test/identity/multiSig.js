@@ -11,8 +11,7 @@ import {
     assertRevert,
 } from './util';
 
-
-const TestContract = artifacts.require('TestContract');
+const TestContract = artifacts.require('./identity/TestContract.sol');
 
 contract('MultiSig', async (addrs) => {
     let identity;

@@ -8,8 +8,8 @@ import {
     assertOkTx,
 } from './util';
 
-const IdentityRegistry = artifacts.require('IdentityRegistry');
-const Identity = artifacts.require('Identity');
+const IdentityRegistry = artifacts.require('./identity/IdentityRegistry.sol');
+const Identity = artifacts.require('./identity/Identity.sol');
 
 contract('IdentityRegistry', async (addrs) => {
     let registry;

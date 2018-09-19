@@ -11,15 +11,18 @@ import {
     assertRevert,
 } from './util';
 
+const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
+
 contract('ClaimManager', async (addrs) => {
     let identity;
     let accounts;
     let anotherIdentity;
+    let claimStore;
 
     afterEach('print gas', printTestGas);
 
     const assertClaim = async (_topic, _issuer, _signature, _data, _uri) => {
-        const claimId = await identity.getClaimId(_issuer, _topic);
+        const claimId = await claimStore.getClaimId(_issuer, _topic);
         const [
             topic,
             scheme,
@@ -81,6 +84,8 @@ contract('ClaimManager', async (addrs) => {
                 },
             ],
         ));
+
+        claimStore = await ClaimStore.deployed();
     });
 
     describe('ERC165', () => {
@@ -101,7 +106,7 @@ contract('ClaimManager', async (addrs) => {
         it('can recover signature', async () => {
             const label = 'test';
             // Claim hash
-            const toSign = await identity.claimToSign(
+            const toSign = await claimStore.claimToSign(
                 identity.address,
                 Topic.LABEL,
                 label,
@@ -109,14 +114,14 @@ contract('ClaimManager', async (addrs) => {
             // Sign using eth_sign
             const signature = web3.eth.sign(accounts.manager[0].addr, toSign);
             // Recover address from signature
-            const signedBy = await identity.getSignatureAddress(toSign, signature);
+            const signedBy = await claimStore.getSignatureAddress(toSign, signature);
             assert.equal(signedBy, accounts.manager[0].addr);
         });
 
         it('can add self-claim as manager', async () => {
             const uri = 'https://twitter.com/ratex_sg';
             // Claim hash
-            const toSign = await identity.claimToSign(
+            const toSign = await claimStore.claimToSign(
                 identity.address,
                 Topic.PROFILE,
                 uri,
@@ -144,7 +149,7 @@ contract('ClaimManager', async (addrs) => {
         it('checks signature when adding', async () => {
             const uri = 'https://twitter.com/ratex_sg';
             // Claim hash
-            const toSign = await identity.claimToSign(
+            const toSign = await claimStore.claimToSign(
                 identity.address,
                 Topic.PROFILE,
                 uri,
@@ -164,14 +169,14 @@ contract('ClaimManager', async (addrs) => {
             ));
 
             // Claim doesn't exist
-            const claimId = await identity.getClaimId(identity.address, Topic.PROFILE);
+            const claimId = await claimStore.getClaimId(identity.address, Topic.PROFILE);
             await assertRevert(identity.getClaim(claimId));
         });
 
         it('can add self-claim with manager approval', async () => {
             const uri = 'https://twitter.com/ratex_sg';
             // Claim hash
-            const toSign = await identity.claimToSign(
+            const toSign = await claimStore.claimToSign(
                 identity.address,
                 Topic.PROFILE,
                 uri,
@@ -192,7 +197,7 @@ contract('ClaimManager', async (addrs) => {
             const claimRequestId = findClaimRequestId(r);
 
             // Claim doesn't exist yet
-            const claimId = await identity.getClaimId(identity.address, Topic.PROFILE);
+            const claimId = await claimStore.getClaimId(identity.address, Topic.PROFILE);
             await assertRevert(identity.getClaim(claimId));
 
             // Approve
@@ -211,7 +216,7 @@ contract('ClaimManager', async (addrs) => {
         it('other identity can add a claim', async () => {
             const uri = 'https://twitter.com/ratex_sg';
             // Claim hash
-            const toSign = await anotherIdentity.claimToSign(
+            const toSign = await claimStore.claimToSign(
                 identity.address,
                 Topic.PROFILE,
                 uri,
@@ -264,7 +269,7 @@ contract('ClaimManager', async (addrs) => {
             const newUri = 'https://medium.com/ratex-engineering';
 
             // Claim hash
-            const toSign = await identity.claimToSign(
+            const toSign = await claimStore.claimToSign(
                 identity.address,
                 Topic.LABEL,
                 label,
@@ -309,7 +314,7 @@ contract('ClaimManager', async (addrs) => {
             const newUri = 'https://medium.com/ratex-engineering';
 
             // Claim hash
-            const toSign = await identity.claimToSign(
+            const toSign = await claimStore.claimToSign(
                 identity.address,
                 Topic.LABEL,
                 label,
@@ -345,7 +350,7 @@ contract('ClaimManager', async (addrs) => {
             const newUri = 'https://medium.com/ratex-engineering';
 
             // Claim hash
-            const toSign = await identity.claimToSign(
+            const toSign = await claimStore.claimToSign(
                 identity.address,
                 Topic.LABEL,
                 label,
@@ -402,7 +407,7 @@ contract('ClaimManager', async (addrs) => {
         });
 
         it('other identity can update a claim', async () => {
-            const claimId = await identity.getClaimId(
+            const claimId = await claimStore.getClaimId(
                 anotherIdentity.address,
                 Topic.LABEL,
             );
@@ -459,7 +464,7 @@ contract('ClaimManager', async (addrs) => {
     describe('removeClaim', async () => {
         it('can remove a claim', async () => {
             // First claim
-            const claimId = await identity.getClaimId(identity.address, Topic.LABEL);
+            const claimId = await claimStore.getClaimId(identity.address, Topic.LABEL);
 
             // Remove it
             await assertOkTx(identity.removeClaim(
@@ -476,7 +481,7 @@ contract('ClaimManager', async (addrs) => {
         it('other identity can remove a claim as a contract', async () => {
             await assertClaims(2, { [Topic.LABEL]: 2 });
 
-            const claimId = await identity.getClaimId(
+            const claimId = await claimStore.getClaimId(
                 anotherIdentity.address,
                 Topic.LABEL,
             );
@@ -499,7 +504,7 @@ contract('ClaimManager', async (addrs) => {
         it('other identity can remove a claim', async () => {
             await assertClaims(2, { [Topic.LABEL]: 2 });
 
-            const claimId = await identity.getClaimId(
+            const claimId = await claimStore.getClaimId(
                 anotherIdentity.address,
                 Topic.LABEL,
             );

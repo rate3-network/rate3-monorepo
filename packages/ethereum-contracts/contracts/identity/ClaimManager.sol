@@ -1,10 +1,10 @@
 pragma solidity 0.4.24;
 
-import "../lib/ECRecovery.sol";
 import "./lifecycle/KeyPausable.sol";
 import "./ERC/ERC725.sol";
 import "./ERC/ERC735.sol";
-import "./ERC/ERC165Query.sol";
+import "./lib/ERC165Query.sol";
+import "./lib/ClaimStore.sol";
 
 
 /**
@@ -14,23 +14,18 @@ import "./ERC/ERC165Query.sol";
  * Inspired by Mircea Pasoi's implementation at https://github.com/mirceapasoi/erc725-735
  */
 contract ClaimManager is KeyPausable, ERC735 {
-    using ECRecovery for bytes32;
     using ERC165Query for address;
 
-    bytes constant internal ETH_PREFIX = "\x19Ethereum Signed Message:\n32";
+    using ClaimStore for ClaimStore.Claims;
+    ClaimStore.Claims internal allClaims;
 
-    struct Claim {
-        uint256 topic;
-        uint256 scheme;
-        address issuer; // msg.sender
-        bytes signature; // this.address + topic + data
-        bytes data;
-        string uri;
+    function numClaims()
+        external
+        view
+        returns (uint256)
+    {
+        return allClaims.numClaims;
     }
-
-    mapping(bytes32 => Claim) internal claims;
-    mapping(uint256 => bytes32[]) internal claimsByTopic;
-    uint public numClaims;
 
     /**
      * @dev Requests the ADDITION or the CHANGE of a claim from an issuer.
@@ -68,38 +63,17 @@ contract ClaimManager is KeyPausable, ERC735 {
             // keys of purpose MANAGEMENT_KEY
             // Execute this function again using its identity
             claimRequestId = this.execute(address(this), 0, msg.data);
-            emit ClaimRequested(
-                claimRequestId,
-                _topic,
-                _scheme,
-                _issuer,
-                _signature,
-                _data,
-                _uri
-            );
+            emit ClaimRequested(claimRequestId, _topic, _scheme, _issuer, _signature, _data, _uri);
             return;
         }
 
-        bytes32 claimId = getClaimId(_issuer, _topic);
-        if (claims[claimId].issuer == address(0)) { // New claim
-            _addClaim(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
-        } else { // Existing claim
-            Claim storage c = claims[claimId];
-            c.scheme = _scheme;
-            c.signature = _signature;
-            c.data = _data;
-            c.uri = _uri;
-            // You can't change issuer or topic without affecting the claimId,
-            // so we don't need to update those two fields
-            emit ClaimChanged(
-                claimId,
-                _topic,
-                _scheme,
-                _issuer,
-                _signature,
-                _data,
-                _uri
-            );
+        bytes32 claimId;
+        bool isNew;
+        (claimId, isNew) = allClaims.add(_topic, _scheme, _issuer, _signature, _data, _uri);
+        if (isNew) {
+            emit ClaimAdded(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
+        } else {
+            emit ClaimChanged(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
         }
     }
 
@@ -115,34 +89,24 @@ contract ClaimManager is KeyPausable, ERC735 {
         onlyManagementOrSelfOrIssuer(_claimId)
         returns (bool success)
     {
-        Claim memory c = claims[_claimId];
-        // Must exist
+
+        ClaimStore.Claim memory c = allClaims.claims[_claimId];
         require(c.issuer != address(0));
-        // Remove from mapping
-        delete claims[_claimId];
-        // Remove from type array
-        bytes32[] storage topics = claimsByTopic[c.topic];
-        for (uint i = 0; i < topics.length; i++) {
-            if (topics[i] == _claimId) {
-                topics[i] = topics[topics.length - 1];
-                delete topics[topics.length - 1];
-                topics.length--;
-                break;
-            }
+
+        if (allClaims.remove(_claimId)) {
+            // Event
+            emit ClaimRemoved(
+                _claimId,
+                c.topic,
+                c.scheme,
+                c.issuer,
+                c.signature,
+                c.data,
+                c.uri
+            );
+            return true;
         }
-        // Decrement
-        numClaims--;
-        // Event
-        emit ClaimRemoved(
-            _claimId,
-            c.topic,
-            c.scheme,
-            c.issuer,
-            c.signature,
-            c.data,
-            c.uri
-        );
-        return true;
+        return false;
     }
 
     /**
@@ -161,14 +125,7 @@ contract ClaimManager is KeyPausable, ERC735 {
             string uri
         )
     {
-        Claim memory c = claims[_claimId];
-        require(c.issuer != address(0));
-        topic = c.topic;
-        scheme = c.scheme;
-        issuer = c.issuer;
-        signature = c.signature;
-        data = c.data;
-        uri = c.uri;
+        return allClaims.get(_claimId);
     }
 
     /**
@@ -181,50 +138,7 @@ contract ClaimManager is KeyPausable, ERC735 {
         view
         returns(bytes32[] claimIds)
     {
-        claimIds = claimsByTopic[_topic];
-    }
-
-    /**
-     * @dev Generate claim ID. Especially useful in tests
-     * @param issuer Address of issuer
-     * @param topic Claim topic
-     * @return Claim ID hash
-     */
-    function getClaimId(address issuer, uint256 topic)
-        public
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(issuer, topic));
-    }
-
-    /**
-     * @dev Generate claim to sign. Especially useful in tests
-     * @param subject Address about which we're making a claim
-     * @param topic Claim topic
-     * @param data Data for the claim
-     * @return Hash to be signed by claim issuer
-     */
-    function claimToSign(address subject, uint256 topic, bytes data)
-        public
-        pure
-        returns (bytes32)
-    {
-        return keccak256(abi.encodePacked(subject, topic, data));
-    }
-
-    /**
-     * @dev Recover address used to sign a claim
-     * @param toSign Hash to be signed, potentially generated with `claimToSign`
-     * @param signature Signature data i.e. signed hash
-     * @return address recovered from `signature` which signed the `toSign` hash
-     */
-    function getSignatureAddress(bytes32 toSign, bytes signature)
-        public
-        pure
-        returns (address)
-    {
-        return keccak256(abi.encodePacked(ETH_PREFIX, toSign)).recover(signature);
+        return allClaims.getClaimIdsByTopic(_topic);
     }
 
     /**
@@ -252,8 +166,8 @@ contract ClaimManager is KeyPausable, ERC735 {
         returns (bool)
     {
         if (_scheme == ECDSA_TYPE) {
-            address signedBy = getSignatureAddress(
-                claimToSign(address(this), _topic, _data),
+            address signedBy = ClaimStore.getSignatureAddress(
+                ClaimStore.claimToSign(address(this), _topic, _data),
                 _signature
             );
 
@@ -282,7 +196,8 @@ contract ClaimManager is KeyPausable, ERC735 {
      *  the identity itself, or the issuer or the claim
      */
     modifier onlyManagementOrSelfOrIssuer(bytes32 _claimId) {
-        address issuer = claims[_claimId].issuer;
+        address issuer;
+        (, , issuer, , ,) = allClaims.get(_claimId);
         // Must exist
         require(issuer != 0);
 
@@ -298,33 +213,5 @@ contract ClaimManager is KeyPausable, ERC735 {
             revert("Sender is NOT Management or Self or Issuer");
         }
         _;
-    }
-
-    /**
-     * @dev Add key data to the identity without checking if it already exists
-     * @param _claimId Claim ID
-     * @param _topic Type of claim
-     * @param _scheme Scheme used for the signatures
-     * @param _issuer Address of issuer
-     * @param _signature The actual signature
-     * @param _data The data that was signed
-     * @param _uri The location of the claim
-     */
-    function _addClaim(
-        bytes32 _claimId,
-        uint256 _topic,
-        uint256 _scheme,
-        address _issuer,
-        bytes _signature,
-        bytes _data,
-        string _uri
-    )
-        internal
-    {
-        // New claim
-        claims[_claimId] = Claim(_topic, _scheme, _issuer, _signature, _data, _uri);
-        claimsByTopic[_topic].push(_claimId);
-        numClaims++;
-        emit ClaimAdded(_claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
     }
 }
