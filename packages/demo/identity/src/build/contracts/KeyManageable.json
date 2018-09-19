@@ -1,0 +1,3062 @@
+{
+  "contractName": "KeyManageable",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "interfaceID",
+          "type": "bytes4"
+        }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "ERC165ID",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "MANAGEMENT_KEY",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_key",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getKey",
+      "outputs": [
+        {
+          "name": "purposes",
+          "type": "uint256[]"
+        },
+        {
+          "name": "keyType",
+          "type": "uint256"
+        },
+        {
+          "name": "key",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_key",
+          "type": "bytes32"
+        },
+        {
+          "name": "_purpose",
+          "type": "uint256"
+        },
+        {
+          "name": "_keyType",
+          "type": "uint256"
+        }
+      ],
+      "name": "addKey",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "RSA_TYPE",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "actionThreshold",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "ECDSA_TYPE",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_key",
+          "type": "bytes32"
+        },
+        {
+          "name": "_purpose",
+          "type": "uint256"
+        }
+      ],
+      "name": "removeKey",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_id",
+          "type": "uint256"
+        },
+        {
+          "name": "_approve",
+          "type": "bool"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "name": "success",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "ACTION_KEY",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "ERC725ID",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes4"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_purpose",
+          "type": "uint256"
+        }
+      ],
+      "name": "getKeysByPurpose",
+      "outputs": [
+        {
+          "name": "keys",
+          "type": "bytes32[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "ENCRYPTION_KEY",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "managementThreshold",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        },
+        {
+          "name": "_data",
+          "type": "bytes"
+        }
+      ],
+      "name": "execute",
+      "outputs": [
+        {
+          "name": "executionId",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "CLAIM_SIGNER_KEY",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_key",
+          "type": "bytes32"
+        },
+        {
+          "name": "purpose",
+          "type": "uint256"
+        }
+      ],
+      "name": "keyHasPurpose",
+      "outputs": [
+        {
+          "name": "exists",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "key",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "purpose",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "name": "keyType",
+          "type": "uint256"
+        }
+      ],
+      "name": "KeyAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "key",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "name": "purpose",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "name": "keyType",
+          "type": "uint256"
+        }
+      ],
+      "name": "KeyRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "executionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "ExecutionRequested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "executionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "value",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "Executed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "executionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "approved",
+          "type": "bool"
+        }
+      ],
+      "name": "Approved",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "numKeys",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "addr",
+          "type": "address"
+        }
+      ],
+      "name": "addrToKey",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity 0.4.24;\n\nimport \"../ERC/ERC725.sol\";\nimport \"../lib/KeyStore.sol\";\n\n\n/**\n * @title KeyManageable\n * @author Wu Di\n * @notice Abstract contract for ERC725 implementation\n * @dev Key data is stored using KeyStore library.\n * Inspired by Mircea Pasoi's implementation at https://github.com/mirceapasoi/erc725-735\n */\ncontract KeyManageable is ERC725 {\n\n    uint256 public constant MANAGEMENT_KEY = 1;\n    uint256 public constant ACTION_KEY = 2;\n    uint256 public constant CLAIM_SIGNER_KEY = 3;\n    uint256 public constant ENCRYPTION_KEY = 4;\n\n    uint256 public constant ECDSA_TYPE = 1;\n    uint256 public constant RSA_TYPE = 2;\n\n    // For multi-sig\n    uint256 public managementThreshold = 1;\n    uint256 public actionThreshold = 1;\n\n    // Key storage\n    using KeyStore for KeyStore.Keys;\n    using KeyStore for KeyStore.Key;\n    KeyStore.Keys internal allKeys;\n\n    /**\n     * @dev Number of keys managed by the contract\n     * @dev Each key can have multiple purposes\n     * @return Unsigned integer number of keys\n     */\n    function numKeys()\n        external\n        view\n        returns (uint)\n    {\n        return allKeys.numKeys;\n    }\n\n    /**\n     * @dev Convert an Ethereum address (20 bytes) to an ERC725 key (32 bytes)\n     * @dev It's just a simple typecast, but it's especially useful in tests\n     */\n    function addrToKey(address addr)\n        public\n        pure\n        returns (bytes32)\n    {\n        return bytes32(addr);\n    }\n\n    /**\n     * @dev Checks if sender is either the identity contract or a MANAGEMENT_KEY\n     * @dev If the multi-sig required (threshold > 1), it will throw an error\n     * @return `true` if sender is either identity contract or a MANAGEMENT_KEY\n     */\n    function _managementOrSelf()\n        internal\n        view\n        returns (bool found)\n    {\n        if (msg.sender == address(this)) {\n            // Identity contract itself\n            return true;\n        }\n        // Only works with 1 key threshold, otherwise need multi-sig\n        if (managementThreshold == 1) {\n            return allKeys.find(addrToKey(msg.sender), MANAGEMENT_KEY);\n        }\n        return false;\n    }\n\n    /**\n     * @dev Modifier that only allows keys of purpose MANAGEMENT_KEY,\n     *  or the identity itself\n     */\n    modifier onlyManagementOrSelf {\n        require(_managementOrSelf());\n        _;\n    }\n}\n",
+  "sourcePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/ownership/KeyManageable.sol",
+  "ast": {
+    "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/ownership/KeyManageable.sol",
+    "exportedSymbols": {
+      "KeyManageable": [
+        2871
+      ]
+    },
+    "id": 2872,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2772,
+        "literals": [
+          "solidity",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:16"
+      },
+      {
+        "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/ERC/ERC725.sol",
+        "file": "../ERC/ERC725.sol",
+        "id": 2773,
+        "nodeType": "ImportDirective",
+        "scope": 2872,
+        "sourceUnit": 955,
+        "src": "25:27:16",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/lib/KeyStore.sol",
+        "file": "../lib/KeyStore.sol",
+        "id": 2774,
+        "nodeType": "ImportDirective",
+        "scope": 2872,
+        "sourceUnit": 2677,
+        "src": "53:29:16",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 2775,
+              "name": "ERC725",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 954,
+              "src": "356:6:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ERC725_$954",
+                "typeString": "contract ERC725"
+              }
+            },
+            "id": 2776,
+            "nodeType": "InheritanceSpecifier",
+            "src": "356:6:16"
+          }
+        ],
+        "contractDependencies": [
+          791,
+          954
+        ],
+        "contractKind": "contract",
+        "documentation": "@title KeyManageable\n@author Wu Di\n@notice Abstract contract for ERC725 implementation\n@dev Key data is stored using KeyStore library.\nInspired by Mircea Pasoi's implementation at https://github.com/mirceapasoi/erc725-735",
+        "fullyImplemented": false,
+        "id": 2871,
+        "linearizedBaseContracts": [
+          2871,
+          954,
+          791
+        ],
+        "name": "KeyManageable",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": true,
+            "id": 2779,
+            "name": "MANAGEMENT_KEY",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "370:42:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2777,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "370:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "31",
+              "id": 2778,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "411:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2782,
+            "name": "ACTION_KEY",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "418:38:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2780,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "418:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "32",
+              "id": 2781,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "455:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_2_by_1",
+                "typeString": "int_const 2"
+              },
+              "value": "2"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2785,
+            "name": "CLAIM_SIGNER_KEY",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "462:44:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2783,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "462:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "33",
+              "id": 2784,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "505:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_3_by_1",
+                "typeString": "int_const 3"
+              },
+              "value": "3"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2788,
+            "name": "ENCRYPTION_KEY",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "512:42:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2786,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "512:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "34",
+              "id": 2787,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "553:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_4_by_1",
+                "typeString": "int_const 4"
+              },
+              "value": "4"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2791,
+            "name": "ECDSA_TYPE",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "561:38:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2789,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "561:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "31",
+              "id": 2790,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "598:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2794,
+            "name": "RSA_TYPE",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "605:36:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2792,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "605:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "32",
+              "id": 2793,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "640:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_2_by_1",
+                "typeString": "int_const 2"
+              },
+              "value": "2"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 2797,
+            "name": "managementThreshold",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "669:38:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2795,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "669:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "31",
+              "id": 2796,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "706:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 2800,
+            "name": "actionThreshold",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "713:34:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2798,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "713:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "31",
+              "id": 2799,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "746:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 2803,
+            "libraryName": {
+              "contractScope": null,
+              "id": 2801,
+              "name": "KeyStore",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2676,
+              "src": "779:8:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_KeyStore_$2676",
+                "typeString": "library KeyStore"
+              }
+            },
+            "nodeType": "UsingForDirective",
+            "src": "773:33:16",
+            "typeName": {
+              "contractScope": null,
+              "id": 2802,
+              "name": "KeyStore.Keys",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2497,
+              "src": "792:13:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_Keys_$2497_storage_ptr",
+                "typeString": "struct KeyStore.Keys"
+              }
+            }
+          },
+          {
+            "id": 2806,
+            "libraryName": {
+              "contractScope": null,
+              "id": 2804,
+              "name": "KeyStore",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2676,
+              "src": "817:8:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_KeyStore_$2676",
+                "typeString": "library KeyStore"
+              }
+            },
+            "nodeType": "UsingForDirective",
+            "src": "811:32:16",
+            "typeName": {
+              "contractScope": null,
+              "id": 2805,
+              "name": "KeyStore.Key",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2470,
+              "src": "830:12:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_Key_$2470_storage_ptr",
+                "typeString": "struct KeyStore.Key"
+              }
+            }
+          },
+          {
+            "constant": false,
+            "id": 2808,
+            "name": "allKeys",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "848:30:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_struct$_Keys_$2497_storage",
+              "typeString": "struct KeyStore.Keys"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 2807,
+              "name": "KeyStore.Keys",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2497,
+              "src": "848:13:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_Keys_$2497_storage_ptr",
+                "typeString": "struct KeyStore.Keys"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 2816,
+              "nodeType": "Block",
+              "src": "1123:39:16",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 2813,
+                      "name": "allKeys",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2808,
+                      "src": "1140:7:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Keys_$2497_storage",
+                        "typeString": "struct KeyStore.Keys storage ref"
+                      }
+                    },
+                    "id": 2814,
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "numKeys",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 2496,
+                    "src": "1140:15:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 2812,
+                  "id": 2815,
+                  "nodeType": "Return",
+                  "src": "1133:22:16"
+                }
+              ]
+            },
+            "documentation": "@dev Number of keys managed by the contract\n@dev Each key can have multiple purposes\n@return Unsigned integer number of keys",
+            "id": 2817,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "numKeys",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2809,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1063:2:16"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2812,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2811,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2817,
+                  "src": "1113:4:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2810,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1113:4:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1112:6:16"
+            },
+            "scope": 2871,
+            "src": "1047:115:16",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 2828,
+              "nodeType": "Block",
+              "src": "1431:37:16",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 2825,
+                        "name": "addr",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2819,
+                        "src": "1456:4:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "id": 2824,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "nodeType": "ElementaryTypeNameExpression",
+                      "src": "1448:7:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_bytes32_$",
+                        "typeString": "type(bytes32)"
+                      },
+                      "typeName": "bytes32"
+                    },
+                    "id": 2826,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "typeConversion",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1448:13:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "functionReturnParameters": 2823,
+                  "id": 2827,
+                  "nodeType": "Return",
+                  "src": "1441:20:16"
+                }
+              ]
+            },
+            "documentation": "@dev Convert an Ethereum address (20 bytes) to an ERC725 key (32 bytes)\n@dev It's just a simple typecast, but it's especially useful in tests",
+            "id": 2829,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "addrToKey",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2820,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2819,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2829,
+                  "src": "1359:12:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2818,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1359:7:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1358:14:16"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2823,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2822,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2829,
+                  "src": "1418:7:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2821,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1418:7:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1417:9:16"
+            },
+            "scope": 2871,
+            "src": "1340:128:16",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 2860,
+              "nodeType": "Block",
+              "src": "1821:338:16",
+              "statements": [
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    },
+                    "id": 2839,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 2834,
+                        "name": "msg",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2886,
+                        "src": "1835:3:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_message",
+                          "typeString": "msg"
+                        }
+                      },
+                      "id": 2835,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "sender",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "1835:10:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 2837,
+                          "name": "this",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2907,
+                          "src": "1857:4:16",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_KeyManageable_$2871",
+                            "typeString": "contract KeyManageable"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_contract$_KeyManageable_$2871",
+                            "typeString": "contract KeyManageable"
+                          }
+                        ],
+                        "id": 2836,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "1849:7:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_address_$",
+                          "typeString": "type(address)"
+                        },
+                        "typeName": "address"
+                      },
+                      "id": 2838,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1849:13:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "1835:27:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": null,
+                  "id": 2843,
+                  "nodeType": "IfStatement",
+                  "src": "1831:109:16",
+                  "trueBody": {
+                    "id": 2842,
+                    "nodeType": "Block",
+                    "src": "1864:76:16",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "hexValue": "74727565",
+                          "id": 2840,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "bool",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "1925:4:16",
+                          "subdenomination": null,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          },
+                          "value": "true"
+                        },
+                        "functionReturnParameters": 2833,
+                        "id": 2841,
+                        "nodeType": "Return",
+                        "src": "1918:11:16"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    },
+                    "id": 2846,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "id": 2844,
+                      "name": "managementThreshold",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2797,
+                      "src": "2022:19:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "hexValue": "31",
+                      "id": 2845,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "2045:1:16",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_1_by_1",
+                        "typeString": "int_const 1"
+                      },
+                      "value": "1"
+                    },
+                    "src": "2022:24:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": null,
+                  "id": 2857,
+                  "nodeType": "IfStatement",
+                  "src": "2018:113:16",
+                  "trueBody": {
+                    "id": 2856,
+                    "nodeType": "Block",
+                    "src": "2048:83:16",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "arguments": [
+                                {
+                                  "argumentTypes": null,
+                                  "expression": {
+                                    "argumentTypes": null,
+                                    "id": 2850,
+                                    "name": "msg",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2886,
+                                    "src": "2092:3:16",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_magic_message",
+                                      "typeString": "msg"
+                                    }
+                                  },
+                                  "id": 2851,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "memberName": "sender",
+                                  "nodeType": "MemberAccess",
+                                  "referencedDeclaration": null,
+                                  "src": "2092:10:16",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_address",
+                                    "typeString": "address"
+                                  }
+                                }
+                              ],
+                              "expression": {
+                                "argumentTypes": [
+                                  {
+                                    "typeIdentifier": "t_address",
+                                    "typeString": "address"
+                                  }
+                                ],
+                                "id": 2849,
+                                "name": "addrToKey",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2829,
+                                "src": "2082:9:16",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_function_internal_pure$_t_address_$returns$_t_bytes32_$",
+                                  "typeString": "function (address) pure returns (bytes32)"
+                                }
+                              },
+                              "id": 2852,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "kind": "functionCall",
+                              "lValueRequested": false,
+                              "names": [],
+                              "nodeType": "FunctionCall",
+                              "src": "2082:21:16",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bytes32",
+                                "typeString": "bytes32"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 2853,
+                              "name": "MANAGEMENT_KEY",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2779,
+                              "src": "2105:14:16",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bytes32",
+                                "typeString": "bytes32"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 2847,
+                              "name": "allKeys",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2808,
+                              "src": "2069:7:16",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Keys_$2497_storage",
+                                "typeString": "struct KeyStore.Keys storage ref"
+                              }
+                            },
+                            "id": 2848,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "find",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 2529,
+                            "src": "2069:12:16",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_internal_view$_t_struct$_Keys_$2497_storage_ptr_$_t_bytes32_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Keys_$2497_storage_ptr_$",
+                              "typeString": "function (struct KeyStore.Keys storage pointer,bytes32,uint256) view returns (bool)"
+                            }
+                          },
+                          "id": 2854,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "2069:51:16",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "functionReturnParameters": 2833,
+                        "id": 2855,
+                        "nodeType": "Return",
+                        "src": "2062:58:16"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "66616c7365",
+                    "id": 2858,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "2147:5:16",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "false"
+                  },
+                  "functionReturnParameters": 2833,
+                  "id": 2859,
+                  "nodeType": "Return",
+                  "src": "2140:12:16"
+                }
+              ]
+            },
+            "documentation": "@dev Checks if sender is either the identity contract or a MANAGEMENT_KEY\n@dev If the multi-sig required (threshold > 1), it will throw an error\n@return `true` if sender is either identity contract or a MANAGEMENT_KEY",
+            "id": 2861,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "_managementOrSelf",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2830,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1755:2:16"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2833,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2832,
+                  "name": "found",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2861,
+                  "src": "1805:10:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 2831,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1805:4:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1804:12:16"
+            },
+            "scope": 2871,
+            "src": "1729:430:16",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 2869,
+              "nodeType": "Block",
+              "src": "2312:56:16",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [],
+                        "expression": {
+                          "argumentTypes": [],
+                          "id": 2864,
+                          "name": "_managementOrSelf",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2861,
+                          "src": "2330:17:16",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_internal_view$__$returns$_t_bool_$",
+                            "typeString": "function () view returns (bool)"
+                          }
+                        },
+                        "id": 2865,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "2330:19:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 2863,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        2889,
+                        2890
+                      ],
+                      "referencedDeclaration": 2889,
+                      "src": "2322:7:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                        "typeString": "function (bool) pure"
+                      }
+                    },
+                    "id": 2866,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2322:28:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 2867,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2322:28:16"
+                },
+                {
+                  "id": 2868,
+                  "nodeType": "PlaceholderStatement",
+                  "src": "2360:1:16"
+                }
+              ]
+            },
+            "documentation": "@dev Modifier that only allows keys of purpose MANAGEMENT_KEY,\n or the identity itself",
+            "id": 2870,
+            "name": "onlyManagementOrSelf",
+            "nodeType": "ModifierDefinition",
+            "parameters": {
+              "id": 2862,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2312:0:16"
+            },
+            "src": "2282:86:16",
+            "visibility": "internal"
+          }
+        ],
+        "scope": 2872,
+        "src": "330:2040:16"
+      }
+    ],
+    "src": "0:2371:16"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/ownership/KeyManageable.sol",
+    "exportedSymbols": {
+      "KeyManageable": [
+        2871
+      ]
+    },
+    "id": 2872,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2772,
+        "literals": [
+          "solidity",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:16"
+      },
+      {
+        "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/ERC/ERC725.sol",
+        "file": "../ERC/ERC725.sol",
+        "id": 2773,
+        "nodeType": "ImportDirective",
+        "scope": 2872,
+        "sourceUnit": 955,
+        "src": "25:27:16",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/lib/KeyStore.sol",
+        "file": "../lib/KeyStore.sol",
+        "id": 2774,
+        "nodeType": "ImportDirective",
+        "scope": 2872,
+        "sourceUnit": 2677,
+        "src": "53:29:16",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 2775,
+              "name": "ERC725",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 954,
+              "src": "356:6:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_ERC725_$954",
+                "typeString": "contract ERC725"
+              }
+            },
+            "id": 2776,
+            "nodeType": "InheritanceSpecifier",
+            "src": "356:6:16"
+          }
+        ],
+        "contractDependencies": [
+          791,
+          954
+        ],
+        "contractKind": "contract",
+        "documentation": "@title KeyManageable\n@author Wu Di\n@notice Abstract contract for ERC725 implementation\n@dev Key data is stored using KeyStore library.\nInspired by Mircea Pasoi's implementation at https://github.com/mirceapasoi/erc725-735",
+        "fullyImplemented": false,
+        "id": 2871,
+        "linearizedBaseContracts": [
+          2871,
+          954,
+          791
+        ],
+        "name": "KeyManageable",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": true,
+            "id": 2779,
+            "name": "MANAGEMENT_KEY",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "370:42:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2777,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "370:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "31",
+              "id": 2778,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "411:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2782,
+            "name": "ACTION_KEY",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "418:38:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2780,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "418:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "32",
+              "id": 2781,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "455:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_2_by_1",
+                "typeString": "int_const 2"
+              },
+              "value": "2"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2785,
+            "name": "CLAIM_SIGNER_KEY",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "462:44:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2783,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "462:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "33",
+              "id": 2784,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "505:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_3_by_1",
+                "typeString": "int_const 3"
+              },
+              "value": "3"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2788,
+            "name": "ENCRYPTION_KEY",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "512:42:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2786,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "512:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "34",
+              "id": 2787,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "553:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_4_by_1",
+                "typeString": "int_const 4"
+              },
+              "value": "4"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2791,
+            "name": "ECDSA_TYPE",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "561:38:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2789,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "561:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "31",
+              "id": 2790,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "598:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": true,
+            "id": 2794,
+            "name": "RSA_TYPE",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "605:36:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2792,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "605:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "32",
+              "id": 2793,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "640:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_2_by_1",
+                "typeString": "int_const 2"
+              },
+              "value": "2"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 2797,
+            "name": "managementThreshold",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "669:38:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2795,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "669:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "31",
+              "id": 2796,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "706:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 2800,
+            "name": "actionThreshold",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "713:34:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 2798,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "713:7:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": {
+              "argumentTypes": null,
+              "hexValue": "31",
+              "id": 2799,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "number",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "746:1:16",
+              "subdenomination": null,
+              "typeDescriptions": {
+                "typeIdentifier": "t_rational_1_by_1",
+                "typeString": "int_const 1"
+              },
+              "value": "1"
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 2803,
+            "libraryName": {
+              "contractScope": null,
+              "id": 2801,
+              "name": "KeyStore",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2676,
+              "src": "779:8:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_KeyStore_$2676",
+                "typeString": "library KeyStore"
+              }
+            },
+            "nodeType": "UsingForDirective",
+            "src": "773:33:16",
+            "typeName": {
+              "contractScope": null,
+              "id": 2802,
+              "name": "KeyStore.Keys",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2497,
+              "src": "792:13:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_Keys_$2497_storage_ptr",
+                "typeString": "struct KeyStore.Keys"
+              }
+            }
+          },
+          {
+            "id": 2806,
+            "libraryName": {
+              "contractScope": null,
+              "id": 2804,
+              "name": "KeyStore",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2676,
+              "src": "817:8:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_KeyStore_$2676",
+                "typeString": "library KeyStore"
+              }
+            },
+            "nodeType": "UsingForDirective",
+            "src": "811:32:16",
+            "typeName": {
+              "contractScope": null,
+              "id": 2805,
+              "name": "KeyStore.Key",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2470,
+              "src": "830:12:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_Key_$2470_storage_ptr",
+                "typeString": "struct KeyStore.Key"
+              }
+            }
+          },
+          {
+            "constant": false,
+            "id": 2808,
+            "name": "allKeys",
+            "nodeType": "VariableDeclaration",
+            "scope": 2871,
+            "src": "848:30:16",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_struct$_Keys_$2497_storage",
+              "typeString": "struct KeyStore.Keys"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 2807,
+              "name": "KeyStore.Keys",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 2497,
+              "src": "848:13:16",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_Keys_$2497_storage_ptr",
+                "typeString": "struct KeyStore.Keys"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 2816,
+              "nodeType": "Block",
+              "src": "1123:39:16",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "expression": {
+                      "argumentTypes": null,
+                      "id": 2813,
+                      "name": "allKeys",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2808,
+                      "src": "1140:7:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_struct$_Keys_$2497_storage",
+                        "typeString": "struct KeyStore.Keys storage ref"
+                      }
+                    },
+                    "id": 2814,
+                    "isConstant": false,
+                    "isLValue": true,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "memberName": "numKeys",
+                    "nodeType": "MemberAccess",
+                    "referencedDeclaration": 2496,
+                    "src": "1140:15:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "functionReturnParameters": 2812,
+                  "id": 2815,
+                  "nodeType": "Return",
+                  "src": "1133:22:16"
+                }
+              ]
+            },
+            "documentation": "@dev Number of keys managed by the contract\n@dev Each key can have multiple purposes\n@return Unsigned integer number of keys",
+            "id": 2817,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "numKeys",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2809,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1063:2:16"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2812,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2811,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2817,
+                  "src": "1113:4:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 2810,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1113:4:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1112:6:16"
+            },
+            "scope": 2871,
+            "src": "1047:115:16",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": {
+              "id": 2828,
+              "nodeType": "Block",
+              "src": "1431:37:16",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 2825,
+                        "name": "addr",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2819,
+                        "src": "1456:4:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "id": 2824,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "lValueRequested": false,
+                      "nodeType": "ElementaryTypeNameExpression",
+                      "src": "1448:7:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_type$_t_bytes32_$",
+                        "typeString": "type(bytes32)"
+                      },
+                      "typeName": "bytes32"
+                    },
+                    "id": 2826,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "typeConversion",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "1448:13:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "functionReturnParameters": 2823,
+                  "id": 2827,
+                  "nodeType": "Return",
+                  "src": "1441:20:16"
+                }
+              ]
+            },
+            "documentation": "@dev Convert an Ethereum address (20 bytes) to an ERC725 key (32 bytes)\n@dev It's just a simple typecast, but it's especially useful in tests",
+            "id": 2829,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "addrToKey",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2820,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2819,
+                  "name": "addr",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2829,
+                  "src": "1359:12:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 2818,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1359:7:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1358:14:16"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2823,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2822,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2829,
+                  "src": "1418:7:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 2821,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1418:7:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1417:9:16"
+            },
+            "scope": 2871,
+            "src": "1340:128:16",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 2860,
+              "nodeType": "Block",
+              "src": "1821:338:16",
+              "statements": [
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    },
+                    "id": 2839,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 2834,
+                        "name": "msg",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 2886,
+                        "src": "1835:3:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_magic_message",
+                          "typeString": "msg"
+                        }
+                      },
+                      "id": 2835,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "sender",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "1835:10:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 2837,
+                          "name": "this",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2907,
+                          "src": "1857:4:16",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_KeyManageable_$2871",
+                            "typeString": "contract KeyManageable"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_contract$_KeyManageable_$2871",
+                            "typeString": "contract KeyManageable"
+                          }
+                        ],
+                        "id": 2836,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "lValueRequested": false,
+                        "nodeType": "ElementaryTypeNameExpression",
+                        "src": "1849:7:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_type$_t_address_$",
+                          "typeString": "type(address)"
+                        },
+                        "typeName": "address"
+                      },
+                      "id": 2838,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "typeConversion",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1849:13:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "1835:27:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": null,
+                  "id": 2843,
+                  "nodeType": "IfStatement",
+                  "src": "1831:109:16",
+                  "trueBody": {
+                    "id": 2842,
+                    "nodeType": "Block",
+                    "src": "1864:76:16",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "hexValue": "74727565",
+                          "id": 2840,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "kind": "bool",
+                          "lValueRequested": false,
+                          "nodeType": "Literal",
+                          "src": "1925:4:16",
+                          "subdenomination": null,
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          },
+                          "value": "true"
+                        },
+                        "functionReturnParameters": 2833,
+                        "id": 2841,
+                        "nodeType": "Return",
+                        "src": "1918:11:16"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "condition": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    },
+                    "id": 2846,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "id": 2844,
+                      "name": "managementThreshold",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 2797,
+                      "src": "2022:19:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_uint256",
+                        "typeString": "uint256"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "hexValue": "31",
+                      "id": 2845,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": true,
+                      "kind": "number",
+                      "lValueRequested": false,
+                      "nodeType": "Literal",
+                      "src": "2045:1:16",
+                      "subdenomination": null,
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_rational_1_by_1",
+                        "typeString": "int_const 1"
+                      },
+                      "value": "1"
+                    },
+                    "src": "2022:24:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "falseBody": null,
+                  "id": 2857,
+                  "nodeType": "IfStatement",
+                  "src": "2018:113:16",
+                  "trueBody": {
+                    "id": 2856,
+                    "nodeType": "Block",
+                    "src": "2048:83:16",
+                    "statements": [
+                      {
+                        "expression": {
+                          "argumentTypes": null,
+                          "arguments": [
+                            {
+                              "argumentTypes": null,
+                              "arguments": [
+                                {
+                                  "argumentTypes": null,
+                                  "expression": {
+                                    "argumentTypes": null,
+                                    "id": 2850,
+                                    "name": "msg",
+                                    "nodeType": "Identifier",
+                                    "overloadedDeclarations": [],
+                                    "referencedDeclaration": 2886,
+                                    "src": "2092:3:16",
+                                    "typeDescriptions": {
+                                      "typeIdentifier": "t_magic_message",
+                                      "typeString": "msg"
+                                    }
+                                  },
+                                  "id": 2851,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": false,
+                                  "lValueRequested": false,
+                                  "memberName": "sender",
+                                  "nodeType": "MemberAccess",
+                                  "referencedDeclaration": null,
+                                  "src": "2092:10:16",
+                                  "typeDescriptions": {
+                                    "typeIdentifier": "t_address",
+                                    "typeString": "address"
+                                  }
+                                }
+                              ],
+                              "expression": {
+                                "argumentTypes": [
+                                  {
+                                    "typeIdentifier": "t_address",
+                                    "typeString": "address"
+                                  }
+                                ],
+                                "id": 2849,
+                                "name": "addrToKey",
+                                "nodeType": "Identifier",
+                                "overloadedDeclarations": [],
+                                "referencedDeclaration": 2829,
+                                "src": "2082:9:16",
+                                "typeDescriptions": {
+                                  "typeIdentifier": "t_function_internal_pure$_t_address_$returns$_t_bytes32_$",
+                                  "typeString": "function (address) pure returns (bytes32)"
+                                }
+                              },
+                              "id": 2852,
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "kind": "functionCall",
+                              "lValueRequested": false,
+                              "names": [],
+                              "nodeType": "FunctionCall",
+                              "src": "2082:21:16",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_bytes32",
+                                "typeString": "bytes32"
+                              }
+                            },
+                            {
+                              "argumentTypes": null,
+                              "id": 2853,
+                              "name": "MANAGEMENT_KEY",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2779,
+                              "src": "2105:14:16",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            }
+                          ],
+                          "expression": {
+                            "argumentTypes": [
+                              {
+                                "typeIdentifier": "t_bytes32",
+                                "typeString": "bytes32"
+                              },
+                              {
+                                "typeIdentifier": "t_uint256",
+                                "typeString": "uint256"
+                              }
+                            ],
+                            "expression": {
+                              "argumentTypes": null,
+                              "id": 2847,
+                              "name": "allKeys",
+                              "nodeType": "Identifier",
+                              "overloadedDeclarations": [],
+                              "referencedDeclaration": 2808,
+                              "src": "2069:7:16",
+                              "typeDescriptions": {
+                                "typeIdentifier": "t_struct$_Keys_$2497_storage",
+                                "typeString": "struct KeyStore.Keys storage ref"
+                              }
+                            },
+                            "id": 2848,
+                            "isConstant": false,
+                            "isLValue": true,
+                            "isPure": false,
+                            "lValueRequested": false,
+                            "memberName": "find",
+                            "nodeType": "MemberAccess",
+                            "referencedDeclaration": 2529,
+                            "src": "2069:12:16",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_function_internal_view$_t_struct$_Keys_$2497_storage_ptr_$_t_bytes32_$_t_uint256_$returns$_t_bool_$bound_to$_t_struct$_Keys_$2497_storage_ptr_$",
+                              "typeString": "function (struct KeyStore.Keys storage pointer,bytes32,uint256) view returns (bool)"
+                            }
+                          },
+                          "id": 2854,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "kind": "functionCall",
+                          "lValueRequested": false,
+                          "names": [],
+                          "nodeType": "FunctionCall",
+                          "src": "2069:51:16",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_bool",
+                            "typeString": "bool"
+                          }
+                        },
+                        "functionReturnParameters": 2833,
+                        "id": 2855,
+                        "nodeType": "Return",
+                        "src": "2062:58:16"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "66616c7365",
+                    "id": 2858,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "bool",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "2147:5:16",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    },
+                    "value": "false"
+                  },
+                  "functionReturnParameters": 2833,
+                  "id": 2859,
+                  "nodeType": "Return",
+                  "src": "2140:12:16"
+                }
+              ]
+            },
+            "documentation": "@dev Checks if sender is either the identity contract or a MANAGEMENT_KEY\n@dev If the multi-sig required (threshold > 1), it will throw an error\n@return `true` if sender is either identity contract or a MANAGEMENT_KEY",
+            "id": 2861,
+            "implemented": true,
+            "isConstructor": false,
+            "isDeclaredConst": true,
+            "modifiers": [],
+            "name": "_managementOrSelf",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2830,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1755:2:16"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 2833,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 2832,
+                  "name": "found",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 2861,
+                  "src": "1805:10:16",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 2831,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1805:4:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1804:12:16"
+            },
+            "scope": 2871,
+            "src": "1729:430:16",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 2869,
+              "nodeType": "Block",
+              "src": "2312:56:16",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "arguments": [],
+                        "expression": {
+                          "argumentTypes": [],
+                          "id": 2864,
+                          "name": "_managementOrSelf",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 2861,
+                          "src": "2330:17:16",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_function_internal_view$__$returns$_t_bool_$",
+                            "typeString": "function () view returns (bool)"
+                          }
+                        },
+                        "id": 2865,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "functionCall",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "2330:19:16",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      ],
+                      "id": 2863,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        2889,
+                        2890
+                      ],
+                      "referencedDeclaration": 2889,
+                      "src": "2322:7:16",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
+                        "typeString": "function (bool) pure"
+                      }
+                    },
+                    "id": 2866,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "2322:28:16",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 2867,
+                  "nodeType": "ExpressionStatement",
+                  "src": "2322:28:16"
+                },
+                {
+                  "id": 2868,
+                  "nodeType": "PlaceholderStatement",
+                  "src": "2360:1:16"
+                }
+              ]
+            },
+            "documentation": "@dev Modifier that only allows keys of purpose MANAGEMENT_KEY,\n or the identity itself",
+            "id": 2870,
+            "name": "onlyManagementOrSelf",
+            "nodeType": "ModifierDefinition",
+            "parameters": {
+              "id": 2862,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "2312:0:16"
+            },
+            "src": "2282:86:16",
+            "visibility": "internal"
+          }
+        ],
+        "scope": 2872,
+        "src": "330:2040:16"
+      }
+    ],
+    "src": "0:2371:16"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2018-09-19T02:35:11.324Z"
+}

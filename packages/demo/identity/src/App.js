@@ -8,6 +8,8 @@ import './App.css';
 
 import Onboard from './pages/Onboard';
 import Home from './pages/Home';
+
+import GlobalSpinner from './components/GlobalSpinner';
 /* Translation */
 import TranslationHandler from './translation/TranslationHandler';
 
@@ -79,6 +81,7 @@ class App extends React.Component {
         <I18nextProvider i18n={i18next}>
           <Provider {...stores}>
             <MuiThemeProvider theme={theme}>
+            <GlobalSpinner />
               <BrowserRouter basename="#">
                 <Switch>
                   <Route

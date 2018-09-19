@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 import "../ERC/ERC725.sol";
-import "./KeyStore.sol";
+import "../lib/KeyStore.sol";
 
 
 /**

@@ -3,6 +3,7 @@ import {
   computed,
   observable,
   action,
+  when,
 } from 'mobx';
 
 import CommonStore from './CommonStore';
@@ -11,12 +12,18 @@ import VerifierStore from './VerifierStore';
 import { userPrivKey, verifierPrivKey } from '../constants/defaults';
 
 class RootStore {
+  constructor() {
+    
+  }
   @observable commonStore = new CommonStore(this);
   @observable userStore = new UserStore(this);
   @observable verifierStore = new VerifierStore(this);
 
   @observable browserProvider = null;
 
+  @observable globalSpinnerIsShowing: Boolean = false;
+
+  @observable finishInitNetwork: Boolean = false;
   @computed get currentNetwork() {
     if (this.commonStore.getIsUser()) {
       if (!this.userStore.isOnFixedAccount) return this.userStore.currentNetwork;
@@ -27,6 +34,7 @@ class RootStore {
 
   @action
   initNetwork() {
+    this.globalSpinnerIsShowing = true;
     // for user using own account, must detect metamask first
     if (this.commonStore.getIsUser()) {
       if (typeof window.web3 === 'undefined') {
@@ -38,9 +46,11 @@ class RootStore {
       console.log('store metamask in root store');
       this.browserProvider = window.web3.currentProvider;
     }
+    
     if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
       console.log('init metamask from root store');
       this.userStore.initMetamaskNetwork();
+      
       return;
     }
     if (this.commonStore.getIsUser() && this.userStore.isOnFixedAccount) {
@@ -54,6 +64,7 @@ class RootStore {
       window.web3.eth.accounts.wallet.add(verifierPrivKey);
       console.log('init verifier fixed network from root store');
     }
+    
   }
 }
 

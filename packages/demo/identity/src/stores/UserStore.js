@@ -65,6 +65,7 @@ class UserStore {
 
   @action
   async initMetamaskNetwork() {
+    this.rootStore.finishInitNetwork = false;
     console.log('init metamask network');
     this.rootStore.commonStore.resetSetupWalletProgress();
     if (this.isOnFixedAccount) {
@@ -93,7 +94,7 @@ class UserStore {
       if (accounts.length > 0) {
         runInAction(() => {
           this.isMetaMaskLoggedIn = true;
-          this.metamaskAccount = accounts[0];
+          [this.metamaskAccount] = accounts;
           this.rootStore.commonStore.completeSetupWalletProgress(1);
         });
       }
@@ -131,6 +132,9 @@ class UserStore {
         this.metamaskBalance = balance;
         console.log(balance);
         this.rootStore.commonStore.completeSetupWalletProgress(3);
+        this.rootStore.globalSpinnerIsShowing = false;
+        this.rootStore.finishInitNetwork = true;
+        
       });
     } catch (err) {
       console.error('An error occurred while checking balance');

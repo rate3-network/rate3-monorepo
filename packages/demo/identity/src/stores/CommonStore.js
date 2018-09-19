@@ -5,7 +5,7 @@ import {
   computed,
 } from 'mobx';
 import Web3 from 'web3';
-import { ropsten, rinkeby, kovan, contractAddresses } from '../constants/addresses';
+import { ropsten, rinkeby, kovan, local, contractAddresses } from '../constants/addresses';
 import { verifierPrivKey } from '../constants/defaults';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
@@ -184,8 +184,9 @@ class CommonStore {
 
   @action
   initCommonNetwork() {
+    this.rootStore.finishInitNetwork = false;
     console.log('init common network');
-    const web3 = new Web3(ropsten.endpoint);
+    const web3 = new Web3(new Web3.providers.WebsocketProvider(ropsten.endpoint));
     window.web3 = web3;
     console.log(`web3js version: ${window.web3.version}`);
     if (typeof localStorage.commonNetwork !== 'undefined') {
@@ -194,7 +195,8 @@ class CommonStore {
       this.changeCommonNetwork('Ropsten');
     }
     this.setupWalletProgress = [true, true, true, true];
-
+    this.rootStore.globalSpinnerIsShowing = false;
+    this.rootStore.finishInitNetwork = true;
   }
 }
 
