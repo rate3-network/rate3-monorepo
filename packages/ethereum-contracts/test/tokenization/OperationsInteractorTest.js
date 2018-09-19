@@ -33,9 +33,9 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
             await this.registryModule.transferOwnership(this.token.address, { from: owner });
-            await this.token.setAllowanceModule(this.allowanceModule.address);
-            await this.token.setBalanceModule(this.balanceModule.address);
-            await this.token.setRegistryModule(this.registryModule.address);
+            await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+            await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+            await this.token.setRegistryModule(this.registryModule.address, { from: owner });
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.setToken(this.token.address, { from: owner });
@@ -78,9 +78,9 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
             await this.registryModule.transferOwnership(this.token.address, { from: owner });
-            await this.token.setAllowanceModule(this.allowanceModule.address);
-            await this.token.setBalanceModule(this.balanceModule.address);
-            await this.token.setRegistryModule(this.registryModule.address);
+            await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+            await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+            await this.token.setRegistryModule(this.registryModule.address, { from: owner });
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.setToken(this.token.address, { from: owner });
@@ -122,9 +122,9 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
             await this.registryModule.transferOwnership(this.token.address, { from: owner });
-            await this.token.setAllowanceModule(this.allowanceModule.address);
-            await this.token.setBalanceModule(this.balanceModule.address);
-            await this.token.setRegistryModule(this.registryModule.address);
+            await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+            await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+            await this.token.setRegistryModule(this.registryModule.address, { from: owner });
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.setToken(this.token.address, { from: owner });
@@ -169,9 +169,9 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
             await this.registryModule.transferOwnership(this.token.address, { from: owner });
-            await this.token.setAllowanceModule(this.allowanceModule.address);
-            await this.token.setBalanceModule(this.balanceModule.address);
-            await this.token.setRegistryModule(this.registryModule.address);
+            await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+            await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+            await this.token.setRegistryModule(this.registryModule.address, { from: owner });
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.setToken(this.token.address, { from: owner });
@@ -223,9 +223,9 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
             await this.registryModule.transferOwnership(this.token.address, { from: owner });
-            await this.token.setAllowanceModule(this.allowanceModule.address);
-            await this.token.setBalanceModule(this.balanceModule.address);
-            await this.token.setRegistryModule(this.registryModule.address);
+            await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+            await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+            await this.token.setRegistryModule(this.registryModule.address, { from: owner });
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.setToken(this.token.address, { from: owner });
@@ -276,9 +276,9 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
             await this.registryModule.transferOwnership(this.token.address, { from: owner });
-            await this.token.setAllowanceModule(this.allowanceModule.address);
-            await this.token.setBalanceModule(this.balanceModule.address);
-            await this.token.setRegistryModule(this.registryModule.address);
+            await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+            await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+            await this.token.setRegistryModule(this.registryModule.address, { from: owner });
 
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.setToken(this.token.address, { from: owner });
