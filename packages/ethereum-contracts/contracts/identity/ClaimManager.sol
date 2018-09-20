@@ -54,7 +54,10 @@ contract ClaimManager is KeyPausable, ERC735 {
     {
         // Check signature
         if (_scheme == executions.allKeys.enums.ECDSA_TYPE()) {
-            require(_validSignature(_topic, _scheme, _issuer, _signature, _data));
+            require(
+                _validSignature(_topic, _scheme, _issuer, _signature, _data),
+                "Invalid signature"
+            );
         }
         // Check we can perform action
         bool requireApproval = !_managementOrSelf();
@@ -92,7 +95,7 @@ contract ClaimManager is KeyPausable, ERC735 {
     {
 
         ClaimStore.Claim memory c = allClaims.claims[_claimId];
-        require(c.issuer != address(0));
+        require(c.issuer != address(0), "Claim does not exist");
 
         if (allClaims.remove(_claimId)) {
             // Event
@@ -206,7 +209,7 @@ contract ClaimManager is KeyPausable, ERC735 {
         address issuer;
         (, , issuer, , ,) = allClaims.get(_claimId);
         // Must exist
-        require(issuer != 0);
+        require(issuer != address(0), "Claim does not exist");
 
         // Can perform action on claim
         if (_managementOrSelf()) { // solhint-disable-line no-empty-blocks
@@ -215,10 +218,13 @@ contract ClaimManager is KeyPausable, ERC735 {
             // MUST only be done by the issuer of the claim
         } else if (issuer.doesContractImplementInterface(ERC725ID())) {
             // Issuer is another Identity contract, is this an action key?
-            require(ERC725(issuer).keyHasPurpose(
-                KeyStore.addrToKey(msg.sender),
-                executions.allKeys.enums.ACTION_KEY()
-            ));
+            require(
+                ERC725(issuer).keyHasPurpose(
+                    KeyStore.addrToKey(msg.sender),
+                    executions.allKeys.enums.ACTION_KEY()
+                ),
+                "Sender is NOT Management or Self or Issuer"
+            );
         } else {
             revert("Sender is NOT Management or Self or Issuer");
         }

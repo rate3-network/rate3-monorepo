@@ -181,7 +181,7 @@ library ClaimStore {
             string uri
         )
     {
-        require(exists(self, _claimId));
+        require(exists(self, _claimId), "Claim does not exist");
         Claim memory c = self.claims[_claimId];
         topic = c.topic;
         scheme = c.scheme;

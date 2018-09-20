@@ -170,12 +170,13 @@ library ExecutionStore {
                     self.allKeys.find(
                         approvalAddr,
                         self.allKeys.enums.MANAGEMENT_KEY()
-                    )
+                    ),
+                    "Sender is not management"
                 );
                 approvals.add(approvalAddr);
             }
         } else {
-            require(_to != address(0));
+            require(_to != address(0), "Invalid to address");
             threshold = self.actionThreshold;
             if (msg.sender == address(this)) { // solhint-disable-line no-empty-blocks
                 // Contract calling itself to act on other address
@@ -185,7 +186,8 @@ library ExecutionStore {
                     self.allKeys.find(
                         approvalAddr,
                         self.allKeys.enums.ACTION_KEY()
-                    )
+                    ),
+                    "Sender is not action operator"
                 );
                 approvals.add(approvalAddr);
             }
@@ -218,10 +220,10 @@ library ExecutionStore {
         public
         returns (bool success)
     {
-        require(_id != 0);
+        require(_id != 0, "Invalid execution id");
         Execution storage e = self.execution[_id];
         // Must exist
-        require(e.to != address(0));
+        require(e.to != address(0), "Execution does not exist");
 
         uint threshold;
         bytes32 approvalAddr = KeyStore.addrToKey(msg.sender);
@@ -231,7 +233,8 @@ library ExecutionStore {
                 self.allKeys.find(
                     approvalAddr,
                     self.allKeys.enums.MANAGEMENT_KEY()
-                )
+                ),
+                "Sender is not management"
             );
             threshold = self.managementThreshold;
         } else {
@@ -239,7 +242,8 @@ library ExecutionStore {
                 self.allKeys.find(
                     approvalAddr,
                     self.allKeys.enums.ACTION_KEY()
-                )
+                ),
+                "Sender is not action operator"
             );
             threshold = self.actionThreshold;
         }
@@ -266,10 +270,13 @@ library ExecutionStore {
     function changeManagementThreshold(Executions storage self, uint threshold)
         public
     {
-        require(threshold > 0);
+        require(threshold > 0, "Must have minimum threshold of 1");
         // Don't lock yourself out
         uint256 _purpose = self.allKeys.enums.MANAGEMENT_KEY();
-        require(threshold <= self.allKeys.keysByPurpose[_purpose].values.length);
+        require(
+            threshold <= self.allKeys.keysByPurpose[_purpose].values.length,
+            "Must have more keys than threshold"
+        );
         self.managementThreshold = threshold;
     }
 
@@ -281,10 +288,13 @@ library ExecutionStore {
     function changeActionThreshold(Executions storage self, uint threshold)
         public
     {
-        require(threshold > 0);
+        require(threshold > 0, "Must have minimum threshold of 1");
         // Don't lock yourself out
         uint256 _purpose = self.allKeys.enums.ACTION_KEY();
-        require(threshold <= self.allKeys.keysByPurpose[_purpose].values.length);
+        require(
+            threshold <= self.allKeys.keysByPurpose[_purpose].values.length,
+            "Must have more keys than threshold"
+        );
         self.actionThreshold = threshold;
     }
 
@@ -299,7 +309,7 @@ library ExecutionStore {
         returns (bool)
     {
         // Must exist
-        require(e.to != 0);
+        require(e.to != address(0), "Execution does not exist");
         // solhint-disable-next-line avoid-call-value
         bool success = e.to.call.value(e.value)(e.data);
         if (!success) {

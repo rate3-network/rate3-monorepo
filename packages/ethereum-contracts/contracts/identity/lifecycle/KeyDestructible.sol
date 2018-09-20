@@ -19,7 +19,7 @@ contract KeyDestructible is KeyManageable {
         public
         onlyManagementOrSelf
     {
-        require(_recipient != address(0));
+        require(_recipient != address(0), "Invalid address");
         selfdestruct(_recipient);
     }
 }

@@ -26,7 +26,7 @@ contract KeyPausable is KeyManageable {
      * @dev Modifier to make a function callable only when the contract is not paused.
      */
     modifier whenNotPaused() {
-        require(!_paused);
+        require(!_paused, "Contract is paused");
         _;
     }
 
@@ -34,7 +34,7 @@ contract KeyPausable is KeyManageable {
    * @dev Modifier to make a function callable only when the contract is paused.
    */
     modifier whenPaused() {
-        require(_paused);
+        require(_paused, "Contract is not paused");
         _;
     }
 

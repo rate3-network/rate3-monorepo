@@ -62,7 +62,10 @@ contract KeyManageable is ERC725 {
      *  or the identity itself
      */
     modifier onlyManagementOrSelf {
-        require(_managementOrSelf());
+        require(
+            _managementOrSelf(),
+            "Sender is not the identity itself or the sole management required"
+        );
         _;
     }
 }
