@@ -184,22 +184,29 @@ class account{
         self.history = null
         if(this.network == 'stellar') {
             var accountId = this.getAddress()
+            request('https://horizon-testnet.stellar.org/accounts/GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV/payments', 
+            function(error, response, body) {
+                console.log('error:', error); // Print the error if one occurred
+                console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+                console.log('body:', body); // Print the HTML for the Google homepage.
+                self.history = body
+            });
 
             // Create an API call to query payments involving the account.
-            var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-            var payments = server.payments().forAccount(accountId);
+            // var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+            // var payments = server.payments().forAccount(accountId);
 
-            server.transactions()
-            .forAccount(accountId)
-            .call()
-            .then(function (page) {
-                console.log('Page 1: ');
-                console.log(page.records);
-                self.history = page.records
-            })
-            .catch(function (err) {
-                console.log(err);
-            });
+            // server.transactions()
+            // .forAccount(accountId)
+            // .call()
+            // .then(function (page) {
+            //     console.log('Page 1: ');
+            //     console.log(page.records);
+            //     self.history = page.records
+            // })
+            // .catch(function (err) {
+            //     console.log(err);
+            // });
         } else if (this.network == 'ethereum') {
             request('http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address='+ self.getAddress() +'&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken',
                 function(error, response, body) {
@@ -264,18 +271,17 @@ class account{
 
 module.exports = account
 
-// let wallet_manager_module = require('./wallet_manager')
-// let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
-// const wallet_manager = new wallet_manager_module('stellar')
-// wallet_manager.setSeed(seed_phrases)
-// wallet_manager.setWallet()
-// let toPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP'
-// let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
-// let fromAddress = null
-// let fromPrivateKey = null
-// let acc = wallet_manager.getAccount(4)
-// acc.receive()
-// console.log('acc history', acc.history)
+let wallet_manager_module = require('./wallet_manager')
+let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+const wallet_manager = new wallet_manager_module('stellar')
+wallet_manager.setSeed(seed_phrases)
+wallet_manager.setWallet()
+let toPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP'
+let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
+let fromAddress = null
+let fromPrivateKey = null
+let acc = wallet_manager.getAccount(4)
+acc.receive()
 // acc.send(toPublicKey, '10')
 // acc.send(toPublicKey, '20')
 // acc.send(toPublicKey, '30')
