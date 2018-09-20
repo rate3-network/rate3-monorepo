@@ -34,7 +34,9 @@ class account{
     }
 
     /**
-     * 
+     * Set the account field of this account to be the argument;
+     * For Stellar, upload it to the testnet and update the balance;
+     * For Ethereum, update its balance read on the Rinbeky testnet.
      * @param {object} account - A stellar or ethereum account
      */
     setAccount (account) {
@@ -96,6 +98,10 @@ class account{
         }
     }
 
+    /**
+     * Sign the data using the private key of the current account
+     * @param {string} data - the data (string) to be signed
+     */
     sign(data) {
         if(this.network == 'stellar') {
             //sign
@@ -178,6 +184,10 @@ class account{
                 }
     }
 
+    /**
+     * This methods sets the history field of this account.
+     * All the fields in the response are retained, in JSON format
+     */
     receive() {
         var request = require('request');
         var self = this
@@ -186,10 +196,8 @@ class account{
             var accountId = this.getAddress()
             request('https://horizon-testnet.stellar.org/accounts/GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV/payments', 
             function(error, response, body) {
-                console.log('error:', error); // Print the error if one occurred
-                console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-                console.log('body:', body); // Print the HTML for the Google homepage.
-                self.history = body
+                self.history =  JSON.parse(body)._embedded.records; // Print the HTML for the Google homepage.
+                console.log('body:', self.history)
             });
 
             // Create an API call to query payments involving the account.
@@ -210,10 +218,7 @@ class account{
         } else if (this.network == 'ethereum') {
             request('http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address='+ self.getAddress() +'&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken',
                 function(error, response, body) {
-                    console.log('error:', error); // Print the error if one occurred
-                    console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
-                    console.log('body:', body); // Print the HTML for the Google homepage.
-                    self.history = body
+                    self.history = JSON.parse(body).result
                 });
         }
         
@@ -226,10 +231,20 @@ class account{
         return this.network
     }
 
+    /**
+     * Get the balance associated to this account.
+     * Currently only values for XLM and ETH are saved.
+     * i.e. there is no other types of currency.
+     */
     getBalance() {
         return this.balance
     }
 
+    /**
+     * Get transaction history in and out from this account.
+     * Currently it is the raw json response, and 
+     * different between eth and stellar.
+     */
     getHistory() {
         return this.history
     }
@@ -256,6 +271,9 @@ class account{
         }
     }
 
+    /**
+     * Return the private key (ethereum) / secret (stellar)
+     */
     getPrivateKey() {
         switch(this.network) {
             case 'stellar':
@@ -271,17 +289,17 @@ class account{
 
 module.exports = account
 
-let wallet_manager_module = require('./wallet_manager')
-let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
-const wallet_manager = new wallet_manager_module('stellar')
-wallet_manager.setSeed(seed_phrases)
-wallet_manager.setWallet()
-let toPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP'
-let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
-let fromAddress = null
-let fromPrivateKey = null
-let acc = wallet_manager.getAccount(4)
-acc.receive()
+// let wallet_manager_module = require('./wallet_manager')
+// let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+// const wallet_manager = new wallet_manager_module('stellar')
+// wallet_manager.setSeed(seed_phrases)
+// wallet_manager.setWallet()
+// let toPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP'
+// let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
+// let fromAddress = null
+// let fromPrivateKey = null
+// let acc = wallet_manager.getAccount(4)
+// acc.receive()
 // acc.send(toPublicKey, '10')
 // acc.send(toPublicKey, '20')
 // acc.send(toPublicKey, '30')
