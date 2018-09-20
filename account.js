@@ -98,6 +98,13 @@ class account{
     sign(data) {
         if(this.network == 'stellar') {
             //sign
+            if (this.account.canSign()) {
+                
+                return this.account.sign(data)//.toString()
+            } else {
+                console.log('The Stellar account does not contain a private key and cannot sign')
+                return null
+            }
         } else if (this.network == 'ethereum') {
             return web3.eth.accounts.sign(data, this.getPrivateKey())
         }

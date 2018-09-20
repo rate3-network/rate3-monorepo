@@ -259,9 +259,9 @@ class wallet_manager{
                 output.putBytes(salt);
                 }
                 output.putBuffer(cipher.output);
-                return {original: output, network: this.network}
+                return {original: output, network: this.network, balance: account.balance}
             case 'ethereum':
-                return {original: web3.eth.accounts.encrypt(account.getPrivateKey(), password), network: this.network}    
+                return {original: web3.eth.accounts.encrypt(account.getPrivateKey(), password), network: this.network, balance: account.balance}    
             //return this.getOriginalAccount().encrypt(this.getPrivateKey(), password)
             default:
                 console.log('The network is not correctly set')

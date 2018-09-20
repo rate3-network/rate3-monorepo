@@ -151,17 +151,26 @@ test('setAccountStellar', () => {
 
     let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
     let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
-    //let expectedSignedDataJSON ="{ 'message': 'test'}"//," +
-    //"messageHash: '0x4a5c5d454721bbbb25540c3317521e71c373ae36458f960d2ad46ef088110e95'," +
-    //"v: '0x1b',"+
-    //"r: '0xc381a96085965fa17411546b655332428a63886c912af4b5bf9c215e5d4a96a9'," +
-    //"s: '0x5e0a2e96a0187e55933b34bec263fc5d77a7c6017b954384bbd23e9ee55ed61a'," +
-    //"signature: '0xc381a96085965fa17411546b655332428a63886c912af4b5bf9c215e5d4a96a95e0a2e96a0187e55933b34bec263fc5d77a7c6017b954384bbd23e9ee55ed61a1b' }";
-    //let expectedData = JSON.parse(expectedSignedDataJSON)
+    let exptectedMesage ='test'
+    let expectedmesageHash = '0x4a5c5d454721bbbb25540c3317521e71c373ae36458f960d2ad46ef088110e95'
+    let expectedSignature = '0xc381a96085965fa17411546b655332428a63886c912af4b5bf9c215e5d4a96a95e0a2e96a0187e55933b34bec263fc5d77a7c6017b954384bbd23e9ee55ed61a1b'
     let account = wallet_manager.getAccount()
-    //let signedData = JSON.parse(account.sign('test'))
-    console.log(account.sign('test').message)
-    console.log(signedData)
-    //expect(signedData).toBe(expectedData)
-
+    let signedObject = account.sign('test')
+    expect(signedObject.message).toBe(exptectedMesage)
+    expect(signedObject.messageHash).toBe(expectedmesageHash)
+    expect(signedObject.signature).toBe(expectedSignature)
   });  
+
+  test('signStellar', () => {
+    let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+    const wallet_manager = new wallet_manager_module('stellar')
+    wallet_manager.setSeed(seed_phrases)
+    wallet_manager.setWallet()
+
+    let expectedPrivateKey = 'SDJNCBWIH4GU377ICXYL7NEI5Z2GWOR2Y3PAQVI2HJHJ7MSB42PP4KVW'
+    let expectedPublicKey = 'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'
+    let exptectedMesage = JSON.parse('{"type": "Buffer", "data": [ 45, 213,184,234,218,196,224,146, 52, 91,221, 163,204, 58, 107, 21, 214, 248, 40, 72, 196, 102, 36, 11, 124, 67, 85, 89, 43, 107, 217, 203, 86, 211, 30, 40, 224, 44, 192, 194, 173, 148, 233, 22, 67, 189, 63, 199, 170, 28, 135, 20, 75, 123, 4, 238, 223, 47, 48, 5, 235, 29, 22, 6 ] }')
+    let account = wallet_manager.getAccount()
+    let signedObject = account.sign('test')
+    expect(signedObject.toJSON().toString()).toBe(exptectedMesage.toString())
+  }); 
