@@ -178,6 +178,31 @@ class account{
                 }
     }
 
+    receive() {
+        var self = this
+        self.history = null
+        if(this.network == 'stellar') {
+            var accountId = this.getAddress()
+
+            // Create an API call to query payments involving the account.
+            var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+            var payments = server.payments().forAccount(accountId);
+            //console.log(payments.stream, 'payments')
+
+            server.transactions()
+            .forAccount(accountId)
+            .call()
+            .then(function (page) {
+                console.log('Page 1: ');
+                console.log(page.records);
+                self.history = page.records
+            })
+            .catch(function (err) {
+                console.log(err);
+            });
+        }
+    }
+
     /**
      * Return the network where the account is.
      */
@@ -226,16 +251,21 @@ class account{
 
 module.exports = account
 
-// let wallet_manager_module = require('./wallet_manager')
-// let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
-// const wallet_manager = new wallet_manager_module('stellar')
-// wallet_manager.setSeed(seed_phrases)
-// wallet_manager.setWallet()
-// let expectedPrivateKey = 'SDJNCBWIH4GU377ICXYL7NEI5Z2GWOR2Y3PAQVI2HJHJ7MSB42PP4KVW'
-// let expectedPublicKey = 'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'
-// let acc = wallet_manager.getAccount(3)
-// console.log(acc.getAddress())
-// acc.send(expectedPublicKey, '1000')
+let wallet_manager_module = require('./wallet_manager')
+let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+const wallet_manager = new wallet_manager_module('stellar')
+wallet_manager.setSeed(seed_phrases)
+wallet_manager.setWallet()
+let toPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP'
+let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
+let fromAddress = null
+let fromPrivateKey = null
+let acc = wallet_manager.getAccount(4)
+acc.receive()
+console.log('acc history', acc.history)
+// acc.send(toPublicKey, '10')
+// acc.send(toPublicKey, '20')
+// acc.send(toPublicKey, '30')
 
 // let wallet_manager_module = require('./wallet_manager')
 // let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
