@@ -10,8 +10,9 @@ import {
     assertOkTx,
     assertRevert,
 } from './util';
+import getEvents from '../helpers/getEvents';
 
-contract('KeyManager', async (addrs) => {
+contract('KeyManager Tests', async (addrs) => {
     let identity;
     let accounts;
 
@@ -31,7 +32,7 @@ contract('KeyManager', async (addrs) => {
         ({ identity, accounts } = await setupTest(config));
     });
 
-    describe('addKey', async () => {
+    describe('Test - Add key', async () => {
         it('should not add the same key twice', async () => {
             const initial = await identity.numKeys();
 
@@ -44,12 +45,32 @@ contract('KeyManager', async (addrs) => {
                 KeyType.ECDSA,
                 { from: accounts.manager[0].addr },
             ));
+
+            let logs = await getEvents(identity, {
+                event: 'KeyAdded',
+                args: {
+                    key: accounts.action[2].key,
+                    purpose: new web3.BigNumber(Purpose.ACTION),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
             await assertOkTx(identity.addKey(
                 accounts.action[2].key,
                 Purpose.ACTION,
                 KeyType.ECDSA,
                 { from: accounts.manager[1].addr },
             ));
+            logs = await getEvents(identity, {
+                event: 'KeyAdded',
+                args: {
+                    key: accounts.action[2].key,
+                    purpose: new web3.BigNumber(Purpose.ACTION),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(0);
 
             // End with 3
             await assertKeyCount(identity, Purpose.ACTION, 3);
@@ -70,6 +91,17 @@ contract('KeyManager', async (addrs) => {
                 KeyType.ECDSA,
                 { from: accounts.action[1].addr },
             ));
+
+            const logs = await getEvents(identity, {
+                event: 'KeyAdded',
+                args: {
+                    key: accounts.action[2].key,
+                    purpose: new web3.BigNumber(Purpose.ACTION),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(0);
+
             await assertRevert(identity.addKey(
                 accounts.action[2].key,
                 Purpose.ACTION,
@@ -97,12 +129,33 @@ contract('KeyManager', async (addrs) => {
                 KeyType.ECDSA,
                 { from: accounts.manager[0].addr },
             ));
+
+            let logs = await getEvents(identity, {
+                event: 'KeyAdded',
+                args: {
+                    key: accounts.action[1].key,
+                    purpose: new web3.BigNumber(Purpose.MANAGEMENT),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
             await assertOkTx(identity.addKey(
                 accounts.manager[1].key,
                 Purpose.ACTION,
                 KeyType.ECDSA,
                 { from: accounts.manager[0].addr },
             ));
+
+            logs = await getEvents(identity, {
+                event: 'KeyAdded',
+                args: {
+                    key: accounts.manager[1].key,
+                    purpose: new web3.BigNumber(Purpose.ACTION),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(1);
 
             // End with 3
             await assertKeyCount(identity, Purpose.MANAGEMENT, 3);
@@ -113,7 +166,7 @@ contract('KeyManager', async (addrs) => {
         });
     });
 
-    describe('removeKey', async () => {
+    describe('Test - Remove key', async () => {
         it('should remove multi-purpose keys', async () => {
             // Start with 2
             await assertKeyCount(identity, Purpose.MANAGEMENT, 2);
@@ -141,6 +194,16 @@ contract('KeyManager', async (addrs) => {
             ));
             await assertKeyCount(identity, Purpose.MANAGEMENT, 2);
 
+            let logs = await getEvents(identity, {
+                event: 'KeyRemoved',
+                args: {
+                    key: accounts.manager[0].key,
+                    purpose: new web3.BigNumber(Purpose.MANAGEMENT),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
             // Remove MANAGEMENT
             await assertOkTx(identity.removeKey(
                 accounts.manager[1].key,
@@ -149,6 +212,16 @@ contract('KeyManager', async (addrs) => {
             ));
             await assertKeyCount(identity, Purpose.MANAGEMENT, 1);
 
+            logs = await getEvents(identity, {
+                event: 'KeyRemoved',
+                args: {
+                    key: accounts.manager[1].key,
+                    purpose: new web3.BigNumber(Purpose.MANAGEMENT),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
             // Remove ACTION
             await assertOkTx(identity.removeKey(
                 accounts.action[1].key,
@@ -156,6 +229,16 @@ contract('KeyManager', async (addrs) => {
                 { from: accounts.action[1].addr },
             ));
             await assertKeyCount(identity, Purpose.ACTION, 1);
+
+            logs = await getEvents(identity, {
+                event: 'KeyRemoved',
+                args: {
+                    key: accounts.action[1].key,
+                    purpose: new web3.BigNumber(Purpose.ACTION),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(1);
 
             // Storage is clean
             const [purposes, keyType, key] = await identity.getKey(
@@ -180,6 +263,16 @@ contract('KeyManager', async (addrs) => {
             ));
             await assertKeyCount(identity, Purpose.MANAGEMENT, 1);
 
+            let logs = await getEvents(identity, {
+                event: 'KeyRemoved',
+                args: {
+                    key: accounts.manager[1].key,
+                    purpose: new web3.BigNumber(Purpose.MANAGEMENT),
+                    keyType: new web3.BigNumber(KeyType.ECDSA),
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
             // Remove self
             await assertRevert(identity.removeKey(
                 accounts.manager[0].key,
@@ -187,6 +280,9 @@ contract('KeyManager', async (addrs) => {
                 { from: accounts.manager[0].addr },
             ));
             await assertKeyCount(identity, Purpose.MANAGEMENT, 1);
+
+            logs = await getEvents(identity, { event: 'KeyRemoved' });
+            logs.should.have.a.lengthOf(0);
 
             const total = await identity.numKeys();
             total.should.be.bignumber.equal(initial.sub(1));
@@ -203,11 +299,16 @@ contract('KeyManager', async (addrs) => {
                 Purpose.MANAGEMENT,
                 { from: accounts.action[1].addr },
             ));
+            let logs = await getEvents(identity, { event: 'KeyRemoved' });
+            logs.should.have.a.lengthOf(0);
+
             await assertRevert(identity.removeKey(
                 accounts.manager[1].key,
                 Purpose.MANAGEMENT,
                 { from: accounts.action[1].addr },
             ));
+            logs = await getEvents(identity, { event: 'KeyRemoved' });
+            logs.should.have.a.lengthOf(0);
 
             // End with 2
             await assertKeyCount(identity, Purpose.MANAGEMENT, 2);
@@ -227,10 +328,11 @@ contract('KeyManager', async (addrs) => {
                 { from: accounts.manager[0].addr },
             ));
 
+            const logs = await getEvents(identity, { event: 'KeyRemoved' });
+            logs.should.have.a.lengthOf(0);
+
             const total = await identity.numKeys();
             total.should.be.bignumber.equal(initial);
         });
     });
-
-    // TODO: test KeyAdded, KeyRemoved
 });

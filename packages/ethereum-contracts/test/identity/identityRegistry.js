@@ -12,7 +12,7 @@ const IdentityRegistry = artifacts.require('./identity/IdentityRegistry.sol');
 const Identity = artifacts.require('./identity/Identity.sol');
 const KeyEnums = artifacts.require('./identity/constants/KeyEnums.sol');
 
-contract('IdentityRegistry', async (addrs) => {
+contract('IdentityRegistry Test', async (addrs) => {
     let registry;
 
     afterEach('print gas', printTestGas);
@@ -25,7 +25,7 @@ contract('IdentityRegistry', async (addrs) => {
         r.logs.find(e => e.event === 'NewIdentity').args.identityAddress
     );
 
-    describe('createIdentity', () => {
+    describe('Test - Create identity', () => {
         it('is created', async () => {
             const r = await assertOkTx(registry.createIdentity({ from: addrs[0] }));
             const identityAddr = findIdentityAddress(r);
@@ -42,7 +42,7 @@ contract('IdentityRegistry', async (addrs) => {
             assert.isTrue(await identity.supportsInterface('0x6a89c416'));
         });
 
-        describe('after created', async () => {
+        describe('Test - After created', async () => {
             let identity;
 
             beforeEach('new contract', async () => {

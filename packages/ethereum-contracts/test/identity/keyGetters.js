@@ -6,7 +6,7 @@ import {
 } from './base';
 import { printTestGas } from './util';
 
-contract('KeyGetters', async (addrs) => {
+contract('KeyGetters Tests', async (addrs) => {
     let identity;
     let accounts;
 
@@ -26,7 +26,7 @@ contract('KeyGetters', async (addrs) => {
     });
 
     // Getters
-    describe('keyHasPurpose', async () => {
+    describe('Test - Key purpose', async () => {
         it('should return keys that exist', async () => {
             assert.isTrue(await identity.keyHasPurpose(
                 accounts.manager[1].key,
@@ -50,7 +50,7 @@ contract('KeyGetters', async (addrs) => {
         });
     });
 
-    describe('getKey', async () => {
+    describe('Test - Get key', async () => {
         it('should return key data', async () => {
             const [purposes, keyType, key] = await identity.getKey(
                 accounts.manager[1].key,
@@ -83,7 +83,7 @@ contract('KeyGetters', async (addrs) => {
         });
     });
 
-    describe('getKeysByPurpose', async () => {
+    describe('Test - Get keys by purpose', async () => {
         it('should return all management keys', async () => {
             const k = await identity.getKeysByPurpose(Purpose.MANAGEMENT);
             assert.equal(k.length, 2);

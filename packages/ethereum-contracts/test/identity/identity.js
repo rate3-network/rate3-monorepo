@@ -13,7 +13,7 @@ const TestContract = artifacts.require('./identity/TestContract.sol');
 const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 const KeyStore = artifacts.require('./identity/lib/KeyStore.sol');
 
-contract('Identity', async (addrs) => {
+contract('Identity Tests', async (addrs) => {
     let identity;
     let accounts;
 

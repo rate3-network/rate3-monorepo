@@ -98,7 +98,7 @@ contract('ClaimManager Tests', async (addrs) => {
         });
     });
 
-    describe('Test - addClaim', () => {
+    describe('Test - Add claim', () => {
         it('can recover signature', async () => {
             const claimStore = await ClaimStore.deployed();
 
@@ -293,7 +293,7 @@ contract('ClaimManager Tests', async (addrs) => {
         });
     });
 
-    describe('Test - changeClaim', () => {
+    describe('Test - Change claim', () => {
         it('can update a self-claim', async () => {
             const uri = 'https://github.com/rate-engineering';
             const newUri = 'https://medium.com/ratex-engineering';
@@ -499,7 +499,7 @@ contract('ClaimManager Tests', async (addrs) => {
         });
     });
 
-    describe('Test - removeClaim', async () => {
+    describe('Test - Remove claim', async () => {
         it('can remove a claim', async () => {
             // First claim
             const claimId = getClaimId(identity.address, Topic.LABEL);
