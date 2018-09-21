@@ -1,8 +1,8 @@
-/*
-The code is refered from the following links
-https://www.npmjs.com/package/stellar-hd-wallet for account creation
-https://www.npmjs.com/package/node-forge for encryption, decryption
-https://www.stellar.org/developers/guides/ for uploading accounts to testnet, transaction
+/**
+* The code is refered from the following links
+* https://www.npmjs.com/package/stellar-hd-wallet for account creation
+* https://www.npmjs.com/package/node-forge for encryption, decryption
+* https://www.stellar.org/developers/guides/ for uploading accounts to testnet, transaction
 */
 
 const bip39 = require('bip39')
@@ -18,9 +18,7 @@ var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630
 
 let account = require('./account')
 
-/**
- * This is a wrapper class over stellar and ethereum wallets
- */
+/** This is a wrapper class over stellar and ethereum wallets */
 class wallet_manager{
     constructor(network) {
         if (network == 'stellar') {
@@ -315,8 +313,7 @@ class wallet_manager{
                 return null
         }
     }
-
-    //set
+    
 }
 
 module.exports = wallet_manager
