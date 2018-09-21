@@ -225,6 +225,25 @@ class account{
     }
 
     /**
+     * Construct the transaction from the uri, and sign it with the current account
+     * Return the signed transaction
+     * @param {string} uri - the input uri
+     */
+    delegatedSigning(uri) {
+        if(this.network == 'stellar') {
+            let txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(uri.slice(19), 'base64')
+            //web+stellar:tx?xdr=... the xdr starts from position 19 of the string
+            let tx1 = new StellarSdk.Transaction(txEnvelope);
+            StellarSdk.Network.useTestNetwork();
+            tx1.sign(this.account)
+            return tx1
+        } else if (this.network == 'ethereum') {
+            return true
+        }
+
+    }
+
+    /**
      * Return the network where the account is.
      */
     getNetwork() {
@@ -298,7 +317,11 @@ module.exports = account
 // let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
 // let fromAddress = null
 // let fromPrivateKey = null
-// let acc = wallet_manager.getAccount(4)
+// let acc = wallet_manager.getAccount(3)
+// let sampleXDR = 'web+stellar:tx?xdr=AAAAAKEXb+g8NGdB5fncWTVdm1VYU/+1EaZfac9+IUMSWlldAAAAZACpzYcAAAAKAAAAAAAAAAAAAAABAAAAAQAAAAChF2/oPDRnQeX53Fk1XZtVWFP/tRGmX2nPfiFDElpZXQAAAAEAAAAAINKkmbLvxl/YKqBHgvQ/pJjOY+EBY2HA3yzTtfbpE3oAAAAAAAAAAACYloAAAAAAAAAAAA=='
+// console.log(acc.delegatedSigning(sampleXDR))
+
+
 // acc.receive()
 // acc.send(toPublicKey, '10')
 // acc.send(toPublicKey, '20')
