@@ -83,8 +83,8 @@ const SuccessModal = inject('RootStore')(observer((props) => {
       <div className={classes.modal}>
         <div className={classes.paper}>
           <div className={classes.content}>
-            <h1>Registration Submitted</h1>
-            <p>Thank you, your registration has been submitted, you will be able to add it to the blockchain once reviewed.</p>
+            <h1>{props.title}</h1>
+            <p>{props.content}</p>
             <div className={classes.buttonContainer}>
               <BlueButton
                 classes={{

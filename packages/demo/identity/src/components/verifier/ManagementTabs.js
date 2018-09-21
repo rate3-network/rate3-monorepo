@@ -87,7 +87,8 @@ class ManagementTabs extends React.Component {
 
   render() {
     const { classes, theme } = this.props;
-    const pendingUserList = createData('pic-', 'address', 3);
+    // const pendingUserList = createData('pic-', 'address', 3);
+    const pendingUserList = this.props.RootStore.verifierStore.pendingIdentityList;
     const verifiedUserList = createData('pic-', 'verified', 13);
     const value = this.props.RootStore.verifierStore.getCurrentTab();
     return (
@@ -111,10 +112,10 @@ class ManagementTabs extends React.Component {
           onChangeIndex={this.handleChangeIndex}
         >
           <div>
-            {value === 0 && <PendingUserTable pendingList={pendingUserList} />}
+            {value === 0 && <PendingUserTable />}
           </div>
           <div>
-            {value === 1 && <PendingUserTable pendingList={verifiedUserList} />}
+            {value === 1 && <PendingUserTable />}
           </div>
         </SwipeableViews>
       </div>

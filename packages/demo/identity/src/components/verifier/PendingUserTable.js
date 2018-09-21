@@ -8,7 +8,7 @@ import TableFooter from '@material-ui/core/TableFooter';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { inject } from 'mobx-react';
+import { inject, observer } from 'mobx-react';
 import ChevronRight from '@material-ui/icons/ChevronRightRounded';
 
 import ProfilePic from '../ProfilePic';
@@ -68,10 +68,10 @@ const styles = theme => ({
   },
 });
 
-@inject('RootStore')
+@inject('RootStore') @observer
 class PendingUserTable extends React.Component {
   state = {
-    rows: this.props.pendingList,
+    
     page: 0,
     rowsPerPage: 5,
   };
@@ -86,9 +86,10 @@ class PendingUserTable extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { rows, rowsPerPage, page } = this.state;
+    const { rowsPerPage, page } = this.state;
+    const rows = this.props.RootStore.verifierStore.pendingIdentityList;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-
+    console.log('rows', rows);
     return (
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
@@ -97,15 +98,15 @@ class PendingUserTable extends React.Component {
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
                   <TableRow
-                    onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row.address); }}
+                    onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row.user); }}
                     className={classes.rowRoot}
-                    key={row.address}
+                    key={`${row.user}.${row.value}`}
                   >
                     <TableCell className={classes.profilePicContainer} padding="checkbox" scope="row">
-                      <ProfilePic size={6} seed={row.address} />
+                      <ProfilePic size={6} seed={row.user} />
                     </TableCell>
                     <TableCell className={classes.textCell} component="td" scope="row">
-                      {row.address}
+                      {row.user}
                     </TableCell>
                     <TableCell className={classes.arrowCell} component="td" scope="row">
                       <ChevronRight />

@@ -10,4 +10,10 @@ export default {
 
   howDoesItWork: 'How does it work?',
   howDoesItWorkPara1: '1. Start off with the ‘User’ perspective ',
+
+  registrationSuccessTitle: 'Registration Submitted',
+  registrationSuccessContent: 'Thank you, your registration has been submitted, you will be able to add it to the blockchain once reviewed.',
+
+  verifySuccessTitle: 'Signature Sent',
+  verifySuccessContent: 'Thank you, your signature for the verification has been sent to the user. No further action is required.',
 };

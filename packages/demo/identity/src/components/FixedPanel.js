@@ -42,6 +42,12 @@ const styles = theme => ({
     padding: '1em 0 1em 1em',
     // alignItems: 'center',
   },
+  icon: {
+    // verticalAlign: 'bottom',
+    color: 'black',
+    height: '1.5em',
+    width: '1.5em',
+  },
   title: {
     fontWeight: 'bold',
     fontSize: '1em',
@@ -69,7 +75,7 @@ const styles = theme => ({
 
 const ArrowIcon = withStyles(styles)((props) => {
   const { classes } = props;
-  return <ExpandMoreIcon />;
+  return <ExpandMoreIcon className={classes.icon} />;
 });
 
 const RegisterButton = withStyles(styles)((props) => {
@@ -83,7 +89,7 @@ const FixedPanel = (props) => {
   return (
     <div className={classes.root}>
       <ExpansionPanel className={classes.paper} expanded={false}>
-        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<RegisterButton {...props} />}>
+        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={props.isUser ? <RegisterButton {...props} /> : <React.Fragment /> }>
           <div className={classes.header}>
             <img src={identityIcon} className={classes.image} alt="Identity Icon" />
             <div className={classes.textGroup}>

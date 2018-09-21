@@ -5,6 +5,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { observer, inject } from 'mobx-react';
 
 import { identityHeavyGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
@@ -105,6 +106,7 @@ const styles = theme => ({
   },
 });
 
+@inject('RootStore')
 class SubPanel extends React.Component {
   constructor(props) {
     super(props);
@@ -114,7 +116,14 @@ class SubPanel extends React.Component {
   }
 
   handleAdd() {
-    console.log('add identity');
+    console.log(this.props.item);
+    this.props.RootStore.userStore.addClaim(this.props.item);
+  }
+
+  handleVerify() {
+    console.log(this.props.item);
+    this.props.RootStore.verifierStore.setCurrentVerification(this.props.item.user, this.props.item.value, this.props.item.type);
+    this.props.RootStore.verifierStore.openVerificationModal();
   }
 
   handleExpand() {
@@ -139,6 +148,21 @@ class SubPanel extends React.Component {
           lineHeight="1em"
           fontWeight={500}
           buttonText="add"
+          buttonIcon={ether}
+          iconHeight="0.8em"
+        />
+      </div>);
+    });
+
+    const VerifyButton = withStyles(styles)((props) => {
+      return (
+      <div>
+        <BlueButton 
+          className={classes.buttonContainer}
+          fontSize="0.7em"
+          lineHeight="1em"
+          fontWeight={500}
+          buttonText="verify"
           buttonIcon={ether}
           iconHeight="0.8em"
         />
@@ -169,8 +193,11 @@ class SubPanel extends React.Component {
                   }
                 </div>
               </div>
-              {this.props.item.status === PENDING_ADD &&
-                <div onClick={this.handleAdd} className={classes.addButton}><AddButton /></div>
+              {this.props.isUser && this.props.item.status === PENDING_ADD &&
+                <div onClick={this.handleAdd.bind(this)} className={classes.addButton}><AddButton /></div>
+              }
+              {!this.props.isUser && this.props.item.status === PENDING_REVIEW &&
+                <div onClick={this.handleVerify.bind(this)} className={classes.addButton}><VerifyButton /></div>
               }
             </div>
             
@@ -184,8 +211,8 @@ class SubPanel extends React.Component {
                 }
               </div>
               <div className={classes.contentCol}>
-                {this.props.item.status === VERIFIED && <div className={classes.data}>{this.props.item.txHash}</div>}
-                <div className={classes.data}>{this.props.item.value}</div>
+                {this.props.item.status === VERIFIED && <div className={classes.data}>{'this.props.item.txHash'}</div>}
+                <div className={classes.data}>{this.props.item.value}</div><div className={classes.data}>{'this.props.item.signature'}</div>
                 {this.props.item.status === PENDING_REVIEW &&
                   <div className={classes.pending}>Pending</div>
                 }

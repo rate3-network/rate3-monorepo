@@ -21,7 +21,7 @@ contract KeyGetters is KeyManageable {
         view
         returns(uint256[] purposes, uint256 keyType, bytes32 key)
     {
-        KeyStore.Key memory k = allKeys.keyData[_key];
+        KeyStore.Key memory k = executions.allKeys.keyData[_key];
         purposes = k.purposes.values;
         keyType = k.keyType;
         key = k.key;
@@ -38,7 +38,7 @@ contract KeyGetters is KeyManageable {
         view
         returns(bool exists)
     {
-        return allKeys.find(_key, purpose);
+        return executions.allKeys.find(_key, purpose);
     }
 
     /**
@@ -51,6 +51,6 @@ contract KeyGetters is KeyManageable {
         view
         returns(bytes32[] keys)
     {
-        return allKeys.keysByPurpose[_purpose].values;
+        return executions.allKeys.keysByPurpose[_purpose].values;
     }
 }

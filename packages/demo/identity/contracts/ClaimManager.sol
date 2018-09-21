@@ -4,6 +4,7 @@ import "./lifecycle/KeyPausable.sol";
 import "./ERC/ERC725.sol";
 import "./ERC/ERC735.sol";
 import "./lib/ERC165Query.sol";
+import "./lib/KeyStore.sol";
 import "./lib/ClaimStore.sol";
 
 
@@ -52,7 +53,7 @@ contract ClaimManager is KeyPausable, ERC735 {
         returns (uint256 claimRequestId)
     {
         // Check signature
-        if (_scheme == ECDSA_TYPE) {
+        if (_scheme == executions.allKeys.enums.ECDSA_TYPE()) {
             require(_validSignature(_topic, _scheme, _issuer, _signature, _data));
         }
         // Check we can perform action
@@ -165,7 +166,7 @@ contract ClaimManager is KeyPausable, ERC735 {
         view
         returns (bool)
     {
-        if (_scheme == ECDSA_TYPE) {
+        if (_scheme == executions.allKeys.enums.ECDSA_TYPE()) {
             address signedBy = ClaimStore.getSignatureAddress(
                 ClaimStore.claimToSign(address(this), _topic, _data),
                 _signature
@@ -176,12 +177,18 @@ contract ClaimManager is KeyPausable, ERC735 {
                 return true;
             } else if (_issuer == address(this)) {
                 // Self-signed with CLAIM_SIGNER_KEY
-                return allKeys.find(addrToKey(signedBy), CLAIM_SIGNER_KEY);
+                return executions.allKeys.find(
+                    KeyStore.addrToKey(signedBy),
+                    executions.allKeys.enums.CLAIM_SIGNER_KEY()
+                );
             } else if (_issuer.doesContractImplementInterface(ERC725ID())) {
                 // Issuer is an Identity contract
                 // It should hold the key with which the above message was signed.
                 // If the key is not present anymore, the claim SHOULD be treated as invalid.
-                return ERC725(_issuer).keyHasPurpose(addrToKey(signedBy), CLAIM_SIGNER_KEY);
+                return ERC725(_issuer).keyHasPurpose(
+                    KeyStore.addrToKey(signedBy),
+                    executions.allKeys.enums.CLAIM_SIGNER_KEY()
+                );
             }
             // Invalid
             return false;
@@ -208,7 +215,10 @@ contract ClaimManager is KeyPausable, ERC735 {
             // MUST only be done by the issuer of the claim
         } else if (issuer.doesContractImplementInterface(ERC725ID())) {
             // Issuer is another Identity contract, is this an action key?
-            require(ERC725(issuer).keyHasPurpose(addrToKey(msg.sender), ACTION_KEY));
+            require(ERC725(issuer).keyHasPurpose(
+                KeyStore.addrToKey(msg.sender),
+                executions.allKeys.enums.ACTION_KEY()
+            ));
         } else {
             revert("Sender is NOT Management or Self or Issuer");
         }

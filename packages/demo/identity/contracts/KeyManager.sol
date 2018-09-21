@@ -23,11 +23,7 @@ contract KeyManager is KeyPausable {
         whenNotPaused
         returns (bool success)
     {
-        if (allKeys.find(_key, _purpose)) {
-            return false;
-        }
-        _addKey(_key, _purpose, _keyType);
-        return true;
+        return executions.addKey(_key, _purpose, _keyType);
     }
 
     /**
@@ -42,33 +38,6 @@ contract KeyManager is KeyPausable {
         whenNotPaused
         returns (bool success)
     {
-        if (!allKeys.find(_key, _purpose)) {
-            return false;
-        }
-        if (_purpose == MANAGEMENT_KEY) {
-            require(
-                getKeysByPurpose(_purpose).length - 1 >= managementThreshold
-            );
-        } else if (_purpose == ACTION_KEY) {
-            require(
-                getKeysByPurpose(_purpose).length - 1 >= actionThreshold
-            );
-        }
-        uint256 keyType = allKeys.remove(_key, _purpose);
-        emit KeyRemoved(_key, _purpose, keyType);
-        return true;
-    }
-
-    /**
-     * @dev Add key data to the identity without checking if it already exists
-     * @param _key Key bytes to add
-     * @param _purpose Purpose to add
-     * @param _keyType Key type to add
-     */
-    function _addKey(bytes32 _key, uint256 _purpose, uint256 _keyType)
-        internal
-    {
-        allKeys.add(_key, _purpose, _keyType);
-        emit KeyAdded(_key, _purpose, _keyType);
+        return executions.removeKey(_key, _purpose);
     }
 }

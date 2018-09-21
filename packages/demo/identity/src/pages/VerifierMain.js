@@ -35,9 +35,6 @@ const styles = (theme) => {
 
 @inject('RootStore') @observer
 class VerifierMain extends React.Component {
-  @observable registryContract = {};
-  @observable identityContract = {};
-  @observable identityAddress = '';
   constructor(props) {
     super(props);
     if (this.props.RootStore.commonStore.getIsUser()) {
@@ -47,33 +44,14 @@ class VerifierMain extends React.Component {
   componentDidMount() {
     // console.log(verifierPrivKey);
     // window.web3ForCommonNetwork.eth.accounts.wallet.add(verifierPrivKey);
-     when(
-      () => this.props.RootStore.finishInitNetwork,
-      () => {
-        
-        const contract = new window.web3.eth.Contract(identityRegistryJson.abi, '0x2d0335d5f2405ab1f9d149913b05ad00b9dea041');
-        this.registryContract = contract;
-        window.registryContract = contract;
-        console.log('creating event listener');
-        const sub = contract.events.NewIdentity( function(error, event){ console.log('from event listener');console.log(event); })
-          .on('data', function(event) {
-            console.log('from event listener');
-            console.log(event); // same results as the optional callback above
-          })
-          .on('changed', function(event) {
-            console.log('from event listener');
-            console.log(event);
-          })
-          .on('error', console.error);
-        
-        console.log(sub);
-        console.log(contract);
-        this.registryContract = contract;
-        // const identity = this.registryContract.methods.createIdentity().call().then(console.log);
-        
-        // console.log('listening for NewIdentity');
-       },
-    );
+    let storage = window.localStorage;
+    if (storage.getItem('table') === null) {
+      storage.setItem('table', []);
+    }
+    
+    const table = storage.getItem('table') === '' ? [] : JSON.parse(storage.getItem('table'));
+    this.props.RootStore.verifierStore.setIdentityTable(table);
+
   }
   // onUserItemClick(value) {
   //   console.log('clicked');
@@ -81,27 +59,7 @@ class VerifierMain extends React.Component {
   //   this.props.RootStore.verifierStore.setUserSelected(value);
   //   console.log(this.props.RootStore.verifierStore.getUserSelected());
   // }
-  createIdentity() {
-    this.registryContract.methods.createIdentity().send({from: '0x110E4bC4286bac52370B4AEF9aE89832C252d794', gas: 6000000}, (err, result) => {console.log(result);});
-  }
-  getPastEvents() {
-    this.registryContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
-  }
-  checkHasIdentity() {
-    this.registryContract.methods.hasIdentity('0xE4Bfd8b40e78e539eb59719Ad695D0D0132FA502').call().then(console.log);
-  }
-  @action
-  getIdentityContract() {
-    this.registryContract.methods.identities('0xE4Bfd8b40e78e539eb59719Ad695D0D0132FA502').call()
-      .then((result) => {
-        console.log(result);
-        runInAction(() => {
-          this.identityAddress = result;
-        });
-        const identityContract = new window.web3.eth.Contract(identityJson.abi, this.identityAddress);
-        window.identityContract = identityContract;
-      });
-  }
+ 
   render() {
     const { classes, t, RootStore } = this.props;
     const { verifierStore } = RootStore;
@@ -109,10 +67,6 @@ class VerifierMain extends React.Component {
     return (
       <div className={classes.container}>
         <p>{this.identityAddress}</p>
-        <button onClick={this.createIdentity.bind(this)}>create identity</button>
-        <button onClick={this.getPastEvents.bind(this)}>get past events</button>
-        <button onClick={this.checkHasIdentity.bind(this)}>check has identity</button>
-        <button onClick={this.getIdentityContract.bind(this)}>get identity contract</button>
         <InstructionModal
           open={verifierStore.getVerifierModalIsShowing()}
           onClose={verifierStore.closeModal.bind(verifierStore)}

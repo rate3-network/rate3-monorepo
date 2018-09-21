@@ -1,10 +1,13 @@
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
 class Identity {
-  constructor(id, value) {
+  constructor(id, value, type, user, verifier, status = PENDING_REVIEW) {
     this.id = id;
     this.value = value;
-    this.status = PENDING_REVIEW;
+    this.type = type;
+    this.user = user;
+    this.verifier = verifier;
+    this.status = status;
     this.signature = '';
     this.txHash = '';
   }

@@ -36,20 +36,6 @@
     },
     {
       "constant": true,
-      "inputs": [],
-      "name": "MANAGEMENT_KEY",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
       "inputs": [
         {
           "name": "_key",
@@ -103,48 +89,6 @@
       "type": "function"
     },
     {
-      "constant": true,
-      "inputs": [],
-      "name": "RSA_TYPE",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "actionThreshold",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "ECDSA_TYPE",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "constant": false,
       "inputs": [
         {
@@ -168,25 +112,6 @@
       "type": "function"
     },
     {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "addr",
-          "type": "address"
-        }
-      ],
-      "name": "addrToKey",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bytes32"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "pure",
-      "type": "function"
-    },
-    {
       "constant": false,
       "inputs": [
         {
@@ -207,20 +132,6 @@
       ],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "ACTION_KEY",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -257,34 +168,6 @@
       "type": "function"
     },
     {
-      "constant": true,
-      "inputs": [],
-      "name": "ENCRYPTION_KEY",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "managementThreshold",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "constant": false,
       "inputs": [
         {
@@ -309,20 +192,6 @@
       ],
       "payable": false,
       "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "constant": true,
-      "inputs": [],
-      "name": "CLAIM_SIGNER_KEY",
-      "outputs": [
-        {
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
       "type": "function"
     },
     {
@@ -502,30 +371,30 @@
     "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/lifecycle/KeyDestructible.sol",
     "exportedSymbols": {
       "KeyDestructible": [
-        2702
+        3152
       ]
     },
-    "id": 2703,
+    "id": 3153,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 2678,
+        "id": 3128,
         "literals": [
           "solidity",
           "0.4",
           ".24"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:14"
+        "src": "0:23:17"
       },
       {
         "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/ownership/KeyManageable.sol",
         "file": "../ownership/KeyManageable.sol",
-        "id": 2679,
+        "id": 3129,
         "nodeType": "ImportDirective",
-        "scope": 2703,
-        "sourceUnit": 2872,
-        "src": "25:40:14",
+        "scope": 3153,
+        "sourceUnit": 3298,
+        "src": "25:40:17",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -535,44 +404,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 2680,
+              "id": 3130,
               "name": "KeyManageable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2871,
-              "src": "362:13:14",
+              "referencedDeclaration": 3297,
+              "src": "362:13:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_KeyManageable_$2871",
+                "typeIdentifier": "t_contract$_KeyManageable_$3297",
                 "typeString": "contract KeyManageable"
               }
             },
-            "id": 2681,
+            "id": 3131,
             "nodeType": "InheritanceSpecifier",
-            "src": "362:13:14"
+            "src": "362:13:17"
           }
         ],
         "contractDependencies": [
-          791,
-          954,
-          2871
+          890,
+          1053,
+          3297
         ],
         "contractKind": "contract",
         "documentation": "@title KeyDestructible\n@author Wu Di\n@notice Base contract that can be destroyed by MANAGEMENT_KEY or the identity itself\n@dev Inspired by\nhttps://github.com/OpenZeppelin/openzeppelin-solidity/tree/v1.12.0/contracts/lifecycle/Destructible.sol",
         "fullyImplemented": false,
-        "id": 2702,
+        "id": 3152,
         "linearizedBaseContracts": [
-          2702,
-          2871,
-          954,
-          791
+          3152,
+          3297,
+          1053,
+          890
         ],
         "name": "KeyDestructible",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 2700,
+              "id": 3150,
               "nodeType": "Block",
-              "src": "638:84:14",
+              "src": "638:84:17",
               "statements": [
                 {
                   "expression": {
@@ -584,19 +453,19 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 2693,
+                        "id": 3143,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 2689,
+                          "id": 3139,
                           "name": "_recipient",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2683,
-                          "src": "656:10:14",
+                          "referencedDeclaration": 3133,
+                          "src": "656:10:17",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -610,14 +479,14 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "30",
-                              "id": 2691,
+                              "id": 3141,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "678:1:14",
+                              "src": "678:1:17",
                               "subdenomination": null,
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_0_by_1",
@@ -633,20 +502,20 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 2690,
+                            "id": 3140,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "lValueRequested": false,
                             "nodeType": "ElementaryTypeNameExpression",
-                            "src": "670:7:14",
+                            "src": "670:7:17",
                             "typeDescriptions": {
                               "typeIdentifier": "t_type$_t_address_$",
                               "typeString": "type(address)"
                             },
                             "typeName": "address"
                           },
-                          "id": 2692,
+                          "id": 3142,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -654,13 +523,13 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "670:10:14",
+                          "src": "670:10:17",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
                           }
                         },
-                        "src": "656:24:14",
+                        "src": "656:24:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -674,21 +543,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 2688,
+                      "id": 3138,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2889,
-                        2890
+                        3315,
+                        3316
                       ],
-                      "referencedDeclaration": 2889,
-                      "src": "648:7:14",
+                      "referencedDeclaration": 3315,
+                      "src": "648:7:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 2694,
+                    "id": 3144,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -696,15 +565,15 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "648:33:14",
+                    "src": "648:33:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 2695,
+                  "id": 3145,
                   "nodeType": "ExpressionStatement",
-                  "src": "648:33:14"
+                  "src": "648:33:17"
                 },
                 {
                   "expression": {
@@ -712,12 +581,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 2697,
+                        "id": 3147,
                         "name": "_recipient",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2683,
-                        "src": "704:10:14",
+                        "referencedDeclaration": 3133,
+                        "src": "704:10:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -731,18 +600,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 2696,
+                      "id": 3146,
                       "name": "selfdestruct",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2894,
-                      "src": "691:12:14",
+                      "referencedDeclaration": 3320,
+                      "src": "691:12:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_selfdestruct_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 2698,
+                    "id": 3148,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -750,57 +619,57 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "691:24:14",
+                    "src": "691:24:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 2699,
+                  "id": 3149,
                   "nodeType": "ExpressionStatement",
-                  "src": "691:24:14"
+                  "src": "691:24:17"
                 }
               ]
             },
             "documentation": "@dev Transfers the current balance and terminates the contract\n@param _recipient All funds in contract will be sent to this recipient",
-            "id": 2701,
+            "id": 3151,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
             "modifiers": [
               {
                 "arguments": null,
-                "id": 2686,
+                "id": 3136,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 2685,
+                  "id": 3135,
                   "name": "onlyManagementOrSelf",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2870,
-                  "src": "613:20:14",
+                  "referencedDeclaration": 3296,
+                  "src": "613:20:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "613:20:14"
+                "src": "613:20:17"
               }
             ],
             "name": "destroyAndSend",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 2684,
+              "id": 3134,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2683,
+                  "id": 3133,
                   "name": "_recipient",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2701,
-                  "src": "570:18:14",
+                  "scope": 3151,
+                  "src": "570:18:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -808,10 +677,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 2682,
+                    "id": 3132,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "570:7:14",
+                    "src": "570:7:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -821,56 +690,56 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "569:20:14"
+              "src": "569:20:17"
             },
             "payable": false,
             "returnParameters": {
-              "id": 2687,
+              "id": 3137,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "638:0:14"
+              "src": "638:0:17"
             },
-            "scope": 2702,
-            "src": "546:176:14",
+            "scope": 3152,
+            "src": "546:176:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 2703,
-        "src": "334:390:14"
+        "scope": 3153,
+        "src": "334:390:17"
       }
     ],
-    "src": "0:725:14"
+    "src": "0:725:17"
   },
   "legacyAST": {
     "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/lifecycle/KeyDestructible.sol",
     "exportedSymbols": {
       "KeyDestructible": [
-        2702
+        3152
       ]
     },
-    "id": 2703,
+    "id": 3153,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 2678,
+        "id": 3128,
         "literals": [
           "solidity",
           "0.4",
           ".24"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:14"
+        "src": "0:23:17"
       },
       {
         "absolutePath": "/Users/lookrain/Documents/work/rate3-monorepo/packages/demo/identity/contracts/ownership/KeyManageable.sol",
         "file": "../ownership/KeyManageable.sol",
-        "id": 2679,
+        "id": 3129,
         "nodeType": "ImportDirective",
-        "scope": 2703,
-        "sourceUnit": 2872,
-        "src": "25:40:14",
+        "scope": 3153,
+        "sourceUnit": 3298,
+        "src": "25:40:17",
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -880,44 +749,44 @@
             "arguments": null,
             "baseName": {
               "contractScope": null,
-              "id": 2680,
+              "id": 3130,
               "name": "KeyManageable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 2871,
-              "src": "362:13:14",
+              "referencedDeclaration": 3297,
+              "src": "362:13:17",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_KeyManageable_$2871",
+                "typeIdentifier": "t_contract$_KeyManageable_$3297",
                 "typeString": "contract KeyManageable"
               }
             },
-            "id": 2681,
+            "id": 3131,
             "nodeType": "InheritanceSpecifier",
-            "src": "362:13:14"
+            "src": "362:13:17"
           }
         ],
         "contractDependencies": [
-          791,
-          954,
-          2871
+          890,
+          1053,
+          3297
         ],
         "contractKind": "contract",
         "documentation": "@title KeyDestructible\n@author Wu Di\n@notice Base contract that can be destroyed by MANAGEMENT_KEY or the identity itself\n@dev Inspired by\nhttps://github.com/OpenZeppelin/openzeppelin-solidity/tree/v1.12.0/contracts/lifecycle/Destructible.sol",
         "fullyImplemented": false,
-        "id": 2702,
+        "id": 3152,
         "linearizedBaseContracts": [
-          2702,
-          2871,
-          954,
-          791
+          3152,
+          3297,
+          1053,
+          890
         ],
         "name": "KeyDestructible",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "body": {
-              "id": 2700,
+              "id": 3150,
               "nodeType": "Block",
-              "src": "638:84:14",
+              "src": "638:84:17",
               "statements": [
                 {
                   "expression": {
@@ -929,19 +798,19 @@
                           "typeIdentifier": "t_address",
                           "typeString": "address"
                         },
-                        "id": 2693,
+                        "id": 3143,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
                           "argumentTypes": null,
-                          "id": 2689,
+                          "id": 3139,
                           "name": "_recipient",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 2683,
-                          "src": "656:10:14",
+                          "referencedDeclaration": 3133,
+                          "src": "656:10:17",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -955,14 +824,14 @@
                             {
                               "argumentTypes": null,
                               "hexValue": "30",
-                              "id": 2691,
+                              "id": 3141,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
                               "kind": "number",
                               "lValueRequested": false,
                               "nodeType": "Literal",
-                              "src": "678:1:14",
+                              "src": "678:1:17",
                               "subdenomination": null,
                               "typeDescriptions": {
                                 "typeIdentifier": "t_rational_0_by_1",
@@ -978,20 +847,20 @@
                                 "typeString": "int_const 0"
                               }
                             ],
-                            "id": 2690,
+                            "id": 3140,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": true,
                             "lValueRequested": false,
                             "nodeType": "ElementaryTypeNameExpression",
-                            "src": "670:7:14",
+                            "src": "670:7:17",
                             "typeDescriptions": {
                               "typeIdentifier": "t_type$_t_address_$",
                               "typeString": "type(address)"
                             },
                             "typeName": "address"
                           },
-                          "id": 2692,
+                          "id": 3142,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -999,13 +868,13 @@
                           "lValueRequested": false,
                           "names": [],
                           "nodeType": "FunctionCall",
-                          "src": "670:10:14",
+                          "src": "670:10:17",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
                           }
                         },
-                        "src": "656:24:14",
+                        "src": "656:24:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
@@ -1019,21 +888,21 @@
                           "typeString": "bool"
                         }
                       ],
-                      "id": 2688,
+                      "id": 3138,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        2889,
-                        2890
+                        3315,
+                        3316
                       ],
-                      "referencedDeclaration": 2889,
-                      "src": "648:7:14",
+                      "referencedDeclaration": 3315,
+                      "src": "648:7:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$returns$__$",
                         "typeString": "function (bool) pure"
                       }
                     },
-                    "id": 2694,
+                    "id": 3144,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1041,15 +910,15 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "648:33:14",
+                    "src": "648:33:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 2695,
+                  "id": 3145,
                   "nodeType": "ExpressionStatement",
-                  "src": "648:33:14"
+                  "src": "648:33:17"
                 },
                 {
                   "expression": {
@@ -1057,12 +926,12 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 2697,
+                        "id": 3147,
                         "name": "_recipient",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 2683,
-                        "src": "704:10:14",
+                        "referencedDeclaration": 3133,
+                        "src": "704:10:17",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
                           "typeString": "address"
@@ -1076,18 +945,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 2696,
+                      "id": 3146,
                       "name": "selfdestruct",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 2894,
-                      "src": "691:12:14",
+                      "referencedDeclaration": 3320,
+                      "src": "691:12:17",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_selfdestruct_nonpayable$_t_address_$returns$__$",
                         "typeString": "function (address)"
                       }
                     },
-                    "id": 2698,
+                    "id": 3148,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1095,57 +964,57 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "691:24:14",
+                    "src": "691:24:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_tuple$__$",
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 2699,
+                  "id": 3149,
                   "nodeType": "ExpressionStatement",
-                  "src": "691:24:14"
+                  "src": "691:24:17"
                 }
               ]
             },
             "documentation": "@dev Transfers the current balance and terminates the contract\n@param _recipient All funds in contract will be sent to this recipient",
-            "id": 2701,
+            "id": 3151,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
             "modifiers": [
               {
                 "arguments": null,
-                "id": 2686,
+                "id": 3136,
                 "modifierName": {
                   "argumentTypes": null,
-                  "id": 2685,
+                  "id": 3135,
                   "name": "onlyManagementOrSelf",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 2870,
-                  "src": "613:20:14",
+                  "referencedDeclaration": 3296,
+                  "src": "613:20:17",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
                     "typeString": "modifier ()"
                   }
                 },
                 "nodeType": "ModifierInvocation",
-                "src": "613:20:14"
+                "src": "613:20:17"
               }
             ],
             "name": "destroyAndSend",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 2684,
+              "id": 3134,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 2683,
+                  "id": 3133,
                   "name": "_recipient",
                   "nodeType": "VariableDeclaration",
-                  "scope": 2701,
-                  "src": "570:18:14",
+                  "scope": 3151,
+                  "src": "570:18:17",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1153,10 +1022,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 2682,
+                    "id": 3132,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "570:7:14",
+                    "src": "570:7:17",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
                       "typeString": "address"
@@ -1166,27 +1035,27 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "569:20:14"
+              "src": "569:20:17"
             },
             "payable": false,
             "returnParameters": {
-              "id": 2687,
+              "id": 3137,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "638:0:14"
+              "src": "638:0:17"
             },
-            "scope": 2702,
-            "src": "546:176:14",
+            "scope": 3152,
+            "src": "546:176:17",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 2703,
-        "src": "334:390:14"
+        "scope": 3153,
+        "src": "334:390:17"
       }
     ],
-    "src": "0:725:14"
+    "src": "0:725:17"
   },
   "compiler": {
     "name": "solc",
@@ -1194,5 +1063,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-09-19T02:35:11.325Z"
+  "updatedAt": "2018-09-20T03:57:15.624Z"
 }

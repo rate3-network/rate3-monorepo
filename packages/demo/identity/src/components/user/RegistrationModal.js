@@ -145,7 +145,7 @@ const RegistrationModal = inject('RootStore')(observer((props) => {
         <div className={classes.paper}>
           <div className={classes.content}>
             <h1>Registration</h1>
-            <div className={classes.inputLabel}><p>Address</p></div>
+            <div className={classes.inputLabel}><p>{props.RootStore.userStore.formType}</p></div>
             <Input
               placeholder="Your Address"
               className={classes.textField}

@@ -19,7 +19,7 @@ library ERC165Query {
      * @return `true` if the contract implements both ERC165 and `_interfaceId`
      */
     function doesContractImplementInterface(address _contract, bytes4 _interfaceId)
-        internal
+        public
         view
         returns (bool)
     {
@@ -52,7 +52,7 @@ library ERC165Query {
      *  result of the call
      */
     function noThrowCall(address _contract, bytes4 _interfaceId)
-        internal
+        public
         view
         returns (uint256 success, uint256 result)
     {
