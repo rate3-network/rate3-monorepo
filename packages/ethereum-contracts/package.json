@@ -25,6 +25,7 @@
     "eslint-plugin-import": "^2.14.0"
   },
   "dependencies": {
+    "lodash.filter": "^4.6.0",
     "truffle-hdwallet-provider": "0.0.3"
   }
 }

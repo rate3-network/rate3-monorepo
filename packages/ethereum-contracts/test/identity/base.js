@@ -48,6 +48,19 @@ export const assertKeyCount = async (identity, purpose, count) => {
 };
 
 export const addrToBytes32 = addr => `0x${addr.substring(2).padStart(64, '0')}`;
+export const getClaimId = (addr, topic) => (
+    web3.sha3(
+        addr + web3.toHex(topic).substring(2).padStart(64, '0'),
+        { encoding: 'hex' },
+    )
+);
+export const getToSign = (addr, topic, data) => (
+    web3.sha3(
+        addr + web3.toHex(topic).substring(2).padStart(64, '0')
+            + web3.fromAscii(data).substring(2),
+        { encoding: 'hex' },
+    )
+);
 
 export class Account {
     constructor(addr) {
@@ -126,6 +139,124 @@ export class AccountsSetupConfig {
 
     totalKeysToAdd() {
         return Object.keys(this.uniqueAddrToAdd).length;
+    }
+}
+
+/**
+ * Represents an on chain claim, provides helper methods to format arguments
+ * and events.
+ *
+ * @class Claim
+ */
+export class Claim {
+    /**
+     * Creates an instance of Claim.
+     * @param {number} topic Topic of the claim
+     * @param {number} scheme Scheme of the claim
+     * @param {string} signerAddr Account used for signing
+     * @param {string} issuerAddr Account used to issue the claim, can either be
+     *  the same as signerAddr or an identity contract that has the signerAddr
+     *  as a CLAIM_SIGNER_KEY
+     * @param {string} identityAddr Account that we are making the claims for
+     * @param {string} data Data of the claim, for simplicity this will be a string
+     * @param {string} [uri=""] Optional uri
+     * @memberof Claim
+     */
+    constructor(topic, scheme, signerAddr, issuerAddr, identityAddr, data, uri = "") {
+        this.topic = topic;
+        this.scheme = scheme;
+        this.issuerAddr = issuerAddr;
+        this.signerAddr = signerAddr;
+        this.identityAddr = identityAddr;
+        this.data = data;
+        this.uri = uri;
+        this.toSign = getToSign(identityAddr, topic, data);
+        this.signature = web3.eth.sign(signerAddr, this.toSign);
+    }
+
+    /**
+     * Generates the claim id based on the issuer address and claim topic
+     *
+     * @returns claim id
+     * @memberof Claim
+     */
+    id() {
+        return getClaimId(this.issuerAddr, this.topic);
+    }
+
+    /**
+     * @returns An array of arguments for the smart contracts addClaim function
+     * @memberof Claim
+     */
+    addClaimArgs() {
+        return [
+            this.topic,
+            this.scheme,
+            this.issuerAddr,
+            this.signature,
+            this.data,
+            this.uri,
+        ];
+    }
+
+    /**
+     * Event object to be used for filtering through events
+     *
+     * @returns Object containing the `ClaimAdded` event fields
+     * @memberof Claim
+     */
+    claimAddedEvent() {
+        return {
+            event: 'ClaimAdded',
+            args: {
+                topic: new web3.BigNumber(this.topic),
+                scheme: new web3.BigNumber(this.scheme),
+                issuer: this.issuerAddr,
+                signature: this.signature,
+                data: web3.fromAscii(this.data),
+                uri: this.uri,
+            },
+        };
+    }
+
+    /**
+     * Event object to be used for filtering through events
+     *
+     * @returns Object containing the `ClaimRequested` event fields
+     * @memberof Claim
+     */
+    claimRequestedEvent() {
+        return {
+            event: 'ClaimRequested',
+            args: {
+                topic: new web3.BigNumber(this.topic),
+                scheme: new web3.BigNumber(this.scheme),
+                issuer: this.issuerAddr,
+                signature: this.signature,
+                data: web3.fromAscii(this.data),
+                uri: this.uri,
+            },
+        };
+    }
+
+    /**
+     * Event object to be used for filtering through events
+     *
+     * @returns Object containing the `ClaimChanged` event fields
+     * @memberof Claim
+     */
+    claimChangedEvent() {
+        return {
+            event: 'ClaimChanged',
+            args: {
+                topic: new web3.BigNumber(this.topic),
+                scheme: new web3.BigNumber(this.scheme),
+                issuer: this.issuerAddr,
+                signature: this.signature,
+                data: web3.fromAscii(this.data),
+                uri: this.uri,
+            },
+        };
     }
 }
 

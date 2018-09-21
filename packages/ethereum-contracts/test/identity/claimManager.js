@@ -4,58 +4,55 @@ import {
     Purpose,
     Topic,
     Scheme,
+    Claim,
+    getClaimId,
 } from './base';
 import {
     printTestGas,
     assertOkTx,
     assertRevert,
 } from './util';
+import getEvents from '../helpers/getEvents';
 
 const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 
-contract('ClaimManager', async (addrs) => {
+const assertClaim = async (identityContract, _claim) => {
+    const [
+        topic,
+        scheme,
+        issuer,
+        signature,
+        data,
+        uri,
+    ] = await identityContract.getClaim(_claim.id());
+
+    topic.should.be.bignumber.equal(_claim.topic);
+    scheme.should.be.bignumber.equal(_claim.scheme);
+    assert.equal(issuer, _claim.issuerAddr);
+    assert.equal(signature, _claim.signature);
+    assert.equal(web3.toAscii(data), _claim.data);
+    assert.equal(uri, _claim.uri);
+};
+
+const assertClaimsCount = async (identityContract, _total, _topics) => {
+    // Check total
+    const total = await identityContract.numClaims();
+    total.should.be.bignumber.equal(_total);
+
+    // Check per type
+    await Promise.all(Object.keys(_topics).map(async (topic) => {
+        const ids = await identityContract.getClaimIdsByTopic(topic);
+        // Check length
+        assert.equal(ids.length, _topics[topic]);
+    }));
+};
+
+contract('ClaimManager Tests', async (addrs) => {
     let identity;
     let accounts;
     let anotherIdentity;
-    let claimStore;
 
     afterEach('print gas', printTestGas);
-
-    const assertClaim = async (_topic, _issuer, _signature, _data, _uri) => {
-        const claimId = await claimStore.getClaimId(_issuer, _topic);
-        const [
-            topic,
-            scheme,
-            issuer,
-            signature,
-            data,
-            uri,
-        ] = await identity.getClaim(claimId);
-
-        topic.should.be.bignumber.equal(_topic);
-        scheme.should.be.bignumber.equal(Scheme.ECDSA);
-        assert.equal(issuer, _issuer);
-        assert.equal(signature, _signature);
-        assert.equal(web3.toAscii(data), _data);
-        assert.equal(uri, _uri);
-    };
-
-    const assertClaims = async (_total, _topics) => {
-        // Check total
-        const total = await identity.numClaims();
-        total.should.be.bignumber.equal(_total);
-
-        // Check per type
-        await Promise.all(Object.keys(_topics).map(async (topic) => {
-            const ids = await identity.getClaimIdsByTopic(topic);
-            // Check length
-            assert.equal(ids.length, _topics[topic]);
-        }));
-    };
-
-    const findClaimRequestId = r => (
-        r.logs.find(e => e.event === 'ClaimRequested').args.claimRequestId
-    );
 
     beforeEach('new contract', async () => {
         const config = (new AccountsSetupConfig())
@@ -85,10 +82,9 @@ contract('ClaimManager', async (addrs) => {
             ],
         ));
 
-        claimStore = await ClaimStore.deployed();
     });
 
-    describe('ERC165', () => {
+    describe('Test - ERC165', () => {
         it('supports ERC165, ERC725, ERC735', async () => {
             // ERC165
             assert.isFalse(await identity.supportsInterface('0xffffffff'));
@@ -102,8 +98,18 @@ contract('ClaimManager', async (addrs) => {
         });
     });
 
-    describe('addClaim', () => {
+    describe('Test - addClaim', () => {
         it('can recover signature', async () => {
+            const claimStore = await ClaimStore.deployed();
+
+            const claim = new Claim(
+                Topic.LABEL,
+                Scheme.ECDSA,
+                accounts.claim[0].addr,
+                identity.address,
+                identity.address,
+                'test',
+            );
             const label = 'test';
             // Claim hash
             const toSign = await claimStore.claimToSign(
@@ -111,94 +117,92 @@ contract('ClaimManager', async (addrs) => {
                 Topic.LABEL,
                 label,
             );
-            // Sign using eth_sign
-            const signature = web3.eth.sign(accounts.manager[0].addr, toSign);
+            toSign.should.be.equal(claim.toSign);
             // Recover address from signature
-            const signedBy = await claimStore.getSignatureAddress(toSign, signature);
-            assert.equal(signedBy, accounts.manager[0].addr);
+            const signedBy = await claimStore.getSignatureAddress(toSign, claim.signature);
+            assert.equal(signedBy, claim.signerAddr);
         });
 
         it('can add self-claim as manager', async () => {
-            const uri = 'https://twitter.com/ratex_sg';
-            // Claim hash
-            const toSign = await claimStore.claimToSign(
-                identity.address,
+            const claim = new Claim(
                 Topic.PROFILE,
-                uri,
+                Scheme.ECDSA,
+                accounts.manager[0].addr,
+                identity.address,
+                identity.address,
+                'https://twitter.com/ratex_sg',
+                'https://twitter.com/ratex_sg',
             );
-            // Sign using CLAIM_SIGNER_KEY
-            const signature = web3.eth.sign(accounts.claim[0].addr, toSign);
 
             // Add self-claim as manager
             await assertOkTx(identity.addClaim(
-                Topic.PROFILE,
-                Scheme.ECDSA,
-                identity.address,
-                signature,
-                uri,
-                uri,
+                ...claim.addClaimArgs(),
                 { from: accounts.manager[0].addr },
             ));
 
             // Check claim
-            await assertClaim(Topic.PROFILE, identity.address, signature, uri, uri);
+            await assertClaim(identity, claim);
+            await assertClaimsCount(identity, 3, {
+                [Topic.LABEL]: 2,
+                [Topic.PROFILE]: 1,
+            });
 
-            await assertClaims(3, { [Topic.LABEL]: 2, [Topic.PROFILE]: 1 });
+            // Check ClaimAdded event
+            const logs = await getEvents(identity, claim.claimAddedEvent());
+            logs.should.have.a.lengthOf(1);
         });
 
         it('checks signature when adding', async () => {
-            const uri = 'https://twitter.com/ratex_sg';
-            // Claim hash
-            const toSign = await claimStore.claimToSign(
-                identity.address,
+            const claim = new Claim(
                 Topic.PROFILE,
-                uri,
+                Scheme.ECDSA,
+                accounts.claim[0].addr,
+                identity.address,
+                identity.address,
+                'https://twitter.com/ratex_sg',
+                'https://twitter.com/ratex_sg',
             );
-            // Don't sign, create random string
-            const invalidSignature = web3.sha3(toSign);
+            // Change signature to random string
+            claim.signature = web3.sha3(claim.toSign);
 
             // Try to add self-claim as manager
             await assertRevert(identity.addClaim(
-                Topic.PROFILE,
-                Scheme.ECDSA,
-                identity.address,
-                invalidSignature,
-                uri,
-                uri,
+                ...claim.addClaimArgs(),
                 { from: accounts.manager[0].addr },
             ));
 
             // Claim doesn't exist
-            const claimId = await claimStore.getClaimId(identity.address, Topic.PROFILE);
-            await assertRevert(identity.getClaim(claimId));
+            await assertRevert(identity.getClaim(claim.id()));
+
+            // Event not fired
+            const logs = await getEvents(identity, { event: 'ClaimAdded' });
+            logs.should.have.a.lengthOf(0);
         });
 
         it('can add self-claim with manager approval', async () => {
-            const uri = 'https://twitter.com/ratex_sg';
-            // Claim hash
-            const toSign = await claimStore.claimToSign(
-                identity.address,
-                Topic.PROFILE,
-                uri,
-            );
-            // Sign using CLAIM_SIGNER_KEY
-            const signature = web3.eth.sign(accounts.claim[1].addr, toSign);
-
-            // Add self-claim with claim key
-            const r = await assertOkTx(identity.addClaim(
+            const claim = new Claim(
                 Topic.PROFILE,
                 Scheme.ECDSA,
+                accounts.claim[1].addr,
                 identity.address,
-                signature,
-                uri,
-                uri,
+                identity.address,
+                'https://twitter.com/ratex_sg',
+                'https://twitter.com/ratex_sg',
+            );
+
+            // Add self-claim with claim key
+            await assertOkTx(identity.addClaim(
+                ...claim.addClaimArgs(),
                 { from: accounts.claim[1].addr },
             ));
-            const claimRequestId = findClaimRequestId(r);
+
+            // Check ClaimRequested event
+            let logs = await getEvents(identity, claim.claimRequestedEvent());
+            logs.should.have.a.lengthOf(1);
+            const { args: { claimRequestId } } = logs[0];
 
             // Claim doesn't exist yet
-            const claimId = await claimStore.getClaimId(identity.address, Topic.PROFILE);
-            await assertRevert(identity.getClaim(claimId));
+            await assertRevert(identity.getClaim(claim.id()));
 
             // Approve
             await assertOkTx(identity.approve(
@@ -207,41 +211,57 @@ contract('ClaimManager', async (addrs) => {
                 { from: accounts.manager[0].addr },
             ));
 
-            // Check claim
-            await assertClaim(Topic.PROFILE, identity.address, signature, uri, uri);
+            // Check Approved event
+            logs = await getEvents(identity, {
+                event: 'Approved',
+                args: {
+                    executionId: claimRequestId,
+                    approved: true,
+                },
+            });
+            logs.should.have.a.lengthOf(1);
 
-            await assertClaims(3, { [Topic.LABEL]: 2, [Topic.PROFILE]: 1 });
+            // Check claim
+            await assertClaim(identity, claim);
+            await assertClaimsCount(identity, 3, {
+                [Topic.LABEL]: 2,
+                [Topic.PROFILE]: 1,
+            });
+
+            // Check ClaimAdded event
+            logs = await getEvents(identity, claim.claimAddedEvent());
+            logs.should.have.a.lengthOf(1);
         });
 
         it('other identity can add a claim', async () => {
-            const uri = 'https://twitter.com/ratex_sg';
-            // Claim hash
-            const toSign = await claimStore.claimToSign(
-                identity.address,
+            const claim = new Claim(
                 Topic.PROFILE,
-                uri,
+                Scheme.ECDSA,
+                accounts.another.addr,
+                anotherIdentity.address,
+                identity.address,
+                'https://twitter.com/ratex_sg',
+                'https://twitter.com/ratex_sg',
             );
-            const signature = web3.eth.sign(accounts.another.addr, toSign);
 
             // Deployer calls deployedContract.execute(...), which calls identity.addClaim(...)
             const data = identity.contract.addClaim.getData(
-                Topic.PROFILE,
-                Scheme.ECDSA,
-                anotherIdentity.address,
-                signature,
-                uri,
-                uri,
+                ...claim.addClaimArgs(),
             );
-            const r = await assertOkTx(anotherIdentity.execute(
+            await assertOkTx(anotherIdentity.execute(
                 identity.address,
                 0,
                 data,
                 { from: accounts.another.addr },
             ));
-            const claimRequestId = findClaimRequestId(r);
+
+            // Check ClaimRequested event
+            let logs = await getEvents(identity, claim.claimRequestedEvent());
+            logs.should.have.a.lengthOf(1);
+            const { args: { claimRequestId } } = logs[0];
 
             // Claim doesn't exist yet
-            await assertClaims(2, { [Topic.LABEL]: 2 });
+            await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
 
             // Approve
             await assertOkTx(identity.approve(
@@ -250,142 +270,135 @@ contract('ClaimManager', async (addrs) => {
                 { from: accounts.manager[0].addr },
             ));
 
+            // Check Approved event
+            logs = await getEvents(identity, {
+                event: 'Approved',
+                args: {
+                    executionId: claimRequestId,
+                    approved: true,
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
             // Check claim
-            await assertClaim(
-                Topic.PROFILE,
-                anotherIdentity.address,
-                signature,
-                uri,
-                uri,
-            );
-            await assertClaims(3, { [Topic.LABEL]: 2, [Topic.PROFILE]: 1 });
+            await assertClaim(identity, claim);
+            await assertClaimsCount(identity, 3, {
+                [Topic.LABEL]: 2,
+                [Topic.PROFILE]: 1,
+            });
+
+            // Check ClaimAdded event
+            logs = await getEvents(identity, claim.claimAddedEvent());
+            logs.should.have.a.lengthOf(1);
         });
     });
 
-    describe('changeClaim', () => {
+    describe('Test - changeClaim', () => {
         it('can update a self-claim', async () => {
-            const label = 'Rate Engineering';
             const uri = 'https://github.com/rate-engineering';
             const newUri = 'https://medium.com/ratex-engineering';
-
-            // Claim hash
-            const toSign = await claimStore.claimToSign(
-                identity.address,
+            const claim = new Claim(
                 Topic.LABEL,
-                label,
-            );
-            // Sign using CLAIM_SIGNER_KEY
-            const signature = web3.eth.sign(accounts.claim[0].addr, toSign);
-            // Check claim exists
-            await assertClaim(
-                Topic.LABEL,
+                Scheme.ECDSA,
+                accounts.claim[0].addr,
                 identity.address,
-                signature,
-                label,
+                identity.address,
+                'Rate Engineering',
                 uri,
             );
 
+            // Check claim exists
+            await assertClaim(identity, claim);
+
+            claim.uri.should.be.equal(uri);
+            claim.uri = newUri;
+            claim.uri.should.be.equal(newUri);
+
             // Use same signature to update URI
             await assertOkTx(identity.addClaim(
-                Topic.LABEL,
-                Scheme.ECDSA,
-                identity.address,
-                signature,
-                label,
-                newUri,
+                ...claim.addClaimArgs(),
                 { from: accounts.manager[1].addr },
             ));
 
             // Check claim was updated
-            await assertClaim(
-                Topic.LABEL,
-                identity.address,
-                signature,
-                label,
-                newUri,
-            );
-
-            await assertClaims(2, { [Topic.LABEL]: 2 });
+            await assertClaim(identity, claim);
+            await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
         });
 
         it('checks signature when updating', async () => {
-            const label = 'Rate Engineering';
             const uri = 'https://github.com/rate-engineering';
             const newUri = 'https://medium.com/ratex-engineering';
-
-            // Claim hash
-            const toSign = await claimStore.claimToSign(
-                identity.address,
+            const claim = new Claim(
                 Topic.LABEL,
-                label,
+                Scheme.ECDSA,
+                accounts.claim[0].addr,
+                identity.address,
+                identity.address,
+                'Rate Engineering',
+                uri,
             );
-            // Don't sign, create random string
-            const signature = web3.eth.sign(accounts.claim[0].addr, toSign);
-            const invalidSignature = web3.sha3(toSign);
+
+            // Temporarily change values
+            claim.uri.should.be.equal(uri);
+            claim.uri = newUri;
+            claim.uri.should.be.equal(newUri);
+
+            // Change signature to random string
+            const validSignature = claim.signature;
+            claim.signature = web3.sha3(claim.toSign);
 
             // Try to update self-claim as manager
             await assertRevert(identity.addClaim(
-                Topic.LABEL,
-                Scheme.ECDSA,
-                identity.address,
-                invalidSignature,
-                label,
-                newUri,
+                ...claim.addClaimArgs(),
                 { from: accounts.manager[1].addr },
             ));
 
+            // Reset values
+            claim.uri = uri;
+            claim.signature = validSignature;
+
             // Claim is unchanged
-            await assertClaim(
-                Topic.LABEL,
-                identity.address,
-                signature,
-                label,
-                uri,
-            );
+            await assertClaim(identity, claim);
         });
 
         it('needs approval to update a self-claim', async () => {
-            const label = 'Rate Engineering';
             const uri = 'https://github.com/rate-engineering';
             const newUri = 'https://medium.com/ratex-engineering';
-
-            // Claim hash
-            const toSign = await claimStore.claimToSign(
-                identity.address,
-                Topic.LABEL,
-                label,
-            );
-            // Sign using CLAIM_SIGNER_KEY
-            const signature = web3.eth.sign(accounts.claim[0].addr, toSign);
-            // Check claim
-            await assertClaim(
-                Topic.LABEL,
-                identity.address,
-                signature,
-                label,
-                uri,
-            );
-
-            // Use same signature to update URI
-            const r = await assertOkTx(identity.addClaim(
+            const claim = new Claim(
                 Topic.LABEL,
                 Scheme.ECDSA,
+                accounts.claim[0].addr,
                 identity.address,
-                signature,
-                label,
-                newUri,
-                { from: accounts.claim[1].addr },
-            ));
-            const claimRequestId = findClaimRequestId(r);
-
-            // Check claim wasn't updated
-            await assertClaim(
-                Topic.LABEL,
                 identity.address,
-                signature,
-                label,
+                'Rate Engineering',
                 uri,
             );
+
+            // Check claim
+            await assertClaim(identity, claim);
+            await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
+
+            // Change to new value
+            claim.uri.should.be.equal(uri);
+            claim.uri = newUri;
+            claim.uri.should.be.equal(newUri);
+
+            // Use same signature to update URI
+            // send from non-management account
+            await assertOkTx(identity.addClaim(
+                ...claim.addClaimArgs(),
+                { from: accounts.claim[1].addr },
+            ));
+
+            // Check ClaimRequested event
+            let logs = await getEvents(identity, claim.claimRequestedEvent());
+            logs.should.have.a.lengthOf(1);
+            const { args: { claimRequestId } } = logs[0];
+
+            // Check claim wasn't updated
+            claim.uri = uri;
+            await assertClaim(identity, claim);
+            claim.uri = newUri;
 
             // Approve
             await assertOkTx(identity.approve(
@@ -394,53 +407,70 @@ contract('ClaimManager', async (addrs) => {
                 { from: accounts.manager[1].addr },
             ));
 
-            // Check claim was updated
-            await assertClaim(
-                Topic.LABEL,
-                identity.address,
-                signature,
-                label,
-                newUri,
-            );
+            // Check Approved event
+            logs = await getEvents(identity, {
+                event: 'Approved',
+                args: {
+                    executionId: claimRequestId,
+                    approved: true,
+                },
+            });
+            logs.should.have.a.lengthOf(1);
 
-            await assertClaims(2, { [Topic.LABEL]: 2 });
+            // Check claim was updated
+            await assertClaim(identity, claim);
+            await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
+
+            // Check ClaimAdded event
+            logs = await getEvents(identity, claim.claimChangedEvent());
+            logs.should.have.a.lengthOf(1);
         });
 
         it('other identity can update a claim', async () => {
-            const claimId = await claimStore.getClaimId(
-                anotherIdentity.address,
-                Topic.LABEL,
-            );
+            const claimId = getClaimId(anotherIdentity.address, Topic.LABEL);
             // Use same signature as before, but update uri
-            const [, , , signature, dataBytes, uri] = await identity.getClaim(claimId);
-            const label = web3.toAscii(dataBytes);
+            const [
+                topic,
+                scheme,
+                issuerAddr,
+                signature,
+                dataBytes,
+                uri,
+            ] = await identity.getClaim(claimId);
             const newUri = 'https://medium.com/ratex-engineering';
+            const claim = new Claim(
+                topic,
+                scheme,
+                accounts.another.addr,
+                issuerAddr,
+                identity.addr,
+                web3.toAscii(dataBytes),
+                newUri,
+            );
+            claim.signature = signature;
+
+            await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
 
             // Deployer calls deployedContract.execute(...), which calls identity.addClaim(...)
             const data = identity.contract.addClaim.getData(
-                Topic.LABEL,
-                Scheme.ECDSA,
-                anotherIdentity.address,
-                signature,
-                label,
-                newUri,
+                ...claim.addClaimArgs(),
             );
-            const r = await assertOkTx(anotherIdentity.execute(
+            await assertOkTx(anotherIdentity.execute(
                 identity.address,
                 0,
                 data,
                 { from: accounts.another.addr },
             ));
-            const claimRequestId = findClaimRequestId(r);
+
+            // Check ClaimRequested event
+            let logs = await getEvents(identity, claim.claimRequestedEvent());
+            logs.should.have.a.lengthOf(1);
+            const { args: { claimRequestId } } = logs[0];
 
             // Claim hasn't been updated yet
-            await assertClaim(
-                Topic.LABEL,
-                anotherIdentity.address,
-                signature,
-                label,
-                uri,
-            );
+            claim.uri = uri;
+            await assertClaim(identity, claim);
+            claim.uri = newUri;
 
             // Approve
             await assertOkTx(identity.approve(
@@ -449,22 +479,30 @@ contract('ClaimManager', async (addrs) => {
                 { from: accounts.manager[1].addr },
             ));
 
-            // Check claim
-            await assertClaim(
-                Topic.LABEL,
-                anotherIdentity.address,
-                signature,
-                label,
-                newUri,
-            );
-            await assertClaims(2, { [Topic.LABEL]: 2 });
+            // Check Approved event
+            logs = await getEvents(identity, {
+                event: 'Approved',
+                args: {
+                    executionId: claimRequestId,
+                    approved: true,
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
+            // Check claim was updated
+            await assertClaim(identity, claim);
+            await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
+
+            // Check ClaimAdded event
+            logs = await getEvents(identity, claim.claimChangedEvent());
+            logs.should.have.a.lengthOf(1);
         });
     });
 
-    describe('removeClaim', async () => {
+    describe('Test - removeClaim', async () => {
         it('can remove a claim', async () => {
             // First claim
-            const claimId = await claimStore.getClaimId(identity.address, Topic.LABEL);
+            const claimId = getClaimId(identity.address, Topic.LABEL);
 
             // Remove it
             await assertOkTx(identity.removeClaim(
@@ -475,16 +513,23 @@ contract('ClaimManager', async (addrs) => {
             // Check claim no longer exists
             await assertRevert(identity.getClaim(claimId));
 
-            await assertClaims(1, { [Topic.LABEL]: 1 });
+            // Check ClaimRemoved event
+            const logs = await getEvents(identity, {
+                event: 'ClaimRemoved',
+                args: {
+                    topic: new web3.BigNumber(Topic.LABEL),
+                    issuer: identity.address,
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
+            await assertClaimsCount(identity, 1, { [Topic.LABEL]: 1 });
         });
 
         it('other identity can remove a claim as a contract', async () => {
-            await assertClaims(2, { [Topic.LABEL]: 2 });
+            await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
 
-            const claimId = await claimStore.getClaimId(
-                anotherIdentity.address,
-                Topic.LABEL,
-            );
+            const claimId = getClaimId(anotherIdentity.address, Topic.LABEL);
 
             // Remove claim as contract
             const data = identity.contract.removeClaim.getData(claimId);
@@ -498,16 +543,23 @@ contract('ClaimManager', async (addrs) => {
             // Check claim no longer exists
             await assertRevert(identity.getClaim(claimId));
 
-            await assertClaims(1, { [Topic.LABEL]: 1 });
+            // Check ClaimRemoved event
+            const logs = await getEvents(identity, {
+                event: 'ClaimRemoved',
+                args: {
+                    topic: new web3.BigNumber(Topic.LABEL),
+                    issuer: anotherIdentity.address,
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
+            await assertClaimsCount(identity, 1, { [Topic.LABEL]: 1 });
         });
 
         it('other identity can remove a claim', async () => {
-            await assertClaims(2, { [Topic.LABEL]: 2 });
+            await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
 
-            const claimId = await claimStore.getClaimId(
-                anotherIdentity.address,
-                Topic.LABEL,
-            );
+            const claimId = getClaimId(anotherIdentity.address, Topic.LABEL);
 
             // Remove claim using action key
             await assertOkTx(identity.removeClaim(
@@ -518,9 +570,17 @@ contract('ClaimManager', async (addrs) => {
             // Check claim no longer exists
             await assertRevert(identity.getClaim(claimId));
 
-            await assertClaims(1, { [Topic.LABEL]: 1 });
+            // Check ClaimRemoved event
+            const logs = await getEvents(identity, {
+                event: 'ClaimRemoved',
+                args: {
+                    topic: new web3.BigNumber(Topic.LABEL),
+                    issuer: anotherIdentity.address,
+                },
+            });
+            logs.should.have.a.lengthOf(1);
+
+            await assertClaimsCount(identity, 1, { [Topic.LABEL]: 1 });
         });
     });
-
-    // TODO: test ClaimRequested, ClaimAdded, ClaimRemoved, ClaimChanged
 });
