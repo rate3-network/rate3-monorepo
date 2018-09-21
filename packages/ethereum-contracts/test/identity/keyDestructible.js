@@ -2,7 +2,6 @@ import {
     AccountsSetupConfig,
     setupTest,
     Purpose,
-    KeyType,
 } from './base';
 import {
     assertOkTx,
@@ -10,7 +9,7 @@ import {
     assertRevert,
 } from './util';
 
-contract('Pausable', async (addrs) => {
+contract('KeyDestructible Tests', async (addrs) => {
     let identity;
     let accounts;
 
@@ -29,16 +28,17 @@ contract('Pausable', async (addrs) => {
         ({ identity, accounts } = await setupTest(config));
     });
 
-    it('should be paused/unpaused by management keys', async () => {
-        await assertOkTx(identity.pause({ from: accounts.manager[0].addr }));
-        // Can't add key
-        await assertRevert(identity.addKey(accounts.action[2].key, Purpose.ACTION, KeyType.ECDSA, {
-            from: accounts.manager[0].addr,
+    it('should be killed by management keys', async () => {
+        assert.notEqual(web3.eth.getCode(identity.address), '0x0');
+        await assertOkTx(identity.destroyAndSend(accounts.manager[0].addr, {
+            from: accounts.manager[1].addr,
         }));
-        await assertOkTx(identity.unpause({ from: accounts.manager[1].addr }));
+        assert.strictEqual(web3.eth.getCode(identity.address), '0x0');
     });
 
-    it('should not be paused by others', async () => {
-        await assertRevert(identity.pause({ from: accounts.action[1].addr }));
+    it('should not be killed by others', async () => {
+        await assertRevert(identity.destroyAndSend(accounts.action[2].addr, {
+            from: accounts.action[2].addr,
+        }));
     });
 });
