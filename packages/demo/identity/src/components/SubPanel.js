@@ -106,7 +106,7 @@ const styles = theme => ({
   },
 });
 
-@inject('RootStore')
+@inject('RootStore') @observer
 class SubPanel extends React.Component {
   constructor(props) {
     super(props);

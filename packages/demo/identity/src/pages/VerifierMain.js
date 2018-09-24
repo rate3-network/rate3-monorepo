@@ -42,23 +42,10 @@ class VerifierMain extends React.Component {
     }
   }
   componentDidMount() {
-    // console.log(verifierPrivKey);
-    // window.web3ForCommonNetwork.eth.accounts.wallet.add(verifierPrivKey);
-    let storage = window.localStorage;
-    if (storage.getItem('table') === null) {
-      storage.setItem('table', []);
-    }
-    
-    const table = storage.getItem('table') === '' ? [] : JSON.parse(storage.getItem('table'));
-    this.props.RootStore.verifierStore.setIdentityTable(table);
-
+    this.props.RootStore.verifierStore.initDb();
+    this.props.RootStore.verifierStore.resetClaimLists();
+    this.props.RootStore.verifierStore.populateClaimLists();
   }
-  // onUserItemClick(value) {
-  //   console.log('clicked');
-    
-  //   this.props.RootStore.verifierStore.setUserSelected(value);
-  //   console.log(this.props.RootStore.verifierStore.getUserSelected());
-  // }
  
   render() {
     const { classes, t, RootStore } = this.props;
@@ -88,7 +75,7 @@ class VerifierMain extends React.Component {
             <div className={classes.descriptionBox}>
               <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
               <SearchBar />
-              <ManagementTabs onUserItemClick={this.onUserItemClick} />
+              <ManagementTabs />
             </div>
           </div>
         }

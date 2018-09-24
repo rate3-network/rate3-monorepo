@@ -6,6 +6,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { observer, inject } from 'mobx-react';
 
 import { identityBlue, disabledGrey, actionRequiredBoxBg } from '../constants/colors';
 import identityIcon from '../assets/identityIcon.svg';
@@ -145,4 +146,4 @@ DetailedExpansionPanel.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DetailedExpansionPanel);
+export default inject('RootStore')(observer(withStyles(styles)(DetailedExpansionPanel)));

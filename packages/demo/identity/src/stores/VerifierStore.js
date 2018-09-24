@@ -3,19 +3,15 @@ import {
   observable,
   action,
   computed,
+  runInAction,
 } from 'mobx';
 
+import MyTable from '../utils/MyTable';
 import Identity from '../utils/Identity';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
-const social1 = new Identity(0, 'S1234568G');
-const social2 = new Identity(1, 'G01293849I');
-const social3 = new Identity(1, 'S09898376Y');
-social2.approveIdentity('0x4d3a5de2bfa0bb3d35fecd82d6d3c1deb396580f');
-social3.approveIdentity('0x4d3a5de2bfa0bb3d35fecd82d6d3c1deb396580f');
-social3.addIdentity('0x825e1e0c57700b327dff98d2b04b17ba8fe3d2ea729acd79a4d2fe1a2912935b');
 class VerifierStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable userSelected: Number = null;
@@ -25,11 +21,6 @@ class VerifierStore {
   @observable modalPage: Number = 0;
 
   @observable verifierNetwork: String = 'verifier';
-
-  @observable identityTable: Array = [];
-
-  @observable pendingIdentityList: Array = [];
-  @observable verifiedIdentityList: Array = [];
 
   @observable selectedUserNames: Array = [];
   @observable selectedUserAddresses: Array = [];
@@ -41,31 +32,60 @@ class VerifierStore {
   @observable currentVerificationIndex = '';
 
   @observable verifySuccessModalIsShowing = false;
+
+  @observable db = null;
+  @observable nameClaimList = [];
+  @observable addressClaimList = [];
+  @observable socialIdClaimList = [];
+  @observable pendingClaimList = [];
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-    console.log('verifier store constructed');
-  }
-  @action
-  setIdentityTable(table) {
-    console.log('setting table for verifier');
-    this.identityTable = table;
-    this.pendingIdentityList = [];
-    this.verifiedIdentityList = [];
-    table.forEach((row) => {
-      if (row.status === PENDING_REVIEW) {
-        console.log('pending review', row);
-        const claim = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
-        this.pendingIdentityList.push(claim);
-      }
-      if (row.status === VERIFIED || row.status === PENDING_ADD) {
-        console.log('not pending review', row);
-        const claim = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
-        this.verifiedIdentityList.push(claim);
-      }
+    console.log('constructing verifier db');
+    const myDb = new MyTable('rate3', 'identity-demo');
+    if (myDb.hasTable('identity-demo')) {
+      myDb.getTable('identity-demo');
+    } else {
+      myDb.createTable();
+    }
+    runInAction(() => {
+      this.db = myDb;
+      console.log(this.db.getTable('identity-demo'));
     });
   }
+
+  @action
+  initDb() {
+    const myDb = new MyTable('rate3', 'identity-demo');
+    if (myDb.hasTable('identity-demo')) {
+      myDb.getTable('identity-demo');
+    } else {
+      myDb.createTable();
+    }
+    runInAction(() => {
+      this.db = myDb;
+      console.log(this.db.getTable('identity-demo'));
+    });
+  }
+  @action
+  resetClaimLists() {
+    this.pendingClaimList = [];
+    this.nameClaimList = [];
+    this.addressClaimList = [];
+    this.socialIdClaimList = [];
+  }
+  @action
+  populateClaimLists() {
+    console.log('populating verifier lists', this.db.getAllUnverifiedClaims());
+    console.log('from localdb', JSON.parse(window.localStorage['rate3.identity-demo']));
+    this.db.getAllUnverifiedClaims().forEach((claim) => { this.pendingClaimList.push(claim); });
+    console.log('pendingClaimList', this.pendingClaimList);
+    // this.db.getAllNameClaims().forEach((claim) => { this.pendingClaimList.push(claim); this.nameClaimList.push(claim); });
+    // this.db.getAllAddressClaims().forEach((claim) => { this.pendingClaimList.push(claim); this.addressClaimList.push(claim); });
+    // this.db.getAllSocialIdClaims().forEach((claim) => { this.pendingClaimList.push(claim); this.socialIdClaimList.push(claim); });
+  }
+
   getCurrentTab() {
     return this.currentTab;
   }
@@ -91,29 +111,41 @@ class VerifierStore {
   closeVerificationModal() {
     this.verifyModalIsShowing = false;
   }
+
+  // set the verification details on verification modal
   @action
   setCurrentVerification(user, value, type) {
-    let table = this.identityTable;
-    let itemFound = table.find((item) => {
+    console.log('calling set current veri', user, value, type);
+    console.log(this.pendingClaimList);
+    const itemFound = this.pendingClaimList.find((item) => {
       return (item.user === user && item.value === value && item.type === type);
     });
-    let indexFound = table.findIndex((item) => {
+    const indexFound = this.pendingClaimList.findIndex((item) => {
       return (item.user === user && item.value === value && item.type === type);
     });
-    // // itemFound.status = PENDING_ADD;
-    // table[indexFound] = itemFound;
-    // localStorage.setItem('table', JSON.stringify(table));
+
     this.currentVerificationIndex = indexFound;
     this.currentVerification = itemFound;
   }
 
   @action
   approveCurrentVerification() {
-    this.currentVerification.status = PENDING_ADD;
-    console.log('currentVerification', this.currentVerification);
-    let table = this.identityTable;
-    table[this.currentVerificationIndex] = this.currentVerification;
-    localStorage.setItem('table', JSON.stringify(table));
+    console.log('approiving');
+    const itemFound = this.pendingClaimList.find((item) => {
+      return (item.user === this.currentVerification.user &&
+        item.value === this.currentVerification.value &&
+        item.type === this.currentVerification.type);
+    });
+    const indexFound = this.pendingClaimList.findIndex((item) => {
+      return (item.user === this.currentVerification.user &&
+        item.value === this.currentVerification.value &&
+        item.type === this.currentVerification.type);
+    });
+    itemFound.status = PENDING_ADD;
+    this.pendingClaimList[indexFound] = itemFound;
+    console.log('line 128 pendingClaimList', this.pendingClaimList);
+    this.db.approveClaim(this.currentVerification.user, this.currentVerification.value);
+    this.setUserSelected(this.userSelected);
     this.openVerifySuccessModal();
     this.closeVerificationModal();
   }
@@ -146,15 +178,17 @@ class VerifierStore {
   }
 
   @action
-  setUserSelected(value) {
-    this.userSelected = value;
-    this.identityTable.forEach((row) => {
-      const newId = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
-      console.log('newID', newId);
-      if (row.type === 'name') this.selectedUserNames.push(newId);
-      if (row.type === 'address') this.selectedUserAddresses.push(newId);
-      if (row.type === 'socialId') this.selectedUserSocialIds.push(newId);
-    })
+  setUserSelected(user) {
+    this.userSelected = user;
+    this.pendingClaimList.forEach((row) => {
+      // const newId = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
+      // console.log('newID', newId);
+      if (row.user === user) {
+        if (row.type === 'name') this.selectedUserNames.push(row);
+        if (row.type === 'address') this.selectedUserAddresses.push(row);
+        if (row.type === 'socialId') this.selectedUserSocialIds.push(row);
+      }
+    });
   }
   @action
   resetUserSelected(value) {

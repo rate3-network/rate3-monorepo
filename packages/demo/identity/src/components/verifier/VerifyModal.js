@@ -99,17 +99,13 @@ const VerifyModal = inject('RootStore')(observer((props) => {
             <h1>Verification</h1>
             {/* <div className={classes.label}><p>{props.RootStore.userStore.formType}</p></div> */}
             <div className={classes.label}><p>Data</p></div>
-            <div className={classes.text}><p>{props.RootStore.verifierStore.currentVerification.user}</p></div>
-            <div className={classes.label}><p>Address</p></div>
-            <div className={classes.text}><p>{props.RootStore.verifierStore.currentVerification.type}</p></div>
-            <div className={classes.label}><p>User</p></div>
             <div className={classes.text}><p>{props.RootStore.verifierStore.currentVerification.value}</p></div>
+            <div className={classes.label}><p>User Address</p></div>
+            <div className={classes.text}><p>{props.RootStore.verifierStore.currentVerification.user}</p></div>
+            <div className={classes.label}><p>Verifier Address</p></div>
+            <div className={classes.text}><p>{props.RootStore.verifierStore.currentVerification.verifier}</p></div>
             <div className={classes.buttonContainer}>
               <BlueButton
-                // classes={{
-                //   disabled: classes.buttonDisabled,
-                // }}
-                // disabled={!props.textInputValue || props.verifier === '_placeholder_'}
                 buttonText="Sign"
                 handleClick={props.RootStore.verifierStore.approveCurrentVerification.bind(props.RootStore.verifierStore)}
               />

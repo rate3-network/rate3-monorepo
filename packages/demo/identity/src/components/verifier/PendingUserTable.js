@@ -87,7 +87,7 @@ class PendingUserTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { rowsPerPage, page } = this.state;
-    const rows = this.props.RootStore.verifierStore.pendingIdentityList;
+    const rows = this.props.RootStore.verifierStore.pendingClaimList;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
     console.log('rows', rows);
     return (

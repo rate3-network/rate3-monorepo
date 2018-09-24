@@ -1,8 +1,7 @@
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
 class Identity {
-  constructor(id, value, type, user, verifier, status = PENDING_REVIEW) {
-    this.id = id;
+  constructor(value, type, user, verifier, status = PENDING_REVIEW) {
     this.value = value;
     this.type = type;
     this.user = user;

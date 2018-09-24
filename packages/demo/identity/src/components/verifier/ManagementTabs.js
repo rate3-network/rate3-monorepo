@@ -87,9 +87,7 @@ class ManagementTabs extends React.Component {
 
   render() {
     const { classes, theme } = this.props;
-    // const pendingUserList = createData('pic-', 'address', 3);
-    const pendingUserList = this.props.RootStore.verifierStore.pendingIdentityList;
-    const verifiedUserList = createData('pic-', 'verified', 13);
+
     const value = this.props.RootStore.verifierStore.getCurrentTab();
     return (
       <div className={classes.root}>

@@ -2,28 +2,23 @@ import {
   configure,
   observable,
   action,
-  computed,
   runInAction,
-  autorun,
-  when,
 } from 'mobx';
 import Web3 from 'web3';
+
 import Identity from '../utils/Identity';
+import MyTable from '../utils/MyTable';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
 import identityJson from '../build/contracts/Identity.json';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
-
 class UserStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable userModalIsShowing = false;
   @observable userModalHasBeenViewed = false;
   @observable modalPage: Number = 0;
-  @observable identityNames: Array = [];
-  @observable identityAddresses: Array = [];//[{ id: 1, status: PENDING_REVIEW, value: '001 Changi Road' }];
-  @observable identitySocialIds: Array = [];//[social1, social2, social3];
 
   @observable registerModalIsShowing = false;
   @observable registerSuccessModalIsShowing = false;
@@ -42,7 +37,7 @@ class UserStore {
   @observable metamaskAccount: String = '';
   @observable metamaskBalance: String = '';
 
-  @observable registryContractAddr = '0x2d0335d5f2405ab1f9d149913b05ad00b9dea041';
+  @observable registryContractAddr = '0x121159a9a1731fec0690ac92a448795ac3f5d97d';
   @observable identityContractAddr = '';
   @observable userAddr = '';
   @observable doesIdentityExist = false;
@@ -54,41 +49,65 @@ class UserStore {
   @observable addressClaim = '';
   @observable socialIdClaim = '';
 
-  @observable identityTable = [];
+  @observable db = null;
+  @observable nameClaimList = [];
+  @observable addressClaimList = [];
+  @observable socialIdClaimList = [];
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-    // autorun(() => {
-    //   console.log(this.getFormTextInputValue(), this.getVerifierSelected());
-    // });
-  }
-
-  @action
-  setIdentityTable(table) {
-    this.identityTable = table;
-    table.forEach((row) => {
-      if (row.type === 'name' && row.status !== VERIFIED) {
-        const claim = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
-        this.identityNames.push(claim);
-      }
-      if (row.type === 'address' && row.status !== VERIFIED) {
-        const claim = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
-        this.identityAddresses.push(claim);
-      }
-      if (row.type === 'socialId' && row.status !== VERIFIED) {
-        const claim = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
-        this.identitySocialIds.push(claim);
-      }
+    
+    const myDb = new MyTable('rate3', 'identity-demo');
+    if (myDb.hasTable('identity-demo')) {
+      myDb.getTable('identity-demo');
+    } else {
+      myDb.createTable();
+    }
+    runInAction(() => {
+      this.db = myDb;
+      console.log(this.db.getTable('identity-demo'));
     });
   }
+  @action
+  initDb() {
+    const myDb = new MyTable('rate3', 'identity-demo');
+    if (myDb.hasTable('identity-demo')) {
+      myDb.getTable('identity-demo');
+    } else {
+      myDb.createTable();
+    }
+    runInAction(() => {
+      this.db = myDb;
+      console.log(this.db.getTable('identity-demo'));
+    });
+  }
+  @action
+  resetClaimLists() {
+    this.nameClaimList = [];
+    this.addressClaimList = [];
+    this.socialIdClaimList = [];
+  }
+  @action
+  populateClaimLists() {
+    this.db.getAllNameClaims().forEach((claim) => {
+      if (claim.user === this.userAddr) this.nameClaimList.push(claim);
+    });
+    this.db.getAllAddressClaims().forEach((claim) => {
+      if (claim.user === this.userAddr) this.addressClaimList.push(claim);
+    });
+    this.db.getAllSocialIdClaims().forEach((claim) => {
+      if (claim.user === this.userAddr) this.socialIdClaimList.push(claim);
+    });
+  }
+
   @action
   async getUserAddr() {
     const accounts = await window.web3.eth.getAccounts();
     try {
       if (accounts.length > 0) {
         runInAction(() => {
-          this.userAddr = accounts[0];
+          [this.userAddr] = accounts;
           console.log('user addr', this.userAddr);
         });
       }
@@ -105,6 +124,7 @@ class UserStore {
   checkHasIdentity() {
     this.registryContract.methods.hasIdentity(this.userAddr).call().then(console.log);
   }
+
   @action
   async getIdentities() {
     const hasIdentity = await this.registryContract.methods.hasIdentity(this.userAddr).call();
@@ -116,100 +136,86 @@ class UserStore {
     if (hasIdentity) {
       idContractAddr = await this.registryContract.methods.identities(this.userAddr).call();
     }
-    console.log('id contract address');
-      console.log(idContractAddr);
-      const identityContract = new window.web3.eth.Contract(identityJson.abi, idContractAddr);
-      window.identityContract = identityContract;
+
+    const identityContract = new window.web3.eth.Contract(identityJson.abi, idContractAddr);
+    window.identityContract = identityContract;
+    runInAction(() => {
+      this.identityContract = identityContract;
+      this.identityContractAddr = identityContract._address;
+    });
+
+    // name claim
+    let nameClaims;
+    let nameClaimId;
+    try {
+      nameClaims = await identityContract.methods.getClaimIdsByTopic(101).call();
+      [nameClaimId] = nameClaims;
+      console.log('nameClaimId', nameClaimId);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      const nameClaim = await identityContract.methods.getClaim(nameClaimId).call();
       runInAction(() => {
-        this.identityContract = identityContract;
-        this.identityContractAddr = identityContract._address;
+        console.log(nameClaim);
+        this.nameClaim = window.web3.utils.hexToAscii(nameClaim.data);
+        const nameClaimObj = new Identity(this.nameClaim, 'name', this.userAddr, this.signature, VERIFIED);
+        this.nameClaimList.push(nameClaimObj);
+        console.log('name claim: ', this.nameClaim);
       });
-      
-      // const claimAddedEvents = await identityContract.getPastEvents('ClaimAdded', { fromBlock: 0, toBlock: 'latest' });
-      // console.log('claimAddedEvents', claimAddedEvents);
-      // claimAddedEvents.forEach((event) => {
-      //   const rawData = event.returnValues.data;
-      //   console.log(window.web3.utils.hexToAscii(rawData));
-      // });
+    } catch (err) {
+      console.log(err);
+    }
 
+    // address claim
+    let addressClaims;
+    let addressClaimId;
+    try {
+      addressClaims = await identityContract.methods.getClaimIdsByTopic(102).call();
+      [addressClaimId] = addressClaims;
+      console.log('addressClaimId', addressClaimId);
+    } catch (err) {
+      console.log(err);
+    }
+    
+    try {
+      const addressClaim = await identityContract.methods.getClaim(addressClaimId).call();
+      runInAction(() => {
+        this.addressClaim = window.web3.utils.hexToAscii(addressClaim.data);
+        const addressClaimObj = new Identity(this.addressClaim, 'address', this.userAddr, this.signature, VERIFIED);
+        this.addressClaimList.push(addressClaimObj);
+        // }
+        console.log('address claim: ', this.addressClaim);
+      });
+    } catch (err) {
+      console.log(err);
+    }
 
-      // name claim
-      let nameClaims;
-      let nameClaimId;
-      try {
-        nameClaims = await identityContract.methods.getClaimIdsByTopic(101).call();
-        nameClaimId = nameClaims[0];
-        console.log('nameClaimId', nameClaimId);
-      } catch (err) {
-        console.log(err);
-      }
-      
-      try {
-        const nameClaim = await identityContract.methods.getClaim(nameClaimId).call();
-        runInAction(() => {
-          console.log(nameClaim);
-          this.nameClaim = window.web3.utils.hexToAscii(nameClaim.data);
-          const nameClaimObj = new Identity(this.nameClaim, this.nameClaim, 'name', this.userAddr, this.signature, VERIFIED);
-          // if (!this.identityNames.some((item) => {return item.id === nameClaimObj.id})) {
-          this.identityNames.push(nameClaimObj);
-          // }
-          console.log('name claim: ', this.nameClaim);
-        });
-        
-      } catch (err) {
-        console.log(err);
-      }
-
-      // address claim
-      let addressClaims;
-      let addressClaimId;
-      try {
-        addressClaims = await identityContract.methods.getClaimIdsByTopic(102).call();
-        addressClaimId = addressClaims[0];
-        console.log('addressClaimId', addressClaimId);
-      } catch (err) {
-        console.log(err);
-      }
-      
-      try {
-        const addressClaim = await identityContract.methods.getClaim(addressClaimId).call();
-        runInAction(() => {
-          this.addressClaim = window.web3.utils.hexToAscii(addressClaim.data);
-          const addressClaimObj = new Identity(this.addressClaim, this.addressClaim, 'address', this.userAddr, this.signature, VERIFIED);
-          // if (!this.identityAddresses.some((item) => {return item.id === addressClaimObj.id})) {
-          this.identityAddresses.push(addressClaimObj);
-          // }
-          console.log('address claim: ', this.addressClaim);
-        });
-      } catch (err) {
-        console.log(err);
-      }
-
-      // social id claim
-      let socialIdClaims;
-      let socialIdClaimId;
-      try {
-        socialIdClaims = await identityContract.methods.getClaimIdsByTopic(103).call();
-        socialIdClaimId = socialIdClaims[0];
-        console.log('socialIdClaimId', socialIdClaimId);
-      } catch (err) {
-        console.log(err);
-      }
-      
-      try {
-        const socialIdClaim = await identityContract.methods.getClaim(socialIdClaimId).call();
-        runInAction(() => {
-          this.socialIdClaim = window.web3.utils.hexToAscii(socialIdClaim.data);
-          const socialIdClaimObj = new Identity(this.socialIdClaim, this.socialIdClaim, 'socialId', this.userAddr, this.signature, VERIFIED);
-          // if (!this.identitySocialIds.some((item) => {return item.id === socialIdClaimObj.id})) {
-          this.identitySocialIds.push(socialIdClaimObj);
-          // }
-          console.log('social id claim: ', this.socialIdClaim);
-        });
-      } catch (err) {
-        console.log(err);
-      }
+    // social id claim
+    let socialIdClaims;
+    let socialIdClaimId;
+    try {
+      socialIdClaims = await identityContract.methods.getClaimIdsByTopic(103).call();
+      [socialIdClaimId] = socialIdClaims;
+      console.log('socialIdClaimId', socialIdClaimId);
+    } catch (err) {
+      console.log(err);
+    }
+    
+    try {
+      const socialIdClaim = await identityContract.methods.getClaim(socialIdClaimId).call();
+      runInAction(() => {
+        this.socialIdClaim = window.web3.utils.hexToAscii(socialIdClaim.data);
+        const socialIdClaimObj = new Identity(this.socialIdClaim, 'socialId', this.userAddr, this.signature, VERIFIED);
+        this.socialIdClaimList.push(socialIdClaimObj);
+        // }
+        console.log('social id claim: ', this.socialIdClaim);
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
+
   @action
   getIdentityContract() {
     this.registryContract.methods.identities(this.userAddr).call()
@@ -242,7 +248,7 @@ class UserStore {
 
     const dataToSign = window.web3.utils.soliditySha3(issuerAddr, topic, data);
     console.log('dataToSign', dataToSign);
-    const location = "some location";
+    const location = 'some location';
     let sig;
     console.log('line 197', this.userAddr);
     window.web3.eth.personal.sign(dataToSign, this.userAddr, '').then((str) => {
@@ -254,26 +260,16 @@ class UserStore {
           (err, result) => {
             console.log('from addClaim callback');
             if (err) console.log(err);
-            if (result) console.log(result);
+            if (result) {
+              console.log(result);
+              this.db.deleteClaim(addr, claim);
+              window.location.reload();
+            }
           }
         );
     });
- 
+
     console.log(sig);
-
-    const table = this.identityTable;
-    const itemFound = table.find((el) => {
-      return (el.user === item.user && el.value === item.value && el.type === item.type);
-    });
-    const indexFound = table.findIndex((el) => {
-      return (el.user === item.user && el.value === item.value && el.type === item.type);
-    });
-    
-    itemFound.status = VERIFIED;
-
-    table[indexFound] = itemFound;
-    localStorage.setItem('table', JSON.stringify(table));
-    
   }
   web3HasMetamaskProvider() {
     return (
@@ -347,9 +343,9 @@ class UserStore {
             this.rootStore.commonStore.completeSetupWalletProgress(2);
             break;
           case 'private':
-          this.currentNetwork = 'Private';
-          this.rootStore.commonStore.completeSetupWalletProgress(2);
-          break;
+            this.currentNetwork = 'Private';
+            this.rootStore.commonStore.completeSetupWalletProgress(2);
+            break;
           default:
             this.currentNetwork = 'Other Net or';
         }
@@ -386,16 +382,6 @@ class UserStore {
 
   getModalPage() {
     return this.modalPage;
-  }
-
-  getIdentityNames() {
-    return this.identityNames;
-  }
-  getIdentityAddresses() {
-    return this.identityAddresses;
-  }
-  getIdentitySocialIds() {
-    return this.identitySocialIds;
   }
 
   getUserModalIsShowing() {
