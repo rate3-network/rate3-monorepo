@@ -10,27 +10,21 @@ import "./ERC165.sol";
  */
 contract ERC725 is ERC165 {
     /**
+     * bytes4(keccak256('getKey(bytes32)')) ^
+     * bytes4(keccak256('keyHasPurpose(bytes32,uint256)')) ^
+     * bytes4(keccak256('getKeysByPurpose(uint256)')) ^
+     * bytes4(keccak256('addKey(bytes32,uint256,uint256)')) ^
+     * bytes4(keccak256('removeKey(bytes32,uint256)')) ^
+     * bytes4(keccak256('execute(address,uint256,bytes)')) ^
+     * bytes4(keccak256('approve(uint256,bool)'))
+     */
+    bytes4 public constant ERC725ID = 0xdc3d2a7b;
+
+    /**
      * @dev Constructor that adds ERC725 as a supported interface
      */
     constructor() internal {
-        supportedInterfaces[ERC725ID()] = true;
-    }
-
-    /**
-     * @dev ID for ERC165 pseudo-introspection
-     * @return ID for ERC725 interface
-     */
-    // solhint-disable-next-line func-name-mixedcase
-    function ERC725ID() public pure returns (bytes4) {
-        return (
-            this.getKey.selector ^
-            this.keyHasPurpose.selector ^
-            this.getKeysByPurpose.selector ^
-            this.addKey.selector ^
-            this.removeKey.selector ^
-            this.execute.selector ^
-            this.approve.selector
-        );
+        supportedInterfaces[ERC725ID] = true;
     }
 
     // Events

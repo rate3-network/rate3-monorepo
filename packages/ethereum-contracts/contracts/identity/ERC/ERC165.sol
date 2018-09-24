@@ -14,10 +14,15 @@ contract ERC165 {
     mapping(bytes4 => bool) internal supportedInterfaces;
 
     /**
+     * bytes4(keccak256('supportsInterface(bytes4)'))
+     */
+    bytes4 public constant ERC165ID = 0x01ffc9a7;
+
+    /**
      * @dev Constructor that adds ERC165 as a supported interface
      */
     constructor() internal {
-        supportedInterfaces[ERC165ID()] = true;
+        supportedInterfaces[ERC165ID] = true;
     }
 
     /**
@@ -30,14 +35,5 @@ contract ERC165 {
      */
     function supportsInterface(bytes4 interfaceID) external view returns (bool) {
         return supportedInterfaces[interfaceID];
-    }
-
-    /**
-     * @dev ID for ERC165 pseudo-introspection
-     * @return ID for ERC165 interface
-     */
-    // solhint-disable-next-line func-name-mixedcase
-    function ERC165ID() public pure returns (bytes4) {
-        return this.supportsInterface.selector;
     }
 }

@@ -32,7 +32,8 @@ contract Identity is KeyManager, MultiSig, ClaimManager, KeyGetters, KeyDestruct
         executions.addKey(ownerKey, _keyEnums.CLAIM_SIGNER_KEY(), _keyEnums.ECDSA_TYPE());
 
         // Supports both ERC 725 & 735
-        supportedInterfaces[ERC725ID() ^ ERC735ID()] = true;
+        // ERC725ID ^ ERC735ID
+        supportedInterfaces[0x6a89c416] = true;
     }
 
     // Fallback function accepts Ether transactions

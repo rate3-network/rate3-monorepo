@@ -153,7 +153,7 @@ contract ClaimManager is KeyPausable, ERC735 {
             // Valid
         } else if (msg.sender == issuer) { // solhint-disable-line no-empty-blocks
             // MUST only be done by the issuer of the claim
-        } else if (issuer.doesContractImplementInterface(ERC725ID())) {
+        } else if (issuer.doesContractImplementInterface(ERC725ID)) {
             // Issuer is another Identity contract, is this an action key?
             require(
                 ERC725(issuer).keyHasPurpose(
