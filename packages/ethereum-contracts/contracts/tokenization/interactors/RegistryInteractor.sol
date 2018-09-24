@@ -2,9 +2,9 @@ pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
 import "../shared/TokenInterface.sol";
-import "./BaseAdminInteractor.sol";
+import "./AdminInteractor.sol";
 
-contract RegistryInteractor is BaseAdminInteractor {
+contract RegistryInteractor is AdminInteractor {
     using SafeMath for uint256;
 
     string public constant WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";

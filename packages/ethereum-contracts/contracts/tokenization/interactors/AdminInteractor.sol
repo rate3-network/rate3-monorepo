@@ -6,7 +6,7 @@ import "../shared/TokenInterface.sol";
 import "../shared/ProxySupportedERC20Interface.sol";
 import "../proxies/AdminProxy.sol";
 
-contract BaseAdminInteractor is Claimable {
+contract AdminInteractor is Claimable {
     using SafeMath for uint256;
 
     address public token;

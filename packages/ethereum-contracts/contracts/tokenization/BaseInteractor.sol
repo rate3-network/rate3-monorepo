@@ -9,7 +9,7 @@ contract BaseInteractor is OperationsInteractor, RegistryInteractor {
         address _proxy
     ) 
         public
-        BaseAdminInteractor(_token, _proxy)
+        BaseInteractor(_token, _proxy)
     {
         
     }

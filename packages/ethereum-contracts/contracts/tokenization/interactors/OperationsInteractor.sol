@@ -2,9 +2,9 @@ pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
 import "../shared/TokenInterface.sol";
-import "./BaseAdminInteractor.sol";
+import "./AdminInteractor.sol";
 
-contract OperationsInteractor is BaseAdminInteractor {
+contract OperationsInteractor is AdminInteractor {
     using SafeMath for uint256;
 
     struct MintRequestOperation {
