@@ -82,4 +82,16 @@ contract CompliantToken is ModularToken {
     {
         super.transferFrom(_from, _to, _value);
     }
+
+    function isWhitelistedForMint(address _address) public view returns (bool) {
+        return registryModule.getKey(_address, WHITELISTED_FOR_MINT);
+    }
+
+    function isWhitelistedForBurn(address _address) public view returns (bool) {
+        return registryModule.getKey(_address, WHITELISTED_FOR_BURN);
+    }
+
+    function isBlacklisted(address _address) public view returns (bool) {
+        return registryModule.getKey(_address, BLACKLISTED);
+    }
 }

@@ -9,4 +9,8 @@ contract AdminProxy is Claimable {
     constructor(address _token) public {
         token = _token;
     }
+
+    function setToken(address _token) public onlyOwner {
+        token = _token;
+    }
 }

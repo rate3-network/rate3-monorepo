@@ -13,6 +13,10 @@ contract ProxySupportedERC20Token is ModularToken, ProxySupportedERC20Interface 
         _;
     }
 
+    function setProxy(address _proxy) public onlyOwner {
+        proxy = ERC20(_proxy);
+    }
+
     function transferWithSender(address _sender, address _to, uint256 _value) public onlyProxy returns (bool) {
         require(_value <= balanceModule.balanceOf(_sender), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");

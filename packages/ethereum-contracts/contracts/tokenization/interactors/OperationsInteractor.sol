@@ -27,6 +27,23 @@ contract OperationsInteractor is BaseAdminInteractor {
 
     mapping (address => MintRequestOperation[]) public mintRequestOperations;
     mapping (address => BurnRequestOperation[]) public burnRequestOperations;
+
+    bool operationsPaused;
+
+    modifier operationsNotPaused() {
+        require(!operationsPaused, "Operations are paused");
+        _;
+    }
+
+    modifier whitelistedForMint(address _mintDestinationAddress) {
+        require(TokenInterface(token).isWhitelistedForMint(_mintDestinationAddress), "Not whitelisted for mint");
+        _;
+    }
+
+    modifier whitelistedForBurn(address _burnOriginAddress) {
+        require(TokenInterface(token).isWhitelistedForBurn(_burnOriginAddress), "Not whitelisted for burn");
+        _;
+    }
     
     event MintOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
     event BurnOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
@@ -40,7 +57,7 @@ contract OperationsInteractor is BaseAdminInteractor {
     event MintOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
     event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
 
-    function requestMint(uint256 _value) public {
+    function requestMint(uint256 _value) public operationsNotPaused whitelistedForMint(msg.sender) {
         uint256 requestTimestamp = block.timestamp;
         MintRequestOperation memory mintRequestOperation = MintRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0);
 
@@ -48,7 +65,7 @@ contract OperationsInteractor is BaseAdminInteractor {
         mintRequestOperations[msg.sender].push(mintRequestOperation);
     }
 
-    function approveMint(address _requestor, uint256 _index) public onlyAdmin1 {
+    function approveMint(address _requestor, uint256 _index) public onlyAdmin1 operationsNotPaused whitelistedForMint(_requestor) {
         MintRequestOperation storage mintRequestOperation = mintRequestOperations[_requestor][_index];
 
         require(!mintRequestOperation.approved, "MintRequestOperation is already approved");
@@ -60,7 +77,7 @@ contract OperationsInteractor is BaseAdminInteractor {
         emit MintOperationApproved(_requestor, msg.sender, block.timestamp, _index);
     }
 
-    function finalizeMint(address _requestor, uint256 _index) public onlyAdmin2 {
+    function finalizeMint(address _requestor, uint256 _index) public onlyAdmin2 operationsNotPaused whitelistedForMint(_requestor) {
         MintRequestOperation memory mintRequestOperation = mintRequestOperations[_requestor][_index];
         require(mintRequestOperation.approved, "Mint Operation is not approved");
         address mintAddress = mintRequestOperation.by;
@@ -76,7 +93,7 @@ contract OperationsInteractor is BaseAdminInteractor {
         emit MintOperationRevoked(_requestor, msg.sender, block.timestamp, _index);
     }
 
-    function requestBurn(uint256 _value) public {
+    function requestBurn(uint256 _value) public operationsNotPaused whitelistedForBurn(msg.sender) {
         uint256 requestTimestamp = block.timestamp;
         BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0);
 
@@ -84,7 +101,7 @@ contract OperationsInteractor is BaseAdminInteractor {
         burnRequestOperations[msg.sender].push(burnRequestOperation);
     }
 
-    function approveBurn(address _requestor, uint256 _index) public onlyAdmin1 {
+    function approveBurn(address _requestor, uint256 _index) public onlyAdmin1 operationsNotPaused whitelistedForBurn(_requestor) {
         BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
 
         require(!burnRequestOperation.approved, "BurnRequestOperation is already approved");
@@ -96,7 +113,7 @@ contract OperationsInteractor is BaseAdminInteractor {
         emit BurnOperationApproved(_requestor, msg.sender, block.timestamp, _index);
     }
 
-    function finalizeBurn(address _requestor, uint256 _index) public onlyAdmin2 {
+    function finalizeBurn(address _requestor, uint256 _index) public onlyAdmin2 operationsNotPaused whitelistedForBurn(_requestor) {
         BurnRequestOperation memory burnRequestOperation = burnRequestOperations[_requestor][_index];
         require(burnRequestOperation.approved, "Burn Operation is not approved");
         address burnAddress = burnRequestOperation.by;
@@ -112,4 +129,11 @@ contract OperationsInteractor is BaseAdminInteractor {
         emit BurnOperationRevoked(_requestor, msg.sender, block.timestamp, _index);
     }
 
+    function pauseOperations() public onlyOwner {
+        operationsPaused = true;
+    }
+
+    function resumeOperations() public onlyOwner {
+        operationsPaused = false;
+    }
 }

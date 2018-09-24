@@ -58,6 +58,9 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return true;
     }
 
+    function transferContractOwnership(address _contractAddress) public onlyOwner {
+        Claimable(_contractAddress).transferOwnership(msg.sender);
+    }
 
     /**
      * @dev ERC20 functionality - Gets the total number of tokens in existence.
@@ -230,5 +233,34 @@ contract ModularToken is ERC20, Claimable, Pausable {
             _booleanValue,
             _managerAddress
         );
+    }
+
+    function getDataRecord(
+        address _forAddress,
+        string _key
+    )
+        public
+        view
+        returns 
+    (
+        uint256,
+        string,
+        address,
+        bool,
+        address,
+        uint256
+    ) {
+        return registryModule.getDataRecord(_forAddress, _key);
+    }
+
+    function getKey(
+        address _forAddress,
+        string _key
+    )
+        public
+        view
+        returns (bool)
+    {
+        return registryModule.getKey(_forAddress, _key);
     }
 }

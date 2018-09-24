@@ -2,6 +2,9 @@ pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
+import "../shared/TokenInterface.sol";
+import "../shared/ProxySupportedERC20Interface.sol";
+import "../proxies/AdminProxy.sol";
 
 contract BaseAdminInteractor is Claimable {
     using SafeMath for uint256;
@@ -57,6 +60,43 @@ contract BaseAdminInteractor is Claimable {
     function setSecondAdmin(address _newAdminAddress) public onlyOwner {
         require(_newAdminAddress != address(0), "Admin cannot be 0x0 address");
         admin2 = _newAdminAddress;
+    }
+
+    function setTokenOnProxy(Ownable _token) public onlyOwner {
+        require(Ownable(_token).owner() == address(this), "Interactor not owner of token");
+        AdminProxy(proxy).setToken(_token);
+    }
+
+    function setProxyOnToken(Ownable _proxy) public onlyOwner {
+        require(Ownable(_proxy).owner() == address(this), "Interactor not owner of proxy");
+        ProxySupportedERC20Interface(token).setProxy(_proxy);
+    }
+
+    function transferOwnedContract(
+        Ownable _ownedContract,
+        address _newOwner
+    )
+        public
+        onlyOwner
+    {
+        _ownedContract.transferOwnership(_newOwner);
+    }
+
+    function claimContractFromToken(Claimable _contractAddress) public onlyOwner {
+        TokenInterface(token).transferContractOwnership(_contractAddress);
+        Claimable(_contractAddress).claimOwnership();
+    }
+
+    function setBalanceModule(address _moduleAddress) public onlyOwner returns (bool) {
+        TokenInterface(token).setBalanceModule(_moduleAddress);
+    }
+
+    function setAllowanceModule(address _moduleAddress) public onlyOwner returns (bool) {
+        TokenInterface(token).setAllowanceModule(_moduleAddress);
+    }
+
+    function setRegistryModule(address _moduleAddress) public onlyOwner returns (bool) {
+        TokenInterface(token).setRegistryModule(_moduleAddress);
     }
 }
 
