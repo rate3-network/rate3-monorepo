@@ -2,12 +2,12 @@ pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
-import "../TokenizeTemplateToken.sol";
 
 contract BaseAdminInteractor is Claimable {
     using SafeMath for uint256;
 
-    TokenizeTemplateToken public token;
+    address public token;
+    address public proxy;
     address public admin1;
     address public admin2;
 
@@ -26,18 +26,27 @@ contract BaseAdminInteractor is Claimable {
         _;
     }
 
-    constructor(TokenizeTemplateToken _token) public {
+    constructor(address _token, address _proxy) public {
         admin1 = msg.sender;
         admin2 = msg.sender;
         token = _token;
+        proxy = _proxy;
     }
 
-    function setToken(TokenizeTemplateToken _newTokenContract) public onlyOwner {
+    function setToken(address _newTokenContract) public onlyOwner {
         token = _newTokenContract;
     }
 
     function claimTokenOwnership() public onlyOwner {
-        token.claimOwnership();
+        Claimable(token).claimOwnership();
+    }
+
+    function setProxy(address _newProxyContract) public onlyOwner {
+        proxy = _newProxyContract;
+    }
+
+    function claimProxyOwnership() public onlyOwner {
+        Claimable(proxy).claimOwnership();
     }
 
     function setFirstAdmin(address _newAdminAddress) public onlyOwner {

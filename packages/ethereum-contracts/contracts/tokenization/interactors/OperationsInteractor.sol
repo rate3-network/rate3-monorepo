@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
+import "../shared/TokenInterface.sol";
 import "./BaseAdminInteractor.sol";
 
 contract OperationsInteractor is BaseAdminInteractor {
@@ -65,7 +66,7 @@ contract OperationsInteractor is BaseAdminInteractor {
         address mintAddress = mintRequestOperation.by;
         uint256 value = mintRequestOperation.value;
         delete mintRequestOperations[_requestor][_index];
-        token.mint(mintAddress, value);
+        TokenInterface(token).mint(mintAddress, value);
 
         emit MintOperationFinalized(_requestor, msg.sender, block.timestamp, _index);
     }
@@ -101,7 +102,7 @@ contract OperationsInteractor is BaseAdminInteractor {
         address burnAddress = burnRequestOperation.by;
         uint256 value = burnRequestOperation.value;
         delete burnRequestOperations[_requestor][_index];
-        token.burn(burnAddress, value);
+        TokenInterface(token).burn(burnAddress, value);
 
         emit BurnOperationFinalized(_requestor, msg.sender, block.timestamp, _index);
     }

@@ -1,9 +1,10 @@
 pragma solidity ^0.4.24;
 
 import "../shared/ERC20.sol";
-import "./BaseTokenProxy.sol";
+import "../shared/ProxySupportedERC20Interface.sol";
+import "./AdminProxy.sol";
 
-contract ERC20Proxy is ERC20, BaseTokenProxy {
+contract ERC20Proxy is ERC20, AdminProxy {
 
     /// @notice  Returns the name of the token.
     string public name;
@@ -32,7 +33,7 @@ contract ERC20Proxy is ERC20, BaseTokenProxy {
       * @return Total amount of tokens in existence.
       */
     function totalSupply() public view returns (uint256) {
-        return token.totalSupply();
+        return ERC20(token).totalSupply();
     }
 
      /**
@@ -43,7 +44,7 @@ contract ERC20Proxy is ERC20, BaseTokenProxy {
       * @return The amount owned by the passed address.
       */
     function balanceOf(address _owner) public view returns (uint256) {
-        return token.balanceOf(_owner);
+        return ERC20(token).balanceOf(_owner);
     }
 
     /**
@@ -55,7 +56,7 @@ contract ERC20Proxy is ERC20, BaseTokenProxy {
      * @return The amount of tokens still available for the spender.
      */
     function allowance(address _owner, address _spender) public view returns (uint256) {
-        return token.allowance(_owner, _spender);
+        return ERC20(token).allowance(_owner, _spender);
     }
 
     /**
@@ -67,7 +68,7 @@ contract ERC20Proxy is ERC20, BaseTokenProxy {
      * @return Transfer completion success.
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        return token.transferWithSender(msg.sender, _to, _value);
+        return ProxySupportedERC20Interface(token).transferWithSender(msg.sender, _to, _value);
     }
 
     /**
@@ -80,7 +81,7 @@ contract ERC20Proxy is ERC20, BaseTokenProxy {
      * @return Transfer completion success.
      */
     function transferFrom(address _from, address _to, uint256 _value) public returns (bool) {
-        return token.transferFromWithSender(msg.sender, _from, _to, _value);
+        return ProxySupportedERC20Interface(token).transferFromWithSender(msg.sender, _from, _to, _value);
     }
 
     /**
@@ -100,7 +101,7 @@ contract ERC20Proxy is ERC20, BaseTokenProxy {
      * @return Approve completion success.
      */
     function approve(address _spender, uint256 _value) public returns (bool) {
-        return token.approveWithSender(msg.sender, _spender, _value);
+        return ProxySupportedERC20Interface(token).approveWithSender(msg.sender, _spender, _value);
     }
 
     /**
@@ -117,7 +118,7 @@ contract ERC20Proxy is ERC20, BaseTokenProxy {
      * @return Approval completion success.
      */
     function increaseApproval(address _spender, uint256 _addedValue) public returns (bool) {
-        return token.increaseApprovalWithSender(msg.sender, _spender, _addedValue);
+        return ProxySupportedERC20Interface(token).increaseApprovalWithSender(msg.sender, _spender, _addedValue);
     }
 
     /**
@@ -129,11 +130,11 @@ contract ERC20Proxy is ERC20, BaseTokenProxy {
      * From MonolithDAO Token.sol
      *
      * @param _spender The address which will spend the funds.
-     * @param _addedValue The amount of tokens to decrease the allowance by.
+     * @param _subtractedValue The amount of tokens to decrease the allowance by.
      *
      * @return Approval completion success.
      */
     function decreaseApproval(address _spender, uint256 _subtractedValue) public returns (bool) {
-        return token.decreaseApprovalWithSender(msg.sender, _spender, _subtractedValue);
+        return ProxySupportedERC20Interface(token).decreaseApprovalWithSender(msg.sender, _spender, _subtractedValue);
     }
 }

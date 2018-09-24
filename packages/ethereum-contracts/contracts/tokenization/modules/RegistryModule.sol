@@ -93,6 +93,6 @@ contract RegistryModule is Claimable {
         view
         returns (bool)
     {
-        return (registry[_forAddress][_key].managerAddress != address(0));
+        return (registry[_forAddress][_key].dataRecordedTimestamp > 0);
     }
 }
