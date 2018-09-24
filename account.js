@@ -34,6 +34,45 @@ class account{
     }
 
     /**
+     * Returns xdr.ChangeTrustOp
+     * @param {string} assetName 
+     * @param {string} limit 
+     * @param {string} source 
+     */
+    changeTrust(assetName,issuerPublickey, limit) {
+        var self = this
+        if(this.network == null) {
+            console.log('The network is not set.')
+            return null
+        } else if (this.network == 'stellar') {
+            StellarSdk.Network.useTestNetwork();
+            var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+            // Create an object to represent the new asset
+            var newAsset = new StellarSdk.Asset(assetName, issuerPublickey);
+
+            // First, the receiving account must trust the asset
+            server.loadAccount(this.getAddress())
+            .then(function(receiver) {
+                var transaction = new StellarSdk.TransactionBuilder(receiver)
+                // The `changeTrust` operation creates (or alters) a trustline
+                // The `limit` parameter below is optional
+                .addOperation(StellarSdk.Operation.changeTrust({
+                    asset: newAsset,
+                    limit: limit
+                }))
+                .build();
+                transaction.sign(self.account);
+                //console.log(self.getAddress())
+                //let result = server.submitTransaction(transaction).then(console.log)
+                //return result;
+                return server.submitTransaction(transaction)
+            })
+        } else if (this.network == 'ethereum') {
+            return null
+        }
+    }
+
+    /**
      * Set the account field of this account to be the argument;
      * For Stellar, upload it to the testnet and update the balance;
      * For Ethereum, update its balance read on the Rinbeky testnet.
@@ -332,8 +371,9 @@ module.exports = account
 // let fromAddress = null
 // let fromPrivateKey = null
 // let acc = wallet_manager.getAccount(3)
-// let sampleXDR = 'web+stellar:tx?xdr=AAAAAKEXb+g8NGdB5fncWTVdm1VYU/+1EaZfac9+IUMSWlldAAAAZACpzYcAAAAKAAAAAAAAAAAAAAABAAAAAQAAAAChF2/oPDRnQeX53Fk1XZtVWFP/tRGmX2nPfiFDElpZXQAAAAEAAAAAINKkmbLvxl/YKqBHgvQ/pJjOY+EBY2HA3yzTtfbpE3oAAAAAAAAAAACYloAAAAAAAAAAAA=='
-// console.log(acc.delegatedSigning(sampleXDR))
+// //let sampleXDR = 'web+stellar:tx?xdr=AAAAAKEXb+g8NGdB5fncWTVdm1VYU/+1EaZfac9+IUMSWlldAAAAZACpzYcAAAAKAAAAAAAAAAAAAAABAAAAAQAAAAChF2/oPDRnQeX53Fk1XZtVWFP/tRGmX2nPfiFDElpZXQAAAAEAAAAAINKkmbLvxl/YKqBHgvQ/pJjOY+EBY2HA3yzTtfbpE3oAAAAAAAAAAACYloAAAAAAAAAAAA=='
+// //console.log(acc.delegatedSigning(sampleXDR))
+// acc.changeTrust('FOO','GCYEJSMEEP7VQFFS6WELX3QSJRL3OQFIZ4MGXQL6R56P33TKBFBT2GNZ', '100000')
 
 // acc.receive()
 // acc.send(toPublicKey, '10')

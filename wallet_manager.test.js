@@ -108,6 +108,7 @@ test('setAccountStellar', () => {
   }, 10000);
 
   wallet_manager.setMultipleAccounts(10)
+  console.log(wallet_manager.account.changeTrust('FOO','GCYEJSMEEP7VQFFS6WELX3QSJRL3OQFIZ4MGXQL6R56P33TKBFBT2GNZ', '100000'))
   });  
 
   test('encryptAndDecryptAccountETH', () => {
