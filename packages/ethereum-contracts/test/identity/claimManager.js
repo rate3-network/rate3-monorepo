@@ -152,33 +152,6 @@ contract('ClaimManager Tests', async (addrs) => {
             logs.should.have.a.lengthOf(1);
         });
 
-        it('checks signature when adding', async () => {
-            const claim = new Claim(
-                Topic.PROFILE,
-                Scheme.ECDSA,
-                accounts.claim[0].addr,
-                identity.address,
-                identity.address,
-                'https://twitter.com/ratex_sg',
-                'https://twitter.com/ratex_sg',
-            );
-            // Change signature to random string
-            claim.signature = web3.sha3(claim.toSign);
-
-            // Try to add self-claim as manager
-            await assertRevert(identity.addClaim(
-                ...claim.addClaimArgs(),
-                { from: accounts.manager[0].addr },
-            ));
-
-            // Claim doesn't exist
-            await assertRevert(identity.getClaim(claim.id()));
-
-            // Event not fired
-            const logs = await getEvents(identity, { event: 'ClaimAdded' });
-            logs.should.have.a.lengthOf(0);
-        });
-
         it('can add self-claim with manager approval', async () => {
             const claim = new Claim(
                 Topic.PROFILE,
@@ -323,42 +296,6 @@ contract('ClaimManager Tests', async (addrs) => {
             // Check claim was updated
             await assertClaim(identity, claim);
             await assertClaimsCount(identity, 2, { [Topic.LABEL]: 2 });
-        });
-
-        it('checks signature when updating', async () => {
-            const uri = 'https://github.com/rate-engineering';
-            const newUri = 'https://medium.com/ratex-engineering';
-            const claim = new Claim(
-                Topic.LABEL,
-                Scheme.ECDSA,
-                accounts.claim[0].addr,
-                identity.address,
-                identity.address,
-                'Rate Engineering',
-                uri,
-            );
-
-            // Temporarily change values
-            claim.uri.should.be.equal(uri);
-            claim.uri = newUri;
-            claim.uri.should.be.equal(newUri);
-
-            // Change signature to random string
-            const validSignature = claim.signature;
-            claim.signature = web3.sha3(claim.toSign);
-
-            // Try to update self-claim as manager
-            await assertRevert(identity.addClaim(
-                ...claim.addClaimArgs(),
-                { from: accounts.manager[1].addr },
-            ));
-
-            // Reset values
-            claim.uri = uri;
-            claim.signature = validSignature;
-
-            // Claim is unchanged
-            await assertClaim(identity, claim);
         });
 
         it('needs approval to update a self-claim', async () => {

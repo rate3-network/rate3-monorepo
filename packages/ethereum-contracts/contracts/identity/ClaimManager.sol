@@ -52,13 +52,6 @@ contract ClaimManager is KeyPausable, ERC735 {
         whenNotPaused
         returns (uint256 claimRequestId)
     {
-        // Check signature
-        if (_scheme == executions.allKeys.enums.ECDSA_TYPE()) {
-            require(
-                _validSignature(_topic, _scheme, _issuer, _signature, _data),
-                "Invalid signature"
-            );
-        }
         // Check we can perform action
         bool requireApproval = !_managementOrSelf();
 
@@ -143,62 +136,6 @@ contract ClaimManager is KeyPausable, ERC735 {
         returns(bytes32[] claimIds)
     {
         return allClaims.getClaimIdsByTopic(_topic);
-    }
-
-    /**
-     * @dev Only possible to verify for ECDSA that's built into Ethereum
-     * @dev Checks if a given claim is valid:
-     *  - claim is signed by issuer directly
-     *  - claim is self-signed with a valid CLAIM_SIGNER_KEY
-     *  - claim is signed by another identity contract's valid CLAIM_SIGNER_KEY
-     * @param _topic Type of claim
-     * @param _scheme Scheme used for the signatures
-     * @param _issuer Address of issuer
-     * @param _signature The actual signature
-     * @param _data The data that was signed
-     * @return `false` if the signature is invalid or if the scheme is not implemented
-     */
-    function _validSignature(
-        uint256 _topic,
-        uint256 _scheme,
-        address _issuer,
-        bytes _signature,
-        bytes _data
-    )
-        internal
-        view
-        returns (bool)
-    {
-        if (_scheme == executions.allKeys.enums.ECDSA_TYPE()) {
-            address signedBy = ClaimStore.getSignatureAddress(
-                ClaimStore.claimToSign(address(this), _topic, _data),
-                _signature
-            );
-
-            if (_issuer == signedBy) {
-                // Issuer signed the signature
-                return true;
-            } else if (_issuer == address(this)) {
-                // Self-signed with CLAIM_SIGNER_KEY
-                return executions.allKeys.find(
-                    KeyStore.addrToKey(signedBy),
-                    executions.allKeys.enums.CLAIM_SIGNER_KEY()
-                );
-            } else if (_issuer.doesContractImplementInterface(ERC725ID())) {
-                // Issuer is an Identity contract
-                // It should hold the key with which the above message was signed.
-                // If the key is not present anymore, the claim SHOULD be treated as invalid.
-                return ERC725(_issuer).keyHasPurpose(
-                    KeyStore.addrToKey(signedBy),
-                    executions.allKeys.enums.CLAIM_SIGNER_KEY()
-                );
-            }
-            // Invalid
-            return false;
-        } else {
-            // Not implemented
-            return false;
-        }
     }
 
     /**
