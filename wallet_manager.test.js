@@ -76,6 +76,8 @@ test('setAccountETH', () => {
     account = wallet_manager.getAccount(5)
     expect(account.getAddress()).toBe(expectedAddress);
     expect(account.getPrivateKey()).toBe(expectedPrivateKey)
+    wallet_manager.setMultipleAccounts(10)
+
   });  
 
 test('setAccountStellar', () => {
@@ -104,6 +106,8 @@ test('setAccountStellar', () => {
       //console.log(account.balance, 'this.account.balance')
       expect(account.getBalance()).toBe(expectedBalance)
   }, 10000);
+
+  wallet_manager.setMultipleAccounts(10)
   });  
 
   test('encryptAndDecryptAccountETH', () => {

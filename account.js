@@ -10,6 +10,8 @@ var Web3 = require('web3');
 var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 
 /**
+ * @class account
+ * @description
  * This is a wrapper class over stellar and ethereum accounts.
  * For those fields/methods that are already there when the original
  * account is passed in, this class simply extracts them;
@@ -17,7 +19,8 @@ var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630
  */
 class account{
     /**
-     * @class
+     * constructor
+     * @memberof account
      * @param {string} network 
      */
     constructor(network) {

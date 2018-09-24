@@ -23,8 +23,10 @@ class wallet_manager{
     constructor(network) {
         if (network == 'stellar') {
             this.network = 'stellar'
+            this.accountArray = []
         } else if (network == 'ethereum') {
             this.network = 'ethereum'
+            this.accountArray = []
         } else {
             console.log('The name of the network must be stellar or ethereum.')
         }
@@ -37,8 +39,12 @@ class wallet_manager{
     changeNetwork(network) {
         if (network == 'stellar') {
             this.network = 'stellar'
+            this.accountArray = [] // discard the accounts in another network
+            this.account = []
         } else if (network == 'ethereum') {
             this.network = 'ethereum'
+            this.accountArray = []
+            this.account = []
         } else {
             console.log('The name of the network must be stellar or ethereum.')
         }
@@ -48,7 +54,12 @@ class wallet_manager{
      * Return the name of the current network
      */
     getNetwork() {
-        return this.network
+        if (this.network == null) {
+            console.log('the network of the wallet manager is not set.')
+            return null
+        } else {
+            return this.network
+        }
     }
 
     /**
@@ -109,7 +120,12 @@ class wallet_manager{
      * Return the current seed
      */
     getSeed() {
-        return this.seed
+        if (this.seed == null) {
+            console.log('The seed of the wallet is not set.')
+            return null
+        } else {
+            return this.seed
+        }
     }
 
     /**
@@ -135,7 +151,12 @@ class wallet_manager{
      * Return the current wallet
      */
     getWallet() {
-        return this.wallet
+        if(this.wallet == null) {
+            console.log('The wallet is not set.')
+            return null
+        } else {
+            return this.wallet
+        }
     }
 
     /**
@@ -157,11 +178,13 @@ class wallet_manager{
                     case 'stellar':
                         this.account = new account(this.network)
                         this.account.setAccount(this.wallet.getKeypair(0))
+                        this.accountArray.push(Object.assign({}, this.account))
                         return this.account
                     case 'ethereum':
                         let privateKey = '0x' + this.wallet.deriveChild(0).getWallet()._privKey.toString('hex')
                         this.account = new account(this.network)
                         this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey))
+                        this.accountArray.push(Object.assign({}, this.account))
                         return this.account
                     default:
                         console.log('The network is not set.')
@@ -175,6 +198,7 @@ class wallet_manager{
                 case 'stellar':
                     this.account = new account(this.network)
                     this.account.setAccount(this.wallet.getKeypair(arguments[0]))
+                    this.accountArray.push(Object.assign({}, this.account))
                     // console.log(this.account.balance, 'this.account.balance')
                     // setTimeout(() => {
                     //     console.log(this.account.balance, 'this.account.balance')
@@ -184,6 +208,7 @@ class wallet_manager{
                     let privateKey = '0x' + this.wallet.deriveChild(arguments[0]).getWallet()._privKey.toString('hex')
                     this.account = new account(this.network)
                     this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey))
+                    this.accountArray.push(Object.assign({}, this.account))
                     break
                 default:
                     this.account = null
@@ -198,6 +223,7 @@ class wallet_manager{
                             // generate account from private key
                             this.account = new account(this.network)
                             this.account.setAccount(StellarSdk.Keypair.fromSecret(arguments[0]))
+                            this.accountArray.push(Object.assign({}, this.account))
                         } else {
                             this.account = null
                             console.log('The starting char must be S (private key)')
@@ -205,6 +231,7 @@ class wallet_manager{
                     case 'ethereum':
                         this.account = new account(this.network)
                         this.account.setAccount(web3.eth.accounts.privateKeyToAccount(arguments[0]))
+                        this.accountArray.push(Object.assign({}, this.account))
                     default:
                         this.account = null
                         console.log('The network has not been set.')
@@ -219,7 +246,31 @@ class wallet_manager{
             console.log('The argument must be empty, or 0,1,2,...')
             return null
         }
+    }
 
+    /**
+     * A shorthand for creating multiple accounts.
+     * The accounts created will be the 0th, 1st, ... (n-1)th in the wallet
+     * @param {int} numberOfAccounts 
+     */
+    setMultipleAccounts(numberOfAccounts) {
+        for (var i = 0; i < numberOfAccounts; i++) {
+            this.getAccount(i)
+        }
+    }
+
+    /**
+     * Return the account array.
+     * The index of accounts in this array can be different from the index of the account in the wallet,
+     * depending on the sequence the accounts are created.
+     */
+    getAccountArray() {
+        if(this.accountArray == null) {
+            console.log('The account array is empty')
+            return null
+        } else {
+            return this.accountArray
+        }
     }
 
     /**
