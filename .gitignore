@@ -13,3 +13,5 @@ wallet_back_up/
 # encrypted data
 *.enc
  
+# js files
+promiseTest.js

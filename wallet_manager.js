@@ -168,7 +168,7 @@ class wallet_manager{
      * If the parameter is a string,
      * Use it as the private/public key to generate the account
      */
-    getAccount () {
+    async getAccount () {
         if (arguments.length == 0){
             if(this.wallet == null) {
                 console.log('The wallet is not initialized.')
@@ -177,13 +177,13 @@ class wallet_manager{
                 switch(this.network) {
                     case 'stellar':
                         this.account = new account(this.network)
-                        this.account.setAccount(this.wallet.getKeypair(0))
+                        await this.account.setAccount(this.wallet.getKeypair(0))
                         this.accountArray.push(Object.assign({}, this.account))
                         return this.account
                     case 'ethereum':
                         let privateKey = '0x' + this.wallet.deriveChild(0).getWallet()._privKey.toString('hex')
                         this.account = new account(this.network)
-                        this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey))
+                        await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey))
                         this.accountArray.push(Object.assign({}, this.account))
                         return this.account
                     default:
@@ -197,17 +197,13 @@ class wallet_manager{
             switch(this.network) {
                 case 'stellar':
                     this.account = new account(this.network)
-                    this.account.setAccount(this.wallet.getKeypair(arguments[0]))
+                    await this.account.setAccount(this.wallet.getKeypair(arguments[0]))
                     this.accountArray.push(Object.assign({}, this.account))
-                    // console.log(this.account.balance, 'this.account.balance')
-                    // setTimeout(() => {
-                    //     console.log(this.account.balance, 'this.account.balance')
-                    // }, 10000);
                     break
                 case 'ethereum':
                     let privateKey = '0x' + this.wallet.deriveChild(arguments[0]).getWallet()._privKey.toString('hex')
                     this.account = new account(this.network)
-                    this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey))
+                    await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey))
                     this.accountArray.push(Object.assign({}, this.account))
                     break
                 default:
@@ -222,7 +218,7 @@ class wallet_manager{
                         if(arguments[0].charAt(0) == 'S') {
                             // generate account from private key
                             this.account = new account(this.network)
-                            this.account.setAccount(StellarSdk.Keypair.fromSecret(arguments[0]))
+                            await this.account.setAccount(StellarSdk.Keypair.fromSecret(arguments[0]))
                             this.accountArray.push(Object.assign({}, this.account))
                         } else {
                             this.account = null
@@ -230,7 +226,7 @@ class wallet_manager{
                         }
                     case 'ethereum':
                         this.account = new account(this.network)
-                        this.account.setAccount(web3.eth.accounts.privateKeyToAccount(arguments[0]))
+                        await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(arguments[0]))
                         this.accountArray.push(Object.assign({}, this.account))
                     default:
                         this.account = null

@@ -8,6 +8,7 @@ const ethUtil = require('ethereumjs-util');
 const tx = require('ethereumjs-tx');
 var Web3 = require('web3');
 var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
+var rp = require('request-promise');
 
 /**
  * @class account
@@ -26,6 +27,7 @@ class account{
     constructor(network) {
         if (network == 'stellar') {
             this.network = 'stellar'
+            this.testAddress = 'https://horizon-testnet.stellar.org' + '/accounts/'
         } else if (network == 'ethereum') {
             this.network = 'ethereum'
         } else {
@@ -72,13 +74,25 @@ class account{
         }
     }
 
+    async loadBalance(publicKey) {
+        var self = this
+        await rp(this.testAddress + publicKey)
+        .then(function (htmlString) {
+            self.balance = JSON.parse(htmlString).balances[0].balance
+            console.log(self.balance)
+        })
+        .catch(function (err) {
+            console.log('Error in loading balance')
+        });
+      }
+
     /**
      * Set the account field of this account to be the argument;
      * For Stellar, upload it to the testnet and update the balance;
      * For Ethereum, update its balance read on the Rinbeky testnet.
      * @param {object} account - A stellar or ethereum account
      */
-    setAccount (account) {
+    async setAccount (account) {
         var request = require('request');
         if (this.network == null) {
             console.log('The network of this account must be set first.')
@@ -88,47 +102,40 @@ class account{
             this.account = account
             this.balance = '-1'
             var self = this
-            //).then((error, response, body) => {})
-            request('https://horizon-testnet.stellar.org' + '/accounts/' + this.getAddress(), function (error, response, body) {
-                if (response.statusCode == 200) {
-                    // the account is alreay on the testnet
-                    // retrieve the balance value and set it here, in string
-                    self.balance = JSON.parse(body).balances[0].balance
-                } else {
-                    //the account is not on the testnet
-                    // load it to test net and then retrieve the balance
-                    request.get({
-                        url: 'https://friendbot.stellar.org',
-                        qs: { addr: account.publicKey() },
-                        json: true
-                        }, function(error, response, body) {
-                            if (error || response.statusCode !== 200) {
-                                console.error('ERROR!', error || body);
-                            }
-                            else {
-                                console.log('SUCCESS! You have a new account :)\n', body);
-                                // retrieve the balance value and set it here
-                                request('https://horizon-testnet.stellar.org' + '/accounts/' + account.publicKey(), function (error, response, body) {
-                                    if (response.statusCode == 200) {
-                                        self.balance = JSON.parse(body).balances[0].balance
-                                    } else {
-                                        console.log('error:', error)
-                                    }
-                                });
-                            }
-                    
-                    });
-                }
-            });
+            await this.loadBalance(this.getAddress())
+            if (this.balance == null) {
+              await rp({
+                url: 'https://friendbot.stellar.org',
+                qs: { addr: self.getAddress() },
+                json: true
+                }).then(async function(htmlString) {
+                  self.balance = await loadBalance(self.getAddress())
+                })
+                .catch(function (err) {
+                  console.log(err)
+                });
+            } else {
+              console.log('the account is already on the testnet')
+            }
         } else if (this.network == 'ethereum') {
             this.account = account
             this.balance = '-1'
             var self = this
-            web3.eth.getBalance(account.address, function(err, val) {
-                if (err != null) {
-                    console.log('Cannot get the eth balance')
+            // await web3.eth.getBalance(account.address, function(err, val) {
+            //     if (err != null) {
+            //         console.log('Cannot get the eth balance')
+            //     } else {
+            //         self.balance = val
+            //     }
+            // });
+            await web3.eth.getBalance(account.address)
+            .then(function(response) {
+                if (typeof response == 'string') {
+                    console.log('val', response)
+                    self.balance = response
                 } else {
-                    self.balance = val
+                    console.log(response)
+                    console.log('Cannot get the eth balance')
                 }
             });
         } else {
@@ -154,6 +161,18 @@ class account{
         } else if (this.network == 'ethereum') {
             return web3.eth.accounts.sign(data, this.getPrivateKey())
         }
+    }
+
+    /**
+     * 
+     * @param {} tx 
+     */
+    signTransaction(tx) {
+
+    }
+
+    webAuthenticate(tx) {
+
     }
 
     /**
@@ -280,7 +299,8 @@ class account{
             tx1.sign(this.account)
             return tx1
         } else if (this.network == 'ethereum') {
-            web3.eth.getTransaction('0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda')
+            //web3.eth.getTransaction('0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda')
+            web3.eth.getTransaction(uri)// uri here is the transaction hash
             .then(function (tx) {
                 return web3.eth.accounts.signTransaction(tx, self.getPrivateKey())
             }).then(function (signedTx) {self.signedTransaction = signedTx;
@@ -360,7 +380,10 @@ class account{
 }
 
 module.exports = account
-
+// web3.eth.getBalance("0x407d73d8a49eeb85d32cf465507dd71d507100c11")
+// .then(function (response) {
+//     console.log(typeof response)
+// });
 // let wallet_manager_module = require('./wallet_manager')
 // let seed_phrases = 'aspect body artist annual sketch know plug subway series noodle loyal word'
 // const wallet_manager = new wallet_manager_module('stellar')
