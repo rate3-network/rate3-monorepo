@@ -6,6 +6,7 @@ const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 const ExecutionStore = artifacts.require('./identity/lib/ExecutionStore.sol');
 const Identity = artifacts.require('./identity/Identity.sol');
 const IdentityRegistry = artifacts.require('./identity/IdentityRegistry.sol');
+const EthereumIdentityAccounts = artifacts.require('./identity/accounts/EthereumIdentityAccounts.sol');
 const TestContract = artifacts.require('./identity/TestContract.sol');
 
 const deployContracts = async (deployer) => {
@@ -30,6 +31,8 @@ const deployContracts = async (deployer) => {
     await deployer.link(ClaimStore, Identity);
     await deployer.link(ExecutionStore, Identity);
     await deployer.link(ERC165Query, Identity);
+
+    await deployer.link(Arrays, EthereumIdentityAccounts);
 
     await deployer.link(Arrays, IdentityRegistry);
     await deployer.link(ECRecovery, IdentityRegistry);
