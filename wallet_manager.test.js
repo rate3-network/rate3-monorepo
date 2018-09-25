@@ -3,145 +3,167 @@ const seed_phrases = 'aspect body artist annual sketch know plug subway series n
 const Web3 = require('web3');
 const web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 
-test('createWalletManagerInstance', () => {
-    const wallet_manager = new wallet_manager_module('ethereum')
-    expect(wallet_manager.getNetwork()).toBe('ethereum');
-  });
+// test('createWalletManagerInstance', () => {
+//     const wallet_manager = new wallet_manager_module('ethereum')
+//     expect(wallet_manager.getNetwork()).toBe('ethereum');
+//   });
 
-test('changeNetwork', () => {
-    const wallet_manager = new wallet_manager_module('ethereum')
-    wallet_manager.changeNetwork('stellar')
-    expect(wallet_manager.getNetwork()).toBe('stellar');
-  });  
+// test('changeNetwork', () => {
+//     const wallet_manager = new wallet_manager_module('ethereum')
+//     wallet_manager.changeNetwork('stellar')
+//     expect(wallet_manager.getNetwork()).toBe('stellar');
+//   });  
 
-test('setSeedPhrases', () => {
-    const wallet_manager = new wallet_manager_module('ethereum')
-    wallet_manager.setSeed()
-    expect(wallet_manager.getSeed().split(' ').length).toBe(12);// default 12 words
+// test('setSeedPhrases', () => {
+//     const wallet_manager = new wallet_manager_module('ethereum')
+//     wallet_manager.setSeed()
+//     expect(wallet_manager.getSeed().split(' ').length).toBe(12);// default 12 words
 
-    let number_of_words_valid = 24
-    wallet_manager.setSeed(number_of_words_valid)
-    expect(wallet_manager.getSeed().split(' ').length).toBe(number_of_words_valid);
+//     let number_of_words_valid = 24
+//     wallet_manager.setSeed(number_of_words_valid)
+//     expect(wallet_manager.getSeed().split(' ').length).toBe(number_of_words_valid);
 
-    let number_of_words_invalid = 23
-    wallet_manager.setSeed(number_of_words_invalid)
-    expect(wallet_manager.getSeed()).toBeFalsy();
+//     let number_of_words_invalid = 23
+//     wallet_manager.setSeed(number_of_words_invalid)
+//     expect(wallet_manager.getSeed()).toBeFalsy();
 
-    let seed_phrases_valid = 'aspect body artist annual sketch know plug subway series noodle loyal word'
-    wallet_manager.setSeed(seed_phrases_valid)
-    expect(wallet_manager.getSeed()).toBe(seed_phrases_valid);
+//     let seed_phrases_valid = 'aspect body artist annual sketch know plug subway series noodle loyal word'
+//     wallet_manager.setSeed(seed_phrases_valid)
+//     expect(wallet_manager.getSeed()).toBe(seed_phrases_valid);
 
-    let seed_phrases_invalid = 'aspect body artist annual sketch know plug subway series noodle loyal aspect'
-    wallet_manager.setSeed(seed_phrases_invalid)
-    expect(wallet_manager.getSeed()).toBeFalsy();
+//     let seed_phrases_invalid = 'aspect body artist annual sketch know plug subway series noodle loyal aspect'
+//     wallet_manager.setSeed(seed_phrases_invalid)
+//     expect(wallet_manager.getSeed()).toBeFalsy();
 
-  });  
+//   });  
 
-test('setWalletETH', () => {
-    const wallet_manager = new wallet_manager_module('ethereum')
-    wallet_manager.setSeed(seed_phrases)
-    wallet_manager.setWallet()
-    let privateExtendedKey = 'xprv9s21ZrQH143K292aVhhDBd8vpauoKCEM1Rd26jKjs4bq9Juwdug4cSXPgeYdKuVwN4RWQy7HCFundYP5neF4WLjuqDTMW6uvB7SXNWM9mU3'
-    expect(wallet_manager.getWallet().privateExtendedKey()).toBe(privateExtendedKey);
-  });   
+// test('setWalletETH', () => {
+//     const wallet_manager = new wallet_manager_module('ethereum')
+//     wallet_manager.setSeed(seed_phrases)
+//     wallet_manager.setWallet()
+//     let privateExtendedKey = 'xprv9s21ZrQH143K292aVhhDBd8vpauoKCEM1Rd26jKjs4bq9Juwdug4cSXPgeYdKuVwN4RWQy7HCFundYP5neF4WLjuqDTMW6uvB7SXNWM9mU3'
+//     expect(wallet_manager.getWallet().privateExtendedKey()).toBe(privateExtendedKey);
+//   });   
 
-test('setWalletStellar', () => {
-    const wallet_manager = new wallet_manager_module('stellar')
-    wallet_manager.setSeed(seed_phrases)
-    wallet_manager.setWallet()
-    let seedHex = '00f014c45065a22e90993dec1a6ea5ec0d71aa7b556f72649814a7169861a0d4adc745570dafac9d925df4007d113ad43372886dce61ec62644441b7a072f3e2'
-    expect(wallet_manager.getWallet().seedHex).toBe(seedHex);
-  }); 
+// test('setWalletStellar', () => {
+//     const wallet_manager = new wallet_manager_module('stellar')
+//     wallet_manager.setSeed(seed_phrases)
+//     wallet_manager.setWallet()
+//     let seedHex = '00f014c45065a22e90993dec1a6ea5ec0d71aa7b556f72649814a7169861a0d4adc745570dafac9d925df4007d113ad43372886dce61ec62644441b7a072f3e2'
+//     expect(wallet_manager.getWallet().seedHex).toBe(seedHex);
+//   }); 
 
-test('setAccountETH', async () => {
-    const wallet_manager = new wallet_manager_module('ethereum')
-    wallet_manager.setSeed(seed_phrases)
-    wallet_manager.setWallet()
+// test('setAccountETH', async () => {
+//     const wallet_manager = new wallet_manager_module('ethereum')
+//     wallet_manager.setSeed(seed_phrases)
+//     wallet_manager.setWallet()
 
-    let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
-    let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
-    let expectedBalance = '0'
-    let account = await wallet_manager.getAccount()
-    expect(account.getAddress()).toBe(expectedAddress);
-    expect(account.getPrivateKey()).toBe(expectedPrivateKey)
-    expect(account.getBalance()).toBe(expectedBalance)
+//     let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
+//     let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
+//     let expectedBalance = '0'
+//     let account = await wallet_manager.getAccount()
+//     expect(account.getAddress()).toBe(expectedAddress);
+//     expect(account.getPrivateKey()).toBe(expectedPrivateKey)
+//     expect(account.getBalance()).toBe(expectedBalance)
  
 
-    expectedAddress = '0x2d8Cce8A8B308a077Eb0e39331258c355c55d04e'
-    expectedPrivateKey = '0xb1cf5f0991e165de0e832bb3304846f0e902c0fdef39deece4c14f6625dc5a61'
-    account = await wallet_manager.getAccount(5)
-    expect(account.getAddress()).toBe(expectedAddress);
-    expect(account.getPrivateKey()).toBe(expectedPrivateKey)
-  });  
+//     expectedAddress = '0x2d8Cce8A8B308a077Eb0e39331258c355c55d04e'
+//     expectedPrivateKey = '0xb1cf5f0991e165de0e832bb3304846f0e902c0fdef39deece4c14f6625dc5a61'
+//     account = await wallet_manager.getAccount(5)
+//     expect(account.getAddress()).toBe(expectedAddress);
+//     expect(account.getPrivateKey()).toBe(expectedPrivateKey)
+//   });  
 
-test('setAccountStellar', async () => {
-    const wallet_manager = new wallet_manager_module('stellar')
-    wallet_manager.setSeed(seed_phrases)
-    wallet_manager.setWallet()
-    let expectedPrivateKey = 'SDJNCBWIH4GU377ICXYL7NEI5Z2GWOR2Y3PAQVI2HJHJ7MSB42PP4KVW'
-    let expectedPublicKey = 'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'
-    let expectedBalance = '10000.0000000'
-    let account = await wallet_manager.getAccount()
+// test('setAccountStellar', async () => {
+//     const wallet_manager = new wallet_manager_module('stellar')
+//     wallet_manager.setSeed(seed_phrases)
+//     wallet_manager.setWallet()
+//     let expectedPrivateKey = 'SDJNCBWIH4GU377ICXYL7NEI5Z2GWOR2Y3PAQVI2HJHJ7MSB42PP4KVW'
+//     let expectedPublicKey = 'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'
+//     let expectedBalance = '10000.0000000'
+//     let account = await wallet_manager.getAccount()
 
-    expect(account.getPrivateKey()).toBe(expectedPrivateKey);
-    expect(account.getAddress()).toBe(expectedPublicKey);
-    expect(account.getBalance()).toBe('15000.0000000');
+//     expect(account.getPrivateKey()).toBe(expectedPrivateKey);
+//     expect(account.getAddress()).toBe(expectedPublicKey);
+//     expect(account.getBalance()).toBe('15000.0000000');
 
-    expectedPrivateKey = 'SCHDEOGWKZYYHDTCQFEXMQ3VVDCOZIUBVSJN4DGTOCB5FCCKBYQEG4PA'
-    expectedPublicKey = 'GCUTV7FC4GITQI6KJASMKH7WX3NTDLNUBHFZNXVJB4DJGGTUL6I7XAVT'
-    account = await wallet_manager.getAccount(10)
-    expect(account.getPrivateKey()).toBe(expectedPrivateKey);
-    expect(account.getAddress()).toBe(expectedPublicKey);
-    expect(account.getBalance()).toBe(expectedBalance);
-  });  
+//     expectedPrivateKey = 'SCHDEOGWKZYYHDTCQFEXMQ3VVDCOZIUBVSJN4DGTOCB5FCCKBYQEG4PA'
+//     expectedPublicKey = 'GCUTV7FC4GITQI6KJASMKH7WX3NTDLNUBHFZNXVJB4DJGGTUL6I7XAVT'
+//     account = await wallet_manager.getAccount(10)
+//     expect(account.getPrivateKey()).toBe(expectedPrivateKey);
+//     expect(account.getAddress()).toBe(expectedPublicKey);
+//     expect(account.getBalance()).toBe(expectedBalance);
+//   });  
 
-  test('sendStellar', async () => {
+//   test('sendStellar', async () => {
+//     jest.setTimeout(30000);// the default timeout is 5000ms
+
+//     const wallet_manager = new wallet_manager_module('stellar')
+//     wallet_manager.setSeed(seed_phrases)
+//     wallet_manager.setWallet()
+//     let expectedPrivateKey = 'SCVOAKTGRAR2FOYRPXSSODGW5VDRT3HKTVAYAPU6M7H6XAGNKTWK3VJC'
+//     let expectedPublicKey = 'GCQRO37IHQ2GOQPF7HOFSNK5TNKVQU77WUI2MX3JZ57CCQYSLJMV3NY2'
+//     let account3 = await wallet_manager.getAccount(3)
+//     expect(account3.getPrivateKey()).toBe(expectedPrivateKey);
+//     expect(account3.getAddress()).toBe(expectedPublicKey);
+//     //expect(account.getBalance()).toBe("0.0000000");
+
+//     expectedPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP'
+//     expectedPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
+//     let account4 = await wallet_manager.getAccount(4)
+//     expect(account4.getPrivateKey()).toBe(expectedPrivateKey);
+//     expect(account4.getAddress()).toBe(expectedPublicKey);
+//     //expect(account.getBalance()).toBe(expectedBalance);
+//     let result = await account4.send(account3.getAddress(), '10')
+//     expect(result._links.transaction.href).toMatch(/https:\/\/horizon-testnet.stellar.org\/transactions\//)
+
+//   });  
+
+//   test('sendETH', async () => {
+//     jest.setTimeout(30000);// the default timeout is 5000ms
+
+//     const wallet_manager = new wallet_manager_module('ethereum')
+//     wallet_manager.setSeed(seed_phrases)
+//     wallet_manager.setWallet()
+
+//     let expectedPrivateKey = '0x10848a86334b428a2f6bdaeaf6dccbe6b3d07ebcc538af29f83a9139ac6c40e8'
+//     let expectedAddress = '0xfd3B37102b3882E08c8D38fF8BAc1b1b305dc103'
+//     let expectedBalance = '0'
+//     let account3 = await wallet_manager.getAccount(3)
+//     expect(account3.getAddress()).toBe(expectedAddress);
+//     expect(account3.getPrivateKey()).toBe(expectedPrivateKey)
+
+//     expectedAddress = '0x7037eAcB1bb6Bf8eE8Cdd1A48f59D3b5BeC63BC2'
+//     expectedPrivateKey = '0x0442eaba5727f864d62dab0858bd07e6c24484711b215285b108ee6048ba87ea'
+//     let account4 = await wallet_manager.getAccount(4)
+//     expect(account4.getAddress()).toBe(expectedAddress);
+//     expect(account4.getPrivateKey()).toBe(expectedPrivateKey)
+//     let receipt = await account3.send(expectedAddress, '0.001')
+//     expect(receipt.from.toLowerCase()).toBe(account3.getAddress().toLowerCase())
+//     expect(receipt.status).toBeTruthy()
+//     expect(receipt.to.toLowerCase()).toBe(account4.getAddress().toLowerCase())
+//   }); 
+
+  test('receiveStellar', async () => {
     jest.setTimeout(30000);// the default timeout is 5000ms
 
     const wallet_manager = new wallet_manager_module('stellar')
     wallet_manager.setSeed(seed_phrases)
     wallet_manager.setWallet()
-    let expectedPrivateKey = 'SCVOAKTGRAR2FOYRPXSSODGW5VDRT3HKTVAYAPU6M7H6XAGNKTWK3VJC'
-    let expectedPublicKey = 'GCQRO37IHQ2GOQPF7HOFSNK5TNKVQU77WUI2MX3JZ57CCQYSLJMV3NY2'
-    let account3 = await wallet_manager.getAccount(3)
-    expect(account3.getPrivateKey()).toBe(expectedPrivateKey);
-    expect(account3.getAddress()).toBe(expectedPublicKey);
-    //expect(account.getBalance()).toBe("0.0000000");
-
-    expectedPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP'
-    expectedPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
     let account4 = await wallet_manager.getAccount(4)
-    expect(account4.getPrivateKey()).toBe(expectedPrivateKey);
-    expect(account4.getAddress()).toBe(expectedPublicKey);
-    //expect(account.getBalance()).toBe(expectedBalance);
-    let result = await account4.send(account3.getAddress(), '10')
-    expect(result._links.transaction.href).toMatch(/https:\/\/horizon-testnet.stellar.org\/transactions\//)
+    let receiveRecord = await account4.receive()
+    expect(receiveRecord[0].id).toBe('47795285128122369')
+  }); 
 
-  });  
-
-  test('sendETH', async () => {
+  test('receiveEthereum', async () => {
     jest.setTimeout(30000);// the default timeout is 5000ms
 
     const wallet_manager = new wallet_manager_module('ethereum')
     wallet_manager.setSeed(seed_phrases)
     wallet_manager.setWallet()
-
-    let expectedPrivateKey = '0x10848a86334b428a2f6bdaeaf6dccbe6b3d07ebcc538af29f83a9139ac6c40e8'
-    let expectedAddress = '0xfd3B37102b3882E08c8D38fF8BAc1b1b305dc103'
-    let expectedBalance = '0'
-    let account3 = await wallet_manager.getAccount(3)
-    expect(account3.getAddress()).toBe(expectedAddress);
-    expect(account3.getPrivateKey()).toBe(expectedPrivateKey)
-
-    expectedAddress = '0x7037eAcB1bb6Bf8eE8Cdd1A48f59D3b5BeC63BC2'
-    expectedPrivateKey = '0x0442eaba5727f864d62dab0858bd07e6c24484711b215285b108ee6048ba87ea'
     let account4 = await wallet_manager.getAccount(4)
-    expect(account4.getAddress()).toBe(expectedAddress);
-    expect(account4.getPrivateKey()).toBe(expectedPrivateKey)
-    let receipt = await account3.send(expectedAddress, '0.001')
-    expect(receipt.from.toLowerCase()).toBe(account3.getAddress().toLowerCase())
-    expect(receipt.status).toBeTruthy()
-    expect(receipt.to.toLowerCase()).toBe(account4.getAddress().toLowerCase())
+    let receiveRecord = await account4.receive()
+    expect(receiveRecord[0].blockNumber).toBe('3020019')
   }); 
 
   // test('encryptAndDecryptAccountETH', () => {

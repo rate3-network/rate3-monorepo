@@ -9,6 +9,7 @@ const tx = require('ethereumjs-tx');
 var Web3 = require('web3');
 var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 var rp = require('request-promise');
+var request = require('request');
 var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 
 /**
@@ -75,6 +76,10 @@ class account{
         }
     }
 
+    /**
+     * set the balance field of this account
+     * @param {string} publicKey - the publick key of the account
+     */
     async loadBalance(publicKey) {
         try {
             let response = await rp(this.testAddress + publicKey)
@@ -213,38 +218,26 @@ class account{
      * This methods sets the history field of this account.
      * All the fields in the response are retained, in JSON format
      */
-    receive() {
-        var request = require('request');
-        var self = this
-        self.history = null
+    async receive() {
         if(this.network == 'stellar') {
-            var accountId = this.getAddress()
-            request('https://horizon-testnet.stellar.org/accounts/GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV/payments', 
-            function(error, response, body) {
-                self.history =  JSON.parse(body)._embedded.records; // Print the HTML for the Google homepage.
-                console.log('body:', self.history)
-            });
+            let url = 'https://horizon-testnet.stellar.org/accounts/' + this.getAddress() + '/payments'
+            try {
+                let response = await rp(url)
+                this.history =  JSON.parse(response)._embedded.records
+                return this.history
+            } catch (err) {
+                console.log('error in fetching history', err)
+            }
 
-            // Create an API call to query payments involving the account.
-            // var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-            // var payments = server.payments().forAccount(accountId);
-
-            // server.transactions()
-            // .forAccount(accountId)
-            // .call()
-            // .then(function (page) {
-            //     console.log('Page 1: ');
-            //     console.log(page.records);
-            //     self.history = page.records
-            // })
-            // .catch(function (err) {
-            //     console.log(err);
-            // });
         } else if (this.network == 'ethereum') {
-            request('http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address='+ self.getAddress() +'&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken',
-                function(error, response, body) {
-                    self.history = JSON.parse(body).result
-                });
+            let url = 'http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address='+ this.getAddress() +'&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken'
+            try {
+                let response = await rp(url)
+                this.history =  JSON.parse(response).result
+                return this.history
+            } catch (err) {
+                console.log('error in fetching history', err)
+            }
         }
         
     }
