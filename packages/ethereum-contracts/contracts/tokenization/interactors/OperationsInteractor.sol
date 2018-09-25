@@ -58,6 +58,8 @@ contract OperationsInteractor is AdminInteractor {
     event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
 
     function requestMint(uint256 _value) public operationsNotPaused whitelistedForMint(msg.sender) {
+        require(_value > 0, "Mint value should be more than 0");
+
         uint256 requestTimestamp = block.timestamp;
         MintRequestOperation memory mintRequestOperation = MintRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0);
 
@@ -69,6 +71,7 @@ contract OperationsInteractor is AdminInteractor {
         MintRequestOperation storage mintRequestOperation = mintRequestOperations[_requestor][_index];
 
         require(!mintRequestOperation.approved, "MintRequestOperation is already approved");
+        require(mintRequestOperation.value > 0, "MintRequestOperation does not exist");
 
         mintRequestOperation.approvedBy = msg.sender;
         mintRequestOperation.approved = true;
@@ -79,7 +82,10 @@ contract OperationsInteractor is AdminInteractor {
 
     function finalizeMint(address _requestor, uint256 _index) public onlyAdmin2 operationsNotPaused whitelistedForMint(_requestor) {
         MintRequestOperation memory mintRequestOperation = mintRequestOperations[_requestor][_index];
+
         require(mintRequestOperation.approved, "Mint Operation is not approved");
+        require(mintRequestOperation.value > 0, "MintRequestOperation does not exist");
+
         address mintAddress = mintRequestOperation.by;
         uint256 value = mintRequestOperation.value;
         delete mintRequestOperations[_requestor][_index];
@@ -94,6 +100,8 @@ contract OperationsInteractor is AdminInteractor {
     }
 
     function requestBurn(uint256 _value) public operationsNotPaused whitelistedForBurn(msg.sender) {
+        require(_value > 0, "Burn value should be more than 0");
+
         uint256 requestTimestamp = block.timestamp;
         BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0);
 
@@ -105,6 +113,7 @@ contract OperationsInteractor is AdminInteractor {
         BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
 
         require(!burnRequestOperation.approved, "BurnRequestOperation is already approved");
+        require(burnRequestOperation.value > 0, "BurnRequestOperation does not exist");
 
         burnRequestOperation.approvedBy = msg.sender;
         burnRequestOperation.approved = true;
@@ -115,7 +124,10 @@ contract OperationsInteractor is AdminInteractor {
 
     function finalizeBurn(address _requestor, uint256 _index) public onlyAdmin2 operationsNotPaused whitelistedForBurn(_requestor) {
         BurnRequestOperation memory burnRequestOperation = burnRequestOperations[_requestor][_index];
+
         require(burnRequestOperation.approved, "Burn Operation is not approved");
+        require(burnRequestOperation.value > 0, "BurnRequestOperation does not exist");
+
         address burnAddress = burnRequestOperation.by;
         uint256 value = burnRequestOperation.value;
         delete burnRequestOperations[_requestor][_index];
