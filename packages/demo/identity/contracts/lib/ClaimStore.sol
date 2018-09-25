@@ -10,6 +10,35 @@ import "../ECRecovery.sol";
  * @notice Library for managing ERC735 claims
  */
 library ClaimStore {
+    event ClaimAdded(
+        bytes32 indexed claimId,
+        uint256 indexed topic,
+        uint256 scheme,
+        address indexed issuer,
+        bytes signature,
+        bytes data,
+        string uri
+    );
+
+    event ClaimRemoved(
+        bytes32 indexed claimId,
+        uint256 indexed topic,
+        uint256 scheme,
+        address indexed issuer,
+        bytes signature,
+        bytes data,
+        string uri
+    );
+
+    event ClaimChanged(
+        bytes32 indexed claimId,
+        uint256 indexed topic,
+        uint256 scheme,
+        address indexed issuer,
+        bytes signature,
+        bytes data,
+        string uri
+    );
 
     using ECRecovery for bytes32;
     using Arrays for Arrays.bytes32NoDup;
@@ -108,10 +137,7 @@ library ClaimStore {
         string _uri
     )
         public
-        returns (
-            bytes32 claimId,
-            bool isNew
-        )
+        returns (bytes32 claimId)
     {
 
         claimId = getClaimId(_issuer, _topic);
@@ -124,8 +150,9 @@ library ClaimStore {
             c.signature = _signature;
             c.data = _data;
             c.uri = _uri;
+            emit ClaimChanged(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
 
-            return (claimId, false);
+            return claimId;
         } else {
             self.claims[claimId] = Claim(
                 _topic,
@@ -137,8 +164,9 @@ library ClaimStore {
             );
             self.claimsByTopic[_topic].add(claimId);
             self.numClaims++;
+            emit ClaimAdded(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
 
-            return (claimId, true);
+            return claimId;
         }
     }
 
@@ -162,6 +190,18 @@ library ClaimStore {
         self.claimsByTopic[c.topic].remove(_claimId);
         // Decrement
         self.numClaims--;
+
+        // Event
+        emit ClaimRemoved(
+            _claimId,
+            c.topic,
+            c.scheme,
+            c.issuer,
+            c.signature,
+            c.data,
+            c.uri
+        );
+
         return true;
     }
 
@@ -199,7 +239,7 @@ library ClaimStore {
     function getClaimIdsByTopic(Claims storage self, uint256 _topic)
         public
         view
-        returns(bytes32[])
+        returns (bytes32[])
     {
         return self.claimsByTopic[_topic].values;
     }

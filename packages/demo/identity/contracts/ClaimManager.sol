@@ -68,14 +68,7 @@ contract ClaimManager is KeyPausable, ERC735 {
             return;
         }
 
-        bytes32 claimId;
-        bool isNew;
-        (claimId, isNew) = allClaims.add(_topic, _scheme, _issuer, _signature, _data, _uri);
-        if (isNew) {
-            emit ClaimAdded(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
-        } else {
-            emit ClaimChanged(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
-        }
+        allClaims.add(_topic, _scheme, _issuer, _signature, _data, _uri);
     }
 
     /**
@@ -90,24 +83,7 @@ contract ClaimManager is KeyPausable, ERC735 {
         onlyManagementOrSelfOrIssuer(_claimId)
         returns (bool success)
     {
-
-        ClaimStore.Claim memory c = allClaims.claims[_claimId];
-        require(c.issuer != address(0));
-
-        if (allClaims.remove(_claimId)) {
-            // Event
-            emit ClaimRemoved(
-                _claimId,
-                c.topic,
-                c.scheme,
-                c.issuer,
-                c.signature,
-                c.data,
-                c.uri
-            );
-            return true;
-        }
-        return false;
+        return allClaims.remove(_claimId);
     }
 
     /**
@@ -181,7 +157,7 @@ contract ClaimManager is KeyPausable, ERC735 {
                     KeyStore.addrToKey(signedBy),
                     executions.allKeys.enums.CLAIM_SIGNER_KEY()
                 );
-            } else if (_issuer.doesContractImplementInterface(ERC725ID())) {
+            } else if (_issuer.doesContractImplementInterface(ERC725ID)) {
                 // Issuer is an Identity contract
                 // It should hold the key with which the above message was signed.
                 // If the key is not present anymore, the claim SHOULD be treated as invalid.
@@ -213,7 +189,7 @@ contract ClaimManager is KeyPausable, ERC735 {
             // Valid
         } else if (msg.sender == issuer) { // solhint-disable-line no-empty-blocks
             // MUST only be done by the issuer of the claim
-        } else if (issuer.doesContractImplementInterface(ERC725ID())) {
+        } else if (issuer.doesContractImplementInterface(ERC725ID)) {
             // Issuer is another Identity contract, is this an action key?
             require(ERC725(issuer).keyHasPurpose(
                 KeyStore.addrToKey(msg.sender),

@@ -10,24 +10,18 @@ import "./ERC165.sol";
  */
 contract ERC735 is ERC165 {
     /**
+     * bytes4(keccak256('getClaim(bytes32)')) ^
+     * bytes4(keccak256('getClaimIdsByTopic(uint256)')) ^
+     * bytes4(keccak256('addClaim(uint256,uint256,address,bytes,bytes,string)')) ^
+     * bytes4(keccak256('removeClaim(bytes32)'))
+     */
+    bytes4 public constant ERC735ID = 0xb6b4ee6d;
+
+    /**
      * @dev Constructor that adds ERC735 as a supported interface
      */
     constructor() internal {
-        supportedInterfaces[ERC735ID()] = true;
-    }
-
-    /**
-     * @dev ID for ERC165 pseudo-introspection
-     * @return ID for ERC735 interface
-     */
-    // solhint-disable-next-line func-name-mixedcase
-    function ERC735ID() public pure returns (bytes4) {
-        return (
-            this.getClaim.selector ^
-            this.getClaimIdsByTopic.selector ^
-            this.addClaim.selector ^
-            this.removeClaim.selector
-        );
+        supportedInterfaces[ERC735ID] = true;
     }
 
     // Events
