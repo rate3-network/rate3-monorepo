@@ -64,14 +64,7 @@ contract ClaimManager is KeyPausable, ERC735 {
             return;
         }
 
-        bytes32 claimId;
-        bool isNew;
-        (claimId, isNew) = allClaims.add(_topic, _scheme, _issuer, _signature, _data, _uri);
-        if (isNew) {
-            emit ClaimAdded(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
-        } else {
-            emit ClaimChanged(claimId, _topic, _scheme, _issuer, _signature, _data, _uri);
-        }
+        allClaims.add(_topic, _scheme, _issuer, _signature, _data, _uri);
     }
 
     /**
@@ -86,24 +79,7 @@ contract ClaimManager is KeyPausable, ERC735 {
         onlyManagementOrSelfOrIssuer(_claimId)
         returns (bool success)
     {
-
-        ClaimStore.Claim memory c = allClaims.claims[_claimId];
-        require(c.issuer != address(0), "Claim does not exist");
-
-        if (allClaims.remove(_claimId)) {
-            // Event
-            emit ClaimRemoved(
-                _claimId,
-                c.topic,
-                c.scheme,
-                c.issuer,
-                c.signature,
-                c.data,
-                c.uri
-            );
-            return true;
-        }
-        return false;
+        return allClaims.remove(_claimId);
     }
 
     /**
