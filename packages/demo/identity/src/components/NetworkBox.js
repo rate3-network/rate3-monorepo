@@ -11,25 +11,16 @@ const styles = (theme) => {
     box: {
       backgroundColor: networkBoxBg,
       color: materialGrey,
-      height: '2.6em',
-      width: '14.5em',
+      height: '2.3rem',
+      width: '13.5rem',
       fontWeight: '500',
-      fontSize: '0.9em',
+      fontSize: '0.9rem',
       borderRadius: '9px',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       marginTop: '0.5em',
     },
-    // ropsten: {
-    //   borderColor: `${ropstenBg} !important`,
-    // },
-    // rinkeby: {
-    //   borderColor: `${rinkebyBg} !important`,
-    // },
-    // kovan: {
-    //   borderColor: `${kovanBg} !important`,
-    // },
     ropstenDot: {
       color: `${ropstenDot} !important`,
     },

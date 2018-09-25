@@ -53,7 +53,7 @@ class UserMain extends React.Component {
     
 
     when(
-      () => this.props.RootStore.finishInitNetwork,
+      () => !this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitNetwork,
       () => {
         this.props.RootStore.userStore.getUserAddr();
         const contract = new window.web3.eth.Contract(
@@ -64,8 +64,21 @@ class UserMain extends React.Component {
         window.registryContract = contract;
       },
     );
+
     when(
-      () => this.props.RootStore.userStore.userAddr,
+      () => this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitNetwork,
+      () => {
+        const contract = new window.web3.eth.Contract(
+          identityRegistryJson.abi,
+          this.props.RootStore.userStore.registryContractAddr,
+        );
+        this.props.RootStore.userStore.registryContract = contract;
+        window.registryContract = contract;
+      },
+    );
+
+    when(
+      () => this.props.RootStore.userStore.userAddr && this.props.RootStore.finishInitNetwork,
       () => {
         console.log('getting identites');
         this.props.RootStore.userStore.populateClaimLists();

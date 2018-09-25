@@ -7,28 +7,29 @@ import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import KeyboardArrowDown from '@material-ui/icons/KeyboardArrowDown';
+import KeyboardArrowDown from '@material-ui/icons/ArrowDropDown';
 import { inject, observer } from 'mobx-react';
 import Lens from '@material-ui/icons/Lens';
 import classNames from 'classnames';
 
-import { networkBoxBg, materialGrey, ropstenBg, ropstenDot, rinkebyBg, rinkebyDot, kovanBg, kovanDot } from '../constants/colors';
+import { networkBoxBg, borderColor, materialGrey, ropstenBg, ropstenDot, rinkebyBg, rinkebyDot, kovanBg, kovanDot } from '../constants/colors';
 import { verifierPrivKey, userPrivKey } from '../constants/defaults';
 
 
 const styles = theme => ({
   box: {
-    backgroundColor: networkBoxBg,
+    backgroundColor: 'transparent',
     color: materialGrey,
-    height: '2.6em',
-    width: '14.5em',
+    height: '1.8em',
+    width: '11.5em',
     fontWeight: '500',
-    fontSize: '0.9em',
+    fontSize: '1em',
     borderRadius: '9px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: '0.5em',
+    border: `0.09em solid ${borderColor}`,
   },
   formControl: {
     width: '100%',
@@ -39,7 +40,7 @@ const styles = theme => ({
     color: 'inherit',
   },
   select: {
-    fontSize: '0.9rem',
+    fontSize: '1rem',
     fontWeight: '500',
     height: '100%',
     textAlign: 'center',
@@ -75,7 +76,7 @@ const styles = theme => ({
     justifyContent: 'center',
   },
   selectMenu: {
-    padding: '0.7em 2.5em 0 0',
+    padding: '0.65em 2.5em 0 0',
   },
   selectIcon: {
     padding: '0.15em 0.5em',

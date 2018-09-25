@@ -43,9 +43,8 @@ const styles = (theme) => {
 class ManageIndividualUser extends Component {
   componentDidMount() {
     // use backbutton
-    window.onpopstate = this.props.RootStore.verifierStore.resetUserSelected.bind(this.props.RootStore.verifierStore);
-
-
+    window.onpopstate = this.props.RootStore.verifierStore.resetUserSelected.bind(
+      this.props.RootStore.verifierStore);
   }
   render() {
     const { classes, RootStore, t } = this.props;

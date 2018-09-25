@@ -30,7 +30,8 @@ class UserStore {
   // Wallet properties
   @observable currentNetwork: String = 'Detecting Network...';
   @observable isMetaMaskLoggedIn: Boolean = false;
-  @observable isOnFixedAccount: Boolean = false; // if on fixed account, use network settings from commonstore
+  // if on fixed account, use network settings from commonstore
+  @observable isOnFixedAccount: Boolean = false;
 
   @observable fixedUserAcctNetwork: String = 'Ropsten';
 
@@ -39,7 +40,7 @@ class UserStore {
 
   @observable registryContractAddr = '0x121159a9a1731fec0690ac92a448795ac3f5d97d';
   @observable identityContractAddr = '';
-  @observable userAddr = '';
+  @observable userAddr = '0x5d2302a476c52be84dc1a67d0927ee3fe301e1a6';
   @observable doesIdentityExist = false;
   @observable registryContract = {};
   @observable identityContract = {};
@@ -53,11 +54,13 @@ class UserStore {
   @observable nameClaimList = [];
   @observable addressClaimList = [];
   @observable socialIdClaimList = [];
+
+  @observable accountUsedForDetectingChange = null;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-    
+
     const myDb = new MyTable('rate3', 'identity-demo');
     if (myDb.hasTable('identity-demo')) {
       myDb.getTable('identity-demo');
@@ -102,6 +105,17 @@ class UserStore {
   }
 
   @action
+  changeToMetaMaskAccount() {
+    this.isOnFixedAccount = false;
+    window.localStorage.setItem('accountType', 'metamast');
+  }
+  @action
+  changeToFixedAccount() {
+    this.isOnFixedAccount = true;
+    window.localStorage.setItem('accountType', 'fixed');
+  }
+
+  @action
   async getUserAddr() {
     const accounts = await window.web3.eth.getAccounts();
     try {
@@ -116,7 +130,12 @@ class UserStore {
     }
   }
   createIdentity() {
-    this.registryContract.methods.createIdentity().send({from: this.userAddr, gas: 6000000}, (err, result) => {console.log(result);});
+    this.registryContract.methods.createIdentity().send(
+      { from: this.userAddr, gas: 6000000 },
+      (err, result) => {
+        console.log(result);
+      },
+    );
   }
   getPastEvents() {
     this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
@@ -127,6 +146,7 @@ class UserStore {
 
   @action
   async getIdentities() {
+    console.log('this.registryContract', window.registryContract);
     const hasIdentity = await this.registryContract.methods.hasIdentity(this.userAddr).call();
     let idContractAddr = '';
     if (!hasIdentity) {
@@ -289,6 +309,18 @@ class UserStore {
   }
 
   @action
+  listenToMetaMaskAccountChange() {
+    window.web3.eth.givenProvider.publicConfigStore.on('update', (change) => {
+      if (this.accountUsedForDetectingChange === null) {
+        runInAction(() => {
+          this.accountUsedForDetectingChange = change.selectedAddress;
+        });
+      } else if (this.accountUsedForDetectingChange !== change.selectedAddress) {
+        window.location.reload();
+      }
+    });
+  }
+  @action
   async initMetamaskNetwork() {
     this.rootStore.finishInitNetwork = false;
     console.log('init metamask network');
@@ -359,11 +391,11 @@ class UserStore {
       const balance = await web3.eth.getBalance(account);
       runInAction(() => {
         this.metamaskBalance = balance;
-        console.log(balance);
-        this.rootStore.commonStore.completeSetupWalletProgress(3);
-        this.rootStore.globalSpinnerIsShowing = false;
-        this.rootStore.finishInitNetwork = true;
-        
+        if (this.metamaskBalance > 0) {
+          this.rootStore.commonStore.completeSetupWalletProgress(3);
+          this.rootStore.globalSpinnerIsShowing = false;
+          this.rootStore.finishInitNetwork = true;
+        }
       });
     } catch (err) {
       console.error('An error occurred while checking balance');

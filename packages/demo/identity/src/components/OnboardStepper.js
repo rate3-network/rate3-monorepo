@@ -8,6 +8,7 @@ import { translate } from 'react-i18next';
 import { withRouter } from 'react-router-dom';
 
 import RoleSelect from './RoleSelect';
+import AccountTypeDropdown from './AccountTypeDropdown';
 import BlueButton from './BlueButton';
 import { identityBlue, materialGrey } from './../constants/colors';
 import CheckList from './CheckList';
@@ -53,11 +54,13 @@ const styles = theme => ({
     backgroundColor: identityBlue,
     // color: identityBlue,
   },
+  accountType: {
+    paddingLeft: '0.5em',
+  },
 });
 
 @inject('RootStore') @observer
 class OnboardStepper extends React.Component {
-
   componentDidMount() {
     if (this.props.RootStore.commonStore.getIsUserOnboardDone() || this.props.RootStore.commonStore.getIsVerifierOnboardDone()) {
       console.log('should go to last step');
@@ -90,11 +93,18 @@ class OnboardStepper extends React.Component {
         hasRoleSelect: true,
       },
       {
+        hasAccountTypeDropdown: true,
+
         label: 'Set up Wallet',
         list: [{ value: 'Install Metamask on your browser' },
           { value: 'Sign in and unlock your metamask' },
           { value: 'Switch to a test network', hasStyledText: true },
           { value: 'Obtain some test ether' },
+        ],
+
+        listForFixedAccount: [
+          { value: 'Using a buillt-in demo wallet' },
+          { value: 'Test Network', hasStyledText: true },
         ],
       },
     ];
@@ -138,6 +148,21 @@ class OnboardStepper extends React.Component {
       );
     };
 
+    const SetupWalletList = inject('RootStore')(observer((props) => {
+      console.log('is on fixed account? : ', this.props.RootStore.userStore.isOnFixedAccount);
+      if (this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount) {
+        
+        return (
+          <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} />
+        );
+      }
+      return (
+        <CheckList list={onboardSteps[activeStep].listForFixedAccount} network={this.props.RootStore.currentNetwork} />
+      );
+    }));
+    const AccountTypeSelector = (props) => {
+      return (<div className={classes.accountType}><AccountTypeDropdown variant={props.variant} /></div>);
+    };
     const finalButtonDisabled = (activeOnboardStep === 3 && !this.props.RootStore.commonStore.isWalletSetupDone);
     const activeStep = activeOnboardStep - 1;
     return (
@@ -151,15 +176,15 @@ class OnboardStepper extends React.Component {
         {!this.props.RootStore.commonStore.getShouldRenderOnboardTransition() ?
           <TransitionWrapper direction="left">
             <div className={classes.text}>
+              {onboardSteps[activeStep].hasAccountTypeDropdown && <AccountTypeSelector variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} />}
               {onboardSteps[activeStep].text && onboardSteps[activeStep].text }
-              {onboardSteps[activeStep].list && <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} /> }
-              {(activeStep === 2 && this.props.RootStore.commonStore.getIsUser()) && <p>Option for User to choose between a <b>Fixed</b> or <b>Own</b> account</p>}
+              {onboardSteps[activeStep].list && <SetupWalletList /> }
             </div>
           </TransitionWrapper> :
           <div className={classes.text}>
+            {onboardSteps[activeStep].hasAccountTypeDropdown && <AccountTypeSelector variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} />}
             {onboardSteps[activeStep].text && onboardSteps[activeStep].text }
-            {onboardSteps[activeStep].list && <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} /> }
-            {(activeStep === 2 && this.props.RootStore.commonStore.getIsUser()) && <p>Option for User to choose between a <b>Fixed</b> or <b>Own</b> account</p>}
+            {onboardSteps[activeStep].list && <SetupWalletList /> }
           </div>
         }
         {onboardSteps[activeStep].hasRoleSelect &&

@@ -68,3 +68,9 @@ export const errorModalBg = '#D11717';
 export const tabsUnselectedText = '#CACACA';
 export const rippleColor = 'rgba(67, 146, 241, 0.12)';
 export const paginationFooterColor = '#494848 !important';
+
+// Account Type Dropdown
+export const disabledBackgroundColor = '#F1F5F7';
+export const disabledIconColor = '#C6C6C6';
+export const borderColor = 'rgba(129, 140, 161, 0.6)';
+

@@ -13,6 +13,7 @@ import NetworkDropdown from './NetworkDropdown';
 import RoleSwitch from './RoleSwitch';
 import ProfilePic from './ProfilePic';
 import LanguageDropdown from './LanguageDropdown';
+import AccountTypeDropdown from './AccountTypeDropdown';
 
 const styles = theme => ({
   rootStyle: {
@@ -128,6 +129,12 @@ const styles = theme => ({
   info: {
     fontSize: '1em',
   },
+  accountTypeAndNetworkBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 const TopText = withStyles(styles)((props) => {
@@ -202,8 +209,15 @@ const HomeSidebar = observer((props) => {
         <div className={classes.userInfo}><UserInfo isUser={props.RootStore.commonStore.getIsUser()} /></div>
         <div className={classes.networkBox}>
           {props.RootStore.commonStore.shouldUseCommonNetwork ?
-            <NetworkDropdown buttonText="text" /> :
-            <NetworkBox />
+            <div className={classes.accountTypeAndNetworkBox}>
+              <AccountTypeDropdown variant="user" isOnSidebar />
+              <NetworkDropdown buttonText="text" />
+            </div> :
+            <div className={classes.accountTypeAndNetworkBox}>
+              <AccountTypeDropdown variant="user" isOnSidebar />
+              <NetworkBox />
+            </div>
+            
           }
         </div>
         <div className={classes.roleSwitch}>

@@ -66,6 +66,13 @@ class App extends React.Component {
     if (localStorage.isUser === false.toString()) {
       RootStore.commonStore.changeToVerifier();
     }
+
+    if (window.localStorage.accountType === 'fixed') {
+      RootStore.userStore.changeToFixedAccount();
+    }
+    if (window.localStorage.accountType === 'metamask') {
+      RootStore.userStore.changeToMetaMaskAccount();
+    }
   }
   componentDidMount() {
     RootStore.initNetwork();
