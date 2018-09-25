@@ -4,6 +4,7 @@ import {
   observable,
   action,
   when,
+  runInAction,
 } from 'mobx';
 
 import CommonStore from './CommonStore';
@@ -24,6 +25,8 @@ class RootStore {
   @observable globalSpinnerIsShowing: Boolean = false;
 
   @observable finishInitNetwork: Boolean = false;
+
+  @observable accountUsedForDetectingChange: String = null;
   @computed get currentNetwork() {
     if (this.commonStore.getIsUser()) {
       if (!this.userStore.isOnFixedAccount) return this.userStore.currentNetwork;
@@ -50,7 +53,17 @@ class RootStore {
     if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
       console.log('init metamask from root store');
       this.userStore.initMetamaskNetwork();
-      
+      window.web3.eth.givenProvider.publicConfigStore.on('update', (change) => {
+        if (this.accountUsedForDetectingChange === null) {
+          runInAction(() => {
+            this.accountUsedForDetectingChange = change.selectedAddress;
+          });
+        } else {
+          if (this.accountUsedForDetectingChange !== change.selectedAddress) {
+            window.location.reload();
+          }
+        }
+      });
       return;
     }
     if (this.commonStore.getIsUser() && this.userStore.isOnFixedAccount) {

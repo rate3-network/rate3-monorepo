@@ -44,9 +44,12 @@ class ManageIndividualUser extends Component {
   componentDidMount() {
     // use backbutton
     window.onpopstate = this.props.RootStore.verifierStore.resetUserSelected.bind(this.props.RootStore.verifierStore);
+
+
   }
   render() {
     const { classes, RootStore, t } = this.props;
+    console.log('selected user names',RootStore.verifierStore.selectedUserNames);
     return (
       <div>
         <VerifyModal open={RootStore.verifierStore.verifyModalIsShowing} onClose={RootStore.verifierStore.closeVerificationModal.bind(RootStore.verifierStore)} />
