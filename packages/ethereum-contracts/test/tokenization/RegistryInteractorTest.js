@@ -2,11 +2,13 @@ import { increaseTimeTo, duration } from '../helpers/increaseTime';
 import latestTime from '../helpers/latestTime';
 import { advanceBlock } from '../helpers/advanceToBlock';
 
-const TokenizeTemplateToken = artifacts.require("./tokenization/TokenizeTemplateToken.sol");
-const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
+const BaseInteractor = artifacts.require("./tokenization/interactors/BaseInteractor.sol");
+const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
+const BaseToken = artifacts.require("./tokenization/BaseToken.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
+const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
 const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.sol");
-const TokenizeTemplateInteractor = artifacts.require("./tokenization/TokenizeTemplateInteractor.sol");
+
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -24,8 +26,10 @@ contract('RegistryInteractor Tests', function(accounts) {
 
     describe('Test - whitelist for mint', function() {
         beforeEach(async function() {
-            this.token = await TokenizeTemplateToken.new({ from: owner });
-            this.interactor = await TokenizeTemplateInteractor.new(this.token.address, { from: owner });
+            // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
+            this.token = await BaseToken.new({ from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
@@ -61,22 +65,14 @@ contract('RegistryInteractor Tests', function(accounts) {
             await this.interactor.whitelistForMint(rest[0], true, { from: rest[0] }).should.be.rejected;
             await this.interactor.whitelistForMint(rest[0], true, { from: rest[1] }).should.be.rejected;
         });
-
-        it('whitelist for mint gates mint process', async function() {
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveMint(rest[0], 0, { from: admin1 });
-            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
-
-            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 }).should.be.fulfilled;
-
-            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.fulfilled;
-        });
     });
 
     describe('Test - whitelist for burn', function() {
         beforeEach(async function() {
-            this.token = await TokenizeTemplateToken.new({ from: owner });
-            this.interactor = await TokenizeTemplateInteractor.new(this.token.address, { from: owner });
+            // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
+            this.token = await BaseToken.new({ from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
@@ -112,28 +108,14 @@ contract('RegistryInteractor Tests', function(accounts) {
             await this.interactor.whitelistForBurn(rest[0], true, { from: rest[0] }).should.be.rejected;
             await this.interactor.whitelistForBurn(rest[0], true, { from: rest[1] }).should.be.rejected;
         });
-
-        it('whitelist for burn gates burn process', async function() {
-            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
-
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveMint(rest[0], 0, { from: admin1 });
-            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 });
-
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
-
-            await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 }).should.be.fulfilled;
-
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.fulfilled;
-        });
     });
 
     describe('Test - whitelist for transfer', function() {
         beforeEach(async function() {
-            this.token = await TokenizeTemplateToken.new({ from: owner });
-            this.interactor = await TokenizeTemplateInteractor.new(this.token.address, { from: owner });
+            // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
+            this.token = await BaseToken.new({ from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
@@ -227,8 +209,10 @@ contract('RegistryInteractor Tests', function(accounts) {
 
     describe('Test - blacklist', function() {
         beforeEach(async function() {
-            this.token = await TokenizeTemplateToken.new({ from: owner });
-            this.interactor = await TokenizeTemplateInteractor.new(this.token.address, { from: owner });
+            // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
+            this.token = await BaseToken.new({ from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             this.allowanceModule = await AllowanceModule.new({ from: owner });
