@@ -4,7 +4,7 @@ import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
 import "../shared/TokenInterface.sol";
 import "../shared/ProxySupportedERC20Interface.sol";
-import "../proxies/AdminProxy.sol";
+import "../shared/ProxyInterface.sol";
 
 contract AdminInteractor is Claimable {
     using SafeMath for uint256;
@@ -64,7 +64,7 @@ contract AdminInteractor is Claimable {
 
     function setTokenOnProxy(Ownable _token) public onlyOwner {
         require(Ownable(_token).owner() == address(this), "Interactor not owner of token");
-        AdminProxy(proxy).setToken(_token);
+        ProxyInterface(proxy).setToken(_token);
     }
 
     function setProxyOnToken(Ownable _proxy) public onlyOwner {
@@ -88,15 +88,15 @@ contract AdminInteractor is Claimable {
     }
 
     function setBalanceModule(address _moduleAddress) public onlyOwner returns (bool) {
-        TokenInterface(token).setBalanceModule(_moduleAddress);
+        return TokenInterface(token).setBalanceModule(_moduleAddress);
     }
 
     function setAllowanceModule(address _moduleAddress) public onlyOwner returns (bool) {
-        TokenInterface(token).setAllowanceModule(_moduleAddress);
+        return TokenInterface(token).setAllowanceModule(_moduleAddress);
     }
 
     function setRegistryModule(address _moduleAddress) public onlyOwner returns (bool) {
-        TokenInterface(token).setRegistryModule(_moduleAddress);
+        return TokenInterface(token).setRegistryModule(_moduleAddress);
     }
 }
 
