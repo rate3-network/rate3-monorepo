@@ -18,6 +18,7 @@ Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) form
 * [bip39](https://www.npmjs.com/package/bip39) - Mnemonic code for generating deterministic keys
 * [ethereumjs-wallet](https://www.npmjs.com/package/ethereumjs-wallet) - A lightweight Ethereum wallet implementation
 * [forge](https://www.npmjs.com/package/node-forge) - A native implementation of TLS (and various other cryptographic tools)
+* [request-promise](https://www.npmjs.com/package/request-promise) - The simplified HTTP request client 'request' with Promise support.
 * [stellar-hd-wallet](https://www.npmjs.com/package/stellar-hd-wallet) - Key derivation for Stellar (SEP-0005)
 * [stellar-sdk](https://www.npmjs.com/package/stellar-sdk) - Communicating with a Stellar Horizon server
 * [web3](https://www.npmjs.com/package/web3) - A collection of libraries which allow you to interact with a local or remote ethereum node, using a HTTP or IPC connection

@@ -16,3 +16,6 @@ wallet_back_up/
 # js files
 promiseTest.js
 sendTest.js
+
+coverage/
+.eslintrc

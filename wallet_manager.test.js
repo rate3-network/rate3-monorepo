@@ -255,7 +255,6 @@ test('setAccountStellar', async () => {
     let signedObject = await account.delegatedSigning(sampleTx)
     let expectedMessageHash = '0xfa401cfe90cfb8d006def59caf30f0ceb9c9cfdbb1d9e85398aa4b0f199dbcde'
     let expectedRawTransaction = '0xf86b01843b9aca0082520894b929aaf20fd26eb8ed400914e3882e2ee952867088016345785d8a0000802ca072a334620312b2eec41552e781da6ab7247a623b7fa7c240afded7069f71e72aa073846f5e33209dacdfaa1b507fcb537cd69802bd0adba4c60703c4830b9ab2cc'
-    console.log(signedObject)
     expect(signedObject.messageHash).toBe(expectedMessageHash)
     expect(signedObject.rawTransaction).toBe(expectedRawTransaction)
   }); 

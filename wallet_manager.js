@@ -10,15 +10,15 @@ let account = require('./account')
 
 /** This is a wrapper class over stellar and ethereum wallets */
 class wallet_manager{
-    constructor(network) {
-        if (network == 'stellar') {
-            this.network = 'stellar'
-            this.accountArray = []
-        } else if (network == 'ethereum') {
-            this.network = 'ethereum'
-            this.accountArray = []
-        } else {
-            console.log('The name of the network must be stellar or ethereum.')
+    constructor (network) {
+        switch(network) {
+            case 'stellar':
+            case 'ethereum':
+                this.network = network
+                this.accountArray = []
+                break
+            default:
+                console.log('The name of the network must be stellar or ethereum.')
         }
     }
 
@@ -27,16 +27,15 @@ class wallet_manager{
      * @param {string} network - The name of the network, 'stellar' or 'ethereum'
      */
     changeNetwork(network) {
-        if (network == 'stellar') {
-            this.network = 'stellar'
-            this.accountArray = [] // discard the accounts in another network
-            this.account = []
-        } else if (network == 'ethereum') {
-            this.network = 'ethereum'
-            this.accountArray = []
-            this.account = []
-        } else {
-            console.log('The name of the network must be stellar or ethereum.')
+        switch(network) {
+            case 'stellar':
+            case 'ethereum':
+                this.network = network
+                this.accountArray = [] // discard the accounts in another network
+                this.account = []
+                break
+            default:
+                console.log('The name of the network must be stellar or ethereum.')
         }
     }
 
@@ -45,7 +44,7 @@ class wallet_manager{
      */
     getNetwork() {
         if (this.network == null) {
-            console.log('the network of the wallet manager is not set.')
+            console.log('The network of the wallet manager is not set.')
             return null
         } else {
             return this.network
@@ -238,9 +237,22 @@ class wallet_manager{
      * The accounts created will be the 0th, 1st, ... (n-1)th in the wallet
      * @param {int} numberOfAccounts 
      */
-    setMultipleAccounts(numberOfAccounts) {
+    async setMultipleAccounts(numberOfAccounts) {
         for (var i = 0; i < numberOfAccounts; i++) {
-            this.getAccount(i)
+            await this.getAccount(i)
+        }
+    }
+
+    /**
+     * Set the current account.
+     * @param {number} index - The index of the account in the accountArray 
+     */
+    setCurrentAccount(index) {
+        let max = this.accountArray.length - 1
+        if (index > max) {
+            console.log('the maximum index is' + max.toString())
+        } else {
+            this.account = this.accountArray[index]
         }
     }
 
