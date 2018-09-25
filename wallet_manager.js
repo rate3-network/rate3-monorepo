@@ -1,20 +1,10 @@
-/**
-* The code is refered from the following links
-* https://www.npmjs.com/package/stellar-hd-wallet for account creation
-* https://www.npmjs.com/package/node-forge for encryption, decryption
-* https://www.stellar.org/developers/guides/ for uploading accounts to testnet, transaction
-*/
-
 const bip39 = require('bip39')
 const forge = require('node-forge');
-const fs = require('fs');
+const hdkey = require('ethereumjs-wallet/hdkey')
 const stellarHDWallet = require('stellar-hd-wallet') 
 const StellarSdk = require('stellar-sdk');
-const ethereum_wallet = require('ethereumjs-wallet')
-const ethUtil = require('ethereumjs-util');
-const tx = require('ethereumjs-tx');
-var Web3 = require('web3');
-var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
+const Web3 = require('web3');
+const web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 
 let account = require('./account')
 
@@ -132,7 +122,6 @@ class wallet_manager{
      * Generate the wallet based on the seed
      */
     setWallet() {
-        var hdkey = require('ethereumjs-wallet/hdkey')
         switch(this.network) {
             case 'stellar': 
                 this.wallet = stellarHDWallet.fromMnemonic(this.seed)

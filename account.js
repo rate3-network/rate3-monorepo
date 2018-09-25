@@ -1,14 +1,10 @@
 const bip39 = require('bip39')
-const ethereum_wallet = require('ethereumjs-wallet')
-const ethUtil = require('ethereumjs-util');
 const forge = require('node-forge');
-const fs = require('fs');
 const rp = require('request-promise');
 const request = require('request');
 const stellarHDWallet = require('stellar-hd-wallet') 
 const StellarSdk = require('stellar-sdk');
 const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-const tx = require('ethereumjs-tx');
 const Web3 = require('web3');
 const web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 
@@ -104,8 +100,6 @@ class account{
                 } catch(err) {
                   console.log(err)
                 }
-            } else {
-              console.log('the account has a positive native balance')
             }
         } else if (this.network == 'ethereum') {
             this.account = account
@@ -232,8 +226,7 @@ class account{
      * Use the getter to get the signed transaction 
      * @param {string} uri - the input uri (stellar); tx hash (ethereum)
      */
-    delegatedSigning(uri) {
-        var self = this
+    async delegatedSigning(uri) {
         if(this.network == 'stellar') {
             let txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(uri.slice(19), 'base64')
             //web+stellar:tx?xdr=... the xdr starts from position 19 of the string
@@ -241,21 +234,10 @@ class account{
             tx1.sign(this.account)
             return tx1
         } else if (this.network == 'ethereum') {
-            //web3.eth.getTransaction('0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda')
-            web3.eth.getTransaction(uri)// uri here is the transaction hash
-            .then(function (tx) {
-                return web3.eth.accounts.signTransaction(tx, self.getPrivateKey())
-            }).then(function (signedTx) {self.signedTransaction = signedTx;
-                console.log(self.signedTransaction)
-                return self.signTransaction});
+            //tx '0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda'
+            let tx = await web3.eth.getTransaction(uri)// uri here is the transaction hash
+            return web3.eth.accounts.signTransaction(tx, this.getPrivateKey())
         }
-    }
-
-    /**
-     * For ethereum delegated signing to get the signed transaction
-     */
-    getSignedTransaction() {
-        return this.signedTransaction
     }
 
     /**
@@ -331,10 +313,6 @@ module.exports = account
 // const wallet_manager = new wallet_manager_module('stellar')
 // wallet_manager.setSeed(seed_phrases)
 // wallet_manager.setWallet()
-// let toPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP' // 4
-// let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV' // 4
-// let fromAddress = 'GCQRO37IHQ2GOQPF7HOFSNK5TNKVQU77WUI2MX3JZ57CCQYSLJMV3NY2' // 3
-// let fromPrivateKey = 'SCVOAKTGRAR2FOYRPXSSODGW5VDRT3HKTVAYAPU6M7H6XAGNKTWK3VJC' // 3
 // let acc = await wallet_manager.getAccount(3)
 // console.log(acc)
 //acc.send(toPublicKey, 100)
