@@ -53,26 +53,26 @@ const web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff6
 //     expect(wallet_manager.getWallet().seedHex).toBe(seedHex);
 //   }); 
 
-// test('setAccountETH', async () => {
-//     const wallet_manager = new wallet_manager_module('ethereum')
-//     wallet_manager.setSeed(seed_phrases)
-//     wallet_manager.setWallet()
+test('setAccountETH', async () => {
+    const wallet_manager = new wallet_manager_module('ethereum')
+    wallet_manager.setSeed(seed_phrases)
+    wallet_manager.setWallet()
 
-//     let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
-//     let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
-//     let expectedBalance = '0'
-//     let account = await wallet_manager.getAccount()
-//     expect(account.getAddress()).toBe(expectedAddress);
-//     expect(account.getPrivateKey()).toBe(expectedPrivateKey)
-//     expect(account.getBalance()).toBe(expectedBalance)
+    let expectedPrivateKey = '0xd74635dc691ec17d2c6dedf412155faec6b628d5cc58fc5fcd44aba74d5fda7f'
+    let expectedAddress = '0x8Ff91E4a8313F735D07c1775D4d12ddA1e930D00'
+    let expectedBalance = '0'
+    let account = await wallet_manager.getAccount()
+    expect(account.getAddress()).toBe(expectedAddress);
+    expect(account.getPrivateKey()).toBe(expectedPrivateKey)
+    expect(account.getBalance()).toBe(expectedBalance)
  
 
-//     expectedAddress = '0x2d8Cce8A8B308a077Eb0e39331258c355c55d04e'
-//     expectedPrivateKey = '0xb1cf5f0991e165de0e832bb3304846f0e902c0fdef39deece4c14f6625dc5a61'
-//     account = await wallet_manager.getAccount(5)
-//     expect(account.getAddress()).toBe(expectedAddress);
-//     expect(account.getPrivateKey()).toBe(expectedPrivateKey)
-//   });  
+    expectedAddress = '0x2d8Cce8A8B308a077Eb0e39331258c355c55d04e'
+    expectedPrivateKey = '0xb1cf5f0991e165de0e832bb3304846f0e902c0fdef39deece4c14f6625dc5a61'
+    account = await wallet_manager.getAccount(5)
+    expect(account.getAddress()).toBe(expectedAddress);
+    expect(account.getPrivateKey()).toBe(expectedPrivateKey)
+  });  
 
 // test('setAccountStellar', async () => {
 //     const wallet_manager = new wallet_manager_module('stellar')
@@ -144,27 +144,40 @@ const web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff6
 //     expect(receipt.to.toLowerCase()).toBe(account4.getAddress().toLowerCase())
 //   }); 
 
-  test('receiveStellar', async () => {
+  // test('receiveStellar', async () => {
+  //   jest.setTimeout(30000);// the default timeout is 5000ms
+
+  //   const wallet_manager = new wallet_manager_module('stellar')
+  //   wallet_manager.setSeed(seed_phrases)
+  //   wallet_manager.setWallet()
+  //   let account4 = await wallet_manager.getAccount(4)
+  //   let receiveRecord = await account4.receive()
+  //   expect(receiveRecord[0].id).toBe('47795285128122369')
+  // }); 
+
+  // test('receiveEthereum', async () => {
+  //   jest.setTimeout(30000);// the default timeout is 5000ms
+
+  //   const wallet_manager = new wallet_manager_module('ethereum')
+  //   wallet_manager.setSeed(seed_phrases)
+  //   wallet_manager.setWallet()
+  //   let account4 = await wallet_manager.getAccount(4)
+  //   let receiveRecord = await account4.receive()
+  //   expect(receiveRecord[0].blockNumber).toBe('3020019')
+  // }); 
+
+  test('changeTrustStellar', async () => {
     jest.setTimeout(30000);// the default timeout is 5000ms
 
     const wallet_manager = new wallet_manager_module('stellar')
     wallet_manager.setSeed(seed_phrases)
     wallet_manager.setWallet()
-    let account4 = await wallet_manager.getAccount(4)
-    let receiveRecord = await account4.receive()
-    expect(receiveRecord[0].id).toBe('47795285128122369')
+    let account8 = await wallet_manager.getAccount(8)// 8\
+    let IssueingAccountAddress = 'GCYEJSMEEP7VQFFS6WELX3QSJRL3OQFIZ4MGXQL6R56P33TKBFBT2GNZ'
+    let response = await account8.changeTrust('FOO',IssueingAccountAddress, '100000')
+    expect(response.result_meta_xdr).toMatch(/e5qCUM9AAAAAAAAAAAAAADo1KUQAAAAAAEAAAAAAAAAAA==/)
   }); 
-
-  test('receiveEthereum', async () => {
-    jest.setTimeout(30000);// the default timeout is 5000ms
-
-    const wallet_manager = new wallet_manager_module('ethereum')
-    wallet_manager.setSeed(seed_phrases)
-    wallet_manager.setWallet()
-    let account4 = await wallet_manager.getAccount(4)
-    let receiveRecord = await account4.receive()
-    expect(receiveRecord[0].blockNumber).toBe('3020019')
-  }); 
+  
 
   // test('encryptAndDecryptAccountETH', () => {
   //   var Web3 = require('web3');

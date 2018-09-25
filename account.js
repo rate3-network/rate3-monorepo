@@ -1,16 +1,16 @@
 const bip39 = require('bip39')
-const forge = require('node-forge');
-const fs = require('fs');
-const stellarHDWallet = require('stellar-hd-wallet') 
-const StellarSdk = require('stellar-sdk');
 const ethereum_wallet = require('ethereumjs-wallet')
 const ethUtil = require('ethereumjs-util');
+const forge = require('node-forge');
+const fs = require('fs');
+const rp = require('request-promise');
+const request = require('request');
+const stellarHDWallet = require('stellar-hd-wallet') 
+const StellarSdk = require('stellar-sdk');
+const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 const tx = require('ethereumjs-tx');
-var Web3 = require('web3');
-var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
-var rp = require('request-promise');
-var request = require('request');
-var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+const Web3 = require('web3');
+const web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 
 /**
  * @class account
@@ -39,38 +39,27 @@ class account{
     }
 
     /**
-     * Returns xdr.ChangeTrustOp
+     * Returns xdr.ChangeTrustOp;
+     * This is for stellar only
      * @param {string} assetName 
      * @param {string} limit 
      * @param {string} source 
      */
-    changeTrust(assetName,issuerPublickey, limit) {
-        var self = this
+    async changeTrust(assetName,issuerPublickey, limit) {
         if(this.network == null) {
             console.log('The network is not set.')
             return null
         } else if (this.network == 'stellar') {
-            var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-            // Create an object to represent the new asset
-            var newAsset = new StellarSdk.Asset(assetName, issuerPublickey);
-
-            // First, the receiving account must trust the asset
-            server.loadAccount(this.getAddress())
-            .then(function(receiver) {
-                var transaction = new StellarSdk.TransactionBuilder(receiver)
-                // The `changeTrust` operation creates (or alters) a trustline
-                // The `limit` parameter below is optional
-                .addOperation(StellarSdk.Operation.changeTrust({
-                    asset: newAsset,
-                    limit: limit
-                }))
-                .build();
-                transaction.sign(self.account);
-                //console.log(self.getAddress())
-                //let result = server.submitTransaction(transaction).then(console.log)
-                //return result;
-                return server.submitTransaction(transaction)
-            })
+            let newAsset = new StellarSdk.Asset(assetName, issuerPublickey);
+            let receiver = await server.loadAccount(this.getAddress())
+            let transaction = new StellarSdk.TransactionBuilder(receiver)
+            .addOperation(StellarSdk.Operation.changeTrust({
+                asset: newAsset,
+                limit: limit
+            }))
+            .build();
+            transaction.sign(this.account);
+            return await server.submitTransaction(transaction)
         } else if (this.network == 'ethereum') {
             return null
         }
@@ -83,7 +72,7 @@ class account{
     async loadBalance(publicKey) {
         try {
             let response = await rp(this.testAddress + publicKey)
-            this.balance = JSON.parse(response).balances[0].balance
+            this.balance = JSON.parse(response).balances.slice(-1)[0].balance// XLM balance
         } catch(err) {
             console.log('Error in loading balance')
         }
@@ -103,35 +92,29 @@ class account{
         } else if (this.network == 'stellar') {
             //check if the account is already on testnet
             this.account = account
-            this.balance = '-1'
-            var self = this
             await this.loadBalance(this.getAddress())
-            if (this.balance == null) {
-              await rp({
-                url: 'https://friendbot.stellar.org',
-                qs: { addr: self.getAddress() },
-                json: true
-                }).then(async function(htmlString) {
-                  self.balance = await loadBalance(self.getAddress())
-                })
-                .catch(function (err) {
+            if (this.balance == '0.0000000') {
+                try {
+                    await rp({
+                        url: 'https://friendbot.stellar.org',
+                        qs: { addr: this.getAddress() },
+                        json: true
+                        });
+                    this.balance = await loadBalance(this.getAddress())
+                } catch(err) {
                   console.log(err)
-                });
+                }
             } else {
-              console.log('the account is already on the testnet')
+              console.log('the account has a positive native balance')
             }
         } else if (this.network == 'ethereum') {
             this.account = account
-            this.balance = '-1'
-            var self = this
-            await web3.eth.getBalance(account.address)
-            .then(function(response) {
-                if (typeof response == 'string') {
-                    self.balance = response
-                } else {
-                    console.log('Cannot get the eth balance')
-                }
-            });
+            let response = await web3.eth.getBalance(account.address)
+            if (typeof response == 'string') {
+                this.balance = response
+            } else {
+                console.log('Cannot get the eth balance')
+            }
         } else {
             this.account = null
             console.log('The account network is not correctly set.')
