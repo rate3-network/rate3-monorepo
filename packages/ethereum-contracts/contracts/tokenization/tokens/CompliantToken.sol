@@ -84,14 +84,38 @@ contract CompliantToken is ModularToken {
     }
 
     function isWhitelistedForMint(address _address) public view returns (bool) {
-        return registryModule.getKey(_address, WHITELISTED_FOR_MINT);
+        uint256 integerValue;
+        string memory stringValue;
+        address addressValue;
+        bool booleanValue;
+        address managerAddress;
+        uint256 recordTimestamp;
+        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp)
+            = registryModule.getDataRecord(_address, WHITELISTED_FOR_MINT);
+        return booleanValue;
     }
 
     function isWhitelistedForBurn(address _address) public view returns (bool) {
-        return registryModule.getKey(_address, WHITELISTED_FOR_BURN);
+        uint256 integerValue;
+        string memory stringValue;
+        address addressValue;
+        bool booleanValue;
+        address managerAddress;
+        uint256 recordTimestamp;
+        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp)
+            = registryModule.getDataRecord(_address, WHITELISTED_FOR_BURN);
+        return booleanValue;
     }
 
     function isBlacklisted(address _address) public view returns (bool) {
-        return registryModule.getKey(_address, BLACKLISTED);
+        uint256 integerValue;
+        string memory stringValue;
+        address addressValue;
+        bool booleanValue;
+        address managerAddress;
+        uint256 recordTimestamp;
+        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp)
+            = registryModule.getDataRecord(_address, BLACKLISTED);
+        return booleanValue;
     }
 }
