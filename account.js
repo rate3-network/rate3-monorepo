@@ -76,16 +76,13 @@ class account{
     }
 
     async loadBalance(publicKey) {
-        var self = this
-        await rp(this.testAddress + publicKey)
-        .then(function (htmlString) {
-            self.balance = JSON.parse(htmlString).balances[0].balance
-            console.log(self.balance)
-        })
-        .catch(function (err) {
+        try {
+            let response = await rp(this.testAddress + publicKey)
+            this.balance = JSON.parse(response).balances[0].balance
+        } catch(err) {
             console.log('Error in loading balance')
-        });
-      }
+        }
+    }
 
     /**
      * Set the account field of this account to be the argument;
@@ -187,28 +184,29 @@ class account{
                 })).build();
                 transaction.sign(self.account)
                 let result = await server.submitTransaction(transaction);
-                console.log('Success!')
                 return result
             } catch (error) {
               console.error('Something went wrong!', error);
               return null
             }
         } else if (this.network == 'ethereum') {
-                // infura accepts only raw transactions, because it does not handle private keys
+            // infura accepts only raw transactions, because it does not handle private keys
             const rawTransaction = {
-            "from": this.getAddress(),//'0x1d14a9ed46653b2b833f4dac3b6a786c76faedc2', from address
-            "to": to,//'0x2e2a32690B2D09089F62BF3C262edA1aC1118f8F', to address
+            "from": this.getAddress(),
+            "to": to,
             "value": web3.utils.toHex(web3.utils.toWei(amount, "ether")),// e.g. '0.001'
             "gas": 30000,
-            "chainId": 4 // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
-            
+            "chainId": 4 // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids            
             };
-            
-            this.account.signTransaction(rawTransaction)
-            .then(signedTx => web3.eth.sendSignedTransaction(signedTx.rawTransaction))
-            .then(receipt => console.log("Transaction receipt: ", receipt))
-            .catch(err => console.error(err));
-                }
+            try {
+                let signedTx = await this.account.signTransaction(rawTransaction)
+                let receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+                return receipt
+            } catch (err) {
+                console.log('ethereum send transaction error', err)
+                return null
+            }           
+        }
     }
 
     /**
