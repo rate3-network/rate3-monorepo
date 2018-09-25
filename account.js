@@ -9,6 +9,7 @@ const tx = require('ethereumjs-tx');
 var Web3 = require('web3');
 var web3 = new Web3("https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7");
 var rp = require('request-promise');
+var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 
 /**
  * @class account
@@ -28,6 +29,7 @@ class account{
         if (network == 'stellar') {
             this.network = 'stellar'
             this.testAddress = 'https://horizon-testnet.stellar.org' + '/accounts/'
+            StellarSdk.Network.useTestNetwork();
         } else if (network == 'ethereum') {
             this.network = 'ethereum'
         } else {
@@ -47,7 +49,6 @@ class account{
             console.log('The network is not set.')
             return null
         } else if (this.network == 'stellar') {
-            StellarSdk.Network.useTestNetwork();
             var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
             // Create an object to represent the new asset
             var newAsset = new StellarSdk.Asset(assetName, issuerPublickey);
@@ -121,20 +122,11 @@ class account{
             this.account = account
             this.balance = '-1'
             var self = this
-            // await web3.eth.getBalance(account.address, function(err, val) {
-            //     if (err != null) {
-            //         console.log('Cannot get the eth balance')
-            //     } else {
-            //         self.balance = val
-            //     }
-            // });
             await web3.eth.getBalance(account.address)
             .then(function(response) {
                 if (typeof response == 'string') {
-                    console.log('val', response)
                     self.balance = response
                 } else {
-                    console.log(response)
                     console.log('Cannot get the eth balance')
                 }
             });
@@ -180,50 +172,27 @@ class account{
      * @param {string} to - the address that recerives XLM/ETH
      * @param {string} amount - the amount of XLM/ETH sent; e.g. 100XLM; 0.01 eth
      */
-    send(to, amount) {
+    async send(to, amount) {
+        var self = this
         if(this.network == 'stellar') {
-            StellarSdk.Network.useTestNetwork();
-            var server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-            // Transaction will hold a built transaction we can resubmit if the result is unknown.
-            var transaction;
-            var self = this
-            // First, check to make sure that the destination account exists.
-            // You could skip this, but if the account does not exist, you will be charged
-            // the transaction fee when the transaction fails.
-            server.loadAccount(to)
-              // If the account is not found, surface a nicer error message for logging.
-              .catch(StellarSdk.NotFoundError, function (error) {
-                throw new Error('The destination account does not exist!');
-              })
-              // If there was no error, load up-to-date information on your account.
-              .then(function() {
-                return server.loadAccount(self.getAddress());
-              })
-              .then(function(sourceAccount) {
-                // Start building the transaction.
-                transaction = new StellarSdk.TransactionBuilder(sourceAccount)
-                  .addOperation(StellarSdk.Operation.payment({
-                    destination: to,
-                    // Because Stellar allows transaction in many currencies, you must
-                    // specify the asset type. The special "native" asset represents Lumens.
-                    asset: StellarSdk.Asset.native(),
-                    amount: amount
-                  }))
-                  .build();
-                // Sign the transaction to prove you are actually the person sending it.
-                transaction.sign(self.account)// use the keypair to sign
-                // And finally, send it off to Stellar!
-                return server.submitTransaction(transaction);
-              })
-              .then(function(result) {
-                console.log('Success! Results:', result);
-              })
-              .catch(function(error) {
-                console.error('Something went wrong!', error);
-                // If the result is unknown (no response body, timeout etc.) we simply resubmit
-                // already built transaction:
-                // server.submitTransaction(transaction);
-              });
+            try {
+                var transaction;
+                await server.loadAccount(to)
+                let accontOnTestnet = await server.loadAccount(self.getAddress());
+                transaction = new StellarSdk.TransactionBuilder(accontOnTestnet)
+                .addOperation(StellarSdk.Operation.payment({
+                  destination: to,
+                  asset: StellarSdk.Asset.native(),
+                  amount: amount
+                })).build();
+                transaction.sign(self.account)
+                let result = await server.submitTransaction(transaction);
+                console.log('Success!')
+                return result
+            } catch (error) {
+              console.error('Something went wrong!', error);
+              return null
+            }
         } else if (this.network == 'ethereum') {
                 // infura accepts only raw transactions, because it does not handle private keys
             const rawTransaction = {
@@ -295,7 +264,6 @@ class account{
             let txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(uri.slice(19), 'base64')
             //web+stellar:tx?xdr=... the xdr starts from position 19 of the string
             let tx1 = new StellarSdk.Transaction(txEnvelope);
-            StellarSdk.Network.useTestNetwork();
             tx1.sign(this.account)
             return tx1
         } else if (this.network == 'ethereum') {
@@ -389,11 +357,13 @@ module.exports = account
 // const wallet_manager = new wallet_manager_module('stellar')
 // wallet_manager.setSeed(seed_phrases)
 // wallet_manager.setWallet()
-// let toPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP'
-// let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV'
-// let fromAddress = null
-// let fromPrivateKey = null
-// let acc = wallet_manager.getAccount(3)
+// let toPrivateKey = 'SA6XR67FP7ZF4QBOYGPXUBSBQ6275E4HI7AOVSL56JETRBQG2COJCAGP' // 4
+// let toPublicKey = 'GAQNFJEZWLX4MX6YFKQEPAXUH6SJRTTD4EAWGYOA34WNHNPW5EJXU4VV' // 4
+// let fromAddress = 'GCQRO37IHQ2GOQPF7HOFSNK5TNKVQU77WUI2MX3JZ57CCQYSLJMV3NY2' // 3
+// let fromPrivateKey = 'SCVOAKTGRAR2FOYRPXSSODGW5VDRT3HKTVAYAPU6M7H6XAGNKTWK3VJC' // 3
+// let acc = await wallet_manager.getAccount(3)
+// console.log(acc)
+//acc.send(toPublicKey, 100)
 // //let sampleXDR = 'web+stellar:tx?xdr=AAAAAKEXb+g8NGdB5fncWTVdm1VYU/+1EaZfac9+IUMSWlldAAAAZACpzYcAAAAKAAAAAAAAAAAAAAABAAAAAQAAAAChF2/oPDRnQeX53Fk1XZtVWFP/tRGmX2nPfiFDElpZXQAAAAEAAAAAINKkmbLvxl/YKqBHgvQ/pJjOY+EBY2HA3yzTtfbpE3oAAAAAAAAAAACYloAAAAAAAAAAAA=='
 // //console.log(acc.delegatedSigning(sampleXDR))
 // acc.changeTrust('FOO','GCYEJSMEEP7VQFFS6WELX3QSJRL3OQFIZ4MGXQL6R56P33TKBFBT2GNZ', '100000')
