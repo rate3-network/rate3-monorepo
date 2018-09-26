@@ -56,32 +56,32 @@ contract CompliantToken is ModularToken {
         super.mint(_to, _value);
     }
 
-    function transfer(
-        address _to,
-        uint256 _value
-    )
-        public
-        whitelistedForTransfer(msg.sender, _to)
-        notBlacklisted(msg.sender)
-        notBlacklisted(_to)
-        returns (bool)
-    {
-        super.transfer(_to, _value);
-    }
+    // function transfer(
+    //     address _to,
+    //     uint256 _value
+    // )
+    //     public
+    //     whitelistedForTransfer(msg.sender, _to)
+    //     notBlacklisted(msg.sender)
+    //     notBlacklisted(_to)
+    //     returns (bool)
+    // {
+    //     super.transfer(_to, _value);
+    // }
 
-    function transferFrom(
-        address _from,
-        address _to,
-        uint256 _value
-    )
-        public
-        whitelistedForTransfer(_from, _to)
-        notBlacklisted(_from)
-        notBlacklisted(_to)
-        returns (bool)
-    {
-        super.transferFrom(_from, _to, _value);
-    }
+    // function transferFrom(
+    //     address _from,
+    //     address _to,
+    //     uint256 _value
+    // )
+    //     public
+    //     whitelistedForTransfer(_from, _to)
+    //     notBlacklisted(_from)
+    //     notBlacklisted(_to)
+    //     returns (bool)
+    // {
+    //     super.transferFrom(_from, _to, _value);
+    // }
 
     function isWhitelistedForMint(address _address) public view returns (bool) {
         uint256 integerValue;
