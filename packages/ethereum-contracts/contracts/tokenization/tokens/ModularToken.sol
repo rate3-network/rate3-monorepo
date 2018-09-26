@@ -20,7 +20,7 @@ contract ModularToken is ERC20, Claimable, Pausable {
     event BalanceModuleSet(address indexed moduleAddress);
     event AllowanceModuleSet(address indexed moduleAddress);
     event RegistryModuleSet(address indexed moduleAddress);
-    event Burn(address indexed burner, uint256 value);
+    event Burn(address indexed from, uint256 value);
     event Mint(address indexed to, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Sweep(address indexed authorizer, address indexed from, address indexed to, uint256 value);
