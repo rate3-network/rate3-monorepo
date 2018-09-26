@@ -125,11 +125,10 @@ const DetailedExpansionPanel = (props) => {
               <Typography className={classes.title}>{props.title}</Typography>
               <div className={classes.titleInOneRow}>
                 {noVerified > 0 && <Typography className={classes.verificationStatus}>{noVerified} Verification </Typography>}
-                {noPending > 0 && <Typography className={classes.disabledVerificationStatus}> {noPending} Pending</Typography>}
-                
+                {noPending > 0 && <Typography className={classes.disabledVerificationStatus}>{noPending} Pending</Typography>}
               </div>
             </div>
-            {noPending && !props.isUser && <div className={classes.actionRequiredBox}>Action Required</div>}
+            {(noPending > 0 && !props.isUser) && <div className={classes.actionRequiredBox}>Action Required</div>}
             {needAction && <div className={classes.actionRequiredBox}>Action Required</div>}
           </div>
         </ExpansionPanelSummary>
