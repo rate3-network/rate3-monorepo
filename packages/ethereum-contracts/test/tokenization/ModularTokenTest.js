@@ -14,9 +14,6 @@ require('chai')
   .use(require('chai-bignumber')(web3.BigNumber))
   .should();
 
-// ERC20 tests referenced from:
-// https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/token/ERC20/ERC20.test.js
-
 contract('Modular Token Tests', function(accounts) {
 
     before(async function () {
@@ -27,114 +24,114 @@ contract('Modular Token Tests', function(accounts) {
     const [_, owner, ...rest] = accounts;
     const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 
-    // describe('Test - setup modules', function() {
-    //     beforeEach(async function () {
-    //         // Initialize ModularToken contract.
-    //         this.token = await ModularToken.new({ from: owner });
-    //     });
+    describe('Test - setup modules', function() {
+        beforeEach(async function () {
+            // Initialize ModularToken contract.
+            this.token = await ModularToken.new({ from: owner });
+        });
         
-    //     describe('balanceModule', function() {
-    //         beforeEach(async function() {
-    //             this.balanceModule = await BalanceModule.new({ from: owner });
-    //             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
-    //             this.allowanceModule = await AllowanceModule.new({ from: owner });
-    //             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
-    //         });
+        describe('balanceModule', function() {
+            beforeEach(async function() {
+                this.balanceModule = await BalanceModule.new({ from: owner });
+                await this.balanceModule.transferOwnership(this.token.address, { from: owner });
+                this.allowanceModule = await AllowanceModule.new({ from: owner });
+                await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
+            });
 
-    //         it('only owner can set module', async function() {
-    //             await assertRevert(this.token.setBalanceModule(this.balanceModule.address, { from: rest[0] }));
-    //             await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
-    //         });
+            it('only owner can set module', async function() {
+                await assertRevert(this.token.setBalanceModule(this.balanceModule.address, { from: rest[0] }));
+                await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+            });
 
-    //         it('functionality breaks when module not set', async function() {
-    //             await assertRevert(this.token.balanceOf(rest[0]));
-    //         });
+            it('functionality breaks when module not set', async function() {
+                await assertRevert(this.token.balanceOf(rest[0]));
+            });
 
-    //         it('functionality breaks when module set incorrectly', async function() {
-    //             await this.token.setBalanceModule(this.allowanceModule.address, { from: owner });
-    //             await assertRevert(this.token.balanceOf(rest[0]));
+            it('functionality breaks when module set incorrectly', async function() {
+                await this.token.setBalanceModule(this.allowanceModule.address, { from: owner });
+                await assertRevert(this.token.balanceOf(rest[0]));
 
-    //             await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
-    //             await this.token.balanceOf(rest[0]);
-    //         });
+                await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+                await this.token.balanceOf(rest[0]);
+            });
 
-    //         it('event emitted', async function() {
-    //             const { logs } = await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
+            it('event emitted', async function() {
+                const { logs } = await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
 
-    //             const event = expectEvent.inLogs(logs, 'BalanceModuleSet', {
-    //                 moduleAddress: this.balanceModule.address
-    //             });
-    //         });
-    //     });
+                const event = expectEvent.inLogs(logs, 'BalanceModuleSet', {
+                    moduleAddress: this.balanceModule.address
+                });
+            });
+        });
 
-    //     describe('allowanceModule', function() {
-    //         beforeEach(async function() {
-    //             this.balanceModule = await BalanceModule.new({ from: owner });
-    //             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
-    //             this.allowanceModule = await AllowanceModule.new({ from: owner });
-    //             await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
-    //         });
+        describe('allowanceModule', function() {
+            beforeEach(async function() {
+                this.balanceModule = await BalanceModule.new({ from: owner });
+                await this.balanceModule.transferOwnership(this.token.address, { from: owner });
+                this.allowanceModule = await AllowanceModule.new({ from: owner });
+                await this.allowanceModule.transferOwnership(this.token.address, { from: owner });
+            });
 
-    //         it('only owner can set module', async function() {
-    //             await assertRevert(this.token.setAllowanceModule(this.allowanceModule.address, { from: rest[0] }));
-    //             await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
-    //         });
+            it('only owner can set module', async function() {
+                await assertRevert(this.token.setAllowanceModule(this.allowanceModule.address, { from: rest[0] }));
+                await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+            });
 
-    //         it('functionality breaks when module not set', async function() {
-    //             await assertRevert(this.token.allowance(rest[0], 10));
-    //         });
+            it('functionality breaks when module not set', async function() {
+                await assertRevert(this.token.allowance(rest[0], 10));
+            });
 
-    //         it('functionality breaks when module set incorrectly', async function() {
-    //             await this.token.setAllowanceModule(this.balanceModule.address, { from: owner });
-    //             await assertRevert(this.token.allowance(rest[0], 10));
+            it('functionality breaks when module set incorrectly', async function() {
+                await this.token.setAllowanceModule(this.balanceModule.address, { from: owner });
+                await assertRevert(this.token.allowance(rest[0], 10));
 
-    //             await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
-    //             await this.token.allowance(rest[0], 10);
-    //         });
+                await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+                await this.token.allowance(rest[0], 10);
+            });
 
-    //         it('event emitted', async function() {
-    //             const { logs } = await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
+            it('event emitted', async function() {
+                const { logs } = await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
 
-    //             const event = expectEvent.inLogs(logs, 'AllowanceModuleSet', {
-    //                 moduleAddress: this.allowanceModule.address
-    //             });
-    //         });
-    //     });
+                const event = expectEvent.inLogs(logs, 'AllowanceModuleSet', {
+                    moduleAddress: this.allowanceModule.address
+                });
+            });
+        });
 
-    //     describe('registryModule', function() {
-    //         beforeEach(async function() {
-    //             this.balanceModule = await BalanceModule.new({ from: owner });
-    //             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
-    //             this.registryModule = await RegistryModule.new({ from: owner });
-    //             await this.registryModule.transferOwnership(this.token.address, { from: owner });
-    //         });
+        describe('registryModule', function() {
+            beforeEach(async function() {
+                this.balanceModule = await BalanceModule.new({ from: owner });
+                await this.balanceModule.transferOwnership(this.token.address, { from: owner });
+                this.registryModule = await RegistryModule.new({ from: owner });
+                await this.registryModule.transferOwnership(this.token.address, { from: owner });
+            });
 
-    //         it('only owner can set module', async function() {
-    //             await assertRevert(this.token.setRegistryModule(this.registryModule.address, { from: rest[0] }));
-    //             await this.token.setRegistryModule(this.registryModule.address, { from: owner });
-    //         });
+            it('only owner can set module', async function() {
+                await assertRevert(this.token.setRegistryModule(this.registryModule.address, { from: rest[0] }));
+                await this.token.setRegistryModule(this.registryModule.address, { from: owner });
+            });
 
-    //         it('functionality breaks when module not set', async function() {
-    //             await assertRevert(this.token.getKey(rest[0], 'test'));
-    //         });
+            it('functionality breaks when module not set', async function() {
+                await assertRevert(this.token.getKey(rest[0], 'test'));
+            });
 
-    //         it('functionality breaks when module set incorrectly', async function() {
-    //             await this.token.setRegistryModule(this.balanceModule.address, { from: owner });
-    //             await assertRevert(this.token.getKey(rest[0], 'test'));
+            it('functionality breaks when module set incorrectly', async function() {
+                await this.token.setRegistryModule(this.balanceModule.address, { from: owner });
+                await assertRevert(this.token.getKey(rest[0], 'test'));
 
-    //             await this.token.setRegistryModule(this.registryModule.address, { from: owner });
-    //             await this.token.getKey(rest[0], 'test');
-    //         });
+                await this.token.setRegistryModule(this.registryModule.address, { from: owner });
+                await this.token.getKey(rest[0], 'test');
+            });
 
-    //         it('event emitted', async function() {
-    //             const { logs } = await this.token.setRegistryModule(this.registryModule.address, { from: owner });
+            it('event emitted', async function() {
+                const { logs } = await this.token.setRegistryModule(this.registryModule.address, { from: owner });
 
-    //             const event = expectEvent.inLogs(logs, 'RegistryModuleSet', {
-    //                 moduleAddress: this.registryModule.address
-    //             });
-    //         });
-    //     });
-    // });
+                const event = expectEvent.inLogs(logs, 'RegistryModuleSet', {
+                    moduleAddress: this.registryModule.address
+                });
+            });
+        });
+    });
 
     describe('Test - token supply functions', function() {
         beforeEach(async function() {
