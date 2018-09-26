@@ -10,23 +10,23 @@ contract CompliantToken is ModularToken {
     string public constant BLACKLISTED = "BLACKLISTED";
 
     modifier whitelistedForMint(address _mintDestinationAddress) {
-        require(registryModule.getKey(_mintDestinationAddress, WHITELISTED_FOR_MINT), "Not whitelisted for mint");
+        require(isWhitelistedForMint(_mintDestinationAddress), "Not whitelisted for mint");
         _;
     }
 
     modifier whitelistedForBurn(address _burnOriginAddress) {
-        require(registryModule.getKey(_burnOriginAddress, WHITELISTED_FOR_BURN), "Not whitelisted for burn");
+        require(isWhitelistedForBurn(_burnOriginAddress), "Not whitelisted for burn");
         _;
     }
 
-    modifier whitelistedForTransfer(address _transferOriginAddress, address _transferDestinationAddress) {
-        require(registryModule.getKey(_transferOriginAddress, WHITELISTED_FOR_TRANSFER), "Origin not whitelisted for transfer");
-        require(registryModule.getKey(_transferDestinationAddress, WHITELISTED_FOR_TRANSFER), "Destination not whitelisted for transfer");
-        _;
-    }
+    // modifier whitelistedForTransfer(address _transferOriginAddress, address _transferDestinationAddress) {
+    //     require(registryModule.getKey(_transferOriginAddress, WHITELISTED_FOR_TRANSFER), "Origin not whitelisted for transfer");
+    //     require(registryModule.getKey(_transferDestinationAddress, WHITELISTED_FOR_TRANSFER), "Destination not whitelisted for transfer");
+    //     _;
+    // }
 
     modifier notBlacklisted(address _address) {
-        require(!registryModule.getKey(_address, BLACKLISTED), "Address is blacklisted");
+        require(!isBlacklisted(_address), "Address is blacklisted");
         _;
     }
 
