@@ -3,10 +3,10 @@ pragma solidity ^0.4.24;
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
 import "../../lib/lifecycle/Pausable.sol";
-import "./ERC20.sol";
-import "./AllowanceModule.sol";
-import "./BalanceModule.sol";
-import "./RegistryModule.sol";
+import "../shared/ERC20.sol";
+import "../modules/AllowanceModule.sol";
+import "../modules/BalanceModule.sol";
+import "../modules/RegistryModule.sol";
 
 contract ModularToken is ERC20, Claimable, Pausable {
     using SafeMath for uint256;
@@ -20,8 +20,10 @@ contract ModularToken is ERC20, Claimable, Pausable {
     event BalanceModuleSet(address indexed moduleAddress);
     event AllowanceModuleSet(address indexed moduleAddress);
     event RegistryModuleSet(address indexed moduleAddress);
-    event Burn(address indexed burner, uint256 value);
+    event Burn(address indexed from, uint256 value);
     event Mint(address indexed to, uint256 value);
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    event Sweep(address indexed authorizer, address indexed from, address indexed to, uint256 value);
 
 
     /**
@@ -57,6 +59,9 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return true;
     }
 
+    function transferContractOwnership(address _contractAddress) public onlyOwner {
+        Claimable(_contractAddress).transferOwnership(msg.sender);
+    }
 
     /**
      * @dev ERC20 functionality - Gets the total number of tokens in existence.
@@ -112,6 +117,8 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _value The amount of tokens to be spent.
      */
     function approve(address _spender, uint256 _value) public whenNotPaused returns (bool) {
+        require(_spender != address(0), "Spender cannot be 0x0 address");
+
         allowanceModule.setAllowance(msg.sender, _spender, _value);
 
         emit Approval(msg.sender, _spender, _value);
@@ -147,7 +154,9 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _spender The address which will spend the funds.
      * @param _addedValue The amount of tokens to increase the allowance by.
      */
-    function increaseApproval(address _spender, uint _addedValue) public whenNotPaused returns (bool) {
+    function increaseApproval(address _spender, uint256 _addedValue) public whenNotPaused returns (bool) {
+        require(_spender != address(0), "Spender cannot be 0x0 address");
+
         allowanceModule.addAllowance(msg.sender, _spender, _addedValue);
 
         emit Approval(msg.sender, _spender, allowanceModule.allowanceOf(msg.sender, _spender));
@@ -164,8 +173,11 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _spender The address which will spend the funds.
      * @param _subtractedValue The amount of tokens to decrease the allowance by.
      */
-    function decreaseApproval(address _spender, uint _subtractedValue) public whenNotPaused returns (bool) {
+    function decreaseApproval(address _spender, uint256 _subtractedValue) public whenNotPaused returns (bool) {
+        require(_spender != address(0), "Spender cannot be 0x0 address");
+
         uint256 oldValue = allowanceModule.allowanceOf(msg.sender, _spender);
+
         if (_subtractedValue >= oldValue) {
             allowanceModule.setAllowance(msg.sender, _spender, 0);
         } else {
@@ -227,7 +239,59 @@ contract ModularToken is ERC20, Claimable, Pausable {
             _stringValue,
             _addressValue,
             _booleanValue,
-            _managerAddress  
+            _managerAddress
         );
+    }
+
+    function getDataRecord(
+        address _forAddress,
+        string _key
+    )
+        public
+        view
+        returns 
+    (
+        uint256,
+        string,
+        address,
+        bool,
+        address,
+        uint256
+    ) {
+        return registryModule.getDataRecord(_forAddress, _key);
+    }
+
+    function getKey(
+        address _forAddress,
+        string _key
+    )
+        public
+        view
+        returns (bool)
+    {
+        return registryModule.getKey(_forAddress, _key);
+    }
+
+    /**
+     * @notice Sweeps tokens from any address and transfers the tokens to
+     * another address.
+     *
+     * @dev WARNING: Should only be used when neccessary.
+     * Restricted to owner of contract.
+     *
+     * @param _authorizer Address that sanctioned sweep.
+     * @param _from Target address to sweep tokens from.
+     * @param _to Address to store sweeped tokens.
+     * @param _value Amount of tokens to sweep.
+     */
+    function sweep(address _authorizer, address _from, address _to, uint256 _value) external onlyOwner {
+        uint256 balance = balanceModule.balanceOf(_from);
+        require(_value <= balance, "Insufficient balance");
+        require(_to != address(0), "Transfer to 0x0 address is not allowed");    
+
+        balanceModule.subBalance(_from, _value);
+        balanceModule.addBalance(_to, _value);
+
+        emit Sweep(_authorizer, _from, _to, _value);
     }
 }

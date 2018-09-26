@@ -3,12 +3,13 @@ pragma solidity ^0.4.24;
 import "./interactors/RegistryInteractor.sol";
 import "./interactors/OperationsInteractor.sol";
 
-contract TokenizeTemplateInteractor is OperationsInteractor, RegistryInteractor {
+contract BaseInteractor is OperationsInteractor, RegistryInteractor {
     constructor(
-        TokenizeTemplateToken _token
+        address _token,
+        address _proxy
     ) 
         public
-        BaseAdminInteractor(_token)
+        AdminInteractor(_token, _proxy)
     {
         
     }

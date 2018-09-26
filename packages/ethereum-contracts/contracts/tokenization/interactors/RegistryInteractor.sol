@@ -1,9 +1,10 @@
 pragma solidity ^0.4.24;
 
 import "../../lib/math/SafeMath.sol";
-import "./BaseAdminInteractor.sol";
+import "../shared/TokenInterface.sol";
+import "./AdminInteractor.sol";
 
-contract RegistryInteractor is BaseAdminInteractor {
+contract RegistryInteractor is AdminInteractor {
     using SafeMath for uint256;
 
     string public constant WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
@@ -12,7 +13,7 @@ contract RegistryInteractor is BaseAdminInteractor {
     string public constant BLACKLISTED = "BLACKLISTED";
 
     function whitelistForMint(address _address, bool _bool) public onlyAdmin {
-        token.setKeyDataRecord(
+        TokenInterface(token).setKeyDataRecord(
             _address,
             WHITELISTED_FOR_MINT,
             0,
@@ -24,7 +25,7 @@ contract RegistryInteractor is BaseAdminInteractor {
     }
 
     function whitelistForBurn(address _address, bool _bool) public onlyAdmin {
-        token.setKeyDataRecord(
+        TokenInterface(token).setKeyDataRecord(
             _address,
             WHITELISTED_FOR_BURN,
             0,
@@ -36,7 +37,7 @@ contract RegistryInteractor is BaseAdminInteractor {
     }
 
     function whitelistForTransfer(address _address, bool _bool) public onlyAdmin {
-        token.setKeyDataRecord(
+        TokenInterface(token).setKeyDataRecord(
             _address,
             WHITELISTED_FOR_TRANSFER,
             0,
@@ -48,7 +49,7 @@ contract RegistryInteractor is BaseAdminInteractor {
     }
 
     function blacklist(address _address, bool _bool) public onlyAdmin {
-        token.setKeyDataRecord(
+        TokenInterface(token).setKeyDataRecord(
             _address,
             BLACKLISTED,
             0,
