@@ -116,6 +116,8 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _value The amount of tokens to be spent.
      */
     function approve(address _spender, uint256 _value) public whenNotPaused returns (bool) {
+        require(_spender != address(0), "Spender cannot be 0x0 address");
+
         allowanceModule.setAllowance(msg.sender, _spender, _value);
 
         emit Approval(msg.sender, _spender, _value);
@@ -152,6 +154,8 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _addedValue The amount of tokens to increase the allowance by.
      */
     function increaseApproval(address _spender, uint256 _addedValue) public whenNotPaused returns (bool) {
+        require(_spender != address(0), "Spender cannot be 0x0 address");
+
         allowanceModule.addAllowance(msg.sender, _spender, _addedValue);
 
         emit Approval(msg.sender, _spender, allowanceModule.allowanceOf(msg.sender, _spender));
@@ -169,7 +173,10 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _subtractedValue The amount of tokens to decrease the allowance by.
      */
     function decreaseApproval(address _spender, uint256 _subtractedValue) public whenNotPaused returns (bool) {
+        require(_spender != address(0), "Spender cannot be 0x0 address");
+
         uint256 oldValue = allowanceModule.allowanceOf(msg.sender, _spender);
+
         if (_subtractedValue >= oldValue) {
             allowanceModule.setAllowance(msg.sender, _spender, 0);
         } else {
