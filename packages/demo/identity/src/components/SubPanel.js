@@ -159,8 +159,8 @@ class SubPanel extends React.Component {
           fontSize="0.7em"
           lineHeight="1em"
           fontWeight={500}
-          buttonText="add"
-          buttonIcon={ether}
+          buttonText="publish"
+          // buttonIcon={ether}
           iconHeight="0.8em"
         />
       </div>);
@@ -201,7 +201,7 @@ class SubPanel extends React.Component {
                     <div className={classes.pendingText}><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Pending Review</div>
                   }
                   {this.props.item.status === PENDING_ADD &&
-                    <div className={classes.pendingText}><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Ready to Add</div>
+                    <div className={classes.pendingText}><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Ready to Publish</div>
                   }
                 </div>
               </div>
@@ -219,12 +219,18 @@ class SubPanel extends React.Component {
               <div className={classes.contentHeaderCol}>
                 {this.props.item.status === VERIFIED ?
                   <React.Fragment><div>TxHsh</div><div>Data</div><div>Signature</div></React.Fragment> :
-                  <React.Fragment> <div>Data</div><div>Signature</div></React.Fragment>
+                  <React.Fragment> <div>{this.props.isUser ? 'Your Data' : 'Data'}</div><div>Signature</div></React.Fragment>
                 }
               </div>
               <div className={classes.contentCol}>
+                {/* transaction hash */}
                 {this.props.item.status === VERIFIED && <div className={classes.data}>{'this.props.item.txHash'}</div>}
-                <div className={classes.data}>{this.props.item.value}</div><div className={classes.data}>{'this.props.item.signature'}</div>
+                {/* data */}
+                <div className={classes.data}>{this.props.item.value}</div>
+                {/* signature */}
+                <div className={classes.data}>{'signature'}</div>
+
+                
                 {this.props.item.status === PENDING_REVIEW &&
                   <div className={classes.pending}>Pending</div>
                 }

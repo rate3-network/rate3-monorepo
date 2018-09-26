@@ -27,3 +27,14 @@ export const getRandomColor = (s) => {
 };
 
 export { b64Md5 } from './md5';
+
+
+export const truncateAddress = (addr, maxLength) => {
+  const { length } = addr;
+  if (length <= maxLength) {
+    return addr;
+  }
+  const half = maxLength / 2;
+  return `${addr.substring(0, half)}...${addr.substring(length - half - 1, length - 1)}`;
+};
+

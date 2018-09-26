@@ -14,7 +14,7 @@ import ChevronRight from '@material-ui/icons/ChevronRightRounded';
 import ProfilePic from '../ProfilePic';
 import TablePaginationActions from './TablePaginationActions';
 import { toggleGrey, modalShadow, identityHeavyGrey } from '../../constants/colors';
-
+import { truncateAddress } from '../../utils/index';
 
 const styles = theme => ({
   root: {
@@ -57,9 +57,12 @@ const styles = theme => ({
   },
   textCell: {
     fontSize: '1em',
-    fontWeight: 500,
+    // fontWeight: 500,
+    letterSpacing: '0.03em',
     paddingLeft: '0.5em',
     color: identityHeavyGrey,
+    textOverflow: 'ellipsis',
+    overflow: 'hidden',
   },
   arrowCell: {
     paddingRight: '0px !important',
@@ -106,7 +109,7 @@ class PendingUserTable extends React.Component {
                       <ProfilePic size={6} seed={row.user} />
                     </TableCell>
                     <TableCell className={classes.textCell} component="td" scope="row">
-                      {row.user}
+                      {truncateAddress(row.user, 18)}
                     </TableCell>
                     <TableCell className={classes.arrowCell} component="td" scope="row">
                       <ChevronRight />

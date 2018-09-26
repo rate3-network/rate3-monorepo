@@ -77,11 +77,16 @@ const styles = theme => ({
     justifyContent: 'space-between',
   },
   topText: {
-    fontSize: '0.8em',
-    fontWeight: '500',
+    fontSize: '1em',
+    fontWeight: '300',
     alignSelf: 'flex-start',
     lineHeight: '0.9em',
     textDecoration: 'underline',
+
+    width: '6em',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   walletNameText: {
     fontSize: '0.95em',
@@ -137,10 +142,19 @@ const styles = theme => ({
   },
 });
 
-const TopText = withStyles(styles)((props) => {
+const TopText = withRouter(withStyles(styles)((props) => {
   const { classes } = props;
-  return <div className={classes.topText}>Want to browswe identities?</div>;
-});
+  return (
+    <div className={classes.topText}>
+      <p style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/faq'); }}>
+        FAQ
+      </p>
+      <p style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/faq'); }}>
+        Help
+      </p>
+    </div>
+  );
+}));
 
 const UserInfo = withStyles(styles)((props) => {
   const { classes } = props;
@@ -176,11 +190,11 @@ const Keys = withStyles(styles)((props) => {
   );
 });
 
-const Faq = withRouter(withStyles(styles)((props) => {
+const Settings = withRouter(withStyles(styles)((props) => {
   const { classes } = props;
   return (
-    <span style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/faq'); }} className={classes.faqText}>
-      FAQ
+    <span style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/settings'); }} className={classes.faqText}>
+      Settings
     </span>
   );
 }));
@@ -234,7 +248,7 @@ const HomeSidebar = observer((props) => {
           />
         </div>
         <Keys />
-        <div className={classes.bottomItems}><LanguageDropdown /><Faq /></div>
+        <div className={classes.bottomItems}><LanguageDropdown /><Settings /></div>
       </div>
     </Drawer>
   );
