@@ -48,4 +48,6 @@ interface TokenInterface {
     ;
 
     function sweep(address _authorizer, address _from, address _to, uint256 _value) external;
+    function pause() external;
+    function unpause() external;
 }
