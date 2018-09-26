@@ -7,7 +7,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { observer, inject } from 'mobx-react';
 
-import { identityHeavyGrey } from '../constants/colors';
+import { identityHeavyGrey, pendingTextColor } from '../constants/colors';
 import BlueButton from './BlueButton';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import Rate3LogoSmall from '../assets/Rate3LogoSmall.svg';
@@ -50,9 +50,15 @@ const styles = theme => ({
     fontSize: '1em',
     color: 'black',
     whiteSpace: 'pre',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   smallLogo: {
     height: '0.8em',
+  },
+  pendingText: {
+    color: pendingTextColor,
   },
   status: {
     fontSize: '0.8em',
@@ -94,7 +100,8 @@ const styles = theme => ({
     paddingLeft: '3em',
   },
   addButton: {
-    marginLeft: '40%',
+    marginLeft: 'auto',
+    paddingRight: '4em',
   },
   buttonContainer: {
     display: 'flex',
@@ -104,6 +111,11 @@ const styles = theme => ({
     height: '1.3em',
     marginRight: '1em',
   },
+  titleText: {
+    maxWidth: '12em',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }
 });
 
 @inject('RootStore') @observer
@@ -163,7 +175,6 @@ class SubPanel extends React.Component {
           lineHeight="1em"
           fontWeight={500}
           buttonText="verify"
-          buttonIcon={ether}
           iconHeight="0.8em"
         />
       </div>);
@@ -180,17 +191,17 @@ class SubPanel extends React.Component {
             <div className={classes.paperContainer}>
               <div>
                 <div className={classes.title}>
-                  {this.props.item.value} <img className={classes.smallLogo} src={Rate3LogoSmall} alt="Rate3 Logo Small" />
+                  <div className={classes.titleText}>{this.props.item.value}</div><p> </p><img className={classes.smallLogo} src={Rate3LogoSmall} alt="Rate3 Logo Small" />
                 </div>
                 <div className={classes.status}>
                   {this.props.item.status === VERIFIED &&
-                    <div><img className={classes.smallLogo} src={addedIcon} alt="icon" /> Added</div>
+                    <div  className={classes.pendingText}><img className={classes.smallLogo} src={addedIcon} alt="icon" /> Added</div>
                   }
                   {this.props.item.status === PENDING_REVIEW &&
-                    <div><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Pending Review</div>
+                    <div className={classes.pendingText}><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Pending Review</div>
                   }
                   {this.props.item.status === PENDING_ADD &&
-                    <div><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Ready to Add</div>
+                    <div className={classes.pendingText}><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Ready to Add</div>
                   }
                 </div>
               </div>

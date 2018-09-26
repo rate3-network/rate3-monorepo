@@ -45,7 +45,7 @@ export const homeTextWhiteVerifier = '#FFFFFF';
 export const homeSidebarBgColorUser = '#FFFFFF';
 export const homeSidebarBgColorVerifier = '#1E4465';
 
-
+export const pendingTextColor = '#F9AD54';
 // User Main
 export const identityHeavyGrey = '#697180';
 export const actionRequiredBoxBg = 'rgba(249, 173, 84, 0.25)';

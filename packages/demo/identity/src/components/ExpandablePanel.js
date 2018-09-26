@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { observer, inject } from 'mobx-react';
 
-import { identityBlue, disabledGrey, actionRequiredBoxBg } from '../constants/colors';
+import { pendingTextColor,identityBlue, disabledGrey, actionRequiredBoxBg } from '../constants/colors';
 import identityIcon from '../assets/identityIcon.svg';
 import SubPanel from './SubPanel';
 
@@ -86,7 +86,7 @@ const styles = theme => ({
     whiteSpace: 'pre',
   },
   disabledVerificationStatus: {
-    color: disabledGrey,
+    color: pendingTextColor,
     fontWeight: 'bold',
     whiteSpace: 'pre',
   },
@@ -129,6 +129,7 @@ const DetailedExpansionPanel = (props) => {
                 
               </div>
             </div>
+            {noPending && !props.isUser && <div className={classes.actionRequiredBox}>Action Required</div>}
             {needAction && <div className={classes.actionRequiredBox}>Action Required</div>}
           </div>
         </ExpansionPanelSummary>
