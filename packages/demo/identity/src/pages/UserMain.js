@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
-import { observable, when, action, runInAction } from 'mobx';
+import { when, runInAction } from 'mobx';
 import { translate } from 'react-i18next';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 import ExpandablePanel from '../components/ExpandablePanel';
 import FixedPanel from '../components/FixedPanel';
@@ -12,10 +12,8 @@ import InstructionModal from '../components/InstructionModal';
 import UserInstructions from '../components/user/UserInstructions';
 import RegistrationModal from '../components/user/RegistrationModal';
 import SuccessModal from '../components/SuccessModal';
-
-import MyTable from '../utils/MyTable';
+import LoadingModal from '../components/LoadingModal';
 import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
-import identityJson from '../build/contracts/Identity.json';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
 const styles = (theme) => {
@@ -74,9 +72,12 @@ class UserMain extends React.Component {
         );
         this.props.RootStore.userStore.registryContract = contract;
         window.registryContract = contract;
+
+        this.props.RootStore.userStore.populateClaimLists();
+        this.props.RootStore.userStore.getIdentities();
       },
     );
-
+    // const fixedAccountReady = this.
     when(
       () => this.props.RootStore.userStore.userAddr && this.props.RootStore.finishInitNetwork,
       () => {
@@ -85,6 +86,7 @@ class UserMain extends React.Component {
         this.props.RootStore.userStore.getIdentities();
       },
     );
+
   }
 
   onRegisterSuccess() {
@@ -93,7 +95,7 @@ class UserMain extends React.Component {
 
     const claimToStore = {
       status: PENDING_REVIEW,
-      user: this.props.RootStore.userStore.userAddr,
+      user: this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr,
       type: this.props.RootStore.userStore.formType,
       value: this.props.RootStore.userStore.getFormTextInputValue(),
       verifier: this.props.RootStore.userStore.getVerifierSelected(),
@@ -101,7 +103,7 @@ class UserMain extends React.Component {
     this.props.RootStore.userStore.db.addClaim(
       this.props.RootStore.userStore.getFormTextInputValue(),
       this.props.RootStore.userStore.formType,
-      this.props.RootStore.userStore.userAddr,
+      this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr,
       this.props.RootStore.userStore.getVerifierSelected(),
       PENDING_REVIEW,
     );
@@ -148,6 +150,13 @@ class UserMain extends React.Component {
             onChangeIndex={userStore.handleModalIndexChange.bind(userStore)}
           />
         </InstructionModal>
+        <LoadingModal open={userStore.startedDeployingIdentity && !userStore.finishedDeployingIdentity} subText="Please wait while your Rate3 identity is deploying">
+          Deploying Contract...
+        </LoadingModal>
+
+        <LoadingModal open={userStore.startedLoadingClaims && !userStore.finishedLoadingClaims}>
+          Loading Claims...
+        </LoadingModal>
         <RegistrationModal
           open={userStore.getRegisterModalIsShowing()}
           onClose={userStore.closeRegisterModal.bind(userStore)}

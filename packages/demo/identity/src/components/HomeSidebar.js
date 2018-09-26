@@ -210,11 +210,11 @@ const HomeSidebar = observer((props) => {
         <div className={classes.networkBox}>
           {props.RootStore.commonStore.shouldUseCommonNetwork ?
             <div className={classes.accountTypeAndNetworkBox}>
-              <AccountTypeDropdown variant="user" isOnSidebar />
-              <NetworkDropdown buttonText="text" />
+              <AccountTypeDropdown variant={props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} isOnSidebar isUser={props.RootStore.commonStore.getIsUser()} />
+              <NetworkDropdown buttonText="text" isOnSidebar isUser={props.RootStore.commonStore.getIsUser()} />
             </div> :
             <div className={classes.accountTypeAndNetworkBox}>
-              <AccountTypeDropdown variant="user" isOnSidebar />
+              <AccountTypeDropdown variant={props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} isOnSidebar isUser={props.RootStore.commonStore.getIsUser()} />
               <NetworkBox />
             </div>
             

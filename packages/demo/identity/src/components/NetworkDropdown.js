@@ -12,8 +12,7 @@ import { inject, observer } from 'mobx-react';
 import Lens from '@material-ui/icons/Lens';
 import classNames from 'classnames';
 
-import { networkBoxBg, borderColor, materialGrey, ropstenBg, ropstenDot, rinkebyBg, rinkebyDot, kovanBg, kovanDot } from '../constants/colors';
-import { verifierPrivKey, userPrivKey } from '../constants/defaults';
+import { networkBoxBg, disabledBackgroundColor, borderColor, materialGrey, ropstenBg, ropstenDot, rinkebyBg, rinkebyDot, kovanBg, kovanDot } from '../constants/colors';
 
 
 const styles = theme => ({
@@ -30,6 +29,15 @@ const styles = theme => ({
     alignItems: 'center',
     marginTop: '0.5em',
     border: `0.09em solid ${borderColor}`,
+  },
+  sidebarBox: {
+    height: '2.3rem !important',
+    width: '13.5rem !important',
+    fontSize: '0.9rem !important',
+  },
+  sidebarBoxVerifier: {
+    border: `0.1em solid ${disabledBackgroundColor}`,
+    color: `${disabledBackgroundColor} !important`,
   },
   formControl: {
     width: '100%',
@@ -48,6 +56,9 @@ const styles = theme => ({
     '&:focus': {
       backgroundColor: 'transparent',
     },
+  },
+  verifierSelect: {
+    color: `${disabledBackgroundColor} !important`,
   },
   ropsten: {
     backgroundColor: `${ropstenBg} !important`,
@@ -70,6 +81,9 @@ const styles = theme => ({
   icon: {
     height: '0.4em',
   },
+  verifierIcon: {
+    color: `${disabledBackgroundColor} !important`,
+  },
   menuIconWithText: {
     display: 'flex',
     alignItems: 'center',
@@ -91,12 +105,6 @@ const networkList = [
 @inject('RootStore') @observer
 class NetworkDropdown extends React.Component {
   componentDidMount() {
-    // this.props.RootStore.commonStore.initCommonNetwork();
-    // if (this.props.RootStore.commonStore.getIsUser()) {
-    //   window.web3ForCommonNetwork.eth.accounts.wallet.add(userPrivKey);
-    // } else {
-    //   window.web3ForCommonNetwork.eth.accounts.wallet.add(verifierPrivKey);
-    // }
   }
   handleClick = (e) => {
     this.props.RootStore.commonStore.changeCommonNetwork(e.target.value);
@@ -105,14 +113,11 @@ class NetworkDropdown extends React.Component {
 
 
   render() {
-    const { classes } = this.props;
+    const { classes, isOnSidebar, isUser } = this.props;
 
     return (
       <div
-        className={classNames(classes.box)}
-          // { [classes.ropsten]: this.props.RootStore.currentNetwork === 'Ropsten' },
-          // { [classes.rinkeby]: this.props.RootStore.currentNetwork === 'Rinkeby' },
-          // { [classes.kovan]: this.props.RootStore.currentNetwork === 'Kovan' },
+        className={classNames(classes.box, { [classes.sidebarBox]: isOnSidebar }, { [classes.sidebarBoxVerifier]: !isUser })}
       >
         <FormControl className={classes.formControl}>
           <Select
@@ -127,8 +132,8 @@ class NetworkDropdown extends React.Component {
               },
             }}
             classes={{
-              selectMenu: classes.selectMenu,
-              icon: classes.selectIcon,
+              selectMenu: classNames(classes.selectMenu, { [classes.verifierSelect]: !isUser }),
+              icon: classNames(classes.selectIcon, { [classes.verifierIcon]: !isUser }),
               select: classes.select,
             }}
           >
@@ -165,12 +170,14 @@ class NetworkDropdown extends React.Component {
 
 NetworkDropdown.propTypes = {
   classes: PropTypes.object.isRequired,
+  isUser: PropTypes.bool,
 };
 NetworkDropdown.wrappedComponent.propTypes = {
   RootStore: PropTypes.object.isRequired,
 };
 
 NetworkDropdown.defaultProps = {
+  isUser: true,
 };
 
 export default withStyles(styles, { withTheme: true })(NetworkDropdown);

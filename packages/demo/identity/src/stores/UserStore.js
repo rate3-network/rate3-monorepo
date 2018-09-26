@@ -57,6 +57,12 @@ class UserStore {
   @observable socialIdClaimList = [];
 
   @observable accountUsedForDetectingChange = null;
+
+  @observable startedDeployingIdentity = false;
+  @observable finishedDeployingIdentity = false;
+
+  @observable startedLoadingClaims = false;
+  @observable finishedLoadingClaims = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -146,14 +152,39 @@ class UserStore {
     );
   }
   getPastEvents() {
-    this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
+    
   }
   checkHasIdentity() {
     this.registryContract.methods.hasIdentity(this.userAddr).call().then(console.log);
   }
 
+  listenToNewIdentityEvent() {
+    
+    const checkNewIdentity = () => {
+      console.log('polling');
+      this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
+        if (error) {
+          alert(error);
+        }
+        if (events) {
+          events.forEach((ev) => {
+            if (ev.returnValues.senderAddress === this.userAddr) {
+              console.log('cleared interval');
+              runInAction(()=>{this.finishedDeployingIdentity = true;});
+              clearInterval(polling);
+            }
+          });
+        }
+      });
+    };
+    let polling = setInterval(checkNewIdentity, 1000);
+    
+    // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
+  }
+
   @action
   async getIdentities() {
+    
     console.log('this.registryContract', window.registryContract);
     let userAddress = '';
     if (this.isOnFixedAccount) {
@@ -164,8 +195,11 @@ class UserStore {
     const hasIdentity = await this.registryContract.methods.hasIdentity(userAddress).call();
     let idContractAddr = '';
     if (!hasIdentity) {
+      runInAction(()=>{this.startedDeployingIdentity = true;});
+      
       const identityAddrCreated = await this.registryContract.methods.createIdentity().send({from: userAddress, gas: 6000000});
       idContractAddr = identityAddrCreated;
+      this.listenToNewIdentityEvent();
     }
     if (hasIdentity) {
       idContractAddr = await this.registryContract.methods.identities(userAddress).call();
@@ -181,6 +215,7 @@ class UserStore {
     // name claim
     let nameClaims;
     let nameClaimId;
+    runInAction(() => {this.startedLoadingClaims = true;});
     try {
       nameClaims = await identityContract.methods.getClaimIdsByTopic(101).call();
       [nameClaimId] = nameClaims;
@@ -248,6 +283,7 @@ class UserStore {
     } catch (err) {
       console.log(err);
     }
+    runInAction(() => {this.finishedLoadingClaims = true;});
   }
 
   @action
@@ -297,23 +333,44 @@ class UserStore {
     const location = 'some location';
     let sig;
     console.log('line 197', userAddress);
-    window.web3.eth.personal.sign(dataToSign, userAddress, '').then((str) => {
-      sig = str;
-      console.log('signature is');
-      console.log(str);
-      window.identityContract.methods.addClaim(topic, 1, issuerAddr, sig, data, location)
-        .send({ from: userAddress, gas: 6000000 },
-          (err, result) => {
-            console.log('from addClaim callback');
-            if (err) console.log(err);
-            if (result) {
-              console.log(result);
-              this.db.deleteClaim(addr, claim);
-              window.location.reload();
+    // window.web3.eth.personal.unlockAccount(userAddress, '195f61b04e113fc356f56074d3b397a83e8cf5c273a553c3baecb1fbce71de7e', 600).then(console.log);
+    if (!this.isOnFixedAccount) {
+      window.web3.eth.personal.sign(dataToSign, userAddress, '').then((str) => {
+        sig = str;
+        console.log('signature is');
+        console.log(str);
+        window.identityContract.methods.addClaim(topic, 1, issuerAddr, sig, data, location)
+          .send({ from: userAddress, gas: 6000000 },
+            (err, result) => {
+              console.log('from addClaim callback');
+              if (err) console.log(err);
+              if (result) {
+                console.log(result);
+                this.db.deleteClaim(addr, claim);
+                window.location.reload();
+              }
             }
-          }
-        );
-    });
+          );
+      });
+    } else {
+      window.web3.eth.sign(dataToSign, userAddress).then((str) => {
+        sig = str;
+        console.log('signature is');
+        console.log(str);
+        window.identityContract.methods.addClaim(topic, 1, issuerAddr, sig, data, location)
+          .send({ from: userAddress, gas: 6000000 },
+            (err, result) => {
+              console.log('from addClaim callback');
+              if (err) console.log(err);
+              if (result) {
+                console.log(result);
+                this.db.deleteClaim(addr, claim);
+                window.location.reload();
+              }
+            }
+          );
+      });
+    }
 
     console.log(sig);
   }

@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
 import Lens from '@material-ui/icons/Lens';
 import classNames from 'classnames';
-import { networkBoxBg, identityBlueLight, materialGrey, ropstenBg, ropstenDot, rinkebyBg, rinkebyDot, kovanBg, kovanDot } from '../constants/colors';
+import { networkBoxBg, identityBlueLight, materialGrey, ropstenDot, rinkebyDot, kovanDot } from '../constants/colors';
 
 const styles = (theme) => {
   return {

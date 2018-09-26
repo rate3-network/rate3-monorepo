@@ -68,7 +68,7 @@ class TablePaginationActions extends React.Component {
         >
           {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
         </IconButton>
-        <IconButton classes={{ root: classes.buttonRoot }} disabled classes={{ disabled: classes.pageIndicator }}>
+        <IconButton classes={{ root: classes.buttonRoot, disabled: classes.pageIndicator }} disabled>
           {page + 1} / {Math.ceil(count / rowsPerPage)}
         </IconButton>
         <IconButton

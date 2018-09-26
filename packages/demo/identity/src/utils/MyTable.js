@@ -4,10 +4,6 @@ otherwise, it will return an object of a type that corresponds to the given valu
 If the value is an object already, it will return the value. */
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
-function isObject(obj) {
-  return obj === Object(obj);
-}
-
 class MyTable {
   constructor(prefix, name) {
     this.prefix = prefix;

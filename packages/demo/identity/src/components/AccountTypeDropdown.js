@@ -32,10 +32,11 @@ const styles = theme => ({
     border: `0.1em solid ${borderColor}`,
   },
   sidebarBox: {
-    height: '2.3rem',
-    width: '13.5rem',
+    height: '2.3rem !important',
+    width: '13.5rem !important',
     fontSize: '0.9rem !important',
   },
+
   disabled: {
     backgroundColor: disabledBackgroundColor,
     color: materialGrey,
@@ -66,6 +67,9 @@ const styles = theme => ({
     '&:focus': {
       backgroundColor: 'transparent',
     },
+  },
+  verifierSelect: {
+    color: `${disabledBackgroundColor} !important`,
   },
   selectSidebar: {
     fontSize: '0.9rem !important',
@@ -116,11 +120,12 @@ class AccountTypeDropdown extends React.Component {
     window.location.reload();
   }
   render() {
-    const { classes, variant, isOnSidebar } = this.props;
+    const { classes, variant, isOnSidebar, isUser } = this.props;
     if (variant === 'verifier') {
       return (
         <div
-          className={classNames(classes.disabled)}
+          className={classNames(classes.disabled, { [classes.sidebarBox]: isOnSidebar }, { [classes.sidebarBoxVerifier]: !isUser })}
+          // className={classNames(classes.disabled)}
         >
           <FormControl className={classes.formControl}>
             <Select
@@ -135,7 +140,7 @@ class AccountTypeDropdown extends React.Component {
                 },
               }}
               classes={{
-                selectMenu: classes.selectMenu,
+                selectMenu: classNames({ [classes.selectMenu]: !isOnSidebar }, { [classes.sidebarSelectMenu]: isOnSidebar }),
                 icon: classes.selectIcon,
                 select: classes.select,
               }}
@@ -164,7 +169,7 @@ class AccountTypeDropdown extends React.Component {
     }
     return (
       <div
-        className={classNames(classes.box, { [classes.sidebarBox]: isOnSidebar })}
+        className={classNames(classes.box, { [classes.sidebarBox]: isOnSidebar }, { [classes.sidebarBoxVerifier]: !isUser })}
       >
         <FormControl className={classes.formControl}>
           <Select
@@ -181,7 +186,7 @@ class AccountTypeDropdown extends React.Component {
             classes={{
               selectMenu: classNames({ [classes.selectMenu]: !isOnSidebar }, { [classes.sidebarSelectMenu]: isOnSidebar }),
               icon: classes.selectIcon,
-              select: classNames(classes.select, { [classes.selectSidebar]: isOnSidebar }),
+              select: classNames(classes.select, { [classes.selectSidebar]: isOnSidebar }, { [classes.verifierSelect]: !isUser }),
             }}
           >
             {accountTypes.map((item) => {
@@ -212,6 +217,7 @@ AccountTypeDropdown.propTypes = {
   classes: PropTypes.object.isRequired,
   variant: PropTypes.string.isRequired,
   isOnSidebar: PropTypes.bool,
+  isUser: PropTypes.bool,
 };
 AccountTypeDropdown.wrappedComponent.propTypes = {
   RootStore: PropTypes.object.isRequired,
@@ -219,6 +225,7 @@ AccountTypeDropdown.wrappedComponent.propTypes = {
 
 AccountTypeDropdown.defaultProps = {
   isOnSidebar: false,
+  isUser: true,
 };
 
 export default withStyles(styles, { withTheme: true })(AccountTypeDropdown);

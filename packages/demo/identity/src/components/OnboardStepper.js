@@ -161,7 +161,7 @@ class OnboardStepper extends React.Component {
       );
     }));
     const AccountTypeSelector = (props) => {
-      return (<div className={classes.accountType}><AccountTypeDropdown variant={props.variant} /></div>);
+      return (<div className={classes.accountType}><AccountTypeDropdown variant={props.variant} isOnSidebar={false} /></div>);
     };
     const finalButtonDisabled = (activeOnboardStep === 3 && !this.props.RootStore.commonStore.isWalletSetupDone);
     const activeStep = activeOnboardStep - 1;
@@ -176,13 +176,13 @@ class OnboardStepper extends React.Component {
         {!this.props.RootStore.commonStore.getShouldRenderOnboardTransition() ?
           <TransitionWrapper direction="left">
             <div className={classes.text}>
-              {onboardSteps[activeStep].hasAccountTypeDropdown && <AccountTypeSelector variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} />}
+              {onboardSteps[activeStep].hasAccountTypeDropdown && <AccountTypeSelector isOnSidebar={false} variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} />}
               {onboardSteps[activeStep].text && onboardSteps[activeStep].text }
               {onboardSteps[activeStep].list && <SetupWalletList /> }
             </div>
           </TransitionWrapper> :
           <div className={classes.text}>
-            {onboardSteps[activeStep].hasAccountTypeDropdown && <AccountTypeSelector variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} />}
+            {onboardSteps[activeStep].hasAccountTypeDropdown && <AccountTypeSelector isOnSidebar={false} variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} />}
             {onboardSteps[activeStep].text && onboardSteps[activeStep].text }
             {onboardSteps[activeStep].list && <SetupWalletList /> }
           </div>
