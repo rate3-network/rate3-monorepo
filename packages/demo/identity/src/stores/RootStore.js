@@ -52,6 +52,7 @@ class RootStore {
     if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
       console.log('init metamask from root store');
       this.userStore.initMetamaskNetwork();
+      this.userStore.listenToMetaMaskAccountChange();
       return;
     }
     if (this.commonStore.getIsUser() && this.userStore.isOnFixedAccount) {

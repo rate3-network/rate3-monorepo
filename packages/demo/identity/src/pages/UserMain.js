@@ -50,8 +50,8 @@ class UserMain extends React.Component {
   componentDidMount() {
     this.props.RootStore.userStore.initDb();
     this.props.RootStore.userStore.resetClaimLists();
-    
 
+    
     when(
       () => !this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitNetwork,
       () => {

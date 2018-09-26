@@ -38,9 +38,10 @@ class UserStore {
   @observable metamaskAccount: String = '';
   @observable metamaskBalance: String = '';
 
-  @observable registryContractAddr = '0x121159a9a1731fec0690ac92a448795ac3f5d97d';
+  @observable registryContractAddr = '0x308f5f2786da8cbca59ac07fab78acc5cc8b3b9a';
   @observable identityContractAddr = '';
-  @observable userAddr = '0x5d2302a476c52be84dc1a67d0927ee3fe301e1a6';
+  @observable userAddr = '';
+  @observable fixedUserAddr = '0x900223b70CA6f78C44a3cDB810C08bBe43340EEC';
   @observable doesIdentityExist = false;
   @observable registryContract = {};
   @observable identityContract = {};
@@ -93,14 +94,20 @@ class UserStore {
   }
   @action
   populateClaimLists() {
+    let userAddress = '';
+    if (this.isOnFixedAccount) {
+      userAddress = this.fixedUserAddr;
+    } else {
+      userAddress = this.userAddr;
+    }
     this.db.getAllNameClaims().forEach((claim) => {
-      if (claim.user === this.userAddr) this.nameClaimList.push(claim);
+      if (claim.user === userAddress) this.nameClaimList.push(claim);
     });
     this.db.getAllAddressClaims().forEach((claim) => {
-      if (claim.user === this.userAddr) this.addressClaimList.push(claim);
+      if (claim.user === userAddress) this.addressClaimList.push(claim);
     });
     this.db.getAllSocialIdClaims().forEach((claim) => {
-      if (claim.user === this.userAddr) this.socialIdClaimList.push(claim);
+      if (claim.user === userAddress) this.socialIdClaimList.push(claim);
     });
   }
 
@@ -108,6 +115,7 @@ class UserStore {
   changeToMetaMaskAccount() {
     this.isOnFixedAccount = false;
     window.localStorage.setItem('accountType', 'metamast');
+    console.log('changing to metamask account in user store');
   }
   @action
   changeToFixedAccount() {
@@ -147,14 +155,20 @@ class UserStore {
   @action
   async getIdentities() {
     console.log('this.registryContract', window.registryContract);
-    const hasIdentity = await this.registryContract.methods.hasIdentity(this.userAddr).call();
+    let userAddress = '';
+    if (this.isOnFixedAccount) {
+      userAddress = this.fixedUserAddr;
+    } else {
+      userAddress = this.userAddr;
+    }
+    const hasIdentity = await this.registryContract.methods.hasIdentity(userAddress).call();
     let idContractAddr = '';
     if (!hasIdentity) {
-      const identityAddrCreated = await this.registryContract.methods.createIdentity().send({from: this.userAddr, gas: 6000000});
+      const identityAddrCreated = await this.registryContract.methods.createIdentity().send({from: userAddress, gas: 6000000});
       idContractAddr = identityAddrCreated;
     }
     if (hasIdentity) {
-      idContractAddr = await this.registryContract.methods.identities(this.userAddr).call();
+      idContractAddr = await this.registryContract.methods.identities(userAddress).call();
     }
 
     const identityContract = new window.web3.eth.Contract(identityJson.abi, idContractAddr);
@@ -179,7 +193,7 @@ class UserStore {
       runInAction(() => {
         console.log(nameClaim);
         this.nameClaim = window.web3.utils.hexToAscii(nameClaim.data);
-        const nameClaimObj = new Identity(this.nameClaim, 'name', this.userAddr, this.signature, VERIFIED);
+        const nameClaimObj = new Identity(this.nameClaim, 'name', userAddress, this.signature, VERIFIED);
         this.nameClaimList.push(nameClaimObj);
         console.log('name claim: ', this.nameClaim);
       });
@@ -202,7 +216,7 @@ class UserStore {
       const addressClaim = await identityContract.methods.getClaim(addressClaimId).call();
       runInAction(() => {
         this.addressClaim = window.web3.utils.hexToAscii(addressClaim.data);
-        const addressClaimObj = new Identity(this.addressClaim, 'address', this.userAddr, this.signature, VERIFIED);
+        const addressClaimObj = new Identity(this.addressClaim, 'address', userAddress, this.signature, VERIFIED);
         this.addressClaimList.push(addressClaimObj);
         // }
         console.log('address claim: ', this.addressClaim);
@@ -226,7 +240,7 @@ class UserStore {
       const socialIdClaim = await identityContract.methods.getClaim(socialIdClaimId).call();
       runInAction(() => {
         this.socialIdClaim = window.web3.utils.hexToAscii(socialIdClaim.data);
-        const socialIdClaimObj = new Identity(this.socialIdClaim, 'socialId', this.userAddr, this.signature, VERIFIED);
+        const socialIdClaimObj = new Identity(this.socialIdClaim, 'socialId', userAddress, this.signature, VERIFIED);
         this.socialIdClaimList.push(socialIdClaimObj);
         // }
         console.log('social id claim: ', this.socialIdClaim);
@@ -238,7 +252,13 @@ class UserStore {
 
   @action
   getIdentityContract() {
-    this.registryContract.methods.identities(this.userAddr).call()
+    let userAddress = '';
+    if (this.isOnFixedAccount) {
+      userAddress = this.fixedUserAddr;
+    } else {
+      userAddress = this.userAddr;
+    }
+    this.registryContract.methods.identities(userAddress).call()
       .then((result) => {
         console.log(result);
         runInAction(() => {
@@ -254,11 +274,17 @@ class UserStore {
   }
   @action
   addClaim(item) {
+    let userAddress = '';
+    if (this.isOnFixedAccount) {
+      userAddress = this.fixedUserAddr;
+    } else {
+      userAddress = this.userAddr;
+    }
     console.log('item', item);
     const claim = item.value;
     const data = window.web3.utils.asciiToHex(claim);
     console.log('data', data);
-    const addr = this.userAddr;
+    const addr = userAddress;
     const issuerAddr = this.identityContractAddr;
     let topic;
     // if (item.sss)
@@ -270,13 +296,13 @@ class UserStore {
     console.log('dataToSign', dataToSign);
     const location = 'some location';
     let sig;
-    console.log('line 197', this.userAddr);
-    window.web3.eth.personal.sign(dataToSign, this.userAddr, '').then((str) => {
+    console.log('line 197', userAddress);
+    window.web3.eth.personal.sign(dataToSign, userAddress, '').then((str) => {
       sig = str;
       console.log('signature is');
       console.log(str);
       window.identityContract.methods.addClaim(topic, 1, issuerAddr, sig, data, location)
-        .send({ from: this.userAddr, gas: 6000000 },
+        .send({ from: userAddress, gas: 6000000 },
           (err, result) => {
             console.log('from addClaim callback');
             if (err) console.log(err);
@@ -310,6 +336,7 @@ class UserStore {
 
   @action
   listenToMetaMaskAccountChange() {
+    console.log('listener mounted');
     window.web3.eth.givenProvider.publicConfigStore.on('update', (change) => {
       if (this.accountUsedForDetectingChange === null) {
         runInAction(() => {
