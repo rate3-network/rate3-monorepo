@@ -14,6 +14,8 @@ Run `npm test` to run all the tests.
 
 ## Documentation
 Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.
+Run the following command to create the documentation `jsdoc Account.js WalletManager.js`.
+The documentation is in the `out` folder, and can be viewed in the browser.
 ## Built With
 * [bip39](https://www.npmjs.com/package/bip39) - Mnemonic code for generating deterministic keys
 * [ethereumjs-wallet](https://www.npmjs.com/package/ethereumjs-wallet) - A lightweight Ethereum wallet implementation

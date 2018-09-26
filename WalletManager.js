@@ -1,7 +1,3 @@
-/* eslint prefer-rest-params: "off" */
-/* eslint prefer-destructuring: "off" */
-/* eslint no-plusplus: ["error", { "allowForLoopAfterthoughts": true }] */
-
 const bip39 = require('bip39');
 const forge = require('node-forge');
 const hdkey = require('ethereumjs-wallet/hdkey');
@@ -11,10 +7,10 @@ const Web3 = require('web3');
 
 const web3 = new Web3('https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7');
 
-const account = require('./account');
+const Account = require('./Account');
 
 /** This is a wrapper class over stellar and ethereum wallets */
-class wallet_manager {
+class WalletManager {
   /**
    * Set the network of the wallet manager
    * @param {string} network - stellar or ethereum
@@ -80,11 +76,11 @@ class wallet_manager {
       }
     } else if (arguments.length === 1) {
       if ([12, 18, 21, 24].includes(arguments[0])) {
-        const strength = (function (numberOfWords) {
+        const strength = (function toBits(numberOfWords) {
           switch (numberOfWords) {
             case 12:
               return 128;
-            case 18: 
+            case 18:
               return 160;
             case 21:
               return 224;
@@ -154,7 +150,7 @@ class wallet_manager {
 
   /**
    * Before generating accounts, the seed and wallet MUST be there.
-   * i.e., random account generatation is NOT allowed. 
+   * i.e., random account generatation is NOT allowed.
    * If the wallet is set, generate the first (0) account in the wallet;
    * If the parameter is a number,
    * Generate the account in the wallet. Its index is the number.
@@ -170,14 +166,14 @@ class wallet_manager {
       // generate the 0th account in the wallet
       switch (this.network) {
         case 'stellar': {
-          this.account = new account(this.network);
+          this.account = new Account(this.network);
           await this.account.setAccount(this.wallet.getKeypair(0));
           this.accountArray.push(Object.assign({}, this.account));
           return this.account;
         }
         case 'ethereum': {
           const privateKey = `0x${this.wallet.deriveChild(0).getWallet()._privKey.toString('hex')}`;
-          this.account = new account(this.network);
+          this.account = new Account(this.network);
           await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey));
           this.accountArray.push(Object.assign({}, this.account));
           return this.account;
@@ -191,14 +187,14 @@ class wallet_manager {
       // generate the account of the wallet at the specified index
       switch (this.network) {
         case 'stellar': {
-          this.account = new account(this.network);
+          this.account = new Account(this.network);
           await this.account.setAccount(this.wallet.getKeypair(arguments[0]));
           this.accountArray.push(Object.assign({}, this.account));
           break;
         }
         case 'ethereum': {
           const privateKey = `0x${this.wallet.deriveChild(arguments[0]).getWallet()._privKey.toString('hex')}`;
-          this.account = new account(this.network);
+          this.account = new Account(this.network);
           await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey));
           this.accountArray.push(Object.assign({}, this.account));
           break;
@@ -215,7 +211,7 @@ class wallet_manager {
           case 'stellar': {
             if (arguments[0].charAt(0) === 'S') {
               // generate account from private key
-              this.account = new account(this.network);
+              this.account = new Account(this.network);
               await this.account.setAccount(StellarSdk.Keypair.fromSecret(arguments[0]));
               this.accountArray.push(Object.assign({}, this.account));
             } else {
@@ -225,7 +221,7 @@ class wallet_manager {
             break;
           }
           case 'ethereum': {
-            this.account = new account(this.network);
+            this.account = new Account(this.network);
             await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(arguments[0]));
             this.accountArray.push(Object.assign({}, this.account));
             break;
@@ -299,7 +295,8 @@ class wallet_manager {
         // get derived bytes
         const salt = forge.random.getBytesSync(8);
         const derivedBytes = forge.pbe.opensslDeriveBytes(
-          password, salt, keySize + ivSize/* , md */);
+          password, salt, keySize + ivSize,
+        ); /* , md */
         const buffer = forge.util.createBuffer(derivedBytes);
         const key = buffer.getBytes(keySize);
         const iv = buffer.getBytes(ivSize);
@@ -318,7 +315,11 @@ class wallet_manager {
       }
 
       case 'ethereum':
-        return { original: web3.eth.accounts.encrypt(account.getPrivateKey(), password), network: this.network, balance: account.balance };
+        return {
+          original: web3.eth.accounts.encrypt(account.getPrivateKey(), password),
+          network: this.network,
+          balance: account.balance,
+        };
         // return this.getOriginalAccount().encrypt(this.getPrivateKey(), password)
       default:
         console.log('The network is not correctly set');
@@ -352,14 +353,14 @@ class wallet_manager {
         const decipher = forge.cipher.createDecipher('AES-CBC', key);
         decipher.start({ iv });
         decipher.update(input);
-        const result = decipher.finish(); // check 'result' for true/false
+        // const result = decipher.finish(); // check 'result' for true/false
         const decryptedPrivateKey = decipher.output.data;
-        const decryptedStellarAccount = new account(cipher.network);
+        const decryptedStellarAccount = new Account(cipher.network);
         decryptedStellarAccount.setAccount(StellarSdk.Keypair.fromSecret(decryptedPrivateKey));
         return decryptedStellarAccount;
       }
       case 'ethereum': {
-        const decryptedAccount = new account(cipher.network);
+        const decryptedAccount = new Account(cipher.network);
         decryptedAccount.setAccount(web3.eth.accounts.decrypt(cipher.original, password));
         return decryptedAccount;
       }
@@ -370,4 +371,4 @@ class wallet_manager {
   }
 }
 
-module.exports = wallet_manager
+module.exports = WalletManager;

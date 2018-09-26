@@ -1,5 +1,3 @@
-/* eslint no-console: "off" */
-
 const rp = require('request-promise');
 const StellarSdk = require('stellar-sdk');
 const Web3 = require('web3');
@@ -8,17 +6,15 @@ const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 const web3 = new Web3('https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7');
 
 /**
- * @class account
- * @description
+ * @class Account
  * This is a wrapper class over stellar and ethereum accounts.
  * For those fields/methods that are already there when the original
  * account is passed in, this class simply extracts them;
  * Otherwise, the fields/methods are created and saved in this class.
  */
-class account {
+class Account {
   /**
   * constructor
-  * @memberof account
   * @param {string} network
   */
   constructor(network) {
@@ -309,4 +305,4 @@ class account {
   }
 }
 
-module.exports = account;
+module.exports = Account;
