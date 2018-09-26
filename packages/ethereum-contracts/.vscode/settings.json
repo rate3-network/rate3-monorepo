@@ -1,0 +1,7 @@
+{
+  "[javascript]": {
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4
+  },
+  "solidity.linter": "solhint",
+}
