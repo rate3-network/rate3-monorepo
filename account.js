@@ -1,9 +1,7 @@
 /* eslint no-console: "off" */
 
 const rp = require('request-promise');
-
 const StellarSdk = require('stellar-sdk');
-
 const Web3 = require('web3');
 
 const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
