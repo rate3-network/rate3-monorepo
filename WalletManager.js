@@ -156,6 +156,7 @@ class WalletManager {
    * Generate the account in the wallet. Its index is the number.
    * If the parameter is a string,
    * Use it as the private/public key to generate the account
+   * @returns the account created/imported
    */
   async getAccount() {
     if (arguments.length === 0) {
@@ -255,6 +256,7 @@ class WalletManager {
   /**
    * Set the current account.
    * @param {number} index - The index of the account in the accountArray
+   * @returns null
    */
   setCurrentAccount(index) {
     const max = this.accountArray.length - 1;
@@ -270,6 +272,7 @@ class WalletManager {
    * The index of accounts in this array can be different from the index
    * of the account in the wallet,
    * depending on the sequence the accounts are created.
+   * @returns the array of accounts
    */
   getAccountArray() {
     if (this.accountArray == null) {
@@ -280,11 +283,55 @@ class WalletManager {
   }
 
   /**
+   * 
+   * @param {string} password - the password
+   * @returns {ByteStringBuffer} the object containing the encrypted string
+   */
+  encryptSeed(password) {
+    // generate a random key and IV
+    // Note: a key size of 16 bytes will use AES-128, 24 => AES-192, 32 => AES-256
+    this.iv = forge.random.getBytesSync(16);
+
+    // alternatively, generate a password-based 16-byte key
+    this.salt = forge.random.getBytesSync(128);
+    const key = forge.pkcs5.pbkdf2(password, this.salt, 10, 16); // numIterations set to 10
+
+    // encrypt some bytes using CBC mode
+    // (other modes include: ECB, CFB, OFB, CTR, and GCM)
+    // Note: CBC and ECB modes use PKCS#7 padding as default
+    const cipher = forge.cipher.createCipher('AES-CBC', key);
+    cipher.start({ iv: this.iv });
+    cipher.update(forge.util.createBuffer(this.getSeed()));
+    cipher.finish();
+    const encrypted = cipher.output;
+    // outputs encrypted hex
+    console.log(encrypted.toHex());
+    return encrypted;
+  }
+
+  /**
+   * It must be called after encryptSeed is called at least once
+   * @param {string} password - The password to decrypt
+   * @returns {string} the seed phrases if the password is correct, otherwise a random string
+   */
+  decryptSeed(password, encrypted) {
+    const key = forge.pkcs5.pbkdf2(password, this.salt, 10, 16); // numIterations set to 10
+    const decipher = forge.cipher.createDecipher('AES-CBC', key);
+    decipher.start({ iv: this.iv });
+    decipher.update(encrypted);
+    // const result = decipher.finish(); // check 'result' for true/false
+    // outputs decrypted hex
+    console.log(decipher.output.toHex());
+    return decipher.output.data;
+  }
+
+  /**
    * @param {object} account - The account to be encrypted. Only the private key will be encrypted.
    * @param {string} password - The password string used to encrypt the private key
    * If on stellar, return the encrypted private key;
    * If on ethereum, return the keystore V3 JSON.
    * Plus all the auxiliary fields
+   * @returns the encrypted account
    */
   encrypt(account, password) {
     switch (account.network) {
@@ -333,6 +380,7 @@ class WalletManager {
    * Return an account, reconstructed from the cipher
    * The fields remain the same, but methods are not.
    * However, these methods will not be used, i.e. will use web3/stellar libraries.
+   * @returns the decrypted account
    */
   decrypt(cipher, password) {
     switch (this.network) {
@@ -372,3 +420,10 @@ class WalletManager {
 }
 
 module.exports = WalletManager;
+
+// let w = new WalletManager('stellar');
+// w.setSeed('aspect body artist annual sketch know plug subway series noodle loyal word');
+// const enc = w.encryptSeed('password');
+// console.log(enc)
+// const dec = w.decryptSeed('password1', enc);
+// console.log(typeof dec);

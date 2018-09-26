@@ -33,11 +33,11 @@ class Account {
   }
 
   /**
-   * Returns xdr.ChangeTrustOp;
    * This is for stellar only
    * @param {string} assetName
    * @param {string} limit
    * @param {string} source
+   * @returns {object|null} xdr.ChangeTrustOp if succeeds or null otherwise
    */
   async changeTrust(assetName, issuerPublickey, limit) {
     switch (this.network) {
@@ -118,6 +118,7 @@ class Account {
   /**
    * Sign the data using the private key of the current account
    * @param {string} data - the data (string) to be signed
+   * @returns {object} the signed object
    */
   sign(data) {
     switch (this.network) {
@@ -139,6 +140,7 @@ class Account {
    * Send an amount from the current account to another account
    * @param {string} to - the address that recerives XLM/ETH
    * @param {string} amount - the amount of XLM/ETH sent; e.g. 100XLM; 0.01 eth
+   * @returns {object} the server response of the transaction
    */
   async send(to, amount) {
     try {
@@ -183,6 +185,7 @@ class Account {
   /**
    * This methods sets the history field of this account.
    * All the fields in the response are retained, in JSON format
+   * @returns {JSON} the transaction history
    */
   async receive() {
     try {
@@ -215,6 +218,7 @@ class Account {
    * For ethereum, take the transaction hash, and sign it;
    * Use the getter to get the signed transaction
    * @param {string} uri - the input uri (stellar); tx hash (ethereum)
+   * @returns {transaction} the signed transaction
    */
   async delegatedSigning(uri) {
     try {
@@ -243,6 +247,7 @@ class Account {
 
   /**
    * Return the network where the account is.
+   * @returns the network where the account is
    */
   getNetwork() {
     return this.network;
@@ -252,6 +257,7 @@ class Account {
    * Get the balance associated to this account.
    * Currently only values for XLM and ETH are saved.
    * i.e. there is no other types of currency.
+   * @returns the balance associated to this account.
    */
   getBalance() {
     return this.balance;
@@ -261,6 +267,7 @@ class Account {
    * Get transaction history in and out from this account.
    * Currently it is the raw json response, and
    * different between eth and stellar.
+   * @returns transaction history in and out from this account
    */
   getHistory() {
     return this.history;
@@ -268,6 +275,7 @@ class Account {
 
   /**
    * Get the account that is passed into this wrapper class.
+   * @returns the account that is passed into this wrapper class
    */
   getOriginalAccount() {
     return this.account;
@@ -276,6 +284,7 @@ class Account {
   /**
    * The address of a stellar account is the public key of the key pair;
    * The address of an ethereum account is a part of the hash of the public key
+   * @return the address
    */
   getAddress() {
     switch (this.network) {
@@ -291,6 +300,7 @@ class Account {
 
   /**
    * Return the private key (ethereum) / secret (stellar)
+   * @returns the private key
    */
   getPrivateKey() {
     switch (this.network) {
