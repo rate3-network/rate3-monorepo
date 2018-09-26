@@ -2,10 +2,11 @@ import { increaseTimeTo, duration } from '../helpers/increaseTime';
 import latestTime from '../helpers/latestTime';
 import { advanceBlock } from '../helpers/advanceToBlock';
 
-const TokenizeTemplateToken = artifacts.require("./tokenization/TokenizeTemplateToken.sol");
-const TokenizeTemplateInteractor = artifacts.require("./tokenization/TokenizeTemplateInteractor.sol");
-const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
+const BaseInteractor = artifacts.require("./tokenization/interactors/BaseInteractor.sol");
+const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
+const BaseToken = artifacts.require("./tokenization/BaseToken.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
+const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
 const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.sol");
 
 require('chai')
@@ -20,14 +21,19 @@ contract('Gas Limit Tests', function(accounts) {
         await advanceBlock();
     });
 
-    const [owner, admin, anotherAdmin, ...rest] = accounts;
+    const [owner, ...rest] = accounts;
 
     describe('Test - check if not out of gas', function() {
-        it('check TokenizeTemplateToken', async function() {
-            this.token = await TokenizeTemplateToken.new({ from: owner });
-            it('check TokenizeTemplateInteractor', async function() {
-                this.interactor = await TokenizeTemplateInteractor.new(this.token.address, { from: owner });
-            });
+        it('check BaseToken', async function() {
+            this.token = await BaseToken.new({ from: owner });
+        });
+
+        it('check BaseProxy', async function() {
+            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+        });
+
+        it('check BaseInteractor', async function() {
+            this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
         });
 
         it('check BalanceModule', async function() {
