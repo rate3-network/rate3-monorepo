@@ -148,4 +148,8 @@ contract OperationsInteractor is AdminInteractor {
     function resumeOperations() public onlyOwner {
         operationsPaused = false;
     }
+
+    function sweepToken(address _from, address _to, uint256 _value) public onlyOwner {
+        TokenInterface(token).sweep(msg.sender, _from, _to, _value);
+    }
 }

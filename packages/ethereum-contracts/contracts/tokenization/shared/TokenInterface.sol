@@ -46,4 +46,6 @@ interface TokenInterface {
         view
         returns (bool)
     ;
+
+    function sweep(address _authorizer, address _from, address _to, uint256 _value) external;
 }

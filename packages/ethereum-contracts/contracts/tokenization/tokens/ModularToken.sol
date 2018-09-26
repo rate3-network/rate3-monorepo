@@ -23,6 +23,7 @@ contract ModularToken is ERC20, Claimable, Pausable {
     event Burn(address indexed burner, uint256 value);
     event Mint(address indexed to, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);
+    event Sweep(address indexed authorizer, address indexed from, address indexed to, uint256 value);
 
 
     /**
@@ -269,5 +270,28 @@ contract ModularToken is ERC20, Claimable, Pausable {
         returns (bool)
     {
         return registryModule.getKey(_forAddress, _key);
+    }
+
+    /**
+     * @notice Sweeps tokens from any address and transfers the tokens to
+     * another address.
+     *
+     * @dev WARNING: Should only be used when neccessary.
+     * Restricted to owner of contract.
+     *
+     * @param _authorizer Address that sanctioned sweep.
+     * @param _from Target address to sweep tokens from.
+     * @param _to Address to store sweeped tokens.
+     * @param _value Amount of tokens to sweep.
+     */
+    function sweep(address _authorizer, address _from, address _to, uint256 _value) external onlyOwner {
+        uint256 balance = balanceModule.balanceOf(_from);
+        require(_value <= balance, "Insufficient balance");
+        require(_to != address(0), "Transfer to 0x0 address is not allowed");    
+
+        balanceModule.subBalance(_from, _value);
+        balanceModule.addBalance(_to, _value);
+
+        emit Sweep(_authorizer, _from, _to, _value);
     }
 }
