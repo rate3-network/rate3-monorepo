@@ -1,3 +1,5 @@
+/* eslint no-console: "off" */
+
 const rp = require('request-promise');
 
 const StellarSdk = require('stellar-sdk');
@@ -55,9 +57,8 @@ class account {
           }))
           .build();
         transaction.sign(this.account);
-        return server.submitTransaction(transaction)
+        return server.submitTransaction(transaction);
       }
-
       case 'ethereum':
         console.log('Change trust is not for ethereum.');
         break;
@@ -86,10 +87,10 @@ class account {
    * For Ethereum, update its balance read on the Rinbeky testnet.
    * @param {object} account - A stellar or ethereum account
    */
-  async setAccount(account) {
+  async setAccount(originalAccount) {
     switch (this.network) {
       case 'stellar':
-        this.account = account;
+        this.account = originalAccount;
         await this.loadBalance(this.getAddress());
         if (this.balance === '0.0000000') {
           try {
@@ -105,8 +106,8 @@ class account {
         }
         break;
       case 'ethereum': {
-        this.account = account;
-        const response = await web3.eth.getBalance(account.address)
+        this.account = originalAccount;
+        const response = await web3.eth.getBalance(originalAccount.address);
         if (typeof response === 'string') {
           this.balance = response;
         } else {
@@ -128,7 +129,7 @@ class account {
     switch (this.network) {
       case 'stellar':
         if (this.account.canSign()) {
-          return this.account.sign(data)
+          return this.account.sign(data);
         }
         console.log('The Stellar account does not contain a private key and cannot sign');
         return null;
@@ -161,142 +162,153 @@ class account {
           return await server.submitTransaction(transaction);
         }
 
-        case 'ethereum':
-        // infura accepts only raw transactions, because it does not handle private keys
-        const rawTransaction = {
-                    "from": this.getAddress(),
-                    "to": to,
-                    "value": web3.utils.toHex(web3.utils.toWei(amount, "ether")),// e.g. '0.001'
-                    "gas": 30000,
-                    "chainId": 4 // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids            
-                };
-        
-                let signedTx = await this.account.signTransaction(rawTransaction)
-                let receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction)
-                return receipt 
-            default:
-                console.log('The network is not correct')
+        case 'ethereum': {
+          const rawTransaction = {
+            from: this.getAddress(),
+            to,
+            value: web3.utils.toHex(web3.utils.toWei(amount, 'ether')), // e.g. '0.001'
+            gas: 30000,
+            chainId: 4, // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
+          };
+
+          const signedTx = await this.account.signTransaction(rawTransaction);
+          const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+          return receipt;
         }
+        // infura accepts only raw transactions, because it does not handle private keys
+        default:
+          console.log('The network is not correct');
+      }
     } catch (err) {
-        console.log('ethereum send transaction error', err)
-        return null
+      console.log('ethereum send transaction error', err);
+      return null;
     }
     return null;
   }
 
-    /**
-     * This methods sets the history field of this account.
-     * All the fields in the response are retained, in JSON format
-     */
-    async receive() {
-        if(this.network == 'stellar') {
-            let url = 'https://horizon-testnet.stellar.org/accounts/' + this.getAddress() + '/payments'
-            try {
-                let response = await rp(url)
-                this.history =  JSON.parse(response)._embedded.records
-                return this.history
-            } catch (err) {
-                console.log('error in fetching history', err)
-            }
-
-        } else if (this.network == 'ethereum') {
-            let url = 'http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address='+ this.getAddress() +'&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken'
-            try {
-                let response = await rp(url)
-                this.history =  JSON.parse(response).result
-                return this.history
-            } catch (err) {
-                console.log('error in fetching history', err)
-            }
+  /**
+   * This methods sets the history field of this account.
+   * All the fields in the response are retained, in JSON format
+   */
+  async receive() {
+    try {
+      switch (this.network) {
+        case 'stellar': {
+          const url = `https://horizon-testnet.stellar.org/accounts/${this.getAddress()}/payments`;
+          const response = await rp(url);
+          this.history = JSON.parse(response)._embedded.records;
+          return this.history;
         }
-        
-    }
-
-    /**
-     * Construct the transaction from the uri (stellar), and sign it with the current account
-     * Return the signed transaction
-     * For ethereum, take the transaction hash, and sign it; 
-     * Use the getter to get the signed transaction 
-     * @param {string} uri - the input uri (stellar); tx hash (ethereum)
-     */
-    async delegatedSigning(uri) {
-        if(this.network == 'stellar') {
-            let txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(uri.slice(19), 'base64')
-            //web+stellar:tx?xdr=... the xdr starts from position 19 of the string
-            let tx1 = new StellarSdk.Transaction(txEnvelope);
-            tx1.sign(this.account)
-            return tx1
-        } else if (this.network == 'ethereum') {
-            //tx '0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda'
-            let tx = await web3.eth.getTransaction(uri)// uri here is the transaction hash
-            return web3.eth.accounts.signTransaction(tx, this.getPrivateKey())
+        case 'ethereum': {
+          const url = `http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${this.getAddress()}&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken`;
+          const response = await rp(url);
+          this.history = JSON.parse(response).result;
+          return this.history;
         }
+        default:
+          console.log('The network is not correct');
+          return null;
+      }
+    } catch (err) {
+      console.log('error in fetching history', err);
     }
+    return null;
+  }
 
-    /**
-     * Return the network where the account is.
-     */
-    getNetwork() {
-        return this.network
-    }
-
-    /**
-     * Get the balance associated to this account.
-     * Currently only values for XLM and ETH are saved.
-     * i.e. there is no other types of currency.
-     */
-    getBalance() {
-        return this.balance
-    }
-
-    /**
-     * Get transaction history in and out from this account.
-     * Currently it is the raw json response, and 
-     * different between eth and stellar.
-     */
-    getHistory() {
-        return this.history
-    }
-
-    /**
-     * Get the account that is passed into this wrapper class.
-     */
-    getOriginalAccount() {
-        return this.account
-    }
-
-    /**
-     * The address of a stellar account is the public key of the key pair;
-     * The address of an ethereum account is a part of the hash of the public key
-     */
-    getAddress() {
-        switch(this.network) {
-            case 'stellar':
-                return this.account.publicKey()
-            case 'ethereum':
-                return this.account.address
-            default:
-                return null //If the network is not set correctly
+  /**
+   * Construct the transaction from the uri (stellar), and sign it with the current account
+   * Return the signed transaction
+   * For ethereum, take the transaction hash, and sign it;
+   * Use the getter to get the signed transaction
+   * @param {string} uri - the input uri (stellar); tx hash (ethereum)
+   */
+  async delegatedSigning(uri) {
+    try {
+      switch (this.network) {
+        case 'stellar': {
+          const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(uri.slice(19), 'base64');
+          // web+stellar:tx?xdr=... the xdr starts from position 19 of the string
+          const tx1 = new StellarSdk.Transaction(txEnvelope);
+          tx1.sign(this.account);
+          return tx1;
         }
-    }
-
-    /**
-     * Return the private key (ethereum) / secret (stellar)
-     */
-    getPrivateKey() {
-        switch(this.network) {
-            case 'stellar':
-                return this.account.secret()
-            case 'ethereum':
-                return this.account.privateKey
-            default:
-                return null //If the network is not set correctly
+        case 'ethereum': {
+          // tx '0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda'
+          const tx = await web3.eth.getTransaction(uri); // uri here is the transaction hash
+          return web3.eth.accounts.signTransaction(tx, this.getPrivateKey());
         }
+        default:
+          console.log('The network is not correct');
+          return null;
+      }
+    } catch (err) {
+      console.log('Error in delegated signing', err);
     }
+    return null;
+  }
 
+  /**
+   * Return the network where the account is.
+   */
+  getNetwork() {
+    return this.network;
+  }
+
+  /**
+   * Get the balance associated to this account.
+   * Currently only values for XLM and ETH are saved.
+   * i.e. there is no other types of currency.
+   */
+  getBalance() {
+    return this.balance;
+  }
+
+  /**
+   * Get transaction history in and out from this account.
+   * Currently it is the raw json response, and
+   * different between eth and stellar.
+   */
+  getHistory() {
+    return this.history;
+  }
+
+  /**
+   * Get the account that is passed into this wrapper class.
+   */
+  getOriginalAccount() {
+    return this.account;
+  }
+
+  /**
+   * The address of a stellar account is the public key of the key pair;
+   * The address of an ethereum account is a part of the hash of the public key
+   */
+  getAddress() {
+    switch (this.network) {
+      case 'stellar':
+        return this.account.publicKey();
+      case 'ethereum':
+        return this.account.address;
+      default:
+        console.log('The network is not set correctly.');
+        return null;
+    }
+  }
+
+  /**
+   * Return the private key (ethereum) / secret (stellar)
+   */
+  getPrivateKey() {
+    switch (this.network) {
+      case 'stellar':
+        return this.account.secret();
+      case 'ethereum':
+        return this.account.privateKey;
+      default:
+        console.log('The network is not set correctly.');
+        return null;
+    }
+  }
 }
 
 module.exports = account;
-
-
-
