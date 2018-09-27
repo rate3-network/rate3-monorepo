@@ -2,6 +2,15 @@ pragma solidity ^0.4.24;
 
 import "../../lib/ownership/Claimable.sol";
 
+/**
+ * @title A key-value store where the value is a generic DataRecord.
+ *
+ * @notice A single DataRecord can store uint256, string, boolean and address values.
+ *
+ * @dev Since block.timestamp is recorded for each DataRecord, to identify whether
+ * a DataRecord exist for a key-DataRecord pair is to check whether
+ * dataRecordedTimestamp > 0
+ */
 contract RegistryModule is Claimable {
     mapping (address => mapping(string => DataRecord)) private registry;
 

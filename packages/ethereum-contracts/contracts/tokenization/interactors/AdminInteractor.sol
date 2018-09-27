@@ -6,6 +6,14 @@ import "../shared/TokenInterface.sol";
 import "../shared/ProxySupportedERC20Interface.sol";
 import "../shared/ProxyInterface.sol";
 
+/**
+ * @title Contains admin functions for interactor.
+ *
+ * @notice
+ * - Set token and proxy contracts
+ * - Set admins for operations
+ * - Manage contracts owned by the interactor contract 
+ */
 contract AdminInteractor is Claimable {
     using SafeMath for uint256;
 
