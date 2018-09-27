@@ -14,9 +14,6 @@ require('chai')
   .use(require('chai-bignumber')(web3.BigNumber))
   .should();
 
-// ERC20 tests referenced from:
-// https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/token/ERC20/ERC20.test.js
-
 contract('CompliantToken Tests', function(accounts) {
 
     before(async function () {
@@ -30,7 +27,7 @@ contract('CompliantToken Tests', function(accounts) {
     const WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
     const BLACKLISTED = "BLACKLISTED";
 
-    describe('Test - token supply functions', function() {
+    describe('Test - compliance functions', function() {
         beforeEach(async function() {
             this.token = await CompliantToken.new({ from: owner });
 
