@@ -46,6 +46,7 @@ class UserMain extends React.Component {
   }
 
   componentDidMount() {
+    window.analytics.page('user');
     this.props.RootStore.userStore.initDb();
     this.props.RootStore.userStore.resetClaimLists();
 
@@ -172,6 +173,12 @@ class UserMain extends React.Component {
           onClose={userStore.closeRegisterSuccessModal.bind(userStore)}
           title={t('registrationSuccessTitle')}
           content={t('registrationSuccessContent')}
+        />
+        <SuccessModal
+          open={userStore.startedAddingClaim && userStore.finishedAddingClaim}
+          onClose={userStore.resetPublishClaim.bind(userStore)}
+          title={t('publicationSuccessTitle')}
+          content={t('publicationSuccessContent')}
         />
         <h1 className={classes.title}>My Identity</h1>
         <div className={classes.descriptionBox}>

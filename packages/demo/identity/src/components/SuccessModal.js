@@ -90,6 +90,7 @@ const SuccessModal = inject('RootStore')(observer((props) => {
                 classes={{
                   root: classes.buttonRoot,
                 }}
+                handleClick={props.onClose}
                 buttonText="Finish"
               />
             </div>

@@ -9,12 +9,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import KeyboardArrowDown from '@material-ui/icons/ArrowDropDown';
 import { inject, observer } from 'mobx-react';
-import Lens from '@material-ui/icons/Lens';
 import classNames from 'classnames';
 
 import { disabledBackgroundColor, borderColor, disabledIconColor, networkBoxBg, materialGrey, ropstenBg, ropstenDot, rinkebyBg, rinkebyDot, kovanBg, kovanDot } from '../constants/colors';
-import { verifierPrivKey, userPrivKey } from '../constants/defaults';
-
 
 const styles = theme => ({
   box: {

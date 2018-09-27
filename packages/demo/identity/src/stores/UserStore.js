@@ -38,7 +38,7 @@ class UserStore {
   @observable metamaskAccount: String = '';
   @observable metamaskBalance: String = '';
 
-  @observable registryContractAddr = '0x308f5f2786da8cbca59ac07fab78acc5cc8b3b9a';
+  @observable registryContractAddr = '0x121159a9a1731fec0690ac92a448795ac3f5d97d';
   @observable identityContractAddr = '';
   @observable userAddr = '';
   @observable fixedUserAddr = '0x900223b70CA6f78C44a3cDB810C08bBe43340EEC';
@@ -63,6 +63,10 @@ class UserStore {
 
   @observable startedLoadingClaims = false;
   @observable finishedLoadingClaims = false;
+
+  @observable signature = '';
+  @observable startedAddingClaim = false;
+  @observable finishedAddingClaim = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -116,7 +120,11 @@ class UserStore {
       if (claim.user === userAddress) this.socialIdClaimList.push(claim);
     });
   }
-
+  @action
+  resetPublishClaim() {
+    this.startedAddingClaim = false;
+    this.finishedAddingClaim = false;
+  }
   @action
   changeToMetaMaskAccount() {
     this.isOnFixedAccount = false;
@@ -159,12 +167,11 @@ class UserStore {
   }
 
   listenToNewIdentityEvent() {
-    
     const checkNewIdentity = () => {
       console.log('polling');
       this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         if (error) {
-          alert(error);
+          console.error(error);
         }
         if (events) {
           events.forEach((ev) => {
@@ -178,7 +185,34 @@ class UserStore {
       });
     };
     let polling = setInterval(checkNewIdentity, 1000);
-    
+    // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
+  }
+
+  listenToNewClaimEvent() {
+    const checkNewClaim = () => {
+      console.log('polling for new claim');
+      this.identityContract.getPastEvents('ClaimAdded', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
+        if (error) {
+          console.error(error);
+        }
+        if (events) {
+          events.forEach((ev) => {
+            if (ev.returnValues.signature === this.signature) {
+              console.log('cleared interval for polling new claim');
+              runInAction(() =>{ this.finishedAddingClaim = true; });
+              this.resetClaimLists();
+              this.getIdentities();
+              this.initDb();
+              this.populateClaimLists();
+              clearInterval(polling);
+              // window.location.reload();
+              
+            }
+          });
+        }
+      });
+    };
+    let polling = setInterval(checkNewClaim, 1000);
     // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
   }
 
@@ -334,9 +368,12 @@ class UserStore {
     let sig;
     console.log('line 197', userAddress);
     // window.web3.eth.personal.unlockAccount(userAddress, '195f61b04e113fc356f56074d3b397a83e8cf5c273a553c3baecb1fbce71de7e', 600).then(console.log);
+    this.startedAddingClaim = true;
+    this.listenToNewClaimEvent();
     if (!this.isOnFixedAccount) {
       window.web3.eth.personal.sign(dataToSign, userAddress, '').then((str) => {
         sig = str;
+        runInAction(() => { this.signature = sig; });
         console.log('signature is');
         console.log(str);
         window.identityContract.methods.addClaim(topic, 1, issuerAddr, sig, data, location)
@@ -347,7 +384,6 @@ class UserStore {
               if (result) {
                 console.log(result);
                 this.db.deleteClaim(addr, claim);
-                window.location.reload();
               }
             }
           );
@@ -355,6 +391,7 @@ class UserStore {
     } else {
       window.web3.eth.sign(dataToSign, userAddress).then((str) => {
         sig = str;
+        runInAction(() => { this.signature = sig; });
         console.log('signature is');
         console.log(str);
         window.identityContract.methods.addClaim(topic, 1, issuerAddr, sig, data, location)
@@ -365,7 +402,6 @@ class UserStore {
               if (result) {
                 console.log(result);
                 this.db.deleteClaim(addr, claim);
-                window.location.reload();
               }
             }
           );
@@ -404,6 +440,7 @@ class UserStore {
       }
     });
   }
+
   @action
   async initMetamaskNetwork() {
     this.rootStore.finishInitNetwork = false;

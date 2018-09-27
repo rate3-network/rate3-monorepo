@@ -174,19 +174,21 @@ const UserInfo = withStyles(styles)((props) => {
 });
 
 const Keys = withStyles(styles)((props) => {
-  const { classes } = props;
+  const { classes, isUser } = props;
   return (
-    <div className={classes.keys}>
-      <div className={classes.keyTitle}>
-        My Public Keys
+    !isUser &&
+      <div className={classes.keys}>
+        <div className={classes.keyTitle}>
+          My Public Keys
+        </div>
+        
+        <div>
+          <div className={classes.keyName}>Management Key  <Info className={classes.info} /></div>
+          <div className={classes.key}>0xb423...b292</div>
+          <div className={classes.keyName}>Signing Key  <Info className={classes.info} /></div>
+          <div className={classes.key}>0xb423...b292</div>
+        </div>
       </div>
-      <div>
-        <div className={classes.keyName}>Management Key  <Info className={classes.info} /></div>
-        <div className={classes.key}>0xb423...b292</div>
-        <div className={classes.keyName}>Signing Key  <Info className={classes.info} /></div>
-        <div className={classes.key}>0xb423...b292</div>
-      </div>
-    </div>
   );
 });
 
@@ -247,7 +249,7 @@ const HomeSidebar = observer((props) => {
             }
           />
         </div>
-        <Keys />
+        {/* <Keys isUser={props.RootStore.commonStore.getIsUser()}/> */}
         <div className={classes.bottomItems}><LanguageDropdown /><Settings /></div>
       </div>
     </Drawer>
