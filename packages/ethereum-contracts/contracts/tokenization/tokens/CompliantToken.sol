@@ -2,6 +2,11 @@ pragma solidity ^0.4.24;
 
 import "./ModularToken.sol";
 
+/**
+ * @title Adds compliance checks to various token actions.
+ *
+ * @dev String constants used as key across contracts should be consistent.
+ */
 contract CompliantToken is ModularToken {
 
     string public constant WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";

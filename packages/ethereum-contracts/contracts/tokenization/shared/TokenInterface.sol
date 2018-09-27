@@ -1,5 +1,8 @@
 pragma solidity ^0.4.24;
 
+/**
+ * @title Interface for BaseToken
+ */
 interface TokenInterface {
     function setBalanceModule(address _moduleAddress) external returns (bool);
     function setAllowanceModule(address _moduleAddress) external returns (bool);
@@ -21,8 +24,7 @@ interface TokenInterface {
         bool _booleanValue,
         address _managerAddress
     )
-        external
-    ;
+        external;
     function getDataRecord(
         address _forAddress,
         string _key
@@ -44,8 +46,7 @@ interface TokenInterface {
     )
         external
         view
-        returns (bool)
-    ;
+        returns (bool);
 
     function sweep(address _authorizer, address _from, address _to, uint256 _value) external;
     function pause() external;

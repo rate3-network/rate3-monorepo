@@ -4,6 +4,16 @@ import "../shared/ERC20.sol";
 import "../shared/ProxySupportedERC20Interface.sol";
 import "./ModularToken.sol";
 
+/**
+ * @title Proxy supported ERC20 token
+ *
+ * @notice Proxy forwarded calls to the token contains an additional sender
+ * parameter - msg.sender in this case is the proxy contract which is not
+ * the information that we need.
+ *
+ * @dev It is important that ONLY the proxy contract can call the '-withSender'
+ * functions. Only forwarded calls from the proxy set are accepted.
+ */
 contract ProxySupportedERC20Token is ModularToken, ProxySupportedERC20Interface {
 
     ERC20 proxy;

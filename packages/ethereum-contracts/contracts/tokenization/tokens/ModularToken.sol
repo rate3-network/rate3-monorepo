@@ -8,6 +8,16 @@ import "../modules/AllowanceModule.sol";
 import "../modules/BalanceModule.sol";
 import "../modules/RegistryModule.sol";
 
+/**
+ * @title Modular token that allows for interchangable modules for data storage.
+ *
+ * @notice ERC20-compatible and Pausable (public functions can be freezed).
+ *
+ * @dev Owner of modules should be set to this token contract. In addition,
+ * this token contract should be owned by an interactor contract, once setup
+ * is complete.
+ * Allows for sweeping of tokens from any account, accessible only by the Owner.
+ */
 contract ModularToken is ERC20, Claimable, Pausable {
     using SafeMath for uint256;
 
