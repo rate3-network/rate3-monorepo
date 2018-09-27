@@ -14,7 +14,6 @@ contract RegistryInteractor is AdminInteractor {
 
     string public constant WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
     string public constant WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
-    string public constant WHITELISTED_FOR_TRANSFER = "WHITELISTED_FOR_TRANSFER";
     string public constant BLACKLISTED = "BLACKLISTED";
 
     function whitelistForMint(address _address, bool _bool) public onlyAdmin {
@@ -33,18 +32,6 @@ contract RegistryInteractor is AdminInteractor {
         TokenInterface(token).setKeyDataRecord(
             _address,
             WHITELISTED_FOR_BURN,
-            0,
-            "",
-            address(0),
-            _bool,
-            msg.sender
-        );
-    }
-
-    function whitelistForTransfer(address _address, bool _bool) public onlyAdmin {
-        TokenInterface(token).setKeyDataRecord(
-            _address,
-            WHITELISTED_FOR_TRANSFER,
             0,
             "",
             address(0),

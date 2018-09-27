@@ -105,13 +105,17 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) public whenNotPaused returns (bool) {
-        require(_value <= balanceModule.balanceOf(msg.sender), "Insufficient balance");
+        return _transfer(msg.sender, _to, _value);
+    }
+
+    function _transfer(address _from, address _to, uint256 _value) internal returns (bool) {
+        require(_value <= balanceModule.balanceOf(_from), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
 
-        balanceModule.subBalance(msg.sender, _value);
+        balanceModule.subBalance(_from, _value);
         balanceModule.addBalance(_to, _value);
 
-        emit Transfer(msg.sender, _to, _value);
+        emit Transfer(_from, _to, _value);
         return true;
     }
 
@@ -127,11 +131,15 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _value The amount of tokens to be spent.
      */
     function approve(address _spender, uint256 _value) public whenNotPaused returns (bool) {
+        return _approve(msg.sender, _spender, _value);
+    }
+
+    function _approve(address _from, address _spender, uint256 _value) internal returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
 
-        allowanceModule.setAllowance(msg.sender, _spender, _value);
+        allowanceModule.setAllowance(_from, _spender, _value);
 
-        emit Approval(msg.sender, _spender, _value);
+        emit Approval(_from, _spender, _value);
         return true;
     }
 
@@ -142,11 +150,15 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _value uint256 the amount of tokens to be transferred.
      */
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
+        return _transferFrom(msg.sender, _from, _to, _value);
+    }
+
+    function _transferFrom(address _spender, address _from, address _to, uint256 _value) internal returns (bool) {
         require(_value <= balanceModule.balanceOf(_from), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
-        require(_value <= allowanceModule.allowanceOf(_from, msg.sender), "Insufficient allowance");
+        require(_value <= allowanceModule.allowanceOf(_from, _spender), "Insufficient allowance");
 
-        allowanceModule.subAllowance(_from, msg.sender, _value);
+        allowanceModule.subAllowance(_from, _spender, _value);
         balanceModule.subBalance(_from, _value);
         balanceModule.addBalance(_to, _value);
 
@@ -165,11 +177,15 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _addedValue The amount of tokens to increase the allowance by.
      */
     function increaseApproval(address _spender, uint256 _addedValue) public whenNotPaused returns (bool) {
+        return _increaseApproval(msg.sender, _spender, _addedValue);
+    }
+
+    function _increaseApproval(address _from, address _spender, uint256 _addedValue) internal returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
 
-        allowanceModule.addAllowance(msg.sender, _spender, _addedValue);
+        allowanceModule.addAllowance(_from, _spender, _addedValue);
 
-        emit Approval(msg.sender, _spender, allowanceModule.allowanceOf(msg.sender, _spender));
+        emit Approval(_from, _spender, allowanceModule.allowanceOf(_from, _spender));
         return true;
     }
 
@@ -184,17 +200,21 @@ contract ModularToken is ERC20, Claimable, Pausable {
      * @param _subtractedValue The amount of tokens to decrease the allowance by.
      */
     function decreaseApproval(address _spender, uint256 _subtractedValue) public whenNotPaused returns (bool) {
+        return _decreaseApproval(msg.sender, _spender, _subtractedValue);
+    }
+
+    function _decreaseApproval(address _from, address _spender, uint256 _subtractedValue) internal returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
 
-        uint256 oldValue = allowanceModule.allowanceOf(msg.sender, _spender);
+        uint256 oldValue = allowanceModule.allowanceOf(_from, _spender);
 
         if (_subtractedValue >= oldValue) {
-            allowanceModule.setAllowance(msg.sender, _spender, 0);
+            allowanceModule.setAllowance(_from, _spender, 0);
         } else {
-            allowanceModule.subAllowance(msg.sender, _spender, _subtractedValue);
+            allowanceModule.subAllowance(_from, _spender, _subtractedValue);
         }
 
-        emit Approval(msg.sender, _spender, allowanceModule.allowanceOf(msg.sender, _spender));
+        emit Approval(_from, _spender, allowanceModule.allowanceOf(_from, _spender));
         return true;
     }
 

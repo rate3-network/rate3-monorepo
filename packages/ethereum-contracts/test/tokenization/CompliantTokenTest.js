@@ -28,7 +28,6 @@ contract('CompliantToken Tests', function(accounts) {
     const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
     const WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
     const WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
-    const WHITELISTED_FOR_TRANSFER = "WHITELISTED_FOR_TRANSFER";
     const BLACKLISTED = "BLACKLISTED";
 
     describe('Test - token supply functions', function() {
@@ -210,6 +209,237 @@ contract('CompliantToken Tests', function(accounts) {
             );
 
             await this.token.burn(rest[0], 50, { from: owner });    
+        });
+
+        it('blacklisted address cannot transfer tokens as sender', async function() {
+            await this.token.setKeyDataRecord(
+                rest[0],
+                WHITELISTED_FOR_MINT,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+            // Mint tokens first
+            await this.token.mint(rest[0], 100, { from: owner });
+            // Transfer from rest[0] to rest[1]
+            await this.token.transfer(rest[1], 50, { from: rest[0] });
+
+            // Blacklist rest[0]
+            await this.token.setKeyDataRecord(
+                rest[0],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+
+            await assertRevert(this.token.transfer(rest[1], 50, { from: rest[0] }));
+
+            // Unblacklist rest[0]
+            await this.token.setKeyDataRecord(
+                rest[0],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                false,
+                owner,
+                { from: owner }
+            );
+
+            await this.token.transfer(rest[1], 50, { from: rest[0] });
+        });
+
+        it('blacklisted address cannot transfer tokens as receiver', async function() {
+            await this.token.setKeyDataRecord(
+                rest[0],
+                WHITELISTED_FOR_MINT,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+            // Mint tokens first
+            await this.token.mint(rest[0], 100, { from: owner });
+            // Transfer from rest[0] to rest[1]
+            await this.token.transfer(rest[1], 50, { from: rest[0] });
+
+            // Blacklist rest[1]
+            await this.token.setKeyDataRecord(
+                rest[1],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+
+            await assertRevert(this.token.transfer(rest[1], 50, { from: rest[0] }));
+
+            // Unblacklist rest[1]
+            await this.token.setKeyDataRecord(
+                rest[1],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                false,
+                owner,
+                { from: owner }
+            );
+
+            await this.token.transfer(rest[1], 50, { from: rest[0] });
+        });
+
+        it('blacklisted address cannot transferFrom tokens as spender', async function() {
+            await this.token.setKeyDataRecord(
+                rest[0],
+                WHITELISTED_FOR_MINT,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+            // Mint tokens first
+            await this.token.mint(rest[0], 100, { from: owner });
+            // Approve rest[1] to spend rest[0] token
+            await this.token.approve(rest[1], 100, { from: rest[0] });
+            // Transfer tokens from rest[0] to rest[2], as rest[1]
+            await this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] });
+
+            // Blacklist rest[1]
+            await this.token.setKeyDataRecord(
+                rest[1],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+
+            await assertRevert(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+
+            // Unblacklist rest[1]
+            await this.token.setKeyDataRecord(
+                rest[1],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                false,
+                owner,
+                { from: owner }
+            );
+
+            await this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] });
+        });
+
+        it('blacklisted address cannot transferFrom tokens as receiver', async function() {
+            await this.token.setKeyDataRecord(
+                rest[0],
+                WHITELISTED_FOR_MINT,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+            // Mint tokens first
+            await this.token.mint(rest[0], 100, { from: owner });
+            // Approve rest[1] to spend rest[0] token
+            await this.token.approve(rest[1], 100, { from: rest[0] });
+            // Transfer tokens from rest[0] to rest[2], as rest[1]
+            await this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] });
+
+            // Blacklist rest[2]
+            await this.token.setKeyDataRecord(
+                rest[1],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+
+            await assertRevert(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+
+            // Unblacklist rest[2]
+            await this.token.setKeyDataRecord(
+                rest[1],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                false,
+                owner,
+                { from: owner }
+            );
+
+            await this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] });
+        });
+
+        it('blacklisted address cannot transferFrom tokens as origin', async function() {
+            await this.token.setKeyDataRecord(
+                rest[0],
+                WHITELISTED_FOR_MINT,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+            // Mint tokens first
+            await this.token.mint(rest[0], 100, { from: owner });
+            // Approve rest[1] to spend rest[0] token
+            await this.token.approve(rest[1], 100, { from: rest[0] });
+            // Transfer tokens from rest[0] to rest[2], as rest[1]
+            await this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] });
+
+            // Blacklist rest[0]
+            await this.token.setKeyDataRecord(
+                rest[1],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                true,
+                owner,
+                { from: owner }
+            );
+
+            await assertRevert(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+
+            // Unblacklist rest[0]
+            await this.token.setKeyDataRecord(
+                rest[1],
+                BLACKLISTED,
+                0,
+                "",
+                ZERO_ADDRESS,
+                false,
+                owner,
+                { from: owner }
+            );
+
+            await this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] });
         });
     });
 
