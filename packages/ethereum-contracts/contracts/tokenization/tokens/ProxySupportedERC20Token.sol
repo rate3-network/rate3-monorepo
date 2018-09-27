@@ -17,7 +17,7 @@ contract ProxySupportedERC20Token is ModularToken, ProxySupportedERC20Interface 
         proxy = ERC20(_proxy);
     }
 
-    function transferWithSender(address _sender, address _to, uint256 _value) public onlyProxy returns (bool) {
+    function transferWithSender(address _sender, address _to, uint256 _value) public onlyProxy whenNotPaused returns (bool) {
         require(_value <= balanceModule.balanceOf(_sender), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
 
@@ -28,7 +28,7 @@ contract ProxySupportedERC20Token is ModularToken, ProxySupportedERC20Interface 
         return true;
     }
 
-    function approveWithSender(address _sender, address _spender, uint256 _value) public onlyProxy returns (bool) {
+    function approveWithSender(address _sender, address _spender, uint256 _value) public onlyProxy whenNotPaused returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
         
         allowanceModule.setAllowance(_sender, _spender, _value);
@@ -37,7 +37,7 @@ contract ProxySupportedERC20Token is ModularToken, ProxySupportedERC20Interface 
         return true;
     }
 
-    function transferFromWithSender(address _sender, address _from, address _to, uint256 _value) public onlyProxy returns (bool) {
+    function transferFromWithSender(address _sender, address _from, address _to, uint256 _value) public onlyProxy whenNotPaused returns (bool) {
         require(_value <= balanceModule.balanceOf(_from), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
         require(_value <= allowanceModule.allowanceOf(_from, _sender), "Insufficient allowance");
@@ -49,7 +49,7 @@ contract ProxySupportedERC20Token is ModularToken, ProxySupportedERC20Interface 
         emit Transfer(_from, _to, _value);
     }
 
-    function increaseApprovalWithSender(address _sender, address _spender, uint256 _addedValue) public onlyProxy returns (bool) {
+    function increaseApprovalWithSender(address _sender, address _spender, uint256 _addedValue) public onlyProxy whenNotPaused returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
 
         allowanceModule.addAllowance(_sender, _spender, _addedValue);
@@ -58,7 +58,7 @@ contract ProxySupportedERC20Token is ModularToken, ProxySupportedERC20Interface 
         return true;
     }
 
-    function decreaseApprovalWithSender(address _sender, address _spender, uint256 _subtractedValue) public onlyProxy returns (bool) {
+    function decreaseApprovalWithSender(address _sender, address _spender, uint256 _subtractedValue) public onlyProxy whenNotPaused returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
 
         uint256 oldValue = allowanceModule.allowanceOf(_sender, _spender);
