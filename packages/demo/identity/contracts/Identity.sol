@@ -1,6 +1,5 @@
 pragma solidity 0.4.24;
 
-import "./lifecycle/KeyDestructible.sol";
 import "./KeyGetters.sol";
 import "./KeyManager.sol";
 import "./MultiSig.sol";
@@ -14,7 +13,7 @@ import "./lib/KeyStore.sol";
  * @author Wu Di
  * @notice Identity contract implementing both ERC725 and ERC735
  */
-contract Identity is KeyManager, MultiSig, ClaimManager, KeyGetters, KeyDestructible {
+contract Identity is KeyManager, MultiSig, ClaimManager, KeyGetters {
     /**
      * @dev Constructor for Identity contract. The initial owner address
      *  will be set as the MANAGEMENT_KEY, ACTION_KEY and CLAIM_SIGNER_KEY
