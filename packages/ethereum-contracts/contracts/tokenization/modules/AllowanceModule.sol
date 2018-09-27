@@ -3,7 +3,9 @@ pragma solidity ^0.4.24;
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
 
-// A wrapper around the allowanceOf mapping.
+/**
+ * @title A wrapper around the allowanceOf mapping.
+ */
 contract AllowanceModule is Claimable {
     using SafeMath for uint256;
 

@@ -4,6 +4,10 @@ import "../shared/ERC20.sol";
 import "../shared/ProxySupportedERC20Interface.sol";
 import "./AdminProxy.sol";
 
+/**
+ * @title ERC20 Proxy contract that forwards ERC20 functionality to an actual
+ * token contract implementation.
+ */
 contract ERC20Proxy is ERC20, AdminProxy {
 
     /// @notice  Returns the name of the token.

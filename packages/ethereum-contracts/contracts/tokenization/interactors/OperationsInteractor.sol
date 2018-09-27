@@ -4,6 +4,11 @@ import "../../lib/math/SafeMath.sol";
 import "../shared/TokenInterface.sol";
 import "./AdminInteractor.sol";
 
+/**
+ * @title For tokenization operations such as minting and burning of tokens.
+ *
+ * @notice Operations flow: Request -> Approval by first admin -> Finalize by second admin
+ */
 contract OperationsInteractor is AdminInteractor {
     using SafeMath for uint256;
 

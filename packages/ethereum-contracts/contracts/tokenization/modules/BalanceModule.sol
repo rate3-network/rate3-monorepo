@@ -3,7 +3,9 @@ pragma solidity ^0.4.23;
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
 
-// A wrapper around the balanceOf mapping.
+/**
+ * @title A wrapper around the balanceOf mapping.
+ */
 contract BalanceModule is Claimable {
     using SafeMath for uint256;
 
