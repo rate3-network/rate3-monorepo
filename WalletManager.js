@@ -57,7 +57,7 @@ class WalletManager {
 
   /**
    * If the argument is empty, generate random seed phrases (12 words).
-   * If the arugment is a number, generate that number of seed phrases.
+   * If the argument is a number, generate that number of seed phrases.
    * If the argument is a string of seed phrases, use it.
    */
   setSeed() {
