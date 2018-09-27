@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-import "./lifecycle/KeyPausable.sol";
+import "./ownership/KeyManageable.sol";
 
 
 /**
@@ -9,7 +9,7 @@ import "./lifecycle/KeyPausable.sol";
  * @notice Implement add/remove functions from ERC725 spec
  * Inspired by Mircea Pasoi's implementation at https://github.com/mirceapasoi/erc725-735
  */
-contract KeyManager is KeyPausable {
+contract KeyManager is KeyManageable {
     /**
      * @dev Add key data to the identity if key + purpose tuple doesn't already exist
      * @param _key Key bytes to add
@@ -20,7 +20,6 @@ contract KeyManager is KeyPausable {
     function addKey(bytes32 _key, uint256 _purpose, uint256 _keyType)
         public
         onlyManagementOrSelf
-        whenNotPaused
         returns (bool success)
     {
         return executions.addKey(_key, _purpose, _keyType);
@@ -35,7 +34,6 @@ contract KeyManager is KeyPausable {
     function removeKey(bytes32 _key, uint256 _purpose)
         public
         onlyManagementOrSelf
-        whenNotPaused
         returns (bool success)
     {
         return executions.removeKey(_key, _purpose);

@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-import "./lifecycle/KeyPausable.sol";
+import "./ownership/KeyManageable.sol";
 import "./ERC/ERC725.sol";
 import "./ERC/ERC735.sol";
 import "./lib/ERC165Query.sol";
@@ -14,7 +14,7 @@ import "./lib/ClaimStore.sol";
  * @notice Implement functions from ERC735 spec
  * Inspired by Mircea Pasoi's implementation at https://github.com/mirceapasoi/erc725-735
  */
-contract ClaimManager is KeyPausable, ERC735 {
+contract ClaimManager is KeyManageable, ERC735 {
     using ERC165Query for address;
 
     using ClaimStore for ClaimStore.Claims;
@@ -49,7 +49,6 @@ contract ClaimManager is KeyPausable, ERC735 {
         string _uri
     )
         public
-        whenNotPaused
         returns (uint256 claimRequestId)
     {
         // Check signature
@@ -79,7 +78,6 @@ contract ClaimManager is KeyPausable, ERC735 {
      */
     function removeClaim(bytes32 _claimId)
         public
-        whenNotPaused
         onlyManagementOrSelfOrIssuer(_claimId)
         returns (bool success)
     {

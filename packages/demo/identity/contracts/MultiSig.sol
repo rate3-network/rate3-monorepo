@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-import "./lifecycle/KeyPausable.sol";
+import "./ownership/KeyManageable.sol";
 
 
 /**
@@ -9,7 +9,7 @@ import "./lifecycle/KeyPausable.sol";
  * @notice Implement execute and multi-sig functions from ERC725 spec
  * Inspired by Mircea Pasoi's implementation at https://github.com/mirceapasoi/erc725-735
  */
-contract MultiSig is KeyPausable {
+contract MultiSig is KeyManageable {
 
     event ExecutionFailed(
         uint256 indexed executionId,
@@ -26,7 +26,6 @@ contract MultiSig is KeyPausable {
      */
     function execute(address _to, uint256 _value, bytes _data)
         public
-        whenNotPaused
         returns (uint256 executionId)
     {
         return executions.add(_to, _value, _data);
@@ -47,7 +46,6 @@ contract MultiSig is KeyPausable {
      */
     function approve(uint256 _id, bool _approve)
         public
-        whenNotPaused
         returns (bool success)
     {
         return executions.approve(_id, _approve);
@@ -60,7 +58,6 @@ contract MultiSig is KeyPausable {
      */
     function changeManagementThreshold(uint threshold)
         public
-        whenNotPaused
         onlyManagementOrSelf
     {
         executions.changeManagementThreshold(threshold);
@@ -73,7 +70,6 @@ contract MultiSig is KeyPausable {
      */
     function changeActionThreshold(uint threshold)
         public
-        whenNotPaused
         onlyManagementOrSelf
     {
         executions.changeActionThreshold(threshold);
