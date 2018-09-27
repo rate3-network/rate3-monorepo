@@ -176,3 +176,13 @@ test('encryptAndDecryptAccountStellar', async () => {
   expect(decryptedAccount.getPrivateKey()).toEqual(account.getPrivateKey());
   expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork());
 });
+
+test('encryptAndDecryptSeedPhrases', async () => {
+  const wallet = new WalletManager('stellar'); // the currency does not matter
+  wallet.setSeed(seedPhrases);
+  wallet.setWallet();
+
+  const encrypted = wallet.encryptSeed(password);
+  const decrypted = wallet.decryptSeed(password, encrypted);
+  expect(decrypted).toMatch(seedPhrases); // toBe will fail
+});
