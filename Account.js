@@ -35,8 +35,8 @@ class Account {
   /**
    * This is for stellar only
    * @param {string} assetName
+   * @param {string} issuerPublickey
    * @param {string} limit
-   * @param {string} source
    * @returns {object|null} xdr.ChangeTrustOp if succeeds or null otherwise
    */
   async changeTrust(assetName, issuerPublickey, limit) {
