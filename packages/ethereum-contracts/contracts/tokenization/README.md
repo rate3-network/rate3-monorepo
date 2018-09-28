@@ -48,3 +48,15 @@ inheriting from other sub-contracts.
 
 ## Deploying Modules
 Module contracts should be deployed seperately.
+
+## Sample Deployment Steps
+1. Deploy module (Balance, Allowance, Registry) contracts
+2. Deploy BaseToken contract
+3. Deploy BaseProxy contract
+4. Deploy BaseInteractor contract
+5. Transfer ownership of modules to token contract
+6. Set modules to token contract
+7. Transfer ownership of token to interactor contract
+8. Transfer ownership of proxy to interactor contract
+9. Appoint 2 admin account addresses
+
