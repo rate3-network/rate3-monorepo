@@ -185,6 +185,8 @@ class Account {
   /**
    * This methods sets the history field of this account.
    * All the fields in the response are retained, in JSON format
+   * for users of this package to select.
+   * The format for Stellar and Ethereum are different.
    * @returns {JSON} the transaction history
    */
   async receive() {
@@ -246,6 +248,57 @@ class Account {
   }
 
   /**
+   * Request a challenge to verify this account from the end point
+   * @param {string} webAuthEndpoint - The url that is the web auth end point
+   * @returns the string of XDR endcoded transaction
+   */
+  async getAuthenticationChallenge(webAuthEndpoint) {
+    this.webAuthEndpoint = webAuthEndpoint;// save it for the post method
+    const options = {
+      uri: webAuthEndpoint,
+      qs: {
+        account: this.getAddress(),
+      },
+      json: true, // Automatically parses the JSON string in the response
+    };
+    const response = await rp(options);
+    return response.transaction;
+  }
+
+  /**
+   * Takes an XDR encoded transaction, build a transaction and sign it.
+   * @param {JSON} transaction
+   * @returns the signed transaction XDR encoded
+   */
+  signAuthenticationChallenge(transaction) {
+    // build the transaction
+    const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(transaction, 'base64');
+    const tx1 = new StellarSdk.Transaction(txEnvelope);
+    // sign it
+    tx1.sign(this.account);
+    return tx1.toEnvelope().toXDR('base64');
+  }
+
+  /**
+   * Send the signed transaction XDR to the server, which is saved before
+   * @param {string} signedTransaction - the XDR encoded signed transaction
+   * @returns the JWT token, if verification on the server is successful
+   * otherwise error message
+   */
+  async sendSignedAuthentication(signedTransaction) {
+    const options = {
+      method: 'POST',
+      uri: this.webAuthEndpoint,
+      body: {
+        transaction: signedTransaction,
+      },
+      json: true, // Automatically stringifies the body to JSON
+    };
+    const response = await rp(options);
+    return response;
+  }
+
+  /**
    * Return the network where the account is.
    * @returns the network where the account is
    */
@@ -284,7 +337,7 @@ class Account {
   /**
    * The address of a stellar account is the public key of the key pair;
    * The address of an ethereum account is a part of the hash of the public key
-   * @return the address
+   * @returns the address
    */
   getAddress() {
     switch (this.network) {

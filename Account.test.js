@@ -138,5 +138,4 @@ test('delegatedSigningEthereum', async () => {
 // readme: summary + ... + link to docs
 // Test cases + acceptable comments
 // CLI demo in all hands
-// encrypted seedphase
 // separate that burn fees
