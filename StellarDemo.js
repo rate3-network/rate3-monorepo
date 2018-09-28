@@ -25,17 +25,12 @@ async function receive() {
   console.log(history);
 }
 
-
-// const password = 'qwerty';
-// function demoEncryptSeedPhrases(pw) {
-//   const encrypted = wallet.encryptSeed(pw);
-//   console.log(encrypted);
-//   const decrypted = wallet.decryptSeed(pw, encrypted);
-//   console.log(decrypted);
-// }
-// demoEncryptSeedPhrases(password);
-// demoGetAccount();
-
+async function dSign() {
+  const sampleXDR = 'web+stellar:tx?xdr=AAAAABB90WssODNIgi6BHveqzxTRmIpvAFRyVNM+Hm2GVuCcAAAAZABiwhcABDcyAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAQkg8Q0RSZ6rszbhlMk1IzhdDpOiyLHwFxzmVAJ2j/GwAAAAXSHboAAAAAAAAAAABhlbgnAAAAECpFmDzmqsgjhVfZaDCR1T7QYWRwUdB76cEPpqtK3A0sP7oQADsCDtTju0I15yklPKnNXI8l1U2u8xo6Kwx3eQG';
+  const signedTx = await account0.delegatedSigning(sampleXDR);
+  console.log(signedTx);
+  console.log(signedTx.toEnvelope().toXDR('base64'));
+}
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -44,25 +39,30 @@ const rl = readline.createInterface({
 rl.on('line', (input) => {
   switch (input) {
     case '1': {
-      console.log(`Input：${input}`);
+      console.log(`Input：${input} Generate 12 seed phrases`);
       wallet.setSeed();
       wallet.setWallet();
-      console.log('Generate 12 seed phrases:\n', wallet.getSeed());
+      console.log(wallet.getSeed());
       break;
     }
     case '2': {
-      console.log(`Input：${input}`);
+      console.log(`Input：${input} Get 2 Accounts`);
       demoGetAccount();
       break;
     }
     case '3': {
-      console.log(`Input：${input}`);
+      console.log(`Input：${input} Send 100 XLM from account 0 to account 1`);
       send();
       break;
     }
     case '4': {
-      console.log(`Input：${input}`);
+      console.log(`Input：${input} Get transaction history of account 1`);
       receive();
+      break;
+    }
+    case '5': {
+      console.log(`Input：${input} Delegated Signing`);
+      dSign();
       break;
     }
     default:
