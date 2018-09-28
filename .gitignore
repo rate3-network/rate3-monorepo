@@ -3,7 +3,6 @@ node_modules/
 
 # jsdoc files
 out/
-Docs/
 
 # old js files
 wallet_back_up/
