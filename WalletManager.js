@@ -45,7 +45,7 @@ class WalletManager {
   }
 
   /**
-   * Return the name of the current network
+   * @returns {string} the name of the current network
    */
   getNetwork() {
     if (this.network == null) {
@@ -109,7 +109,7 @@ class WalletManager {
   }
 
   /**
-   * Return the current seed
+   * @return {string} the current seed
    */
   getSeed() {
     if (this.seed == null) {
@@ -138,7 +138,7 @@ class WalletManager {
   }
 
   /**
-   * Return the current wallet
+   * @returns {Object} the current wallet
    */
   getWallet() {
     if (this.wallet == null) {
@@ -156,7 +156,7 @@ class WalletManager {
    * Generate the account in the wallet. Its index is the number.
    * If the parameter is a string,
    * Use it as the private/public key to generate the account
-   * @returns the account created/imported
+   * @returns {Account} the account created/imported
    */
   async getAccount() {
     if (arguments.length === 0) {
@@ -256,7 +256,6 @@ class WalletManager {
   /**
    * Set the current account.
    * @param {number} index - The index of the account in the accountArray
-   * @returns null
    */
   setCurrentAccount(index) {
     const max = this.accountArray.length - 1;
@@ -272,7 +271,7 @@ class WalletManager {
    * The index of accounts in this array can be different from the index
    * of the account in the wallet,
    * depending on the sequence the accounts are created.
-   * @returns the array of accounts
+   * @returns {Array} the array of accounts
    */
   getAccountArray() {
     if (this.accountArray == null) {
@@ -380,7 +379,7 @@ class WalletManager {
    * Return an account, reconstructed from the cipher
    * The fields remain the same, but methods are not.
    * However, these methods will not be used, i.e. will use web3/stellar libraries.
-   * @returns the decrypted account
+   * @returns {Account} the decrypted account
    */
   decrypt(cipher, password) {
     switch (this.network) {
@@ -420,10 +419,3 @@ class WalletManager {
 }
 
 module.exports = WalletManager;
-
-// let w = new WalletManager('stellar');
-// w.setSeed('aspect body artist annual sketch know plug subway series noodle loyal word');
-// const enc = w.encryptSeed('password');
-// console.log(enc)
-// const dec = w.decryptSeed('password1', enc);
-// console.log(typeof dec);

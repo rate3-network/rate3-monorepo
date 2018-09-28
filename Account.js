@@ -248,27 +248,44 @@ class Account {
   }
 
   /**
+   * Currently for Stellar only
    * Request a challenge to verify this account from the end point
    * @param {string} webAuthEndpoint - The url that is the web auth end point
-   * @returns the string of XDR endcoded transaction
+   * @returns {string|null} the string of XDR endcoded transaction, or null if failed
    */
   async getAuthenticationChallenge(webAuthEndpoint) {
-    this.webAuthEndpoint = webAuthEndpoint;// save it for the post method
-    const options = {
-      uri: webAuthEndpoint,
-      qs: {
-        account: this.getAddress(),
-      },
-      json: true, // Automatically parses the JSON string in the response
-    };
-    const response = await rp(options);
-    return response.transaction;
+    try {
+      switch (this.network) {
+        case 'stellar': {
+          this.webAuthEndpoint = webAuthEndpoint;// save it for the post method
+          const options = {
+            uri: webAuthEndpoint,
+            qs: {
+              account: this.getAddress(),
+            },
+            json: true, // Automatically parses the JSON string in the response
+          };
+          const response = await rp(options);
+          return response.transaction;
+        }
+        case 'ethereum': {
+          console.log('Web authentication for Ethereum currently not required');
+          return null;
+        }
+        default:
+          console.log('The network is not correct');
+          return null;
+      }
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   /**
    * Takes an XDR encoded transaction, build a transaction and sign it.
    * @param {JSON} transaction
-   * @returns the signed transaction XDR encoded
+   * @returns {string|null}the signed transaction XDR encoded, or null if failed
    */
   signAuthenticationChallenge(transaction) {
     // build the transaction
@@ -282,20 +299,25 @@ class Account {
   /**
    * Send the signed transaction XDR to the server, which is saved before
    * @param {string} signedTransaction - the XDR encoded signed transaction
-   * @returns the JWT token, if verification on the server is successful
-   * otherwise error message
+   * @returns {object|null}the JWT token, if verification on the server is successful
+   * otherwise null
    */
   async sendSignedAuthentication(signedTransaction) {
-    const options = {
-      method: 'POST',
-      uri: this.webAuthEndpoint,
-      body: {
-        transaction: signedTransaction,
-      },
-      json: true, // Automatically stringifies the body to JSON
-    };
-    const response = await rp(options);
-    return response;
+    try {
+      const options = {
+        method: 'POST',
+        uri: this.webAuthEndpoint,
+        body: {
+          transaction: signedTransaction,
+        },
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   /**
@@ -310,7 +332,7 @@ class Account {
    * Get the balance associated to this account.
    * Currently only values for XLM and ETH are saved.
    * i.e. there is no other types of currency.
-   * @returns the balance associated to this account.
+   * @returns {string} the balance associated to this account in string format.
    */
   getBalance() {
     return this.balance;
@@ -320,7 +342,7 @@ class Account {
    * Get transaction history in and out from this account.
    * Currently it is the raw json response, and
    * different between eth and stellar.
-   * @returns transaction history in and out from this account
+   * @returns {JSON} transaction history in and out from this account
    */
   getHistory() {
     return this.history;
@@ -328,7 +350,7 @@ class Account {
 
   /**
    * Get the account that is passed into this wrapper class.
-   * @returns the account that is passed into this wrapper class
+   * @returns {object} the account that is passed into this wrapper class
    */
   getOriginalAccount() {
     return this.account;
@@ -337,7 +359,7 @@ class Account {
   /**
    * The address of a stellar account is the public key of the key pair;
    * The address of an ethereum account is a part of the hash of the public key
-   * @returns the address
+   * @returns {string} the address
    */
   getAddress() {
     switch (this.network) {
@@ -353,7 +375,7 @@ class Account {
 
   /**
    * Return the private key (ethereum) / secret (stellar)
-   * @returns the private key
+   * @returns {string} the private key
    */
   getPrivateKey() {
     switch (this.network) {

@@ -9,13 +9,19 @@ These instructions will get you a copy of the project up and running on your loc
 1. Clone or download the repo.
 2. Run `npm install` in this directory in the command line.
 ## Running the tests
-Tests are wirtten using [Jest](https://jestjs.io/) library.
-Run `npm test` to run all the tests.
-
+* Tests are wirtten using [Jest](https://jestjs.io/) library.
+* Run `npm test` to run all the tests.
+* You can configure it in the `package.json` file, or by adding arguments to the command.
+* From the test cases you can see how to use this package.
 ## Documentation
-Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.
-Run the following command to create the documentation `jsdoc Account.js WalletManager.js`.
-The documentation is in the `out` folder, and can be viewed in the browser.
+* [Documentation](Docs/index.html)
+* Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.
+* Run the following command to create the documentation `jsdoc Account.js WalletManager.js`.
+* The documentation is in the `out` or `Docs` folder, and can be viewed in the browser.
+### Development Plan
+* [Development Plan](https://drive.google.com/open?id=1dW2DiS1rvbvnWDNURoTbekyViuE3FPY7)
+* My current progress is at the end of Phase 2.
+* By the end of my internship, my plan is to complete phase 4.
 ## Built With
 * [bip39](https://www.npmjs.com/package/bip39) - Mnemonic code for generating deterministic keys
 * [ethereumjs-wallet](https://www.npmjs.com/package/ethereumjs-wallet) - A lightweight Ethereum wallet implementation
