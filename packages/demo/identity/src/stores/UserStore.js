@@ -32,7 +32,7 @@ class UserStore {
   @observable currentNetwork: String = 'Detecting Network...';
   @observable isMetaMaskLoggedIn: Boolean = false;
   // if on fixed account, use network settings from commonstore
-  @observable isOnFixedAccount: Boolean = false;
+  @observable isOnFixedAccount: Boolean = true;
 
   @observable fixedUserAcctNetwork: String = 'Ropsten';
 
@@ -130,7 +130,7 @@ class UserStore {
   @action
   changeToMetaMaskAccount() {
     this.isOnFixedAccount = false;
-    window.localStorage.setItem('accountType', 'metamast');
+    window.localStorage.setItem('accountType', 'metamask');
     console.log('changing to metamask account in user store');
   }
   @action

@@ -70,7 +70,7 @@ class App extends React.Component {
     }
   }
   componentDidMount() {
-    RootStore.initNetwork();
+    // RootStore.initNetwork();
     
     if (window.localStorage.accountType === 'fixed') {
       RootStore.userStore.changeToFixedAccount();

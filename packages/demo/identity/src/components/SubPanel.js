@@ -7,7 +7,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { observer, inject } from 'mobx-react';
 
-import { identityHeavyGrey, pendingTextColor, identityBlue } from '../constants/colors';
+import { identityHeavyGrey, pendingTextColor, identityBlue, pendintSigGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import Rate3LogoSmall from '../assets/Rate3LogoSmall.svg';
@@ -110,7 +110,7 @@ const styles = theme => ({
     cursor: 'pointer',
   },
   pending: {
-    paddingLeft: '3em',
+    color: pendintSigGrey,
   },
   addButton: {
     marginLeft: 'auto',
@@ -279,15 +279,12 @@ class SubPanel extends React.Component {
                 {/* data */}
                 <div className={classes.data}>{this.props.item.value}</div>
                 {/* signature */}
-                <div className={classes.data}>{truncateAddress(this.props.item.signature, 10)}</div>
+                <div className={classes.data}>{
+                  this.props.item.signature ?
+                    truncateAddress(this.props.item.signature, 10):
+                    <div className={classes.pending}>Pending</div>
+                }</div>
 
-                
-                {this.props.item.status === PENDING_REVIEW &&
-                  <div className={classes.pending}>Pending</div>
-                }
-                {this.props.item.status === PENDING_ADD &&
-                  <div className={classes.data}>{this.props.item.signature}</div>
-                }
               </div>
             </div>
           </ExpansionPanelDetails>

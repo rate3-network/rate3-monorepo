@@ -151,11 +151,11 @@ class OnboardStepper extends React.Component {
     const SetupWalletList = inject('RootStore')(observer((props) => {
       console.log('is on fixed account? : ', this.props.RootStore.userStore.isOnFixedAccount);
       if (this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount) {
-        
         return (
           <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} />
         );
       }
+      this.props.RootStore.commonStore.completeSetupWallet();
       return (
         <CheckList list={onboardSteps[activeStep].listForFixedAccount} network={this.props.RootStore.currentNetwork} />
       );
