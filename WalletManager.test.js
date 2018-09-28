@@ -115,6 +115,8 @@ test('setAccountEthereum', async () => {
 });
 
 test('setAccountStellar', async () => {
+  jest.setTimeout(30000);// the default timeout is 5000ms
+
   const wallet = new WalletManager('stellar');
   wallet.setSeed(seedPhrases);
   wallet.setWallet();
@@ -125,6 +127,7 @@ test('setAccountStellar', async () => {
 
   expect(account.getPrivateKey()).toBe(expectedPrivateKey);
   expect(account.getAddress()).toBe(expectedPublicKey);
+  expect(account.getBalance()).toBe('15000.0000000');
 
   expectedPrivateKey = 'SCHDEOGWKZYYHDTCQFEXMQ3VVDCOZIUBVSJN4DGTOCB5FCCKBYQEG4PA';
   expectedPublicKey = 'GCUTV7FC4GITQI6KJASMKH7WX3NTDLNUBHFZNXVJB4DJGGTUL6I7XAVT';

@@ -184,21 +184,21 @@ class WalletManager {
           return null;
       }
     }
-    if (arguments.length === 1 && Number.isInteger(arguments[0]) && arguments[0] > 1) {
+    if (arguments.length === 1 && Number.isInteger(arguments[0]) && arguments[0] >= 0) {
       // generate the account of the wallet at the specified index
       switch (this.network) {
         case 'stellar': {
           this.account = new Account(this.network);
           await this.account.setAccount(this.wallet.getKeypair(arguments[0]));
           this.accountArray.push(Object.assign({}, this.account));
-          break;
+          return this.account;
         }
         case 'ethereum': {
           const privateKey = `0x${this.wallet.deriveChild(arguments[0]).getWallet()._privKey.toString('hex')}`;
           this.account = new Account(this.network);
           await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey));
           this.accountArray.push(Object.assign({}, this.account));
-          break;
+          return this.account;
         }
         default:
           this.account = null;
@@ -304,7 +304,7 @@ class WalletManager {
     cipher.finish();
     const encrypted = cipher.output;
     // outputs encrypted hex
-    console.log(encrypted.toHex());
+    // console.log(encrypted.toHex());
     return encrypted;
   }
 
@@ -320,7 +320,7 @@ class WalletManager {
     decipher.update(encrypted);
     // const result = decipher.finish(); // check 'result' for true/false
     // outputs decrypted hex
-    console.log(decipher.output.toHex());
+    // console.log(decipher.output.toHex());
     return decipher.output.data;
   }
 

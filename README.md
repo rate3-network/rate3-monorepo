@@ -14,10 +14,9 @@ These instructions will get you a copy of the project up and running on your loc
 * You can configure it in the `package.json` file, or by adding arguments to the command.
 * From the test cases you can see how to use this package.
 ## Documentation
-* [Documentation](Docs/index.html)
 * Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.
 * Run the following command to create the documentation `jsdoc Account.js WalletManager.js`.
-* The documentation is in the `out` or `Docs` folder, and can be viewed in the browser.
+* The [documentation](Docs/index.html) is in the `out` or `Docs` folder. You can view it in the browser.
 ### Development Plan
 * [Development Plan](https://drive.google.com/open?id=1dW2DiS1rvbvnWDNURoTbekyViuE3FPY7)
 * My current progress is at the end of Phase 2.

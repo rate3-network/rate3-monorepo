@@ -86,14 +86,14 @@ class Account {
       case 'stellar':
         this.account = originalAccount;
         await this.loadBalance(this.getAddress());
-        if (this.balance === '0.0000000') {
+        if (this.balance === '0.0000000' || this.balance === undefined) {
           try {
             await rp({
               url: 'https://friendbot.stellar.org',
               qs: { addr: this.getAddress() },
               json: true,
             });
-            this.balance = await this.loadBalance(this.getAddress());
+            await this.loadBalance(this.getAddress());
           } catch (err) {
             console.log(err);
           }

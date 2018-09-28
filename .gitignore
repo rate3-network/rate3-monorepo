@@ -1,9 +1,6 @@
 # npm modules
 node_modules/
 
-# jsdoc files
-out/
-
 # old js files
 wallet_back_up/
 
@@ -16,6 +13,8 @@ wallet_back_up/
 # js files
 promiseTest.js
 sendTest.js
+hellonode.js
+demo.html
 
 coverage/
 .eslintrc
