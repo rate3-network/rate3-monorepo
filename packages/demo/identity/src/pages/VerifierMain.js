@@ -45,8 +45,17 @@ class VerifierMain extends React.Component {
     this.props.RootStore.verifierStore.initDb();
     this.props.RootStore.verifierStore.resetClaimLists();
     this.props.RootStore.verifierStore.populateClaimLists();
+    when(
+      () => this.props.RootStore.finishInitNetwork,
+      () => {
+        console.log('adding to wallet');
+    const account = window.web3.eth.accounts.wallet.add('0xdee21b0158a640ec97638aafa4b4dc3da04e3e314cdfc6835d52029ada3dc4ba');
+    console.log(window.web3.eth.accounts.wallet);
+        this.props.RootStore.verifierStore.getRegistryContract();
+      },
+    );
   }
- 
+
   render() {
     const { classes, t, RootStore } = this.props;
     const { verifierStore } = RootStore;

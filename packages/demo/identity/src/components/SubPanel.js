@@ -7,13 +7,14 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { observer, inject } from 'mobx-react';
 
-import { identityHeavyGrey, pendingTextColor } from '../constants/colors';
+import { identityHeavyGrey, pendingTextColor, identityBlue } from '../constants/colors';
 import BlueButton from './BlueButton';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import Rate3LogoSmall from '../assets/Rate3LogoSmall.svg';
 import addedIcon from '../assets/addedIcon.svg';
 import pendingIcon from '../assets/pendingIcon.svg';
 import ether from '../assets/ether.svg';
+import { truncateAddress } from '../utils/index';
 
 const styles = theme => ({
   root: {
@@ -60,6 +61,9 @@ const styles = theme => ({
   pendingText: {
     color: pendingTextColor,
   },
+  publishedText: {
+    color: identityBlue,
+  },
   status: {
     fontSize: '0.8em',
     fontWeight: '500',
@@ -95,6 +99,15 @@ const styles = theme => ({
     textOverflow: 'ellipsis',
     maxWidth: '10em',
     color: identityHeavyGrey,
+  },
+  transaction: {
+    paddingLeft: '3em',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    maxWidth: '10em',
+    color: identityHeavyGrey,
+    textDecoration: 'underline',
+    cursor: 'pointer',
   },
   pending: {
     paddingLeft: '3em',
@@ -138,6 +151,10 @@ class SubPanel extends React.Component {
     this.props.RootStore.verifierStore.openVerificationModal();
   }
 
+  handleRemove() {
+    console.log(this.props.item);
+  }
+
   handleExpand() {
     this.setState({
       expanded: !this.state.expanded,
@@ -179,8 +196,32 @@ class SubPanel extends React.Component {
         />
       </div>);
     });
-    
 
+    const RemoveButton = withStyles(styles)((props) => {
+      return (
+      <div>
+        <BlueButton 
+          className={classes.buttonContainer}
+          fontSize="0.7em"
+          lineHeight="1em"
+          fontWeight={500}
+          buttonText="remove"
+          iconHeight="0.8em"
+        />
+      </div>);
+    });
+    const getEtherScanLink = (hash) => {
+      switch (this.props.RootStore.currentNetwork) {
+        case 'Kovan':
+          return `https://kovan.etherscan.io/tx/${hash}`;
+        case 'Ropsten':
+          return `https://ropsten.etherscan.io/tx/${hash}`;
+        case 'Rinkeby':
+          return `https://rinkeby.etherscan.io/tx/${hash}`;
+        default:
+          return '';
+      }
+    };
     return (
       <div className={classes.root}>
         <ExpansionPanel
@@ -191,11 +232,11 @@ class SubPanel extends React.Component {
             <div className={classes.paperContainer}>
               <div>
                 <div className={classes.title}>
-                  <div className={classes.titleText}>{this.props.item.value}</div><p> </p><img className={classes.smallLogo} src={Rate3LogoSmall} alt="Rate3 Logo Small" />
+                  <div className={classes.titleText}>{this.props.item.verifier}</div><p> </p><img className={classes.smallLogo} src={Rate3LogoSmall} alt="Rate3 Logo Small" />
                 </div>
                 <div className={classes.status}>
                   {this.props.item.status === VERIFIED &&
-                    <div  className={classes.pendingText}><img className={classes.smallLogo} src={addedIcon} alt="icon" /> Added</div>
+                    <div className={classes.publishedText}>Published</div>
                   }
                   {this.props.item.status === PENDING_REVIEW &&
                     <div className={classes.pendingText}><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Pending Review</div>
@@ -205,11 +246,14 @@ class SubPanel extends React.Component {
                   }
                 </div>
               </div>
-              {this.props.isUser && this.props.item.status === PENDING_ADD &&
+              {this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim && 
                 <div onClick={this.handleAdd.bind(this)} className={classes.addButton}><AddButton /></div>
               }
               {!this.props.isUser && this.props.item.status === PENDING_REVIEW &&
                 <div onClick={this.handleVerify.bind(this)} className={classes.addButton}><VerifyButton /></div>
+              }
+              {this.props.isUser && this.props.item.status === VERIFIED && !this.props.RootStore.userStore.startedAddingClaim && 
+                <div onClick={this.handleRemove.bind(this)} className={classes.addButton}><RemoveButton /></div>                
               }
             </div>
             
@@ -224,11 +268,18 @@ class SubPanel extends React.Component {
               </div>
               <div className={classes.contentCol}>
                 {/* transaction hash */}
-                {this.props.item.status === VERIFIED && <div className={classes.data}>{'this.props.item.txHash'}</div>}
+                {this.props.item.status === VERIFIED &&
+                  <div
+                    className={classes.transaction}
+                    onClick={() => { window.open(getEtherScanLink(this.props.item.txHash), '_blank'); }}
+                  >
+                    {truncateAddress(this.props.item.txHash, 10)}
+                  </div>
+                }
                 {/* data */}
                 <div className={classes.data}>{this.props.item.value}</div>
                 {/* signature */}
-                <div className={classes.data}>{'signature'}</div>
+                <div className={classes.data}>{truncateAddress(this.props.item.signature, 10)}</div>
 
                 
                 {this.props.item.status === PENDING_REVIEW &&

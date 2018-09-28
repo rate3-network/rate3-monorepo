@@ -1,14 +1,14 @@
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
 class Identity {
-  constructor(value, type, user, verifier, status = PENDING_REVIEW) {
+  constructor(value, type, user, verifier, signature, txHash, status = PENDING_REVIEW) {
     this.value = value;
     this.type = type;
     this.user = user;
     this.verifier = verifier;
     this.status = status;
-    this.signature = '';
-    this.txHash = '';
+    this.signature = signature;
+    this.txHash = txHash;
   }
 
   approveIdentity(sig) {

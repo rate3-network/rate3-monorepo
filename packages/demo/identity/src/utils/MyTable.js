@@ -51,6 +51,7 @@ class MyTable {
       user,
       verifier,
       status,
+      signature: '',
     };
     console.log('this.table', this.table);
     console.log('this.table type ', typeof this.table)
@@ -79,9 +80,10 @@ class MyTable {
     return this.table.find((claim) => {return claim.id === `${userAddr}.${value}`});
   }
 
-  approveClaim(userAddr, value) {
+  approveClaim(userAddr, value, signature) {
     const claimIndex = this.table.findIndex((claim) => {return claim.id === `${userAddr}.${value}`});
     this.table[claimIndex].status = PENDING_ADD;
+    this.table[claimIndex].signature = signature;
     this.saveTable();
   }
 

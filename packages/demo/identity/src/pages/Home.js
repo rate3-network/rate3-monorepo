@@ -39,9 +39,9 @@ class Home extends React.Component {
         <HomeSidebar />
         <div className={classes.main}>
           <Switch>
-            <Route path="/user" component={UserMain} />
-            <Route path="/verifier" component={VerifierMain} />
-            <Route path="/faq" component={Faq} />
+            <Route  path="/user" component={UserMain} />
+            <Route  path="/verifier" component={VerifierMain} />
+            <Route  path="/faq" component={Faq} />
           </Switch>
         </div>
       </div>

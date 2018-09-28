@@ -8,7 +8,7 @@ import {
 import CommonStore from './CommonStore';
 import UserStore from './UserStore';
 import VerifierStore from './VerifierStore';
-import { userPrivKey, verifierPrivKey } from '../constants/defaults';
+import { fixedUserPrivKey, fixedVerifierPrivKey } from '../constants/defaults';
 
 class RootStore {
   constructor() {
@@ -55,13 +55,17 @@ class RootStore {
     }
     if (this.commonStore.getIsUser() && this.userStore.isOnFixedAccount) {
       this.commonStore.initCommonNetwork();
-      window.web3.eth.accounts.wallet.add(userPrivKey);
+      // window.web3.eth.accounts.wallet.add(userPrivKey);
+      window.web3.eth.accounts.wallet.add(fixedUserPrivKey); // user
       console.log('init user fixed network from root store');
       return;
     }
     if (!this.commonStore.getIsUser()) {
       this.commonStore.initCommonNetwork();
-      window.web3.eth.accounts.wallet.add(verifierPrivKey);
+      // window.web3.eth.accounts.wallet.add(verifierPrivKey);
+      // console.log('adding to wallet');
+      window.web3.eth.accounts.wallet.add(fixedVerifierPrivKey); // verifier
+    // console.log(window.web3.eth.accounts.wallet);
       console.log('init verifier fixed network from root store');
     }
   }

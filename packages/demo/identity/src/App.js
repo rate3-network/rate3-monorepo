@@ -1,7 +1,8 @@
 import { I18nextProvider } from 'react-i18next';
 import React from 'react';
 import { Provider, observer, autorun } from 'mobx-react';
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Route, Switch, Redirect } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import './App.css';
@@ -49,6 +50,7 @@ const styles = themes => ({
 const stores = {
   RootStore,
 };
+const history = createBrowserHistory();
 
 @observer
 class App extends React.Component {
@@ -92,11 +94,11 @@ class App extends React.Component {
         <I18nextProvider i18n={i18next}>
           <Provider {...stores}>
             <MuiThemeProvider theme={theme}>
-            <GlobalSpinner />
-              <BrowserRouter basename="#">
+              <GlobalSpinner />
+              <HashRouter basename="/" >
                 <Switch>
                   <Route
-                    path="/"
+                    exact
                     render={() => {
                       if (RootStore.commonStore.getIsUser() && RootStore.commonStore.getIsUserOnboardDone()) {
                         return <Home />;
@@ -108,7 +110,7 @@ class App extends React.Component {
                     }}
                   />
                 </Switch>
-              </BrowserRouter>
+              </HashRouter>
             </MuiThemeProvider>
           </Provider>
         </I18nextProvider>

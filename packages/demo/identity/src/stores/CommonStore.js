@@ -169,6 +169,19 @@ class CommonStore {
     this.commonNetwork = network;
     window.web3.setProvider(contractAddresses[network].endpoint);
     window.localStorage.setItem('commonNetwork', this.commonNetwork);
+    switch (network) {
+      case 'Ropsten':
+        //do something
+        break;
+      case 'Ropsten':
+        //do something
+        break;
+      case 'Ropsten':
+        //do something
+        break;
+      default:
+        //do something
+    }
   }
 
   @action
@@ -186,7 +199,8 @@ class CommonStore {
   initCommonNetwork() {
     this.rootStore.finishInitNetwork = false;
     console.log('init common network');
-    const web3 = new Web3(new Web3.providers.WebsocketProvider(ropsten.endpoint));
+    // const web3 = new Web3(new Web3.providers.WebsocketProvider(ropsten.endpoint));
+    const web3 = new Web3(ropsten.endpoint);
     window.web3 = web3;
     console.log(`web3js version: ${window.web3.version}`);
     if (typeof localStorage.commonNetwork !== 'undefined') {
