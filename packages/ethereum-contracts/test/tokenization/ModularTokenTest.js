@@ -161,20 +161,18 @@ contract('Modular Token Tests', function(accounts) {
             (await this.token.balanceOf(rest[0])).should.be.bignumber.equal(100);
         });
 
-        // it('mint event emitted', async function() {
-        //     const { logs } = await this.token.mint(rest[0], 100, { from: owner });
+        it('mint event emitted', async function() {
+            const { logs } = await this.token.mint(rest[0], 100, { from: owner });
 
-        //     const event1 = expectEvent.inLogs(logs, 'Mint', {
-        //         to: rest[0],
-        //         value: 100,
-        //     });
+            const event1 = expectEvent.inLogs(logs, 'Mint', {
+                to: rest[0],
+            });
 
-        //     const event2 = expectEvent.inLogs(logs, 'Transfer', {
-        //         from: ZERO_ADDRESS,
-        //         to: rest[0],
-        //         value: 100,
-        //     });
-        // });
+            const event2 = expectEvent.inLogs(logs, 'Transfer', {
+                from: ZERO_ADDRESS,
+                to: rest[0],
+            });
+        });
 
         it('only owner can burn', async function() {
             // mint 100 first
@@ -200,23 +198,21 @@ contract('Modular Token Tests', function(accounts) {
             (await this.token.balanceOf(rest[0])).should.be.bignumber.equal(50);
         });
 
-        // it('burn event emitted', async function() {
-        //     // mint 100 first
-        //     await this.token.mint(rest[0], 100, { from: owner });
+        it('burn event emitted', async function() {
+            // mint 100 first
+            await this.token.mint(rest[0], 100, { from: owner });
 
-        //     const { logs } = await this.token.burn(rest[0], 100, { from: owner });
+            const { logs } = await this.token.burn(rest[0], 100, { from: owner });
 
-        //     const event1 = expectEvent.inLogs(logs, 'Burn', {
-        //         from: rest[0],
-        //         value: 100,
-        //     });
+            const event1 = expectEvent.inLogs(logs, 'Burn', {
+                from: rest[0],
+            });
 
-        //     const event2 = expectEvent.inLogs(logs, 'Transfer', {
-        //         from: rest[0],
-        //         to: ZERO_ADDRESS,
-        //         value: 100,
-        //     });
-        // });
+            const event2 = expectEvent.inLogs(logs, 'Transfer', {
+                from: rest[0],
+                to: ZERO_ADDRESS,
+            });
+        });
     });
     
     describe('Test - registry functions', function() {
