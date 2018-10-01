@@ -82,39 +82,75 @@ contract CompliantToken is ModularToken {
         return super._transferFrom(_spender, _from, _to, _value);
     }
 
+    /**
+     * @notice Check if address is whitelisted for mint.
+     *
+     * @param _address The address to check.
+     * 
+     * @return Boolean on address is whitelisted for mint.
+     */
     function isWhitelistedForMint(address _address) public view returns (bool) {
+        bool hasRecord = registryModule.getKey(_address, WHITELISTED_FOR_MINT);
+
+        if (!hasRecord) {
+            return false;
+        }
+
         uint256 integerValue;
         string memory stringValue;
         address addressValue;
         bool booleanValue;
         address managerAddress;
         uint256 recordTimestamp;
-        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp)
-            = registryModule.getDataRecord(_address, WHITELISTED_FOR_MINT);
+        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp) = registryModule.getDataRecord(_address, WHITELISTED_FOR_MINT);
         return booleanValue;
     }
 
+    /**
+     * @notice Check if address is whitelisted for burn.
+     *
+     * @param _address The address to check.
+     * 
+     * @return Boolean on address is whitelisted for burn.
+     */
     function isWhitelistedForBurn(address _address) public view returns (bool) {
+        bool hasRecord = registryModule.getKey(_address, WHITELISTED_FOR_BURN);
+
+        if (!hasRecord) {
+            return false;
+        }
+
         uint256 integerValue;
         string memory stringValue;
         address addressValue;
         bool booleanValue;
         address managerAddress;
         uint256 recordTimestamp;
-        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp)
-            = registryModule.getDataRecord(_address, WHITELISTED_FOR_BURN);
+        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp) = registryModule.getDataRecord(_address, WHITELISTED_FOR_BURN);
         return booleanValue;
     }
 
+    /**
+     * @notice Check if address is blacklisted.
+     *
+     * @param _address The address to check.
+     * 
+     * @return Boolean on address is blacklisted.
+     */
     function isBlacklisted(address _address) public view returns (bool) {
+        bool hasRecord = registryModule.getKey(_address, BLACKLISTED);
+
+        if (!hasRecord) {
+            return false;
+        }
+
         uint256 integerValue;
         string memory stringValue;
         address addressValue;
         bool booleanValue;
         address managerAddress;
         uint256 recordTimestamp;
-        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp)
-            = registryModule.getDataRecord(_address, BLACKLISTED);
+        (integerValue, stringValue, addressValue, booleanValue, managerAddress, recordTimestamp) = registryModule.getDataRecord(_address, BLACKLISTED);
         return booleanValue;
     }
 }

@@ -1,9 +1,9 @@
 pragma solidity ^0.4.24;
 
 import "../../lib/ownership/Claimable.sol";
-import "../shared/TokenInterface.sol";
-import "../shared/ProxySupportedERC20Interface.sol";
-import "../shared/ProxyInterface.sol";
+import "../interfaces/TokenInterface.sol";
+import "../interfaces/ProxySupportedERC20Interface.sol";
+import "../interfaces/ProxyInterface.sol";
 
 /**
  * @title Contains admin functions for interactor.
@@ -60,7 +60,7 @@ contract AdminInteractor is Claimable {
     /**
      * @notice Set token contract attached to interactor.
      *
-     * @param _address Token contract address.
+     * @param _newTokenContract Token contract address.
      */
     function setToken(address _newTokenContract) public onlyOwner {
         token = _newTokenContract;
@@ -77,7 +77,7 @@ contract AdminInteractor is Claimable {
     /**
      * @notice Set proxy contract attached to interactor.
      *
-     * @param _address Proxy contract address.
+     * @param _newProxyContract Proxy contract address.
      */
     function setProxy(address _newProxyContract) public onlyOwner {
         proxy = _newProxyContract;

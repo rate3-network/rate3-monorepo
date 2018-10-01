@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-import "../shared/TokenInterface.sol";
+import "../interfaces/TokenInterface.sol";
 import "./AdminInteractor.sol";
 
 /**
