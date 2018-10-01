@@ -12,6 +12,9 @@ import { inject, observer } from 'mobx-react';
 import classNames from 'classnames';
 
 import { disabledBackgroundColor, borderColor, disabledIconColor, materialGrey } from '../constants/colors';
+import MetamaskIcon from '../assets/metamask.svg';
+import OnboardingWalletIcon from '../assets/OnboardingWallet.svg';
+
 
 const styles = theme => ({
   box: {
@@ -75,6 +78,9 @@ const styles = theme => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
+  },
+  itemText: {
+    whiteSpace: 'pre',
   },
   selectMenu: {
     padding: '0.83em 2.5em 0 1em',
@@ -148,7 +154,7 @@ class AccountTypeDropdown extends React.Component {
               classes={{
                 selectMenu: classNames({ [classes.selectMenu]: !isOnSidebar }, { [classes.sidebarSelectMenu]: isOnSidebar }),
                 icon: classes.selectIconDisabled,
-                select: classes.select,
+                select: classNames(classes.select, { [classes.selectSidebar]: isOnSidebar }),
               }}
             >
               {accountTypes.map((item) => {
@@ -162,7 +168,8 @@ class AccountTypeDropdown extends React.Component {
                       }}
                     >
                       <div className={classes.menuIconWithText}>
-                        <div className={classes.itemText}>{item.label}</div>
+                        {item.value === 'metamask' ? <img style={{ height: '1em' }} src={MetamaskIcon} alt="metamask" /> : <img style={{ height: '1em' }} src={OnboardingWalletIcon} alt="metamask" />}
+                        <div className={classes.itemText}> {item.label}</div>
                       </div>
                     </MenuItem>
                   );
@@ -206,7 +213,8 @@ class AccountTypeDropdown extends React.Component {
                     }}
                   >
                     <div className={classes.menuIconWithText}>
-                      <div className={classes.itemText}>{item.label}</div>
+                      {item.value === 'metamask' ? <img style={{ height: '1em' }} src={MetamaskIcon} alt="metamask" /> : <img style={{ height: '1em' }} src={OnboardingWalletIcon} alt="metamask" />}
+                      <div className={classes.itemText}> {item.label}</div>
                     </div>
                   </MenuItem>
                 );
