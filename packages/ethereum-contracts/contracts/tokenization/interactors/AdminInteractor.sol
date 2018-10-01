@@ -1,9 +1,9 @@
 pragma solidity ^0.4.24;
 
 import "../../lib/ownership/Claimable.sol";
-import "../shared/TokenInterface.sol";
-import "../shared/ProxySupportedERC20Interface.sol";
-import "../shared/ProxyInterface.sol";
+import "../interfaces/TokenInterface.sol";
+import "../interfaces/ProxySupportedERC20Interface.sol";
+import "../interfaces/ProxyInterface.sol";
 
 /**
  * @title Contains admin functions for interactor.

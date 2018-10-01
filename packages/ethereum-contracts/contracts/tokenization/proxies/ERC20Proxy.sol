@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "../shared/ERC20.sol";
-import "../shared/ProxySupportedERC20Interface.sol";
+import "../interfaces/ERC20.sol";
+import "../interfaces/ProxySupportedERC20Interface.sol";
 import "./AdminProxy.sol";
 
 /**

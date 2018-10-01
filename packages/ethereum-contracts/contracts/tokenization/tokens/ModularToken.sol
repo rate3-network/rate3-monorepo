@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 import "../../lib/math/SafeMath.sol";
 import "../../lib/ownership/Claimable.sol";
 import "../../lib/lifecycle/Pausable.sol";
-import "../shared/ERC20.sol";
+import "../interfaces/ERC20.sol";
 import "../modules/AllowanceModule.sol";
 import "../modules/BalanceModule.sol";
 import "../modules/RegistryModule.sol";
