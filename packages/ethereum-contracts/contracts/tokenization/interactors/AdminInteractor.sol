@@ -60,7 +60,7 @@ contract AdminInteractor is Claimable {
     /**
      * @notice Set token contract attached to interactor.
      *
-     * @param _address Token contract address.
+     * @param _newTokenContract Token contract address.
      */
     function setToken(address _newTokenContract) public onlyOwner {
         token = _newTokenContract;
@@ -77,7 +77,7 @@ contract AdminInteractor is Claimable {
     /**
      * @notice Set proxy contract attached to interactor.
      *
-     * @param _address Proxy contract address.
+     * @param _newProxyContract Proxy contract address.
      */
     function setProxy(address _newProxyContract) public onlyOwner {
         proxy = _newProxyContract;
