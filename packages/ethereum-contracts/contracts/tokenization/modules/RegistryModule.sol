@@ -34,6 +34,17 @@ contract RegistryModule is Claimable {
         uint256 dataRecordedTimestamp
     );
     
+    /**
+     * @notice Set key data record in registry module for a particular address.
+     *
+     * @param _forAddress The address to be associated with the data record.
+     * @param _key The string value for key.
+     * @param _integerValue The integer value, 0 default.
+     * @param _stringValue The string value, '' default.
+     * @param _addressValue The address value, address(0) default.
+     * @param _booleanValue The boolean value, false default.
+     * @param _managerAddress Manager address that added this data record.
+     */
     function setKeyDataRecord(
         address _forAddress,
         string _key,
@@ -67,6 +78,12 @@ contract RegistryModule is Claimable {
         );
     }
 
+    /**
+     * @notice Get key data record in registry module for a particular address.
+     *
+     * @param _forAddress The address associated with the data record.
+     * @param _key The string value for key.
+     */
     function getDataRecord(
         address _forAddress,
         string _key
@@ -93,7 +110,14 @@ contract RegistryModule is Claimable {
         );
     }
 
-
+    /**
+     * @notice Check if key exist.
+     *
+     * @param _forAddress The address associated with the data record.
+     * @param _key The string value for key.
+     * 
+     * @return Key exist with a data record.
+     */
     function getKey(
         address _forAddress,
         string _key

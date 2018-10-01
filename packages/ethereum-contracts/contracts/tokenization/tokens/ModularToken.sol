@@ -37,7 +37,8 @@ contract ModularToken is ERC20, Claimable, Pausable {
 
 
     /**
-     * @dev Set the BalanceModule.
+     * @notice Set the BalanceModule.
+     *
      * @param _moduleAddress The address of the BalanceModule.
      */
     function setBalanceModule(address _moduleAddress) public onlyOwner returns (bool) {
@@ -48,7 +49,8 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev Set the AllowanceModule.
+     * @notice Set the AllowanceModule.
+     *
      * @param _moduleAddress The address of the AllowanceModule.
      */
     function setAllowanceModule(address _moduleAddress) public onlyOwner returns (bool) {
@@ -59,7 +61,8 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev Set the RegistryModule.
+     * @notice Set the RegistryModule.
+     *
      * @param _moduleAddress The address of the RegistryModule.
      */
     function setRegistryModule(address _moduleAddress) public onlyOwner returns (bool) {
@@ -69,20 +72,28 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return true;
     }
 
+    /**
+     * @notice Transfers _contractAddress contract owned by this contract to
+     * msg.sender (which is limited to only the owner of this contract).
+     *
+     * @param _contractAddress The contract to transfer ownership.
+     */
     function transferContractOwnership(address _contractAddress) public onlyOwner {
         Claimable(_contractAddress).transferOwnership(msg.sender);
     }
 
     /**
-     * @dev ERC20 functionality - Gets the total number of tokens in existence.
+     * @notice ERC20 functionality - Gets the total number of tokens in existence.
      */
     function totalSupply() public view returns (uint256) {
         return totalSupply_;
     }
 
     /**
-     * @dev ERC20 functionality - Gets the balance of the specified address.
+     * @notice ERC20 functionality - Gets the balance of the specified address.
+     *
      * @param _owner The address to query the the balance of.
+     *
      * @return A uint256 representing the amount owned by the passed address.
      */
     function balanceOf(address _owner) public view returns (uint256 balance) {
@@ -90,9 +101,11 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev ERC20 functionality - Check the amount of tokens that an owner approved for a spender.
+     * @notice ERC20 functionality - Check the amount of tokens that an owner approved for a spender.
+     *
      * @param _owner address The address which owns the funds.
      * @param _spender address The address which will spend the funds.
+     *
      * @return A uint256 specifying the amount of tokens still available for the spender.
      */
     function allowance(address _owner, address _spender) public view returns (uint256) {
@@ -100,7 +113,8 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev ERC20 functionality - Transfer tokens for a specified address.
+     * @notice ERC20 functionality - Transfer tokens for a specified address.
+     *
      * @param _to The address to transfer to.
      * @param _value The amount to be transferred.
      */
@@ -108,6 +122,13 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return _transfer(msg.sender, _to, _value);
     }
 
+    /**
+     * @notice Internal function to include the _from address.
+     *
+     * @param _from The address to transfer from.
+     * @param _to The address to transfer to.
+     * @param _value The amount to be transferred.
+     */
     function _transfer(address _from, address _to, uint256 _value) internal returns (bool) {
         require(_value <= balanceModule.balanceOf(_from), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
@@ -120,9 +141,9 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev ERC20 functionality - Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
+     * @notice ERC20 functionality - Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
      *
-     * Beware that changing an allowance with this method brings the risk that someone may use both the old
+     * @dev Beware that changing an allowance with this method brings the risk that someone may use both the old
      * and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
      * race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
      * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
@@ -134,6 +155,13 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return _approve(msg.sender, _spender, _value);
     }
 
+    /**
+     * @notice Internal function to include the _from address.
+     *
+     * @param _from The address which is the source of funds.
+     * @param _spender The address which will spend the funds.
+     * @param _value The amount of tokens to be spent.
+     */
     function _approve(address _from, address _spender, uint256 _value) internal returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
 
@@ -144,15 +172,24 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev ERC20 functionality - Transfer tokens from one address to another.
-     * @param _from address The address which you want to send tokens from
-     * @param _to address The address which you want to transfer to.
-     * @param _value uint256 the amount of tokens to be transferred.
+     * @notice ERC20 functionality - Transfer tokens from one address to another.
+     *
+     * @param _from The address which you want to send tokens from.
+     * @param _to The address which you want to transfer to.
+     * @param _value The amount of tokens to be transferred.
      */
     function transferFrom(address _from, address _to, uint256 _value) public whenNotPaused returns (bool) {
         return _transferFrom(msg.sender, _from, _to, _value);
     }
 
+    /**
+     * @notice Internal function to include spender.
+     *
+     * @param _spender The address which is spending this transaction.
+     * @param _from The address which you want to send tokens from.
+     * @param _to The address which you want to transfer to.
+     * @param _value The amount of tokens to be transferred.
+     */
     function _transferFrom(address _spender, address _from, address _to, uint256 _value) internal returns (bool) {
         require(_value <= balanceModule.balanceOf(_from), "Insufficient balance");
         require(_to != address(0), "Transfer to 0x0 address is not allowed");
@@ -167,12 +204,13 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev Increase the amount of tokens that an owner allowed to a spender.
+     * @notice Increase the amount of tokens that an owner allowed to a spender.
      *
-     * approve should be called when allowed[_spender] == 0. To increment
+     * @dev approve should be called when allowed[_spender] == 0. To increment
      * allowed value is better to use this function to avoid 2 calls (and wait until
      * the first transaction is mined)
      * From MonolithDAO Token.sol
+     *
      * @param _spender The address which will spend the funds.
      * @param _addedValue The amount of tokens to increase the allowance by.
      */
@@ -180,6 +218,13 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return _increaseApproval(msg.sender, _spender, _addedValue);
     }
 
+    /**
+     * @notice Internal function to include _from address.
+     *
+     * @param _from The address which is the source of funds.
+     * @param _spender The address which will spend the funds.
+     * @param _addedValue The amount of tokens to increase the allowance by.
+     */
     function _increaseApproval(address _from, address _spender, uint256 _addedValue) internal returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
 
@@ -190,12 +235,13 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev Decrease the amount of tokens that an owner allowed to a spender.
+     * @notice Decrease the amount of tokens that an owner allowed to a spender.
      *
-     * approve should be called when allowed[_spender] == 0. To decrement
+     * @dev approve should be called when allowed[_spender] == 0. To decrement
      * allowed value is better to use this function to avoid 2 calls (and wait until
      * the first transaction is mined)
      * From MonolithDAO Token.sol
+     *
      * @param _spender The address which will spend the funds.
      * @param _subtractedValue The amount of tokens to decrease the allowance by.
      */
@@ -203,6 +249,13 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return _decreaseApproval(msg.sender, _spender, _subtractedValue);
     }
 
+    /**
+     * @notice Internal function to include _from address.
+     *
+     * @param _from The address which is the source of funds.
+     * @param _spender The address which will spend the funds.
+     * @param _subtractedValue The amount of tokens to decrease the allowance by.
+     */
     function _decreaseApproval(address _from, address _spender, uint256 _subtractedValue) internal returns (bool) {
         require(_spender != address(0), "Spender cannot be 0x0 address");
 
@@ -219,7 +272,8 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev Burns a specific amount of tokens.
+     * @notice Burns a specific amount of tokens.
+     *
      * @param _from The address that tokens will be burned from.
      * @param _value The amount of token to be burned.
      * @return A boolean that indicates if the operation was successful.
@@ -236,9 +290,11 @@ contract ModularToken is ERC20, Claimable, Pausable {
     }
 
     /**
-     * @dev Function to mint tokens.
+     * @notice Function to mint tokens.
+     *
      * @param _to The address that will receive the minted tokens.
      * @param _value The amount of tokens to mint.
+     *
      * @return A boolean that indicates if the operation was successful.
      */
     function mint(address _to, uint256 _value) public onlyOwner returns (bool) {
@@ -250,6 +306,17 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return true;
     }
 
+    /**
+     * @notice Set key data record in registry module for a particular address.
+     *
+     * @param _forAddress The address to be associated with the data record.
+     * @param _key The string value for key.
+     * @param _integerValue The integer value, 0 default.
+     * @param _stringValue The string value, '' default.
+     * @param _addressValue The address value, address(0) default.
+     * @param _booleanValue The boolean value, false default.
+     * @param _managerAddress Manager address that added this data record.
+     */
     function setKeyDataRecord(
         address _forAddress,
         string _key,
@@ -273,6 +340,12 @@ contract ModularToken is ERC20, Claimable, Pausable {
         );
     }
 
+    /**
+     * @notice Get key data record in registry module for a particular address.
+     *
+     * @param _forAddress The address associated with the data record.
+     * @param _key The string value for key.
+     */
     function getDataRecord(
         address _forAddress,
         string _key
@@ -291,6 +364,14 @@ contract ModularToken is ERC20, Claimable, Pausable {
         return registryModule.getDataRecord(_forAddress, _key);
     }
 
+    /**
+     * @notice Check if key exist.
+     *
+     * @param _forAddress The address associated with the data record.
+     * @param _key The string value for key.
+     * 
+     * @return Key exist with a data record.
+     */
     function getKey(
         address _forAddress,
         string _key
