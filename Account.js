@@ -388,6 +388,55 @@ class Account {
         return null;
     }
   }
+
+  // Phase 3 Anchor Bridge SEP-0006 the client consumes the API
+
+  /**
+   * Deposit external assets with an anchor.
+   * Parameter descriptions are from SEP-0006.
+   * The parameter naming follows SEP-0006, and does not use camel case
+   * @param {string} url - the url of this get request, without slash at the end
+   * @param {string} asset_code - The code of the asset the user is wanting to deposit with
+   * the anchor. Ex BTC,ETH,USD,INR,etc
+   * @param {string} account - (optional) type of memo that anchor should attach to the Stellar
+   *  payment transaction, one of text, id or hash
+   * @param {string} memo_type - The stellar account ID of the user that wants to deposit.
+   * This is where the asset token will be sent.
+   * @param {string} memo - (optional) value of memo to attach to transaction,
+   * for hash this should be base64-encoded.
+   * @param {string} email_address - (optional) Email address of depositor.
+   * If desired, an anchor can use this to send email updates to the user about the deposit.
+   * @param {string} type - (optional) Type of deposit. If the anchor supports
+   *  multiple deposit methods (e.g. SEPA or SWIFT), the wallet should specify type.
+   */
+  async getDeposit(url, asset_code, account, memo_type = '', memo = '', email_address = '', type = '') {
+    this.anchorUrl = url;
+    try {
+      // verifies that the parameters are valid
+      if (account.charAt(0) !== 'G') {
+        console.log('The account must start with letter G.');
+        return null;
+      }
+      const options = {
+        method: 'POST',
+        uri: `${this.anchorUrl}/deposit`,
+        body: {
+          asset_code,
+          account,
+          memo_type,
+          memo,
+          email_address,
+          type,
+        },
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }
 
 module.exports = Account;

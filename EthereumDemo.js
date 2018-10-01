@@ -11,10 +11,14 @@ const seedPhrases = 'cement once add carbon fan awake tree long fresh crew prope
 
 let account0 = null;
 let account1 = null;
+
 async function demoGetAccount() {
   account0 = await wallet.getAccount();
+  // const newIndex = getRandomInt(50, 500);
+  // console.log('Account 0 is created in advance, because I need testnet Ether');
   console.log('Account 0', account0.getAddress(), account0.getPrivateKey(), account0.getBalance());
   account1 = await wallet.getAccount(1);
+  // console.log(`Creating a new account at ${newIndex}`);
   console.log('Account 1', account1.getAddress(), account1.getPrivateKey(), account1.getBalance());
 }
 
@@ -34,8 +38,17 @@ async function receive() {
 async function dSign() {
   const sampleTxHash = '0x4c1341c2f96492a89438e377f2adb8d3756ba71758b37ca1b18a125ff2fdb9ef';
   const signedTx = await account0.delegatedSigning(sampleTxHash);
-  console.log(signedTx);
-  console.log(web3.eth.accounts.recoverTransaction(signedTx.rawTransaction));
+  console.log('signed Tx', signedTx);
+  console.log('Signing address', web3.eth.accounts.recoverTransaction(signedTx.rawTransaction));
+}
+
+function encDec() {
+  const password = 'qwerty';
+  const wrongPassword = 'qwert?';
+  console.log('Password: ', password);
+  console.log('Encrypt then decrypt correctly: ', wallet.decryptSeed(password, wallet.encryptSeed(password)));
+  console.log('Wrong password: ', wrongPassword);
+  console.log('Encrypt then decrypt wrongly: ', wallet.decryptSeed(wrongPassword, wallet.encryptSeed(password)));
 }
 
 const rl = readline.createInterface({
@@ -45,7 +58,7 @@ const rl = readline.createInterface({
 rl.on('line', (input) => {
   switch (input) {
     case '1': {
-      console.log(`Input：${input} Generate 12 seed phrases`);
+      console.log(`Input：${input} Load 12 seed phrases`);
       wallet.setSeed(seedPhrases);
       wallet.setWallet();
       console.log(wallet.getSeed());
@@ -69,6 +82,11 @@ rl.on('line', (input) => {
     case '5': {
       console.log(`Input：${input} Delegated Signing`);
       dSign();
+      break;
+    }
+    case '6': {
+      console.log(`Input：${input} Encrypt Seed`);
+      encDec();
       break;
     }
     default:

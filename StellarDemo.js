@@ -7,9 +7,12 @@ const wallet = new WalletManager('stellar');
 
 let account0 = null;
 let account1 = null;
+let envelopeXDR = null;
+
 async function demoGetAccount() {
   account0 = await wallet.getAccount();
   console.log('Account 0', account0.getAddress(), account0.getPrivateKey(), account0.getBalance());
+
   account1 = await wallet.getAccount(1);
   console.log('Account 1', account1.getAddress(), account1.getPrivateKey(), account1.getBalance());
 }
@@ -18,6 +21,7 @@ async function send() {
   // console.log(account0, account1);
   const response = await account0.send(account1.getAddress(), '100');
   console.log('Response hash and xdr', response.hash, response.envelope_xdr);
+  envelopeXDR = response.envelope_xdr;
 }
 
 async function receive() {
@@ -26,7 +30,7 @@ async function receive() {
 }
 
 async function dSign() {
-  const sampleXDR = 'web+stellar:tx?xdr=AAAAABB90WssODNIgi6BHveqzxTRmIpvAFRyVNM+Hm2GVuCcAAAAZABiwhcABDcyAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAQkg8Q0RSZ6rszbhlMk1IzhdDpOiyLHwFxzmVAJ2j/GwAAAAXSHboAAAAAAAAAAABhlbgnAAAAECpFmDzmqsgjhVfZaDCR1T7QYWRwUdB76cEPpqtK3A0sP7oQADsCDtTju0I15yklPKnNXI8l1U2u8xo6Kwx3eQG';
+  const sampleXDR = `web+stellar:tx?xdr=${envelopeXDR}`;
   const signedTx = await account0.delegatedSigning(sampleXDR);
   console.log(signedTx);
   console.log(signedTx.toEnvelope().toXDR('base64'));
