@@ -13,6 +13,7 @@ import UserInstructions from '../components/user/UserInstructions';
 import RegistrationModal from '../components/user/RegistrationModal';
 import SuccessModal from '../components/SuccessModal';
 import LoadingModal from '../components/LoadingModal';
+import ReOnboardModal from '../components/ReOnboardModal';
 import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
@@ -46,14 +47,27 @@ class UserMain extends React.Component {
   }
 
   componentDidMount() {
+    if (window.localStorage.accountType === 'fixed') {
+      this.props.RootStore.userStore.changeToFixedAccount();
+      this.props.RootStore.initNetwork();
+      console.log('changing to fixed account');
+    } else if (window.localStorage.accountType === 'metamask') {
+      this.props.RootStore.userStore.changeToMetaMaskAccount();
+      this.props.RootStore.initNetwork();
+      console.log('changing to metamask');
+    } else {
+      this.props.RootStore.initNetwork();
+    }
+
     window.analytics.page('user');
     this.props.RootStore.userStore.initDb();
     this.props.RootStore.userStore.resetClaimLists();
 
-    
+    // Initilize MetaMask Account, get claims from smart contract
     when(
-      () => !this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitNetwork,
+      () => !this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitMetamaskNetwork,
       () => {
+        console.log('getting claims from blockchain');
         this.props.RootStore.userStore.getUserAddr();
         const contract = new window.web3.eth.Contract(
           identityRegistryJson.abi,
@@ -63,10 +77,20 @@ class UserMain extends React.Component {
         window.registryContract = contract;
       },
     );
+    when(
+      () => this.props.RootStore.userStore.userAddr && this.props.RootStore.finishInitMetamaskNetwork,
+      () => {
+        console.log('getting identites for ', this.props.RootStore.userStore.userAddr);
+        this.props.RootStore.userStore.populateClaimLists();
+        this.props.RootStore.userStore.getIdentities();
+      },
+    );
 
+    // Initilize Fixed Account, get claims from smart contract
     when(
       () => this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitNetwork,
       () => {
+        
         const contract = new window.web3.eth.Contract(
           identityRegistryJson.abi,
           this.props.RootStore.userStore.registryContractAddr,
@@ -79,14 +103,7 @@ class UserMain extends React.Component {
       },
     );
     // const fixedAccountReady = this.
-    when(
-      () => this.props.RootStore.userStore.userAddr && this.props.RootStore.finishInitNetwork,
-      () => {
-        console.log('getting identites');
-        this.props.RootStore.userStore.populateClaimLists();
-        this.props.RootStore.userStore.getIdentities();
-      },
-    );
+    
 
   }
 
@@ -134,7 +151,7 @@ class UserMain extends React.Component {
 
   render() {
     const { classes, t, RootStore } = this.props;
-    const { userStore } = RootStore;
+    const { userStore, commonStore } = RootStore;
     const instructionLength = 4;
     return (
       <div className={classes.container}>
@@ -154,7 +171,8 @@ class UserMain extends React.Component {
         <LoadingModal open={userStore.startedDeployingIdentity && !userStore.finishedDeployingIdentity} subText="Please wait while your Rate3 identity is deploying">
           Deploying Contract...
         </LoadingModal>
-
+        {/* <ReOnboardModal open={RootStore.startInitMetamaskNetwork && !RootStore.finishInitMetamaskNetwork} /> */}
+        <ReOnboardModal open={RootStore.reonboardModalIsShowing} />
         <LoadingModal open={userStore.startedLoadingClaims && !userStore.finishedLoadingClaims}>
           Loading Claims...
         </LoadingModal>

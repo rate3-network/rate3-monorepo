@@ -11,7 +11,7 @@ import KeyboardArrowDown from '@material-ui/icons/ArrowDropDown';
 import { inject, observer } from 'mobx-react';
 import classNames from 'classnames';
 
-import { disabledBackgroundColor, borderColor, disabledIconColor, networkBoxBg, materialGrey, ropstenBg, ropstenDot, rinkebyBg, rinkebyDot, kovanBg, kovanDot } from '../constants/colors';
+import { disabledBackgroundColor, borderColor, disabledIconColor, materialGrey } from '../constants/colors';
 
 const styles = theme => ({
   box: {
@@ -84,6 +84,9 @@ const styles = theme => ({
   },
   selectIcon: {
     padding: '0.3em 0.5em',
+  },
+  selectIconDisabled: {
+    padding: '0.3em 0.5em',
     color: disabledIconColor,
   },
 });
@@ -101,6 +104,8 @@ class AccountTypeDropdown extends React.Component {
     if (e.target.value === 'metamask') {
       this.props.RootStore.userStore.changeToMetaMaskAccount();
       this.props.RootStore.initNetwork();
+      // this.props.RootStore.userStore.initMetamaskNetwork();
+      // this.props.RootStore.commonStore.checkMetamaskNetwork();
     } else {
       this.props.RootStore.userStore.changeToFixedAccount();
       this.props.RootStore.initNetwork();
@@ -109,7 +114,11 @@ class AccountTypeDropdown extends React.Component {
   handleSidebarClick = (e) => {
     if (e.target.value === 'metamask') {
       this.props.RootStore.userStore.changeToMetaMaskAccount();
-      this.props.RootStore.initNetwork();
+      if (this.props.isOnSidebar) {
+        this.props.RootStore.userStore.openReOnboardModal();
+      } else {
+        this.props.RootStore.initNetwork();
+      }
     } else {
       this.props.RootStore.userStore.changeToFixedAccount();
       this.props.RootStore.initNetwork();
@@ -138,7 +147,7 @@ class AccountTypeDropdown extends React.Component {
               }}
               classes={{
                 selectMenu: classNames({ [classes.selectMenu]: !isOnSidebar }, { [classes.sidebarSelectMenu]: isOnSidebar }),
-                icon: classes.selectIcon,
+                icon: classes.selectIconDisabled,
                 select: classes.select,
               }}
             >

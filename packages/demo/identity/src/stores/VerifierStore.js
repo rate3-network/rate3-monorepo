@@ -18,7 +18,7 @@ class VerifierStore {
   /* JSDOC: MARK START OBSERVABLE */
   @observable userSelected: String = null;
   @observable currentTab: Number = 0;
-  @observable verifierModalIsShowing = true;
+  @observable verifierModalIsShowing = false;
   @observable verifierModalHasBeenViewed = false;
   @observable modalPage: Number = 0;
 

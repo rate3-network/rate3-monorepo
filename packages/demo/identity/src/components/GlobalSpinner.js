@@ -27,7 +27,7 @@ const GlobalSpinner = inject('RootStore')(observer((props) => {
       className={classes.modal}
       aria-labelledby="simple-modal-title"
       aria-describedby="simple-modal-description"
-      open={props.RootStore.globalSpinnerIsShowing}
+      open={props.RootStore.startInitNetwork && !props.RootStore.finishInitNetwork}
     >
       <CircularProgress className={classes.spinner} size={200} />
     </Modal>

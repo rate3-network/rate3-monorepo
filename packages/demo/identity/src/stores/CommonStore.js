@@ -3,6 +3,7 @@ import {
   observable,
   action,
   computed,
+  runInAction,
 } from 'mobx';
 import Web3 from 'web3';
 import { ropsten, rinkeby, kovan, local, contractAddresses } from '../constants/addresses';
@@ -22,6 +23,16 @@ class CommonStore {
   @observable setupWalletProgress: Array = [false, false, false, false];
   @observable shouldRenderOnboardTransition: Boolean = false;
 
+
+  @observable isMetamaskEnabled = false;
+  @observable isMetamaskSignedIn = false;
+  @observable isOnTestNet = false;
+  @observable hasTestEther = false;
+
+  @observable metamaskAccount = '';
+  @observable metamaskCurrentNetwork = '';
+  @observable metamaskBalance = '';
+  @observable accountUsedForDetectingChange = null;
   // @observable shoudUseCommonNetwork: Boolean = false;
   /* JSDOC: MARK END OBSERVABLE */
 
@@ -32,7 +43,13 @@ class CommonStore {
     return !this.getIsUser() || (this.getIsUser() && this.rootStore.userStore.isOnFixedAccount);
   }
   @computed get isWalletSetupDone() {
-    return this.setupWalletProgress.every(progress => (progress)); // check if every step is done
+    if (!this.getIsUser) {
+      return true;
+    }
+    if (this.rootStore.userStore.isOnFixedAccount) {
+      return true;
+    }
+    return this.isMetamaskEnabled && this.isMetamaskSignedIn && this.isOnTestNet && this.hasTestEther;
   }
 
   // @computed get isOnboardDone() {
@@ -186,7 +203,10 @@ class CommonStore {
 
   @action
   resetSetupWalletProgress() {
-    this.setupWalletProgress = [false, false, false, false];
+    this.isMetamaskEnabled = false;
+    this.isMetamaskSignedIn = false;
+    this.isOnTestNet = false;
+    this.hasTestEther = false;
   }
 
   @action
@@ -211,6 +231,104 @@ class CommonStore {
     this.setupWalletProgress = [true, true, true, true];
     this.rootStore.globalSpinnerIsShowing = false;
     this.rootStore.finishInitNetwork = true;
+  }
+
+  web3HasMetamaskProvider() {
+    return (
+      (window.web3.givenProvider !== null && typeof window.web3.givenProvider !== 'undefined' &&
+        window.web3.givenProvider.isMetaMask === true) ||
+      (window.web3.currentProvider !== null && typeof window.web3.currentProvider !== 'undefined' &&
+        window.web3.currentProvider.isMetaMask === true));
+  }
+
+
+  @action
+  async checkMetamaskNetwork() {
+    this.resetSetupWalletProgress();
+    if (this.getIsUser() && !this.rootStore.userStore.isOnFixedAccount) {
+      if (typeof window.web3 !== 'undefined' && this.web3HasMetamaskProvider()) {
+        this.isMetamaskEnabled = true;
+      }
+    } else {
+      this.isMetamaskEnabled = false;
+    }
+
+    let web3;
+    if (window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true) {
+      console.log('from user store: is meta mask');
+      web3 = new Web3(window.web3.currentProvider);
+    } else {
+      web3 = new Web3(this.rootStore.browserProvider);
+    }
+    window.web3 = web3;
+
+    try {
+      const accounts = await window.web3.eth.getAccounts();
+      if (accounts.length === 0) console.log('User is not logged in to MetaMask');
+      if (accounts.length > 0) {
+        runInAction(() => {
+          this.isMetamaskSignedIn = true;
+          [this.metamaskAccount] = accounts;
+        });
+      }
+    } catch (err) {
+      console.error('An error occurred while detecting MetaMask login status');
+    }
+
+    try {
+      const networkType = await window.web3.eth.net.getNetworkType();
+      runInAction(() => {
+        switch (networkType) {
+          case 'ropsten':
+            this.metamaskCurrentNetwork = 'Ropsten';
+            this.isOnTestNet = true;
+            break;
+          case 'rinkeby':
+            this.metamaskCurrentNetwork = 'Rinkeby';
+            this.isOnTestNet = true;
+            break;
+          case 'kovan':
+            this.metamaskCurrentNetwork = 'Kovan';
+            this.isOnTestNet = true;
+            break;
+          case 'private':
+            this.metamaskCurrentNetwork = 'Private';
+            this.isOnTestNet = true;
+            break;
+          default:
+            this.metamaskCurrentNetwork = 'Other Net or';
+        }
+      });
+    } catch (err) {
+      console.error('An error occurred while detecting MetaMask network type');
+    }
+
+    try {
+      const account = this.metamaskAccount;
+      const balance = await window.web3.eth.getBalance(account);
+      runInAction(() => {
+        this.metamaskBalance = balance;
+        if (this.metamaskBalance > 0) {
+          this.hasTestEther = true;
+        }
+      });
+    } catch (err) {
+      console.error('An error occurred while checking balance');
+    }
+
+    console.log('Listening to metamask account change');
+    if (!window.web3.eth.givenProvider) return;
+    window.web3.eth.givenProvider.publicConfigStore.on('update', (change) => {
+      if (this.accountUsedForDetectingChange === null && change.selectedAddress !== '') {
+        runInAction(() => {
+          this.accountUsedForDetectingChange = change.selectedAddress;
+        });
+      } else if (this.accountUsedForDetectingChange !== change.selectedAddress) {
+        window.location.reload();
+      }
+    });
+
+    runInAction(() => { this.rootStore.finishInitMetamaskNetwork = true; });
   }
 }
 

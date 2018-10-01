@@ -12,7 +12,6 @@ import { fixedUserPrivKey, fixedVerifierPrivKey } from '../constants/defaults';
 
 class RootStore {
   constructor() {
-    
   }
   @observable commonStore = new CommonStore(this);
   @observable userStore = new UserStore(this);
@@ -22,8 +21,14 @@ class RootStore {
 
   @observable globalSpinnerIsShowing: Boolean = false;
 
+  @observable startInitNetwork: Boolean = false;
   @observable finishInitNetwork: Boolean = false;
 
+  @observable startInitMetamaskNetwork: Boolean = false;
+  @observable finishInitMetamaskNetwork: Boolean = false;
+  @observable startInitFixedNetwork: Boolean = false;
+
+  @observable reonboardModalIsShowing: Boolean = false;
   @computed get currentNetwork() {
     if (this.commonStore.getIsUser()) {
       if (!this.userStore.isOnFixedAccount) return this.userStore.currentNetwork;
@@ -32,9 +37,9 @@ class RootStore {
     return this.commonStore.commonNetwork;
   }
 
+
   @action
   initNetwork() {
-    this.globalSpinnerIsShowing = true;
     // for user using own account, must detect metamask first
     if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
       if (typeof window.web3 === 'undefined') {
@@ -49,44 +54,34 @@ class RootStore {
     
     if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
       console.log('init metamask from root store');
-      this.userStore.initMetamaskNetwork();
-      this.userStore.listenToMetaMaskAccountChange();
+      this.startInitMetamaskNetwork = true;
+      // this.userStore.initMetamaskNetwork();
+      // this.userStore.listenToMetaMaskAccountChange();
+      this.commonStore.checkMetamaskNetwork();
       return;
     }
     if (this.commonStore.getIsUser() && this.userStore.isOnFixedAccount) {
       this.commonStore.initCommonNetwork();
-      // window.web3.eth.accounts.wallet.add(userPrivKey);
       window.web3.eth.accounts.wallet.add(fixedUserPrivKey); // user
       console.log('init user fixed network from root store');
       return;
     }
     if (!this.commonStore.getIsUser()) {
       this.commonStore.initCommonNetwork();
-      // window.web3.eth.accounts.wallet.add(verifierPrivKey);
-      // console.log('adding to wallet');
       window.web3.eth.accounts.wallet.add(fixedVerifierPrivKey); // verifier
-    // console.log(window.web3.eth.accounts.wallet);
       console.log('init verifier fixed network from root store');
     }
+  }
+  @action
+  openReonboardModal() {
+    this.reonboardModalIsShowing = true;
+  }
+  @action
+  closeReonboardModal() {
+    this.reonboardModalIsShowing = false;
   }
 }
 
 const SingletonRootStore = new RootStore();
 
-// detect
-// const detectMetaMaskNetwork = autorun(() => {
-//   let metaMaskInstalled = false;
-//   let metaMaskLoggedIn = false;
-//   let isOnTestNet = false;
-//   let hasTestEther = false;
-//   if (SingletonRootStore.commonStore.getIsUser()) {
-//     SingletonRootStore.userStore.initMetamaskNetwork();
-//     metaMaskInstalled = SingletonRootStore.userStore.isMetaMaskEnabled;
-//     metaMaskLoggedIn = SingletonRootStore.userStore.isMetaMaskLoggedIn;
-//     isOnTestNet = SingletonRootStore.userStore.currentNetwork === 'Ropsten' || SingletonRootStore.userStore.currentNetwork === 'Rinkeby' || SingletonRootStore.userStore.currentNetwork === 'Kovan';
-//   }
-//   if (metaMaskInstalled) SingletonRootStore.commonStore.completeSetupWalletProgress(0);
-//   if (metaMaskLoggedIn) SingletonRootStore.commonStore.completeSetupWalletProgress(1);
-//   if (isOnTestNet) SingletonRootStore.commonStore.completeSetupWalletProgress(2);
-// });
 export default SingletonRootStore;

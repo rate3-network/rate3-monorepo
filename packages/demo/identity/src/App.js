@@ -72,16 +72,7 @@ class App extends React.Component {
   componentDidMount() {
     // RootStore.initNetwork();
     
-    if (window.localStorage.accountType === 'fixed') {
-      RootStore.userStore.changeToFixedAccount();
-      RootStore.initNetwork();
-      console.log('changing to fixed account');
-    }
-    if (window.localStorage.accountType === 'metamask') {
-      RootStore.userStore.changeToMetaMaskAccount();
-      RootStore.initNetwork();
-      console.log('changing to metamask');
-    }
+    
   }
   render() {
     const { classes } = this.props;

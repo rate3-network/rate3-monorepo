@@ -45,6 +45,7 @@ const styles = (theme) => {
 class ToggleButtons extends React.Component {
   componentWillUnmount() {
     this.props.RootStore.commonStore.setFalseShouldRenderOnboardTransition();
+    this.props.RootStore.initNetwork();
   }
   render() {
     const { classes } = this.props;

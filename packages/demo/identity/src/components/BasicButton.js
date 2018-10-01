@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 
 import Button from '@material-ui/core/Button';
-import { buttonShadow, buttonHoverShadow } from '../constants/colors';
+import { buttonShadow, buttonHoverShadow, identityBlue } from '../constants/colors';
 
 const styles = theme => ({
   button: {
@@ -13,8 +13,8 @@ const styles = theme => ({
     fontSize: '1.5rem',
     // fontWeight: 'bold',
     borderRadius: '50px',
-    color: 'white',
-    boxShadow: buttonShadow,
+    color: identityBlue,
+    boxShadow: '',
     '&:hover': {
       boxShadow: buttonHoverShadow,
     },
@@ -22,20 +22,16 @@ const styles = theme => ({
   whitespaces: {
     whiteSpace: 'pre',
   },
-  disabled: {
-    boxShadow: `${buttonShadow} !important`,
-    color: 'white !important',
-  },
+
   root: {
 
   },
 });
 
-const BlueButton = (props) => {
+const BasicButton = (props) => {
   let { classes } = props;
   return (
     <Button
-      variant="contained"
       size="large"
       color="primary"
       disabled={props.disabled}
@@ -54,10 +50,10 @@ const BlueButton = (props) => {
   );
 };
 
-BlueButton.propTypes = {
+BasicButton.propTypes = {
   classes: PropTypes.object.isRequired,
   // theme: PropTypes.object.isRequired,
 };
 
 
-export default withStyles(styles)(BlueButton);
+export default withStyles(styles)(BasicButton);

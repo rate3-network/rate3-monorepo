@@ -62,6 +62,7 @@ const styles = theme => ({
 @inject('RootStore') @observer
 class OnboardStepper extends React.Component {
   componentDidMount() {
+
     if (this.props.RootStore.commonStore.getIsUserOnboardDone() || this.props.RootStore.commonStore.getIsVerifierOnboardDone()) {
       console.log('should go to last step');
       this.props.RootStore.commonStore.goToLastOnboardStep();
@@ -150,15 +151,16 @@ class OnboardStepper extends React.Component {
 
     const SetupWalletList = inject('RootStore')(observer((props) => {
       console.log('is on fixed account? : ', this.props.RootStore.userStore.isOnFixedAccount);
-      if (this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount) {
-        return (
-          <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} />
-        );
-      }
-      this.props.RootStore.commonStore.completeSetupWallet();
-      return (
-        <CheckList list={onboardSteps[activeStep].listForFixedAccount} network={this.props.RootStore.currentNetwork} />
-      );
+      // if (this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount) {
+      //   return (
+      //     <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} />
+      //   );
+      // }
+      // this.props.RootStore.commonStore.completeSetupWallet();
+      // return (
+      //   <CheckList list={onboardSteps[activeStep].listForFixedAccount} network={this.props.RootStore.currentNetwork} />
+      // );
+      return <CheckList />;
     }));
     const AccountTypeSelector = (props) => {
       return (<div className={classes.accountType}><AccountTypeDropdown variant={props.variant} isOnSidebar={false} /></div>);

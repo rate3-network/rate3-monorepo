@@ -43,7 +43,7 @@ const OutlineButton = (props) => {
         root: props.classes.root ? props.classes.root : classes.button,
       }}
       onClick={props.handleClick}
-      style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.lineHeight }}
+      style={{ fontWeight: props.fontWeight, fontSize: props.fontSize, lineHeight: props.lineHeight, letterSpacing: '0.05em' }}
     >
       {props.buttonText}
     </Button>

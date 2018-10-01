@@ -69,6 +69,8 @@ class UserStore {
   @observable signature = '';
   @observable startedAddingClaim = false;
   @observable finishedAddingClaim = false;
+
+  @observable reOnboardModalIsShowing = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -131,6 +133,7 @@ class UserStore {
   changeToMetaMaskAccount() {
     this.isOnFixedAccount = false;
     window.localStorage.setItem('accountType', 'metamask');
+    this.rootStore.openReonboardModal();
     console.log('changing to metamask account in user store');
   }
   @action
@@ -254,7 +257,11 @@ class UserStore {
       }
       if (events) {
         console.log(events);
-        events.forEach((ev) => {
+        const addedEvents = events.filter((item) => { return item.event === 'ClaimAdded'; });
+        const removedEvents = events.filter((item) => { return item.event === 'ClaimRemoved'; });
+        console.log('addedEvents', addedEvents);
+        console.log('removedEvents', removedEvents);
+        addedEvents.forEach((ev) => {
           
           console.log('ev', ev);
           const returnValues = ev.returnValues;
@@ -265,7 +272,7 @@ class UserStore {
           if (returnValues.topic === '101') type = 'name';
           if (returnValues.topic === '102') type = 'address';
           if (returnValues.topic === '103') type = 'socialId';
-          const newClaim = new Identity(data, type, userAddress, 'Vitalik Buterin', returnValues.signature, ev.transactionHash, VERIFIED);
+          const newClaim = new Identity(data, type, userAddress, 'Vitalik Buterin', returnValues.signature, ev.transactionHash, returnValues.claimId, VERIFIED);
           runInAction(() => {
             if (returnValues.topic === '101') this.nameClaimList.push(newClaim);
             if (returnValues.topic === '102') this.addressClaimList.push(newClaim);
@@ -273,10 +280,32 @@ class UserStore {
           });
           console.log(newClaim);
         });
+        removedEvents.forEach((ev) => {
+          const returnValues = ev.returnValues;
+          
+          if (returnValues.topic === '101') {
+            const foundIndex = this.nameClaimList.findIndex((claim) => {
+              return claim.claimId === returnValues.claimId;
+            });
+            if (foundIndex !== -1) runInAction(() => { this.nameClaimList.splice(foundIndex, 1); });
+          }
+          if (returnValues.topic === '102') {
+            const foundIndex = this.addressClaimList.findIndex((claim) => {
+              return claim.claimId === returnValues.claimId;
+            });
+            if (foundIndex !== -1) runInAction(() => { this.addressClaimList.splice(foundIndex, 1); });
+          }
+          if (returnValues.topic === '103') {
+            const foundIndex = this.socialIdClaimList.findIndex((claim) => {
+              return claim.claimId === returnValues.claimId;
+            });
+            if (foundIndex !== -1) runInAction(() => { this.socialIdClaimList.splice(foundIndex, 1); });
+          }
+        });
         runInAction(() => { this.finishedLoadingClaims = true; });
       }
     };
-    this.identityContract.getPastEvents('ClaimAdded', { fromBlock: 0, toBlock: 'latest' }, getPastEventCallBack);
+    this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' }, getPastEventCallBack);
   }
 
   @action
@@ -344,7 +373,8 @@ class UserStore {
     } else {
       console.log('sig', sig);
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, sig, data, location)
-        .send({ from: userAddress, gas: 6000000 },
+        .send(
+          { from: userAddress, gas: 6000000 },
           (err, result) => {
             console.log('from addClaim callback');
             if (err) console.log(err);
@@ -352,12 +382,13 @@ class UserStore {
               console.log(result);
               this.db.deleteClaim(addr, claim);
             }
-          }
+          },
         );
     }
 
     console.log(sig);
   }
+
   web3HasMetamaskProvider() {
     return (
       (window.web3.givenProvider !== null && typeof window.web3.givenProvider !== 'undefined' &&
@@ -378,6 +409,7 @@ class UserStore {
   @action
   listenToMetaMaskAccountChange() {
     console.log('listener mounted');
+    if (!window.web3.eth.givenProvider) return;
     window.web3.eth.givenProvider.publicConfigStore.on('update', (change) => {
       if (this.accountUsedForDetectingChange === null) {
         runInAction(() => {
@@ -389,87 +421,88 @@ class UserStore {
     });
   }
 
-  @action
-  async initMetamaskNetwork() {
-    this.rootStore.finishInitNetwork = false;
-    console.log('init metamask network');
-    this.rootStore.commonStore.resetSetupWalletProgress();
-    if (this.isOnFixedAccount) {
-      this.currentNetwork = 'user is on a fixed network';
-      console.log('quit init metamask coz on fixed account');
-      return;
-    }
-    if (!this.isMetaMaskEnabled()) {
-      this.currentNetwork = 'Please enable MetaMask browser extension';
-      return;
-    }
+  // @action
+  // async initMetamaskNetwork() {
+  //   // this.rootStore.finishInitNetwork = false;
+  //   console.log('init metamask network');
+  //   this.rootStore.commonStore.resetSetupWalletProgress();
+  //   if (this.isOnFixedAccount) {
+  //     this.currentNetwork = 'user is on a fixed network';
+  //     console.log('quit init metamask coz on fixed account');
+  //     this.rootStore.finishInitNetwork = true;
+  //     return;
+  //   }
+  //   if (!this.isMetaMaskEnabled()) {
+  //     this.currentNetwork = 'Please enable MetaMask browser extension';
+  //     return;
+  //   }
 
-    this.rootStore.commonStore.completeSetupWalletProgress(0);
+  //   this.rootStore.commonStore.completeSetupWalletProgress(0);
 
-    let web3;
-    if (window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true) {
-      console.log('from user store: is meta mask');
-      web3 = new Web3(window.web3.currentProvider);
-    } else {
-      web3 = new Web3(this.rootStore.browserProvider);
-    }
-    window.web3 = web3;
-    try {
-      const accounts = await web3.eth.getAccounts();
-      if (accounts.length === 0) console.log('User is not logged in to MetaMask');
-      if (accounts.length > 0) {
-        runInAction(() => {
-          this.isMetaMaskLoggedIn = true;
-          [this.metamaskAccount] = accounts;
-          this.rootStore.commonStore.completeSetupWalletProgress(1);
-        });
-      }
-    } catch (err) {
-      console.error('An error occurred while detecting MetaMask login status');
-    }
-    try {
-      const networkType = await web3.eth.net.getNetworkType();
-      runInAction(() => {
-        switch (networkType) {
-          case 'ropsten':
-            this.currentNetwork = 'Ropsten';
-            this.rootStore.commonStore.completeSetupWalletProgress(2);
-            break;
-          case 'rinkeby':
-            this.currentNetwork = 'Rinkeby';
-            this.rootStore.commonStore.completeSetupWalletProgress(2);
-            break;
-          case 'kovan':
-            this.currentNetwork = 'Kovan';
-            this.rootStore.commonStore.completeSetupWalletProgress(2);
-            break;
-          case 'private':
-            this.currentNetwork = 'Private';
-            this.rootStore.commonStore.completeSetupWalletProgress(2);
-            break;
-          default:
-            this.currentNetwork = 'Other Net or';
-        }
-      });
-    } catch (err) {
-      console.error('An error occurred while detecting MetaMask network type');
-    }
+  //   let web3;
+  //   if (window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true) {
+  //     console.log('from user store: is meta mask');
+  //     web3 = new Web3(window.web3.currentProvider);
+  //   } else {
+  //     web3 = new Web3(this.rootStore.browserProvider);
+  //   }
+  //   window.web3 = web3;
+  //   try {
+  //     const accounts = await web3.eth.getAccounts();
+  //     if (accounts.length === 0) console.log('User is not logged in to MetaMask');
+  //     if (accounts.length > 0) {
+  //       runInAction(() => {
+  //         this.isMetaMaskLoggedIn = true;
+  //         [this.metamaskAccount] = accounts;
+  //         this.rootStore.commonStore.completeSetupWalletProgress(1);
+  //       });
+  //     }
+  //   } catch (err) {
+  //     console.error('An error occurred while detecting MetaMask login status');
+  //   }
+  //   try {
+  //     const networkType = await web3.eth.net.getNetworkType();
+  //     runInAction(() => {
+  //       switch (networkType) {
+  //         case 'ropsten':
+  //           this.currentNetwork = 'Ropsten';
+  //           this.rootStore.commonStore.completeSetupWalletProgress(2);
+  //           break;
+  //         case 'rinkeby':
+  //           this.currentNetwork = 'Rinkeby';
+  //           this.rootStore.commonStore.completeSetupWalletProgress(2);
+  //           break;
+  //         case 'kovan':
+  //           this.currentNetwork = 'Kovan';
+  //           this.rootStore.commonStore.completeSetupWalletProgress(2);
+  //           break;
+  //         case 'private':
+  //           this.currentNetwork = 'Private';
+  //           this.rootStore.commonStore.completeSetupWalletProgress(2);
+  //           break;
+  //         default:
+  //           this.currentNetwork = 'Other Net or';
+  //       }
+  //     });
+  //   } catch (err) {
+  //     console.error('An error occurred while detecting MetaMask network type');
+  //   }
 
-    try {
-      const account = this.metamaskAccount;
-      const balance = await web3.eth.getBalance(account);
-      runInAction(() => {
-        this.metamaskBalance = balance;
-        if (this.metamaskBalance > 0) {
-          this.rootStore.commonStore.completeSetupWalletProgress(3);
-          this.rootStore.globalSpinnerIsShowing = false;
-          this.rootStore.finishInitNetwork = true;
-        }
-      });
-    } catch (err) {
-      console.error('An error occurred while checking balance');
-    }
-  }
+  //   try {
+  //     const account = this.metamaskAccount;
+  //     const balance = await web3.eth.getBalance(account);
+  //     runInAction(() => {
+  //       this.metamaskBalance = balance;
+  //       if (this.metamaskBalance > 0) {
+  //         this.rootStore.commonStore.completeSetupWalletProgress(3);
+  //         this.rootStore.globalSpinnerIsShowing = false;
+  //         this.rootStore.finishInitNetwork = true;
+  //       }
+  //     });
+  //   } catch (err) {
+  //     console.error('An error occurred while checking balance');
+  //   }
+  // }
 
   getFormTextInputValue() {
     return this.formTextInputValue;
@@ -548,6 +581,10 @@ class UserStore {
   @action
   setFormType(type) {
     this.formType = type;
+  }
+  @action
+  openReOnboardModal() {
+    this.reOnboardModalIsShowing = true;
   }
 }
 export default UserStore;

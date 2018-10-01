@@ -42,6 +42,18 @@ class VerifierMain extends React.Component {
     }
   }
   componentDidMount() {
+    if (window.localStorage.accountType === 'fixed') {
+      this.props.RootStore.userStore.changeToFixedAccount();
+      this.props.RootStore.initNetwork();
+      console.log('changing to fixed account');
+    } else if (window.localStorage.accountType === 'metamask') {
+      this.props.RootStore.userStore.changeToMetaMaskAccount();
+      this.props.RootStore.initNetwork();
+      console.log('changing to metamask');
+    } else {
+      this.props.RootStore.initNetwork();
+    }
+    
     this.props.RootStore.verifierStore.initDb();
     this.props.RootStore.verifierStore.resetClaimLists();
     this.props.RootStore.verifierStore.populateClaimLists();

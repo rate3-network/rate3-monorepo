@@ -5,6 +5,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import { observer, inject } from 'mobx-react';
+import { when } from 'mobx';
 
 import SelectedBox from '../assets/selectedBox.svg';
 import UnselectedBox from '../assets/unselectedBox.svg';
@@ -36,33 +37,109 @@ const styles = theme => ({
 
 @inject('RootStore') @observer
 class CheckList extends React.Component {
+  componentDidMount() {
+    when(
+      () => this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount,
+      () => {
+        this.props.RootStore.commonStore.checkMetamaskNetwork();
+      },
+    );
+
+  }
   render() {
     const { classes } = this.props;
-    return (
-      <div className={classes.root}>
-        <List>
-          {this.props.list.map((item, id) => (
-            <ListItem
-              key={item.value}
-              dense
-              className={classes.listItem}
-            >
+    if (this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount) {
+      return (
+        <div className={classes.root}>
+          <List>
+            <ListItem dense className={classes.listItem}>
               <Checkbox
-                checked={this.props.RootStore.commonStore.getSetupWalletProgress(id)}
+                checked={this.props.RootStore.commonStore.isMetamaskEnabled}
                 checkedIcon={<img src={SelectedBox} alt="finished" className={classes.checkboxIcon} />}
                 icon={<img src={UnselectedBox} alt="not finished" className={classes.checkboxIcon} />}
                 classes={{ root: classes.checkboxRoot }}
                 disableRipple
               />
               <div className={classes.listItemButton}>
-                {item.value}
+                Install Metamask on your browser
+              </div>
+            </ListItem>
+            <ListItem dense className={classes.listItem}>
+              <Checkbox
+                checked={this.props.RootStore.commonStore.isMetamaskSignedIn}
+                checkedIcon={<img src={SelectedBox} alt="finished" className={classes.checkboxIcon} />}
+                icon={<img src={UnselectedBox} alt="not finished" className={classes.checkboxIcon} />}
+                classes={{ root: classes.checkboxRoot }}
+                disableRipple
+              />
+              <div className={classes.listItemButton}>
+                Sign in and unlock your metamask
+              </div>
+            </ListItem>
+            <ListItem dense className={classes.listItem}>
+              <Checkbox
+                checked={this.props.RootStore.commonStore.isOnTestNet}
+                checkedIcon={<img src={SelectedBox} alt="finished" className={classes.checkboxIcon} />}
+                icon={<img src={UnselectedBox} alt="not finished" className={classes.checkboxIcon} />}
+                classes={{ root: classes.checkboxRoot }}
+                disableRipple
+              />
+              <div className={classes.listItemButton}>
+                Switch to a test network
                 {this.props.RootStore.commonStore.shouldUseCommonNetwork ?
-                  item.hasStyledText && <NetworkDropdown buttonText="text" /> :
-                  item.hasStyledText && <NetworkBox />
+                  <NetworkDropdown buttonText="text" /> :
+                  <NetworkBox />
                 }
               </div>
             </ListItem>
-          ))}
+            <ListItem dense className={classes.listItem}>
+              <Checkbox
+                checked={this.props.RootStore.commonStore.hasTestEther}
+                checkedIcon={<img src={SelectedBox} alt="finished" className={classes.checkboxIcon} />}
+                icon={<img src={UnselectedBox} alt="not finished" className={classes.checkboxIcon} />}
+                classes={{ root: classes.checkboxRoot }}
+                disableRipple
+              />
+              <div className={classes.listItemButton}>
+                Obtain some test ether
+              </div>
+            </ListItem>
+  
+          </List>
+        </div>
+      );
+    }
+    return (
+      <div className={classes.root}>
+        <List>
+          <ListItem dense className={classes.listItem}>
+            <Checkbox
+              checked
+              checkedIcon={<img src={SelectedBox} alt="finished" className={classes.checkboxIcon} />}
+              icon={<img src={UnselectedBox} alt="not finished" className={classes.checkboxIcon} />}
+              classes={{ root: classes.checkboxRoot }}
+              disableRipple
+            />
+            <div className={classes.listItemButton}>
+              Using a buillt-in demo wallet
+            </div>
+          </ListItem>
+          <ListItem dense className={classes.listItem}>
+            <Checkbox
+              checked
+              checkedIcon={<img src={SelectedBox} alt="finished" className={classes.checkboxIcon} />}
+              icon={<img src={UnselectedBox} alt="not finished" className={classes.checkboxIcon} />}
+              classes={{ root: classes.checkboxRoot }}
+              disableRipple
+            />
+            <div className={classes.listItemButton}>
+              Test network
+              {this.props.RootStore.commonStore.shouldUseCommonNetwork ?
+                <NetworkDropdown buttonText="text" /> :
+                <NetworkBox />
+              }
+            </div>
+          </ListItem>
         </List>
       </div>
     );

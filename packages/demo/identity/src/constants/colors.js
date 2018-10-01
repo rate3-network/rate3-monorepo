@@ -75,3 +75,4 @@ export const disabledIconColor = '#C6C6C6';
 export const borderColor = 'rgba(129, 140, 161, 0.6)';
 
 export const pendintSigGrey = '#D3D3D3';
+export const outlineButtonRed = '#D12020';

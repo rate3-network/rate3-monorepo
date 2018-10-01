@@ -15,6 +15,7 @@ import addedIcon from '../assets/addedIcon.svg';
 import pendingIcon from '../assets/pendingIcon.svg';
 import ether from '../assets/ether.svg';
 import { truncateAddress } from '../utils/index';
+import OutlineButton from './OutlineButton';
 
 const styles = theme => ({
   root: {
@@ -153,6 +154,16 @@ class SubPanel extends React.Component {
 
   handleRemove() {
     console.log(this.props.item);
+    console.log(this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr);
+    window.identityContract.methods.removeClaim(this.props.item.claimId).send({ from: this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr, gas: 6000000 },
+          (err, result) => {
+            console.log('from addClaim callback');
+            if (err) console.log(err);
+            if (result) {
+              console.log(result);
+            }
+          }
+        );
   }
 
   handleExpand() {
@@ -200,11 +211,11 @@ class SubPanel extends React.Component {
     const RemoveButton = withStyles(styles)((props) => {
       return (
       <div>
-        <BlueButton 
+        <OutlineButton 
           className={classes.buttonContainer}
           fontSize="0.7em"
           lineHeight="1em"
-          fontWeight={500}
+          fontWeight={400}
           buttonText="remove"
           iconHeight="0.8em"
         />
@@ -246,14 +257,14 @@ class SubPanel extends React.Component {
                   }
                 </div>
               </div>
-              {this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim && 
+              {this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim &&
                 <div onClick={this.handleAdd.bind(this)} className={classes.addButton}><AddButton /></div>
               }
               {!this.props.isUser && this.props.item.status === PENDING_REVIEW &&
                 <div onClick={this.handleVerify.bind(this)} className={classes.addButton}><VerifyButton /></div>
               }
-              {this.props.isUser && this.props.item.status === VERIFIED && !this.props.RootStore.userStore.startedAddingClaim && 
-                <div onClick={this.handleRemove.bind(this)} className={classes.addButton}><RemoveButton /></div>                
+              {this.props.isUser && this.props.item.status === VERIFIED && !this.props.RootStore.userStore.startedAddingClaim &&
+                <div onClick={this.handleRemove.bind(this)} className={classes.addButton}><RemoveButton /></div>
               }
             </div>
             
