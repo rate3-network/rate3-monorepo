@@ -9,10 +9,19 @@ import "./AdminInteractor.sol";
  * @dev String constants should be consistent with what is expected on the token side.
  */
 contract RegistryInteractor is AdminInteractor {
+    /// @notice String constants for compliance
     string public constant WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
     string public constant WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
     string public constant BLACKLISTED = "BLACKLISTED";
 
+    /**
+     * @notice Set the minting whitelist status for address provided.
+     *
+     * @dev Only admin can whitelist/blacklist.
+     *
+     * @param _address Address to be added or removed from whitelist.
+     * @param _bool True if address whitelisted.
+     */
     function whitelistForMint(address _address, bool _bool) public onlyAdmin {
         TokenInterface(token).setKeyDataRecord(
             _address,
@@ -25,6 +34,14 @@ contract RegistryInteractor is AdminInteractor {
         );
     }
 
+    /**
+     * @notice Set the burning whitelist status for address provided.
+     *
+     * @dev Only admin can whitelist/blacklist.
+     *
+     * @param _address Address to be added or removed from whitelist.
+     * @param _bool True if address whitelisted.
+     */
     function whitelistForBurn(address _address, bool _bool) public onlyAdmin {
         TokenInterface(token).setKeyDataRecord(
             _address,
@@ -37,6 +54,14 @@ contract RegistryInteractor is AdminInteractor {
         );
     }
 
+    /**
+     * @notice Set the blacklist status for address provided.
+     *
+     * @dev Only admin can whitelist/blacklist.
+     *
+     * @param _address Address to be added or removed from blacklist.
+     * @param _bool True if address blacklisted.
+     */
     function blacklist(address _address, bool _bool) public onlyAdmin {
         TokenInterface(token).setKeyDataRecord(
             _address,
@@ -48,5 +73,4 @@ contract RegistryInteractor is AdminInteractor {
             msg.sender
         );
     }
-
 }
