@@ -390,6 +390,7 @@ class Account {
   }
 
   // Phase 3 Anchor Bridge SEP-0006 the client consumes the API
+  // responses are not yet handled
 
   /**
    * Deposit external assets with an anchor.
@@ -418,15 +419,123 @@ class Account {
         return null;
       }
       const options = {
-        method: 'POST',
         uri: `${this.anchorUrl}/deposit`,
-        body: {
+        qs: {
           asset_code,
           account,
           memo_type,
           memo,
           email_address,
           type,
+        },
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  /**
+   * Withdraw assets from an anchor
+   * @param {string} url - the url of this get request, without slash at the end
+   * @param {string} type - Type of withdrawal. Can be: crypto, bank_account, cash, mobile,
+   *  bill_payment or other custom values
+   * @param {string} asset_code - Code of the asset the user wants to withdraw
+   * @param {string} dest - The account that the user wants to withdraw their funds to.
+   *  This can be a crypto account, a bank account number, IBAN, mobile number, or email address.
+   * @param {string} dest_extra - (optional) Extra information to specify withdrawal location.
+   *  For crypto it may be a memo in addition to the dest address. It can also be a routing number
+   *  for a bank, a BIC, or the name of a partner handling the withdrawal.
+   * @param {string} account - (optional) The stellar account ID of the user that wants to do
+   *  the withdrawal. This is only needed if the anchor requires KYC information for withdrawal.
+   *  The anchor can use account to look up the user's KYC information.
+   * @param {string} memo - (optional) A wallet will send this to uniquely identify a user
+   *  if the wallet has multiple users sharing one Stellar account. The anchor can use this
+   *  along with account to look up the user's KYC info.
+   * @param {string} memo_type - (optional) type of memo. One of text, id or hash
+   */
+  async getWithdraw(url, type, asset_code, dest, dest_extra = '', account, memo = '', memo_type = '') {
+    this.anchorUrl = url;
+    try {
+      // verifies that the parameters are valid
+      if (account.charAt(0) !== 'G') {
+        console.log('The account must start with letter G.');
+        return null;
+      }
+      const options = {
+        uri: `${this.anchorUrl}/withdraw`,
+        qs: {
+          type,
+          asset_code,
+          dest,
+          dest_extra,
+          account,
+          memo,
+          memo_type,
+        },
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  // have not handled interactive/non-interactive customer information needed response
+  // and not accepted, error
+
+  /**
+   * Allows an anchor to communicate basic info about what
+   * their TRANSFER_SERVER supports to wallets and clients.
+   * @param {string} url - the url of this get request, without slash at the end
+   * @param {string} lang - (optional) Defaults to en. Language code specified using ISO 639-1.
+   * description fields in the response should be in this language
+   */
+  async getInfo(url, lang = '') {
+    this.anchorUrl = url;
+    try {
+      const options = {
+        uri: `${this.anchorUrl}/info`,
+        qs: {
+          lang,
+        },
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  /**
+   * View history of deposits and withdrawals involving the user
+   * @param {string} url - the url of this get request, without slash at the end
+   * @param {string} asset_code - The code of the asset of interest. E.g. BTC,ETH,USD,INR,etc
+   * @param {string} account - The stellar account ID involved in the transactions
+   * @param {string} no_older_than - (optional) The response should contain transactions
+   *  starting on or after this date & time
+   * @param {int} limit - (optional) the response should contain at most limit transactions
+   * @param {string} paging_id - (optional) the response should contain transactions
+   *  starting prior to this ID (exclusive)
+   */
+  async getTransactionHistory(url, asset_code, account, no_older_than = '', limit = '', paging_id = '') {
+    this.anchorUrl = url;
+    try {
+      const options = {
+        uri: `${this.anchorUrl}/info`,
+        qs: {
+          asset_code,
+          account,
+          no_older_than,
+          limit,
+          paging_id,
         },
         json: true, // Automatically stringifies the body to JSON
       };
