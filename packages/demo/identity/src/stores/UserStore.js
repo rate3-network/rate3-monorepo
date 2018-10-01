@@ -24,7 +24,7 @@ class UserStore {
   @observable registerModalIsShowing = false;
   @observable registerSuccessModalIsShowing = false;
   // Modal Form
-  @observable verifierList: Array = ['Pikachu', 'Eevee', 'Squirtle', 'Snorlax'];
+  @observable verifierList: Array = ['Vitalik'];
   @observable verifierSelected: String = '_placeholder_';
   @observable formTextInputValue: String = '';
   @observable formType: String = '';
@@ -133,7 +133,7 @@ class UserStore {
   changeToMetaMaskAccount() {
     this.isOnFixedAccount = false;
     window.localStorage.setItem('accountType', 'metamask');
-    this.rootStore.openReonboardModal();
+    if (!this.rootStore.commonStore.isWalletSetupDone) this.rootStore.openReonboardModal();
     console.log('changing to metamask account in user store');
   }
   @action
@@ -242,70 +242,103 @@ class UserStore {
     }
     if (hasIdentity) {
       idContractAddr = await this.registryContract.methods.identities(userAddress).call();
-    }
+      const identityContract = new window.web3.eth.Contract(identityJson.abi, idContractAddr);
+      window.identityContract = identityContract;
+      runInAction(() => {
+        this.identityContract = identityContract;
+        this.identityContractAddr = identityContract._address;
+      });
 
-    const identityContract = new window.web3.eth.Contract(identityJson.abi, idContractAddr);
-    window.identityContract = identityContract;
-    runInAction(() => {
-      this.identityContract = identityContract;
-      this.identityContractAddr = identityContract._address;
-    });
+      const getPastEventCallBack = (err, events) => {
+        if (err) {
+          console.error(err);
+        }
+        if (events) {
+          console.log(events);
+          const addedEvents = events.filter((item) => { return item.event === 'ClaimAdded'; });
+          const removedEvents = events.filter((item) => { return item.event === 'ClaimRemoved'; });
+          console.log('addedEvents', addedEvents);
+          console.log('removedEvents', removedEvents);
+          const tempNameList = [];
+          const tempAddressList = [];
+          const tempSocialIdList = [];
+          let newNameClaim, newAddressClaim, newSocialIdClaim;
+          addedEvents.forEach((ev) => {
+            let currNameLogIndex = -1;
+            let currAddressLogIndex = -1;
+            let currSocialIdLogIndex = -1;
+            
+            console.log('ev', ev);
+            const returnValues = ev.returnValues;
+  
+            const data = window.web3.utils.hexToAscii(returnValues.data);
+            let type;
+            // if (item.sss)
+            if (returnValues.topic === '101') type = 'name'; currNameLogIndex = ev.logIndex;
+            if (returnValues.topic === '102') type = 'address'; currAddressLogIndex = ev.logIndex;
+            if (returnValues.topic === '103') type = 'socialId'; currSocialIdLogIndex = ev.logIndex;
+            const newClaim = new Identity(data, type, userAddress, 'Vitalik Buterin', returnValues.signature, ev.transactionHash, returnValues.claimId, VERIFIED);
+            if (returnValues.topic === '101') tempNameList.push({ claim: newClaim, index: currNameLogIndex });
+            if (returnValues.topic === '102') tempAddressList.push({ claim: newClaim, index: currAddressLogIndex });
+            if (returnValues.topic === '103') tempSocialIdList.push({ claim: newClaim, index: currSocialIdLogIndex });
 
-    const getPastEventCallBack = (err, events) => {
-      if (err) {
-        console.error(err);
-      }
-      if (events) {
-        console.log(events);
-        const addedEvents = events.filter((item) => { return item.event === 'ClaimAdded'; });
-        const removedEvents = events.filter((item) => { return item.event === 'ClaimRemoved'; });
-        console.log('addedEvents', addedEvents);
-        console.log('removedEvents', removedEvents);
-        addedEvents.forEach((ev) => {
-          
-          console.log('ev', ev);
-          const returnValues = ev.returnValues;
- 
-          const data = window.web3.utils.hexToAscii(returnValues.data);
-          let type;
-          // if (item.sss)
-          if (returnValues.topic === '101') type = 'name';
-          if (returnValues.topic === '102') type = 'address';
-          if (returnValues.topic === '103') type = 'socialId';
-          const newClaim = new Identity(data, type, userAddress, 'Vitalik Buterin', returnValues.signature, ev.transactionHash, returnValues.claimId, VERIFIED);
-          runInAction(() => {
-            if (returnValues.topic === '101') this.nameClaimList.push(newClaim);
-            if (returnValues.topic === '102') this.addressClaimList.push(newClaim);
-            if (returnValues.topic === '103') this.socialIdClaimList.push(newClaim);
+            newNameClaim = tempNameList.reduce((prev, next) => {
+              if (prev === null) return next;
+              if (next.index > prev.index) {
+                return next;
+              }
+              return prev;
+            }, null);
+            
+            newAddressClaim = tempAddressList.reduce((prev, next) => {
+              if (prev === null) return next;
+              if (next.index > prev.index) {
+                return next;
+              }
+              return prev;
+            }, null);
+            console.log('Rate: getPastEventCallBack -> newAddressClaim', newAddressClaim);
+            newSocialIdClaim = tempSocialIdList.reduce((prev, next) => {
+              if (prev === null) return next;
+              if (next.index > prev.index) {
+                return next;
+              }
+              return prev;
+            }, null);
+            // console.log(newClaim);
           });
-          console.log(newClaim);
-        });
-        removedEvents.forEach((ev) => {
-          const returnValues = ev.returnValues;
-          
-          if (returnValues.topic === '101') {
-            const foundIndex = this.nameClaimList.findIndex((claim) => {
-              return claim.claimId === returnValues.claimId;
-            });
-            if (foundIndex !== -1) runInAction(() => { this.nameClaimList.splice(foundIndex, 1); });
-          }
-          if (returnValues.topic === '102') {
-            const foundIndex = this.addressClaimList.findIndex((claim) => {
-              return claim.claimId === returnValues.claimId;
-            });
-            if (foundIndex !== -1) runInAction(() => { this.addressClaimList.splice(foundIndex, 1); });
-          }
-          if (returnValues.topic === '103') {
-            const foundIndex = this.socialIdClaimList.findIndex((claim) => {
-              return claim.claimId === returnValues.claimId;
-            });
-            if (foundIndex !== -1) runInAction(() => { this.socialIdClaimList.splice(foundIndex, 1); });
-          }
-        });
-        runInAction(() => { this.finishedLoadingClaims = true; });
-      }
-    };
-    this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' }, getPastEventCallBack);
+          runInAction(() => {
+            if (newNameClaim !== null && newNameClaim !== undefined && newNameClaim.claim !== undefined) this.nameClaimList.push(newNameClaim.claim);
+            if (newAddressClaim !== null && newAddressClaim !== undefined && newAddressClaim.claim !== undefined) this.addressClaimList.push(newAddressClaim.claim);
+            if (newSocialIdClaim !== null && newSocialIdClaim !== undefined && newSocialIdClaim.claim !== undefined) this.socialIdClaimList.push(newSocialIdClaim.claim);
+          });
+          removedEvents.forEach((ev) => {
+            const returnValues = ev.returnValues;
+            
+            if (returnValues.topic === '101') {
+              const foundIndex = this.nameClaimList.findIndex((claim) => {
+                return claim.txHash === ev.transactionHash;
+              });
+              if (foundIndex !== -1) runInAction(() => { this.nameClaimList.splice(foundIndex, 1); });
+            }
+            if (returnValues.topic === '102') {
+              const foundIndex = this.addressClaimList.findIndex((claim) => {
+                return claim.txHash === ev.transactionHash;
+              });
+              if (foundIndex !== -1) runInAction(() => { this.addressClaimList.splice(foundIndex, 1); });
+            }
+            if (returnValues.topic === '103') {
+              const foundIndex = this.socialIdClaimList.findIndex((claim) => {
+                return claim.txHash === ev.transactionHash;
+              });
+              if (foundIndex !== -1) runInAction(() => { this.socialIdClaimList.splice(foundIndex, 1); });
+            }
+          });
+          runInAction(() => { this.finishedLoadingClaims = true; });
+        }
+      };
+      this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' }, getPastEventCallBack);
+    }
   }
 
   @action
@@ -359,6 +392,11 @@ class UserStore {
     this.startedAddingClaim = true;
     this.listenToNewClaimEvent();
     if (!this.isOnFixedAccount) {
+      console.log('adding from metamask account');
+      console.log('Rate: addClaim -> data', data);
+      console.log('Rate: addClaim -> this.signature', this.signature);
+      console.log('Rate: addClaim -> this.verifierIdentityContractAddr', this.verifierIdentityContractAddr);
+      console.log('Rate: addClaim -> topic', topic);
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, this.signature, data, location)
         .send({ from: userAddress, gas: 6000000 },
           (err, result) => {
@@ -389,23 +427,6 @@ class UserStore {
     console.log(sig);
   }
 
-  web3HasMetamaskProvider() {
-    return (
-      (window.web3.givenProvider !== null && typeof window.web3.givenProvider !== 'undefined' &&
-        window.web3.givenProvider.isMetaMask === true) ||
-      (window.web3.currentProvider !== null && typeof window.web3.currentProvider !== 'undefined' &&
-        window.web3.currentProvider.isMetaMask === true));
-  }
-  isMetaMaskEnabled() {
-    console.log('isMetaMaskEnabled from userstore ');
-    return (typeof window.web3 !== 'undefined' && this.web3HasMetamaskProvider());
-  }
-
-  @action
-  changeFixedUserAcctNetwork(v) {
-    this.fixedUserAcctNetwork = v;
-  }
-
   @action
   listenToMetaMaskAccountChange() {
     console.log('listener mounted');
@@ -420,89 +441,6 @@ class UserStore {
       }
     });
   }
-
-  // @action
-  // async initMetamaskNetwork() {
-  //   // this.rootStore.finishInitNetwork = false;
-  //   console.log('init metamask network');
-  //   this.rootStore.commonStore.resetSetupWalletProgress();
-  //   if (this.isOnFixedAccount) {
-  //     this.currentNetwork = 'user is on a fixed network';
-  //     console.log('quit init metamask coz on fixed account');
-  //     this.rootStore.finishInitNetwork = true;
-  //     return;
-  //   }
-  //   if (!this.isMetaMaskEnabled()) {
-  //     this.currentNetwork = 'Please enable MetaMask browser extension';
-  //     return;
-  //   }
-
-  //   this.rootStore.commonStore.completeSetupWalletProgress(0);
-
-  //   let web3;
-  //   if (window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true) {
-  //     console.log('from user store: is meta mask');
-  //     web3 = new Web3(window.web3.currentProvider);
-  //   } else {
-  //     web3 = new Web3(this.rootStore.browserProvider);
-  //   }
-  //   window.web3 = web3;
-  //   try {
-  //     const accounts = await web3.eth.getAccounts();
-  //     if (accounts.length === 0) console.log('User is not logged in to MetaMask');
-  //     if (accounts.length > 0) {
-  //       runInAction(() => {
-  //         this.isMetaMaskLoggedIn = true;
-  //         [this.metamaskAccount] = accounts;
-  //         this.rootStore.commonStore.completeSetupWalletProgress(1);
-  //       });
-  //     }
-  //   } catch (err) {
-  //     console.error('An error occurred while detecting MetaMask login status');
-  //   }
-  //   try {
-  //     const networkType = await web3.eth.net.getNetworkType();
-  //     runInAction(() => {
-  //       switch (networkType) {
-  //         case 'ropsten':
-  //           this.currentNetwork = 'Ropsten';
-  //           this.rootStore.commonStore.completeSetupWalletProgress(2);
-  //           break;
-  //         case 'rinkeby':
-  //           this.currentNetwork = 'Rinkeby';
-  //           this.rootStore.commonStore.completeSetupWalletProgress(2);
-  //           break;
-  //         case 'kovan':
-  //           this.currentNetwork = 'Kovan';
-  //           this.rootStore.commonStore.completeSetupWalletProgress(2);
-  //           break;
-  //         case 'private':
-  //           this.currentNetwork = 'Private';
-  //           this.rootStore.commonStore.completeSetupWalletProgress(2);
-  //           break;
-  //         default:
-  //           this.currentNetwork = 'Other Net or';
-  //       }
-  //     });
-  //   } catch (err) {
-  //     console.error('An error occurred while detecting MetaMask network type');
-  //   }
-
-  //   try {
-  //     const account = this.metamaskAccount;
-  //     const balance = await web3.eth.getBalance(account);
-  //     runInAction(() => {
-  //       this.metamaskBalance = balance;
-  //       if (this.metamaskBalance > 0) {
-  //         this.rootStore.commonStore.completeSetupWalletProgress(3);
-  //         this.rootStore.globalSpinnerIsShowing = false;
-  //         this.rootStore.finishInitNetwork = true;
-  //       }
-  //     });
-  //   } catch (err) {
-  //     console.error('An error occurred while checking balance');
-  //   }
-  // }
 
   getFormTextInputValue() {
     return this.formTextInputValue;

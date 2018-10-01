@@ -149,19 +149,6 @@ class OnboardStepper extends React.Component {
       );
     };
 
-    const SetupWalletList = inject('RootStore')(observer((props) => {
-      console.log('is on fixed account? : ', this.props.RootStore.userStore.isOnFixedAccount);
-      // if (this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount) {
-      //   return (
-      //     <CheckList list={onboardSteps[activeStep].list} network={this.props.RootStore.currentNetwork} />
-      //   );
-      // }
-      // this.props.RootStore.commonStore.completeSetupWallet();
-      // return (
-      //   <CheckList list={onboardSteps[activeStep].listForFixedAccount} network={this.props.RootStore.currentNetwork} />
-      // );
-      return <CheckList />;
-    }));
     const AccountTypeSelector = (props) => {
       return (<div className={classes.accountType}><AccountTypeDropdown variant={props.variant} isOnSidebar={false} /></div>);
     };
@@ -180,13 +167,13 @@ class OnboardStepper extends React.Component {
             <div className={classes.text}>
               {onboardSteps[activeStep].hasAccountTypeDropdown && <AccountTypeSelector isOnSidebar={false} variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} />}
               {onboardSteps[activeStep].text && onboardSteps[activeStep].text }
-              {onboardSteps[activeStep].list && <SetupWalletList /> }
+              {onboardSteps[activeStep].list && <CheckList /> }
             </div>
           </TransitionWrapper> :
           <div className={classes.text}>
             {onboardSteps[activeStep].hasAccountTypeDropdown && <AccountTypeSelector isOnSidebar={false} variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} />}
             {onboardSteps[activeStep].text && onboardSteps[activeStep].text }
-            {onboardSteps[activeStep].list && <SetupWalletList /> }
+            {onboardSteps[activeStep].list && <CheckList /> }
           </div>
         }
         {onboardSteps[activeStep].hasRoleSelect &&

@@ -38,13 +38,14 @@ const styles = theme => ({
 @inject('RootStore') @observer
 class CheckList extends React.Component {
   componentDidMount() {
-    when(
-      () => this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount,
-      () => {
-        this.props.RootStore.commonStore.checkMetamaskNetwork();
-      },
-    );
-
+    
+    // when(
+    //   () => this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount,
+    //   () => {
+    //     console.log('oh boy');
+    //     this.props.RootStore.commonStore.checkMetamaskNetwork();
+    //   },
+    // );
   }
   render() {
     const { classes } = this.props;

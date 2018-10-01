@@ -107,21 +107,22 @@ class AccountTypeDropdown extends React.Component {
   }
   handleClick = (e) => {
     console.log(e.target.value);
-    if (e.target.value === 'metamask') {
-      this.props.RootStore.userStore.changeToMetaMaskAccount();
-      this.props.RootStore.initNetwork();
-      // this.props.RootStore.userStore.initMetamaskNetwork();
-      // this.props.RootStore.commonStore.checkMetamaskNetwork();
-    } else {
-      this.props.RootStore.userStore.changeToFixedAccount();
-      this.props.RootStore.initNetwork();
-    }
+    this.props.RootStore.initNetwork();
+    // if (e.target.value === 'metamask') {
+    //   this.props.RootStore.userStore.changeToMetaMaskAccount();
+    //   this.props.RootStore.initNetwork();
+    //   // this.props.RootStore.userStore.initMetamaskNetwork();
+    //   // this.props.RootStore.commonStore.checkMetamaskNetwork();
+    // } else {
+    //   this.props.RootStore.userStore.changeToFixedAccount();
+    //   this.props.RootStore.initNetwork();
+    // }
   };
   handleSidebarClick = (e) => {
     if (e.target.value === 'metamask') {
       this.props.RootStore.userStore.changeToMetaMaskAccount();
       if (this.props.isOnSidebar) {
-        this.props.RootStore.userStore.openReOnboardModal();
+        if (!this.props.RootStore.commonStore.isWalletSetupDone) this.props.RootStore.userStore.openReOnboardModal();
       } else {
         this.props.RootStore.initNetwork();
       }

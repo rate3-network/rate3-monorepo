@@ -65,7 +65,7 @@ class UserMain extends React.Component {
 
     // Initilize MetaMask Account, get claims from smart contract
     when(
-      () => !this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitMetamaskNetwork,
+      () => !this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitMetamaskNetwork && this.props.RootStore.commonStore.isWalletSetupDone,
       () => {
         console.log('getting claims from blockchain');
         this.props.RootStore.userStore.getUserAddr();
@@ -171,11 +171,18 @@ class UserMain extends React.Component {
         <LoadingModal open={userStore.startedDeployingIdentity && !userStore.finishedDeployingIdentity} subText="Please wait while your Rate3 identity is deploying">
           Deploying Contract...
         </LoadingModal>
+        <SuccessModal
+          open={userStore.startedDeployingIdentity && userStore.finishedDeployingIdentity}
+          onClose={() => { window.location.reload(); }}
+          title={t('deploySuccessTitle')}
+          content={t('deploySuccessContent')}
+        />
         {/* <ReOnboardModal open={RootStore.startInitMetamaskNetwork && !RootStore.finishInitMetamaskNetwork} /> */}
-        <ReOnboardModal open={RootStore.reonboardModalIsShowing} />
+        
         <LoadingModal open={userStore.startedLoadingClaims && !userStore.finishedLoadingClaims}>
           Loading Claims...
         </LoadingModal>
+        <ReOnboardModal open={RootStore.reonboardModalIsShowing} />
         <RegistrationModal
           open={userStore.getRegisterModalIsShowing()}
           onClose={userStore.closeRegisterModal.bind(userStore)}

@@ -107,6 +107,7 @@ class NetworkDropdown extends React.Component {
   componentDidMount() {
   }
   handleClick = (e) => {
+    if (this.props.RootStore.commonStore.commonNetwork === e.target.value) return;
     this.props.RootStore.commonStore.changeCommonNetwork(e.target.value);
     this.props.RootStore.initNetwork();
     window.location.reload();

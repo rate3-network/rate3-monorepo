@@ -9,6 +9,7 @@ import FormControl from '@material-ui/core/FormControl';
 import { observer, inject } from 'mobx-react';
 import { inputBorderGrey, buttonShadow, identityBlue, homeBg, backdropColor, modalShadow, homeTextGreyVerifier, materialGrey, buttonTextGrey } from '../../constants/colors';
 import BlueButton from '../BlueButton';
+import { parseFormType } from '../../utils';
 
 const styles = (theme) => {
   return ({
@@ -145,7 +146,11 @@ const RegistrationModal = inject('RootStore')(observer((props) => {
         <div className={classes.paper}>
           <div className={classes.content}>
             <h1>Registration</h1>
-            <div className={classes.inputLabel}><p>{props.RootStore.userStore.formType}</p></div>
+            <div className={classes.inputLabel}>
+              <p>
+                {parseFormType(props.RootStore.userStore.formType)}
+              </p>
+            </div>
             <Input
               placeholder="Your Address"
               className={classes.textField}

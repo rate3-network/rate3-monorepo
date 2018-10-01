@@ -19,4 +19,7 @@ export default {
 
   publicationSuccessTitle: 'Verification Published',
   publicationSuccessContent: 'Thank you, your verification has been added to the blockchain. You can view the transaction in Metamask.',
+
+  deploySuccessTitle: 'Identity Deployed',
+  deploySuccessContent: 'Thank you, your Rate3 Identity has been added to the blockchain. You can view the transaction in Metamask.',
 };

@@ -156,7 +156,8 @@ const TopText = withRouter(withStyles(styles)((props) => {
   );
 }));
 
-const UserInfo = withStyles(styles)((props) => {
+const UserInfo = observer(withStyles(styles)((props) => {
+  
   const { classes } = props;
   return (
     <div>
@@ -166,31 +167,13 @@ const UserInfo = withStyles(styles)((props) => {
       <div>
         <span className={classes.walletNameText}>ETH wallet</span>
         :
-        <span className={classes.amountText}> 0.0003454 </span>
+        <span className={classes.amountText}> {props.balance} </span>
         <span className={classes.unitText}> ETH</span>
       </div>
     </div>
   );
-});
+}));
 
-const Keys = withStyles(styles)((props) => {
-  const { classes, isUser } = props;
-  return (
-    !isUser &&
-      <div className={classes.keys}>
-        <div className={classes.keyTitle}>
-          My Public Keys
-        </div>
-        
-        <div>
-          <div className={classes.keyName}>Management Key  <Info className={classes.info} /></div>
-          <div className={classes.key}>0xb423...b292</div>
-          <div className={classes.keyName}>Signing Key  <Info className={classes.info} /></div>
-          <div className={classes.key}>0xb423...b292</div>
-        </div>
-      </div>
-  );
-});
 
 const Settings = withRouter(withStyles(styles)((props) => {
   const { classes } = props;
@@ -202,7 +185,7 @@ const Settings = withRouter(withStyles(styles)((props) => {
 }));
 
 
-const HomeSidebar = observer((props) => {
+const HomeSidebar = inject('RootStore')(observer((props) => {
   const { classes } = props;
   return (
     <Drawer
@@ -222,7 +205,12 @@ const HomeSidebar = observer((props) => {
       <div className={classes.container}>
         <TopText />
         <div className={classes.profilePic}><ProfilePic size={11} /></div>
-        <div className={classes.userInfo}><UserInfo isUser={props.RootStore.commonStore.getIsUser()} /></div>
+        <div className={classes.userInfo}>
+          <UserInfo
+            isUser={props.RootStore.commonStore.getIsUser()}
+            balance={props.RootStore.userStore.isOnFixedAccount ? props.RootStore.commonStore.fixedAccountBalance : props.RootStore.commonStore.metamaskBalance}
+          />
+        </div>
         <div className={classes.networkBox}>
           {props.RootStore.commonStore.shouldUseCommonNetwork ?
             <div className={classes.accountTypeAndNetworkBox}>
@@ -254,7 +242,7 @@ const HomeSidebar = observer((props) => {
       </div>
     </Drawer>
   );
-});
+}));
 
 HomeSidebar.propTypes = {
   classes: PropTypes.object.isRequired,

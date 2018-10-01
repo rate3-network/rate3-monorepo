@@ -31,7 +31,7 @@ class RootStore {
   @observable reonboardModalIsShowing: Boolean = false;
   @computed get currentNetwork() {
     if (this.commonStore.getIsUser()) {
-      if (!this.userStore.isOnFixedAccount) return this.userStore.currentNetwork;
+      if (!this.userStore.isOnFixedAccount) return this.commonStore.metamaskCurrentNetwork;
       return this.commonStore.commonNetwork;
     }
     return this.commonStore.commonNetwork;
@@ -41,13 +41,14 @@ class RootStore {
   @action
   initNetwork() {
     // for user using own account, must detect metamask first
+    console.log('init root network');
     if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
       if (typeof window.web3 === 'undefined') {
         console.error('no web3 is installed or metamask not enabled');
         return;
       }
     }
-    if (typeof window.web3 !== 'undefined' && window.web3.currentProvider.isMetaMask === true) {
+    if (typeof window.web3 !== 'undefined' && this.commonStore.web3HasMetamaskProvider() && window.web3.currentProvider.isMetaMask) {
       console.log('store metamask in root store');
       this.browserProvider = window.web3.currentProvider;
     }

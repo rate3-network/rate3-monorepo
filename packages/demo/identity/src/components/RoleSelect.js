@@ -46,6 +46,9 @@ class ToggleButtons extends React.Component {
   componentWillUnmount() {
     this.props.RootStore.commonStore.setFalseShouldRenderOnboardTransition();
     this.props.RootStore.initNetwork();
+    // if (this.props.RootStore.commonStore.getIsUser() && !this.props.RootStore.userStore.isOnFixedAccount) {
+    //   this.props.RootStore.commonStore.checkMetamaskNetwork();
+    // }
   }
   render() {
     const { classes } = this.props;

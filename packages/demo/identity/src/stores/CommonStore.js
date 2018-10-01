@@ -33,6 +33,8 @@ class CommonStore {
   @observable metamaskCurrentNetwork = '';
   @observable metamaskBalance = '';
   @observable accountUsedForDetectingChange = null;
+
+  @observable fixedAccountBalance = '';
   // @observable shoudUseCommonNetwork: Boolean = false;
   /* JSDOC: MARK END OBSERVABLE */
 
@@ -216,7 +218,7 @@ class CommonStore {
   }
 
   @action
-  initCommonNetwork() {
+  async initCommonNetwork() {
     this.rootStore.finishInitNetwork = false;
     console.log('init common network');
     // const web3 = new Web3(new Web3.providers.WebsocketProvider(ropsten.endpoint));
@@ -228,9 +230,22 @@ class CommonStore {
     } else {
       this.changeCommonNetwork('Ropsten');
     }
-    this.setupWalletProgress = [true, true, true, true];
-    this.rootStore.globalSpinnerIsShowing = false;
-    this.rootStore.finishInitNetwork = true;
+
+    const fixedAccountBalance = await window.web3.eth.getBalance(this.rootStore.userStore.fixedUserAddr);    
+
+    try {
+      runInAction(() => {
+        this.fixedAccountBalance = fixedAccountBalance;
+        this.fixedAccountBalance = window.web3.utils.fromWei(this.fixedAccountBalance);
+        console.log('Rate: CommonStore -> asyncinitCommonNetwork -> this.fixedAccountBalance', this.fixedAccountBalance);
+        this.setupWalletProgress = [true, true, true, true];
+        this.rootStore.globalSpinnerIsShowing = false;
+        this.rootStore.finishInitNetwork = true;
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    
   }
 
   web3HasMetamaskProvider() {
@@ -303,11 +318,13 @@ class CommonStore {
       console.error('An error occurred while detecting MetaMask network type');
     }
 
+
     try {
       const account = this.metamaskAccount;
       const balance = await window.web3.eth.getBalance(account);
       runInAction(() => {
         this.metamaskBalance = balance;
+        this.metamaskBalance = window.web3.utils.fromWei(this.metamaskBalance);
         if (this.metamaskBalance > 0) {
           this.hasTestEther = true;
         }
