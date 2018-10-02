@@ -76,7 +76,9 @@ const styles = theme => ({
     width: '1.5em',
   },
   iconButton: {
-    marginRight: '2em',
+    marginLeft: 'auto',
+    transform: 'rotate(0deg) !important',
+    top: '10%',
   },
   content: {
     display: 'flex',
@@ -129,16 +131,16 @@ const styles = theme => ({
     maxWidth: '12em',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-  }
+  },
+  reducedMargin: {
+    margin: '0 0 !important',
+  },
 });
 
 @inject('RootStore') @observer
 class SubPanel extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      expanded: false,
-    };
   }
 
   handleAdd() {
@@ -156,14 +158,14 @@ class SubPanel extends React.Component {
     console.log(this.props.item);
     console.log(this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr);
     window.identityContract.methods.removeClaim(this.props.item.claimId).send({ from: this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr, gas: 6000000 },
-          (err, result) => {
-            console.log('from addClaim callback');
-            if (err) console.log(err);
-            if (result) {
-              console.log(result);
-            }
-          }
-        );
+      (err, result) => {
+        console.log('from addClaim callback');
+        if (err) console.log(err);
+        if (result) {
+          console.log(result);
+        }
+      },
+    );
   }
 
   handleExpand() {
@@ -175,21 +177,30 @@ class SubPanel extends React.Component {
   render() {
     const { classes } = this.props;
 
-    const ArrowIcon = withStyles(styles)((props) => {
-      return <ExpandMoreIcon onClick={this.handleExpand.bind(this)} className={classes.icon} />;
+    const ActionButton = withStyles(styles)((props) => {
+      if (this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim) {
+        return (<div onClick={this.handleAdd.bind(this)} className={classes.addButton}><AddButton /></div>);
+      }
+      if (!this.props.isUser && this.props.item.status === PENDING_REVIEW) {
+        return (<div onClick={this.handleVerify.bind(this)} className={classes.addButton}><VerifyButton /></div>);
+      }
+      
+      if (this.props.isUser && this.props.item.status === VERIFIED && !this.props.RootStore.userStore.startedAddingClaim) {
+        return (<div onClick={this.handleRemove.bind(this)} className={classes.addButton}><RemoveButton /></div>);
+      }
+      return null;
     });
-    
     const AddButton = withStyles(styles)((props) => {
       return (
       <div>
         <BlueButton 
           className={classes.buttonContainer}
-          fontSize="0.7em"
-          lineHeight="1em"
+          fontSize="0.8rem"
+          lineHeight="0.8rem"
           fontWeight={500}
           buttonText="publish"
           // buttonIcon={ether}
-          iconHeight="0.8em"
+          iconHeight="0.8rem"
         />
       </div>);
     });
@@ -199,11 +210,11 @@ class SubPanel extends React.Component {
       <div>
         <BlueButton 
           className={classes.buttonContainer}
-          fontSize="0.7em"
-          lineHeight="1em"
+          fontSize="0.8rem"
+          lineHeight="0.8rem"
           fontWeight={500}
           buttonText="verify"
-          iconHeight="0.8em"
+          iconHeight="0.8rem"
         />
       </div>);
     });
@@ -213,11 +224,11 @@ class SubPanel extends React.Component {
       <div>
         <OutlineButton 
           className={classes.buttonContainer}
-          fontSize="0.7em"
-          lineHeight="1em"
-          fontWeight={400}
+          fontSize="0.8rem"
+          lineHeight="0.8rem"
+          fontWeight={500}
           buttonText="remove"
-          iconHeight="0.8em"
+          iconHeight="0.8rem"
         />
       </div>);
     });
@@ -237,9 +248,12 @@ class SubPanel extends React.Component {
       <div className={classes.root}>
         <ExpansionPanel
           className={classes.paper}
-          expanded={this.state.expanded}
+          expanded
         >
-          <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
+          <ExpansionPanelSummary
+            classes={{ expandIcon: classes.iconButton, content: classes.reducedMargin }}
+            expandIcon={<ActionButton />}
+          >
             <div className={classes.paperContainer}>
               <div>
                 <div className={classes.title}>
@@ -257,7 +271,7 @@ class SubPanel extends React.Component {
                   }
                 </div>
               </div>
-              {this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim &&
+              {/* {this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim &&
                 <div onClick={this.handleAdd.bind(this)} className={classes.addButton}><AddButton /></div>
               }
               {!this.props.isUser && this.props.item.status === PENDING_REVIEW &&
@@ -265,7 +279,7 @@ class SubPanel extends React.Component {
               }
               {this.props.isUser && this.props.item.status === VERIFIED && !this.props.RootStore.userStore.startedAddingClaim &&
                 <div onClick={this.handleRemove.bind(this)} className={classes.addButton}><RemoveButton /></div>
-              }
+              } */}
             </div>
             
           </ExpansionPanelSummary>
