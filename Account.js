@@ -389,8 +389,8 @@ class Account {
     }
   }
 
-  // Phase 3 Anchor Bridge SEP-0006 the client consumes the API
-  // responses are not yet handled
+  // Phase 3 Anchor Bridge, client side implementation of SEP-0006
+  // They should be static functions, having no relation with this account
 
   /**
    * Deposit external assets with an anchor.
@@ -460,25 +460,26 @@ class Account {
    *  along with account to look up the user's KYC info.
    * @param {string} memo_type - (optional) type of memo. One of text, id or hash
    */
-  async getWithdraw(url, type, asset_code, dest, dest_extra = '', account, memo = '', memo_type = '') {
+  async getWithdraw(url, type, asset_code, dest, dest_extra = '', account = '', memo = '', memo_type = '') {
     this.anchorUrl = url;
     try {
+      const qsConstruct = {
+        asset_code, dest, dest_extra, account, memo_type, memo, type,
+      };
+      // eslint-disable-next-line no-restricted-syntax
+      for (const property in qsConstruct) {
+        if (!qsConstruct[property]) {
+          delete qsConstruct[property];
+        }
+      }
       // verifies that the parameters are valid
-      if (account.charAt(0) !== 'G') {
+      if (account && account.charAt(0) !== 'G') {
         console.log('The account must start with letter G.');
         return null;
       }
       const options = {
         uri: `${this.anchorUrl}/withdraw`,
-        qs: {
-          type,
-          asset_code,
-          dest,
-          dest_extra,
-          account,
-          memo,
-          memo_type,
-        },
+        qs: qsConstruct,
         json: true, // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
@@ -499,14 +500,16 @@ class Account {
    * @param {string} lang - (optional) Defaults to en. Language code specified using ISO 639-1.
    * description fields in the response should be in this language
    */
-  async getInfo(url, lang = '') {
+  async getInfo(url, lang = 'en') {
     this.anchorUrl = url;
     try {
+      const qsConstruct = {};
+      if (lang !== 'en') {
+        qsConstruct.lang = lang;
+      }
       const options = {
         uri: `${this.anchorUrl}/info`,
-        qs: {
-          lang,
-        },
+        qs: qsConstruct,
         json: true, // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
@@ -531,15 +534,18 @@ class Account {
   async getTransactionHistory(url, asset_code, account, no_older_than = '', limit = '', paging_id = '') {
     this.anchorUrl = url;
     try {
+      const qsConstruct = {
+        asset_code, account, no_older_than, limit, paging_id,
+      };
+      // eslint-disable-next-line no-restricted-syntax
+      for (const property in qsConstruct) {
+        if (!qsConstruct[property]) {
+          delete qsConstruct[property];
+        }
+      }
       const options = {
-        uri: `${this.anchorUrl}/info`,
-        qs: {
-          asset_code,
-          account,
-          no_older_than,
-          limit,
-          paging_id,
-        },
+        uri: `${this.anchorUrl}/transactions`,
+        qs: qsConstruct,
         json: true, // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
