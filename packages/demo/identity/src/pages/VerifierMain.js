@@ -24,7 +24,7 @@ const styles = (theme) => {
       letterSpacing: '0.02em',
     },
     descriptionBox: {
-      width: '65%',
+      width: '75%',
       fontSize: '1.2em',
       lineHeight: '1.55em',
       fontWeight: '400',
@@ -42,6 +42,7 @@ class VerifierMain extends React.Component {
     }
   }
   componentDidMount() {
+    this.props.RootStore.setStartInitNetworkTrue();
     if (window.localStorage.accountType === 'fixed') {
       this.props.RootStore.userStore.changeToFixedAccount();
       this.props.RootStore.initNetwork();

@@ -71,8 +71,6 @@ class App extends React.Component {
   }
   componentDidMount() {
     // RootStore.initNetwork();
-    
-    
   }
   render() {
     const { classes } = this.props;

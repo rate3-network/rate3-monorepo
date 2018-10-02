@@ -11,9 +11,14 @@ import ExpandablePanel from '../../components/ExpandablePanel';
 import FixedPanel from '../../components/FixedPanel';
 import VerifyModal from '../../components/verifier/VerifyModal';
 import SuccessModal from '../../components/SuccessModal';
+import { truncateAddress } from '../../utils';
 
 const styles = (theme) => {
   return ({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+    },
     title: {
       letterSpacing: '0.02em',
       display: 'flex',
@@ -30,7 +35,7 @@ const styles = (theme) => {
       lineHeight: '1.5em',
     },
     descriptionBox: {
-      width: '65%',
+      width: '75%',
       fontSize: '1.2em',
       lineHeight: '1.55em',
       fontWeight: '400',
@@ -51,7 +56,7 @@ class ManageIndividualUser extends Component {
     const { classes, RootStore, t } = this.props;
     console.log('selected user names',RootStore.verifierStore.selectedUserNames);
     return (
-      <div>
+      <div className={classes.container}>
         <VerifyModal open={RootStore.verifierStore.verifyModalIsShowing} onClose={RootStore.verifierStore.closeVerificationModal.bind(RootStore.verifierStore)} />
         <SuccessModal
           open={RootStore.verifierStore.verifySuccessModalIsShowing}
@@ -66,7 +71,7 @@ class ManageIndividualUser extends Component {
             <ChevronLeft className={classes.label} />
           </IconButton>
           <div><ProfilePic size={7} seed={RootStore.verifierStore.getUserSelected()} /></div>
-          <div className={classes.userAddr}>{RootStore.verifierStore.getUserSelected()}</div>
+          <div className={classes.userAddr}>{truncateAddress(RootStore.verifierStore.getUserSelected(), 16)}</div>
         </h1>
         <div className={classes.descriptionBox}>
           <p>You can approve this user’s verifications if he/she has registered.</p>

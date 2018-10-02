@@ -345,7 +345,7 @@ class CommonStore {
       }
     });
 
-    runInAction(() => { this.rootStore.finishInitMetamaskNetwork = true; });
+    runInAction(() => { this.rootStore.finishInitMetamaskNetwork = true; this.rootStore.finishInitNetwork = true; });
   }
 }
 

@@ -133,6 +133,7 @@ class UserStore {
   changeToMetaMaskAccount() {
     this.isOnFixedAccount = false;
     window.localStorage.setItem('accountType', 'metamask');
+    console.log('changing to metamask account in user store 1');
     if (!this.rootStore.commonStore.isWalletSetupDone) this.rootStore.openReonboardModal();
     console.log('changing to metamask account in user store');
   }
@@ -206,21 +207,104 @@ class UserStore {
               console.log('cleared interval for polling new claim');
               runInAction(() =>{ this.finishedAddingClaim = true; });
               this.resetClaimLists();
-              this.getIdentities();
+              this.getValidClaims();
               this.initDb();
               this.populateClaimLists();
+              this.rootStore.finishedLoadingClaims = true;
               clearInterval(polling);
               // window.location.reload();
-              
             }
           });
         }
       });
     };
+    runInAction(() => { this.rootStore.startedLoadingClaims = true; this.rootStore.finishedLoadingClaims = false; });
     let polling = setInterval(checkNewClaim, 1000);
     // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
   }
+  @action
+  async getIdentityContractFromBlockchain() {
+    console.log('this.registryContract', window.registryContract);
+    runInAction(() => { this.startedLoadingClaims = true; });
+    let userAddress = '';
+    if (this.isOnFixedAccount) {
+      userAddress = this.fixedUserAddr;
+    } else {
+      userAddress = this.userAddr;
+    }
+    const hasIdentity = await this.registryContract.methods.hasIdentity(userAddress).call();
+    let idContractAddr = '';
+    if (!hasIdentity) {
+      runInAction(() => { this.startedDeployingIdentity = true; });
+      this.listenToNewIdentityEvent();
+      const identityAddrCreated = await this.registryContract.methods.createIdentity().send({ from: userAddress, gas: 6000000 });
+      idContractAddr = identityAddrCreated;
+    }
+    if (hasIdentity) {
+      idContractAddr = await this.registryContract.methods.identities(userAddress).call();
+    }
+    const identityContract = new window.web3.eth.Contract(identityJson.abi, idContractAddr);
+    window.identityContract = identityContract;
+    runInAction(() => {
+      this.identityContract = identityContract;
+      this.identityContractAddr = identityContract._address;
+    });
+    return new Promise((resolve) => {
+      resolve(identityContract);
+    });
+  }
+  @action
+  async getAliveClaims() {
+    await this.getIdentityContractFromBlockchain();
+    const nameClaimArr = await this.identityContract.methods.getClaimIdsByTopic('101').call();
+    const addressClaimArr = await this.identityContract.methods.getClaimIdsByTopic('102').call();
+    const socialIdClaimArr = await this.identityContract.methods.getClaimIdsByTopic('103').call();
 
+    const combined = { nameClaimArr, addressClaimArr, socialIdClaimArr };
+
+    return new Promise((resolve) => {
+      resolve(combined);
+    });
+  }
+  @action
+  async getValidClaims() {
+    runInAction(() => { this.rootStore.startedLoadingClaims = true; this.rootStore.finishedLoadingClaims = false; });
+    const allAliveClaims = await this.getAliveClaims();
+    const { nameClaimArr, addressClaimArr, socialIdClaimArr } = allAliveClaims;
+    const allEvents = await this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' });
+    const addedAndChangedEvents = allEvents.filter((item) => { return item.event === 'ClaimAdded' || item.event === 'ClaimChanged'; });
+
+    let userAddress;
+    if (this.isOnFixedAccount) {
+      userAddress = this.fixedUserAddr;
+    } else {
+      userAddress = this.userAddr;
+    }
+    let data;
+    if (nameClaimArr.length !== 0) {
+      const validNameClaims = addedAndChangedEvents.filter((item) => { return item.returnValues.topic === '101'; });
+      const validNameClaim = validNameClaims[validNameClaims.length - 1];
+
+      data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
+      const claim = new Identity(data, 'name', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
+      runInAction(() => { this.nameClaimList.push(claim); });
+    }
+    if (addressClaimArr.length !== 0) {
+      const validNameClaims = addedAndChangedEvents.filter((item) => { return item.returnValues.topic === '102'; });
+      const validNameClaim = validNameClaims[validNameClaims.length - 1];
+      data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
+      const claim = new Identity(data, 'address', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
+      runInAction(() => { this.addressClaimList.push(claim); });
+    }
+    if (socialIdClaimArr.length !== 0) {
+      const validNameClaims = addedAndChangedEvents.filter((item) => { return item.returnValues.topic === '103'; });
+      const validNameClaim = validNameClaims[validNameClaims.length - 1];
+      data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
+      const claim = new Identity(data, 'socialId', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
+      runInAction(() => { this.socialIdClaimList.push(claim); });
+    }
+    runInAction(() => { this.finishedLoadingClaims = true; });
+  }
   @action
   async getIdentities() {
     console.log('this.registryContract', window.registryContract);
@@ -236,7 +320,7 @@ class UserStore {
     if (!hasIdentity) {
       runInAction(()=>{this.startedDeployingIdentity = true;});
       this.listenToNewIdentityEvent();
-      const identityAddrCreated = await this.registryContract.methods.createIdentity().send({ from: userAddress, gas: 6000000 });
+      const identityAddrCreated = await this.registryContract.methods.createIdentity().send({ from: userAddress, gas: 5000000 });
       idContractAddr = identityAddrCreated;
       
     }
@@ -297,7 +381,7 @@ class UserStore {
               }
               return prev;
             }, null);
-            console.log('Rate: getPastEventCallBack -> newAddressClaim', newAddressClaim);
+            
             newSocialIdClaim = tempSocialIdList.reduce((prev, next) => {
               if (prev === null) return next;
               if (next.index > prev.index) {
@@ -317,21 +401,24 @@ class UserStore {
             
             if (returnValues.topic === '101') {
               const foundIndex = this.nameClaimList.findIndex((claim) => {
+                console.log('Rate: getPastEventCallBack -> ev.transactionHash', ev.transactionHash, window.web3.utils.hexToAscii(ev.returnValues.data), ev.returnValues.claimId);
+                console.log('Rate: getPastEventCallBack -> claim.txHash', claim.txHash, claim.value, ev.returnValues.claimId);
                 return claim.txHash === ev.transactionHash;
+                
               });
-              if (foundIndex !== -1) runInAction(() => { this.nameClaimList.splice(foundIndex, 1); });
+              if (foundIndex !== -1) runInAction(() => { console.log('removing: ', window.web3.utils.hexToAscii(ev.returnValues.data)); this.nameClaimList.splice(foundIndex, 1); });
             }
             if (returnValues.topic === '102') {
               const foundIndex = this.addressClaimList.findIndex((claim) => {
                 return claim.txHash === ev.transactionHash;
               });
-              if (foundIndex !== -1) runInAction(() => { this.addressClaimList.splice(foundIndex, 1); });
+              if (foundIndex !== -1) runInAction(() => { console.log('removing: ', window.web3.utils.hexToAscii(ev.returnValues.data)); this.addressClaimList.splice(foundIndex, 1); });
             }
             if (returnValues.topic === '103') {
               const foundIndex = this.socialIdClaimList.findIndex((claim) => {
                 return claim.txHash === ev.transactionHash;
               });
-              if (foundIndex !== -1) runInAction(() => { this.socialIdClaimList.splice(foundIndex, 1); });
+              if (foundIndex !== -1) runInAction(() => { console.log('removing: ', window.web3.utils.hexToAscii(ev.returnValues.data)); this.socialIdClaimList.splice(foundIndex, 1); });
             }
           });
           runInAction(() => { this.finishedLoadingClaims = true; });
@@ -340,6 +427,7 @@ class UserStore {
       this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' }, getPastEventCallBack);
     }
   }
+
 
   @action
   getIdentityContract() {

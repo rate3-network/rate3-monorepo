@@ -37,6 +37,9 @@ const styles = (theme) => {
       borderRadius: '0 0.5em 0.5em 0',
       boxShadow: buttonShadow,
       backgroundColor: searchBarButtonColor,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
       '&:hover': {
         boxShadow: buttonHoverShadow,
         backgroundColor: searchBarButtonColor,

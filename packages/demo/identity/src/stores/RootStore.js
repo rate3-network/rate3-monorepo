@@ -8,6 +8,7 @@ import {
 import CommonStore from './CommonStore';
 import UserStore from './UserStore';
 import VerifierStore from './VerifierStore';
+import PaymentStore from './PaymentStore';
 import { fixedUserPrivKey, fixedVerifierPrivKey } from '../constants/defaults';
 
 class RootStore {
@@ -16,6 +17,7 @@ class RootStore {
   @observable commonStore = new CommonStore(this);
   @observable userStore = new UserStore(this);
   @observable verifierStore = new VerifierStore(this);
+  @observable paymentStore = new PaymentStore(this);
 
   @observable browserProvider = null;
 
@@ -35,6 +37,10 @@ class RootStore {
       return this.commonStore.commonNetwork;
     }
     return this.commonStore.commonNetwork;
+  }
+  @action
+  setStartInitNetworkTrue() {
+    this.startInitNetwork = true;
   }
 
 

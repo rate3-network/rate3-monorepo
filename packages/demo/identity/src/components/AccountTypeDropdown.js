@@ -107,6 +107,11 @@ class AccountTypeDropdown extends React.Component {
   }
   handleClick = (e) => {
     console.log(e.target.value);
+    if (e.target.value === 'metamask') {
+      this.props.RootStore.userStore.changeToMetaMaskAccount();
+    } else {
+      this.props.RootStore.userStore.changeToFixedAccount();
+    }
     this.props.RootStore.initNetwork();
     // if (e.target.value === 'metamask') {
     //   this.props.RootStore.userStore.changeToMetaMaskAccount();
@@ -133,6 +138,7 @@ class AccountTypeDropdown extends React.Component {
     window.location.reload();
   }
   render() {
+    const imgStyle = { width: '1.3em' };
     const { classes, variant, isOnSidebar, isUser } = this.props;
     if (variant === 'verifier') {
       return (
@@ -169,8 +175,10 @@ class AccountTypeDropdown extends React.Component {
                       }}
                     >
                       <div className={classes.menuIconWithText}>
-                        {item.value === 'metamask' ? <img style={{ height: '1em' }} src={MetamaskIcon} alt="metamask" /> : <img style={{ height: '1em' }} src={OnboardingWalletIcon} alt="metamask" />}
-                        <div className={classes.itemText}> {item.label}</div>
+                        {item.value === 'metamask' ?
+                          <img style={imgStyle} src={MetamaskIcon} alt="metamask" /> :
+                          <img style={imgStyle} src={OnboardingWalletIcon} alt="metamask" />}
+                        <div className={classes.itemText}>  {item.label}</div>
                       </div>
                     </MenuItem>
                   );
@@ -214,8 +222,10 @@ class AccountTypeDropdown extends React.Component {
                     }}
                   >
                     <div className={classes.menuIconWithText}>
-                      {item.value === 'metamask' ? <img style={{ height: '1em' }} src={MetamaskIcon} alt="metamask" /> : <img style={{ height: '1em' }} src={OnboardingWalletIcon} alt="metamask" />}
-                      <div className={classes.itemText}> {item.label}</div>
+                      {item.value === 'metamask' ?
+                        <img style={imgStyle} src={MetamaskIcon} alt="metamask" /> :
+                        <img style={imgStyle} src={OnboardingWalletIcon} alt="metamask" />}
+                      <div className={classes.itemText}>  {item.label}</div>
                     </div>
                   </MenuItem>
                 );

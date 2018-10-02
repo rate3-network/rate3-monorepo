@@ -145,7 +145,8 @@ class SubPanel extends React.Component {
 
   handleAdd() {
     console.log(this.props.item);
-    this.props.RootStore.userStore.addClaim(this.props.item);
+    this.props.RootStore.paymentStore.openPaymentModal(this.props.item);
+    // this.props.RootStore.userStore.addClaim(this.props.item);
   }
 
   handleVerify() {
@@ -157,9 +158,16 @@ class SubPanel extends React.Component {
   handleRemove() {
     console.log(this.props.item);
     console.log(this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr);
-    window.identityContract.methods.removeClaim(this.props.item.claimId).send({ from: this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr, gas: 6000000 },
+    window.identityContract.methods.removeClaim(this.props.item.claimId).send(
+      {
+        from: this.props.RootStore.userStore.isOnFixedAccount ?
+          this.props.RootStore.userStore.fixedUserAddr :
+          this.props.RootStore.userStore.userAddr,
+        gas: 6000000,
+        // gasPrice: '8000000',
+      },
       (err, result) => {
-        console.log('from addClaim callback');
+        console.log('from remove claim callback');
         if (err) console.log(err);
         if (result) {
           console.log(result);

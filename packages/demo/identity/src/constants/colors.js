@@ -64,6 +64,8 @@ export const inputBorderGrey = 'rgba(129, 140, 161, 0.6)';
 
 export const errorModalBg = '#D11717';
 
+export const disabledInput = '#E0E0E0';
+
 // Tabs
 export const tabsUnselectedText = '#CACACA';
 export const rippleColor = 'rgba(67, 146, 241, 0.12)';

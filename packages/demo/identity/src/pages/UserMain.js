@@ -14,6 +14,7 @@ import RegistrationModal from '../components/user/RegistrationModal';
 import SuccessModal from '../components/SuccessModal';
 import LoadingModal from '../components/LoadingModal';
 import ReOnboardModal from '../components/ReOnboardModal';
+import PaymentModal from '../components/PaymentModal';
 import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
@@ -47,6 +48,7 @@ class UserMain extends React.Component {
   }
 
   componentDidMount() {
+    this.props.RootStore.setStartInitNetworkTrue();
     if (window.localStorage.accountType === 'fixed') {
       this.props.RootStore.userStore.changeToFixedAccount();
       this.props.RootStore.initNetwork();
@@ -82,7 +84,9 @@ class UserMain extends React.Component {
       () => {
         console.log('getting identites for ', this.props.RootStore.userStore.userAddr);
         this.props.RootStore.userStore.populateClaimLists();
-        this.props.RootStore.userStore.getIdentities();
+        // this.props.RootStore.userStore.getIdentities();
+        // this.props.RootStore.userStore.getIdentityContractFromBlockchain().then((contract) => { console.log(contract); });
+        this.props.RootStore.userStore.getValidClaims();
       },
     );
 
@@ -99,7 +103,8 @@ class UserMain extends React.Component {
         window.registryContract = contract;
 
         this.props.RootStore.userStore.populateClaimLists();
-        this.props.RootStore.userStore.getIdentities();
+        // this.props.RootStore.userStore.getIdentities();
+        this.props.RootStore.userStore.getValidClaims();
       },
     );
     // const fixedAccountReady = this.
@@ -151,7 +156,7 @@ class UserMain extends React.Component {
 
   render() {
     const { classes, t, RootStore } = this.props;
-    const { userStore, commonStore } = RootStore;
+    const { userStore, commonStore, paymentStore } = RootStore;
     const instructionLength = 4;
     return (
       <div className={classes.container}>
@@ -168,7 +173,10 @@ class UserMain extends React.Component {
             onChangeIndex={userStore.handleModalIndexChange.bind(userStore)}
           />
         </InstructionModal>
-        <LoadingModal open={userStore.startedDeployingIdentity && !userStore.finishedDeployingIdentity} subText="Please wait while your Rate3 identity is deploying">
+        <LoadingModal
+          open={userStore.startedDeployingIdentity && !userStore.finishedDeployingIdentity}
+          subText="Please wait while your Rate3 identity is deploying"
+        >
           Deploying Contract...
         </LoadingModal>
         <SuccessModal
@@ -178,7 +186,9 @@ class UserMain extends React.Component {
           content={t('deploySuccessContent')}
         />
         {/* <ReOnboardModal open={RootStore.startInitMetamaskNetwork && !RootStore.finishInitMetamaskNetwork} /> */}
-        
+        <PaymentModal
+          open={paymentStore.paymentModalIsShowing}
+        />
         <LoadingModal open={userStore.startedLoadingClaims && !userStore.finishedLoadingClaims}>
           Loading Claims...
         </LoadingModal>
