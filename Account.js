@@ -399,10 +399,10 @@ class Account {
    * @param {string} url - the url of this get request, without slash at the end
    * @param {string} asset_code - The code of the asset the user is wanting to deposit with
    * the anchor. Ex BTC,ETH,USD,INR,etc
-   * @param {string} account - (optional) type of memo that anchor should attach to the Stellar
-   *  payment transaction, one of text, id or hash
-   * @param {string} memo_type - The stellar account ID of the user that wants to deposit.
+   * @param {string} account - The stellar account ID of the user that wants to deposit.
    * This is where the asset token will be sent.
+   * @param {string} memo_type - (optional) type of memo that anchor should attach to the Stellar
+   *  payment transaction, one of text, id or hash
    * @param {string} memo - (optional) value of memo to attach to transaction,
    * for hash this should be base64-encoded.
    * @param {string} email_address - (optional) Email address of depositor.
@@ -410,9 +410,19 @@ class Account {
    * @param {string} type - (optional) Type of deposit. If the anchor supports
    *  multiple deposit methods (e.g. SEPA or SWIFT), the wallet should specify type.
    */
-  async getDeposit(url, asset_code, account, memo_type = '', memo = '', email_address = '', type = '') {
+  async getDeposit(url, asset_code, account, memo_type = null, memo = null,
+    email_address = null, type = null) {
     this.anchorUrl = url;
     try {
+      const qsConstruct = {
+        asset_code, account, memo_type, memo, email_address, type,
+      };
+      // eslint-disable-next-line no-restricted-syntax
+      for (const property in qsConstruct) {
+        if (!qsConstruct[property]) {
+          delete qsConstruct[property];
+        }
+      }
       // verifies that the parameters are valid
       if (account.charAt(0) !== 'G') {
         console.log('The account must start with letter G.');
@@ -420,14 +430,7 @@ class Account {
       }
       const options = {
         uri: `${this.anchorUrl}/deposit`,
-        qs: {
-          asset_code,
-          account,
-          memo_type,
-          memo,
-          email_address,
-          type,
-        },
+        qs: qsConstruct, // query params
         json: true, // Automatically stringifies the body to JSON
       };
       const response = await rp(options);

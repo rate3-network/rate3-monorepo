@@ -19,6 +19,7 @@
     "ethereumjs-wallet": "^0.6.2",
     "hdkey": "^1.1.0",
     "jest": "^23.5.0",
+    "nock": "^10.0.0",
     "node-forge": "^0.7.6",
     "request-promise": "^4.2.2",
     "stellar-hd-wallet": "0.0.8",

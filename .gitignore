@@ -18,3 +18,7 @@ demo.html
 
 coverage/
 .eslintrc
+
+# python test local server setup
+*.py
+__pycache__/
