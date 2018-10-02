@@ -42,6 +42,18 @@ class VerifierMain extends React.Component {
     }
   }
   componentDidMount() {
+    if (window.localStorage.getItem('verifierModalHasShown') !== null) {
+      if (window.localStorage.getItem('verifierModalHasShown') === 'true') {
+        this.props.RootStore.verifierStore.closeModal();
+      } else {
+        this.props.RootStore.verifierStore.openModal();
+        window.localStorage.setItem('verifierModalHasShown', 'true');
+      }
+    } else {
+      this.props.RootStore.verifierStore.openModal();
+      window.localStorage.setItem('verifierModalHasShown', 'true');
+    }
+
     this.props.RootStore.setStartInitNetworkTrue();
     if (window.localStorage.accountType === 'fixed') {
       this.props.RootStore.userStore.changeToFixedAccount();

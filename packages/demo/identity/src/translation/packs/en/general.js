@@ -18,7 +18,7 @@ export default {
   verifySuccessContent: 'Thank you, your signature for the verification has been sent to the user. No further action is required.',
 
   publicationSuccessTitle: 'Verification Published',
-  publicationSuccessContent: 'Thank you, your verification has been added to the blockchain. You can view the transaction in Metamask.',
+  publicationSuccessContent: 'Thank you, your verification has been added to the blockchain. You can view the transaction by clicking on the transaction hash or in Metamask.',
 
   deploySuccessTitle: 'Identity Deployed',
   deploySuccessContent: 'Thank you, your Rate3 Identity has been added to the blockchain. You can view the transaction in Metamask.',

@@ -10,6 +10,7 @@ import { homeBg } from '../constants/colors';
 import UserMain from './UserMain';
 import VerifierMain from './VerifierMain';
 import Faq from './Faq';
+import Settings from './Settings';
 
 const styles = theme => ({
   root: {
@@ -39,9 +40,10 @@ class Home extends React.Component {
         <HomeSidebar />
         <div className={classes.main}>
           <Switch>
-            <Route  path="/user" component={UserMain} />
-            <Route  path="/verifier" component={VerifierMain} />
-            <Route  path="/faq" component={Faq} />
+            <Route path="/user" component={UserMain} />
+            <Route path="/verifier" component={VerifierMain} />
+            <Route path="/faq" component={Faq} />
+            <Route path="/settings" component={Settings} />
           </Switch>
         </div>
       </div>

@@ -60,7 +60,17 @@ class UserMain extends React.Component {
     } else {
       this.props.RootStore.initNetwork();
     }
-
+    if (window.localStorage.getItem('userModalHasShown') !== null) {
+      if (window.localStorage.getItem('userModalHasShown') === 'true') {
+        this.props.RootStore.userStore.closeModal();
+      } else {
+        this.props.RootStore.userStore.openModal();
+        window.localStorage.setItem('userModalHasShown', 'true');
+      }
+    } else {
+      this.props.RootStore.userStore.openModal();
+      window.localStorage.setItem('userModalHasShown', 'true');
+    }
     window.analytics.page('user');
     this.props.RootStore.userStore.initDb();
     this.props.RootStore.userStore.resetClaimLists();

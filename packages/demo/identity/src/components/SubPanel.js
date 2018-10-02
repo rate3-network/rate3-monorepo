@@ -186,6 +186,7 @@ class SubPanel extends React.Component {
     const { classes } = this.props;
 
     const ActionButton = withStyles(styles)((props) => {
+      
       if (this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim) {
         return (<div onClick={this.handleAdd.bind(this)} className={classes.addButton}><AddButton /></div>);
       }
@@ -193,7 +194,7 @@ class SubPanel extends React.Component {
         return (<div onClick={this.handleVerify.bind(this)} className={classes.addButton}><VerifyButton /></div>);
       }
       
-      if (this.props.isUser && this.props.item.status === VERIFIED && !this.props.RootStore.userStore.startedAddingClaim) {
+      if (this.props.isUser && this.props.item.status === VERIFIED) {
         return (<div onClick={this.handleRemove.bind(this)} className={classes.addButton}><RemoveButton /></div>);
       }
       return null;

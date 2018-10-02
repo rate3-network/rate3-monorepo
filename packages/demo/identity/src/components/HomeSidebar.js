@@ -142,19 +142,28 @@ const styles = theme => ({
   },
 });
 
-const TopText = withRouter(withStyles(styles)((props) => {
+const TopText = inject('RootStore')(withRouter(withStyles(styles)((props) => {
   const { classes } = props;
   return (
     <div className={classes.topText}>
-      <p style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/faq'); }}>
+      <div style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/faq'); }}>
         FAQ
-      </p>
-      <p style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/faq'); }}>
+      </div>
+      <div
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          if (props.RootStore.commonStore.getIsUser()) {
+            props.RootStore.userStore.openModal();
+          } else {
+            props.RootStore.verifierStore.openModal();
+          }
+        }}
+      >
         Help
-      </p>
+      </div>
     </div>
   );
-}));
+})));
 
 const UserInfo = observer(withStyles(styles)((props) => {
   
