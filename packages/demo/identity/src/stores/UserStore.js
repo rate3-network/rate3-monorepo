@@ -24,7 +24,7 @@ class UserStore {
   @observable registerModalIsShowing = false;
   @observable registerSuccessModalIsShowing = false;
   // Modal Form
-  @observable verifierList: Array = ['Vitalik'];
+  @observable verifierList: Array = ['Verifier X'];
   @observable verifierSelected: String = '_placeholder_';
   @observable formTextInputValue: String = '';
   @observable formType: String = '';
