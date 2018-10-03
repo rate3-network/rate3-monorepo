@@ -117,6 +117,13 @@ class UserMain extends React.Component {
         this.props.RootStore.userStore.getValidClaims();
       },
     );
+
+    when(
+      () => this.props.RootStore.commonStore.isWalletSetupDone,
+      () => {
+        this.props.RootStore.closeReonboardModal();
+      },
+    );
     // const fixedAccountReady = this.
     
 
@@ -201,7 +208,6 @@ class UserMain extends React.Component {
           title={t('Claim Removed')}
           content={t('Your verification has been removed from the blockchain. You can view the transaction in Metamask.')}
         />
-        {/* <ReOnboardModal open={RootStore.startInitMetamaskNetwork && !RootStore.finishInitMetamaskNetwork} /> */}
         <PaymentModal
           open={paymentStore.paymentModalIsShowing}
         />
