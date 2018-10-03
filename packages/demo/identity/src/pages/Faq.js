@@ -46,8 +46,16 @@ const Faq = (props) => {
         <h3>{t('whatIsThis')}</h3>
         <p>{t('whatIsThisPara1')}</p>
         <p>{t('whatIsThisPara2')}</p>
+        <p>{t('whatIsThisPara3')}</p>
+
         <h3>{t('howDoesItWork')}</h3>
         <p>{t('howDoesItWorkPara1')}</p>
+        <p>{t('howDoesItWorkPara2')}</p>
+        <p>{t('howDoesItWorkPara3')}</p>
+        <p>{t('howDoesItWorkPara4')}</p>
+
+        <h3>{t('whyImportant')}</h3>
+        <p>{t('whyImportantPara1')}</p>
       </div>
     </div>
   );

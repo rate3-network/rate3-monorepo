@@ -208,13 +208,16 @@ const PaymentModal = inject('RootStore')(observer((props) => {
               disableUnderline
               fullWidth
               type="number"
-              value={props.textInputValue}
-              onChange={props.handleChange}
+              value={props.RootStore.paymentStore.gasPrice}
+              onChange={(e) => {
+                props.RootStore.paymentStore.setGasPrice(e.target.value);
+                console.log(props.RootStore.paymentStore.gasPrice);
+              }}
               endAdornment={<InputAdornment className={classes.adornment} disableTypography position="end">GWEI</InputAdornment>}
             />
             <div className={classes.inputLabel}>
               <p>
-                Max Fee
+                {props.RootStore.paymentStore.maxFee}
               </p>
             </div>
             <div className={classes.maxFee}>

@@ -8,6 +8,12 @@ import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
+import AccountTypeDropdown from '../components/AccountTypeDropdown';
+import { identityHeavyGrey, disabledBackgroundColor } from '../constants/colors';
+import { inject, observer } from 'mobx-react';
+import { action } from 'mobx';
+import { fixedVerifierAddress } from '../constants/defaults';
+
 const styles = (theme) => {
   return ({
     title: {
@@ -32,39 +38,83 @@ const styles = (theme) => {
     root: {
       width: '100%',
     },
+    indicator: {
+      backgroundColor: identityHeavyGrey,
+    },
+    primaryColor: {
+      color: `${identityHeavyGrey} !important`,
+    },
+    greyBack: {
+      padding: '0.5em',
+      borderRadius: '0.5em',
+      fontWeight: 'bold',
+      color: identityHeavyGrey,
+      backgroundColor: disabledBackgroundColor,
+    },
   });
 };
-const Settings = (props) => {
-  const { classes, t } = props;
-  return (
-    <div>
-      <h1 className={classes.title}>
-        <IconButton
-          onClick={() => {props.history.goBack()}}
-        >
-          <ChevronLeft className={classes.label} />
-        </IconButton>
-      
-        <div>{t('Settings')}</div>
-      </h1>
-      <div className={classes.descriptionBox}>
-      <Paper className={classes.root}>
-        <Tabs
-          value={1}
-          onChange={this.handleChange}
-          indicatorColor="primary"
-          textColor="primary"
-          centered
-        >
-          <Tab label="Item One" />
-          <Tab label="Item Two" />
-          <Tab label="Item Three" />
-        </Tabs>
-      </Paper>
+@inject('RootStore') @observer
+class Settings extends React.Component {
+  state = { value: 0 };
+  handleChange = (event, value) => {
+    this.setState({ value });
+  };
+  render() {
+    const { classes, t } = this.props;
+    const WalletAddress = (props) => {
+      if (!props.RootStore.commonStore.getIsUser()) {
+        return <p>{fixedVerifierAddress}</p>;
+      }
+      if (!props.RootStore.userStore.isOnFixedAccount) {
+        return <p>{props.RootStore.userStore.userAddr}</p>;
+      }
+      return <p>{props.RootStore.userStore.fixedUserAddr}</p>;
+    };
+    return (
+      <div>
+        <h1 className={classes.title}>
+          <IconButton
+            onClick={() => { this.props.history.goBack(); }}
+          >
+            <ChevronLeft className={classes.label} />
+          </IconButton>
+        
+          <div>{t('Settings')}</div>
+        </h1>
+        <div className={classes.descriptionBox}>
+          <div className={classes.root}>
+            <Tabs
+              value={this.state.value}
+              onChange={this.handleChange}
+              textColor="primary"
+              fullWidth
+              classes={{ indicator: classes.indicator, root: classes.tabs }}
+            >
+              <Tab classes={{ textColorPrimary: classes.primaryColor }} value={0} label="ETH Wallet" />
+              <Tab classes={{ textColorPrimary: classes.primaryColor }} disabled={this.props.RootStore.commonStore.getIsUser()} value={1} label="Public Keys" />
+            </Tabs>
+            {this.state.value === 0 &&
+              <div>
+                <AccountTypeDropdown variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} isOnSidebar isUser={this.props.RootStore.commonStore.getIsUser()} />
+                <p>Account Name</p>
+                <div className={classes.greyBack}>{this.props.RootStore.commonStore.getIsUser() ? 'User' : 'Verifier' }</div>
+                <p>Wallet Address</p>
+                <div className={classes.greyBack}><WalletAddress {...this.props} /></div>
+              </div>
+            }
+
+            {this.state.value === 1 &&
+              <div>
+                <p>Management Key</p>
+                <div className={classes.greyBack}><WalletAddress {...this.props} /></div>
+              </div>
+            }
+          </div>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  }
+}
 
 Settings.propTypes = {
   

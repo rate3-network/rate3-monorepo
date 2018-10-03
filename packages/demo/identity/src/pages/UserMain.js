@@ -195,6 +195,12 @@ class UserMain extends React.Component {
           title={t('deploySuccessTitle')}
           content={t('deploySuccessContent')}
         />
+        <SuccessModal
+          open={userStore.startedRemovingClaim && userStore.finishedRemovingClaim}
+          onClose={() => { window.location.reload(); }}
+          title={t('Claim Removed')}
+          content={t('Your verification has been removed from the blockchain. You can view the transaction in Metamask.')}
+        />
         {/* <ReOnboardModal open={RootStore.startInitMetamaskNetwork && !RootStore.finishInitMetamaskNetwork} /> */}
         <PaymentModal
           open={paymentStore.paymentModalIsShowing}
@@ -225,6 +231,13 @@ class UserMain extends React.Component {
           title={t('publicationSuccessTitle')}
           content={t('publicationSuccessContent')}
         />
+        <SuccessModal
+          open={userStore.removeNotifyModalIsShowing}
+          onClose={userStore.closeRemoveNotifyModal.bind(userStore)}
+          title={t('Request Submitted')}
+          content={t('Your claim is being removed from the blockchain, this usually takes from a few seconds to a few minutes.')}
+        />
+        
         <h1 className={classes.title}>My Identity</h1>
         <div className={classes.descriptionBox}>
           <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>

@@ -71,6 +71,12 @@ class UserStore {
   @observable finishedAddingClaim = false;
 
   @observable reOnboardModalIsShowing = false;
+
+  @observable startedRemovingClaim = false;
+  @observable finishiedRemovingClaim = false;
+
+  @observable removeNotifyModalIsShowing = false;
+
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -197,6 +203,7 @@ class UserStore {
   listenToNewClaimEvent() {
     const checkNewClaim = () => {
       console.log('polling for new claim');
+      console.log('Rate: checkNewClaim -> this.startedAddingClaim', this.startedAddingClaim);
       this.identityContract.getPastEvents('ClaimAdded', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         if (error) {
           console.error(error);
@@ -222,6 +229,35 @@ class UserStore {
     let polling = setInterval(checkNewClaim, 1000);
     // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
   }
+  listenToNewClaimRemovedEvent(id, sig) {
+    const checkNewClaimRemove = () => {
+      console.log('polling for claim removed events');
+      this.identityContract.getPastEvents('ClaimRemoved', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
+        if (error) {
+          console.error('hey here', error);
+        }
+        if (events) {
+          events.forEach((ev) => {
+            if (ev.returnValues.claimId === id && ev.returnValues.signature === sig) {
+              console.log('cleared interval for polling new claim');
+              runInAction(() => { this.finishedRemovingClaim = true; });
+              this.resetClaimLists();
+              this.getValidClaims();
+              this.initDb();
+              this.populateClaimLists();
+              // runInAction(() => { this.finishedLoadingClaims = true; });
+              clearInterval(polling);
+              // window.location.reload();
+            }
+          });
+        }
+      });
+    };
+    // runInAction(() => { this.startedLoadingClaims = true; this.finishedLoadingClaims = false; });
+    let polling = setInterval(checkNewClaimRemove, 1000);
+    // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
+  }
+  
   @action
   async getIdentityContractFromBlockchain() {
     console.log('this.registryContract', window.registryContract);
@@ -307,7 +343,7 @@ class UserStore {
   }
 
   @action
-  addClaim(item) {
+  addClaim(item, gasPrice = 1) {
     let userAddress = '';
     if (this.isOnFixedAccount) {
       userAddress = this.fixedUserAddr;
@@ -333,11 +369,6 @@ class UserStore {
     this.startedAddingClaim = true;
     this.listenToNewClaimEvent();
     if (!this.isOnFixedAccount) {
-      console.log('adding from metamask account');
-      console.log('Rate: addClaim -> data', data);
-      console.log('Rate: addClaim -> this.signature', this.signature);
-      console.log('Rate: addClaim -> this.verifierIdentityContractAddr', this.verifierIdentityContractAddr);
-      console.log('Rate: addClaim -> topic', topic);
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, this.signature, data, location)
         .send({ from: userAddress, gas: 6000000 },
           (err, result) => {
@@ -352,7 +383,7 @@ class UserStore {
     } else {
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, sig, data, location)
         .send(
-          { from: userAddress, gas: 6000000 },
+          { from: userAddress, gas: 6000000, price: gasPrice },
           (err, result) => {
             console.log('from addClaim callback');
             if (err) console.log(err);
@@ -363,6 +394,26 @@ class UserStore {
           },
         );
     }
+  }
+  @action
+  removeClaim(id, sig) {
+    this.startedRemovingClaim = true;
+    this.listenToNewClaimRemovedEvent(id, sig);
+    window.identityContract.methods.removeClaim(id).send(
+      {
+        from: this.isOnFixedAccount ?
+          this.fixedUserAddr :
+          this.userAddr,
+        gas: 6000000,
+      },
+      (err, result) => {
+        console.log('from remove claim callback');
+        if (err) console.log(err);
+        if (result) {
+          console.log(result);
+        }
+      },
+    );
   }
   @action
   openLoadingClaimModal() {
@@ -430,7 +481,14 @@ class UserStore {
   handleModalIndexChange(step) {
     this.modalPage = step;
   }
-
+  @action
+  openRemoveNotifyModal() {
+    this.removeNotifyModalIsShowing = true;
+  }
+  @action
+  closeRemoveNotifyModal() {
+    this.removeNotifyModalIsShowing = false;
+  }
   @action
   handleModalNext() {
     this.modalPage += 1;
