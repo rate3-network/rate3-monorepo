@@ -50,7 +50,10 @@ class ManageIndividualUser extends Component {
     // use backbutton
     window.onpopstate = this.props.RootStore.verifierStore.resetUserSelected.bind(
       this.props.RootStore.verifierStore);
-    this.props.RootStore.verifierStore.getIdentityForSelectedUser();
+    // this.props.RootStore.verifierStore.getIdentityForSelectedUser();
+  }
+  componentWillUnmount() {
+    this.props.RootStore.verifierStore.resetGettingClaimStates();
   }
   render() {
     const { classes, RootStore, t } = this.props;

@@ -67,8 +67,8 @@ const Onboard = inject('RootStore')(observer((props) => {
       <div className={classes.content}>
         
         <div className={classes.dropdownContainer}>
-          <div className={classes.demoDropdown}>CROSS-CHAIN IDENTITY DEMO</div>
-          <ExpandMore className={classes.icon} />
+          {/* <div className={classes.demoDropdown}>CROSS-CHAIN IDENTITY DEMO</div>
+          <ExpandMore className={classes.icon} /> */}
         </div>
         <div className={classes.onboardDetailContainer}>
           <OnboardStepper />

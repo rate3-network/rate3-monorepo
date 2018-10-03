@@ -3,14 +3,17 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
 import { observable, when, action, runInAction } from 'mobx';
+import { withRouter, Route, Switch } from 'react-router-dom';
 
+import Faq from './Faq';
+import Settings from './Settings';
 import SearchBar from '../components/verifier/SearchBar';
 import ManagementTabs from '../components/verifier/ManagementTabs';
 import ManageIndividualUser from './verifier/ManageIndividualUser';
 import InstructionModal from '../components/InstructionModal';
 import VerifierInstructions from '../components/VerifierInstructions';
 import { verifierPrivKey } from '../constants/defaults';
-
+import LoadingModal from '../components/LoadingModal';
 import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
 import identityJson from '../build/contracts/Identity.json';
 
@@ -74,9 +77,9 @@ class VerifierMain extends React.Component {
       () => this.props.RootStore.finishInitNetwork,
       () => {
         console.log('adding to wallet');
-    const account = window.web3.eth.accounts.wallet.add('0xdee21b0158a640ec97638aafa4b4dc3da04e3e314cdfc6835d52029ada3dc4ba');
-    console.log(window.web3.eth.accounts.wallet);
-        this.props.RootStore.verifierStore.getRegistryContract();
+        const account = window.web3.eth.accounts.wallet.add('0xdee21b0158a640ec97638aafa4b4dc3da04e3e314cdfc6835d52029ada3dc4ba');
+        console.log(window.web3.eth.accounts.wallet);
+        this.props.RootStore.verifierStore.getAllUsers();
       },
     );
   }
@@ -101,14 +104,21 @@ class VerifierMain extends React.Component {
             onChangeIndex={verifierStore.handleModalIndexChange.bind(verifierStore)}
           />
         </InstructionModal>
+
+        <LoadingModal
+          open={verifierStore.startedGettingClaim && !verifierStore.finishedGettingClaim}
+          subText="Please wait while we are getting this user's claims for you"
+        >
+          Getting Claims for User...
+        </LoadingModal>
         {this.props.RootStore.verifierStore.getUserSelected() !== null ?
           <ManageIndividualUser />
           :
           <div>
             <h1 className={classes.title}>Manage Users</h1>
             <div className={classes.descriptionBox}>
-              <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
-              <SearchBar />
+              <p>Manage users who you have verified or have pending verification requests.</p>
+              {/* <SearchBar /> */}
               <ManagementTabs />
             </div>
           </div>

@@ -1,7 +1,3 @@
-/* The Object constructor creates an object wrapper for the given value.
-If the value is null or undefined, it will create and return an empty object, 
-otherwise, it will return an object of a type that corresponds to the given value. 
-If the value is an object already, it will return the value. */
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 
 class MyTable {

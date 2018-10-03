@@ -14,7 +14,7 @@ class PaymentStore {
   gasLimit = 0.003;
 
   @observable paymentModalIsShowing = false;
-  @observable gasPrice = 1;
+  @observable gasPrice = 1000000;
 
   @observable claimToAdd = {};
   /* JSDOC: MARK END OBSERVABLE */

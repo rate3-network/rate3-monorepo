@@ -10,6 +10,8 @@ export const userBlockie = {
   size: 8,
 };
 
+export const managementAccountAddress = '0xd102503E987a6402A1E0b220369ea4A4Bce911E8';
+
 export const fixedVerifierAddress = '0x05223E84769d33e75e692856216Ee881008d81FF';
 export const fixedVerifierPrivKey = '0xd2806a307e0f5025d9611b18a83258b45fd9ae54eec11113eb782825d825db94';
 export const fixedVerifierRegistryContractAddr = '0x04bb4bc5bced9d93b7bc98cf7e092469d5920a4a';
@@ -20,3 +22,6 @@ export const verifierBlockie = {
   spotcolor: '#61794e',
   size: 8,
 };
+
+export const dbPrefix = 'rate3-test-v1';
+export const tableName = 'identity-demo';

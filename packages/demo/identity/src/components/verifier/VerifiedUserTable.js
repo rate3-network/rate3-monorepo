@@ -72,9 +72,8 @@ const styles = theme => ({
 });
 
 @inject('RootStore') @observer
-class PendingUserTable extends React.Component {
+class VerifiedUserTable extends React.Component {
   state = {
-    
     page: 0,
     rowsPerPage: 5,
   };
@@ -87,10 +86,27 @@ class PendingUserTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
+  getClaim(arr) {
+    if (arr.length > 0) {
+      
+    }
+  }
+  async handleRowClick(row) {
+    // get identity contract for the user first
+    const identityContract = this.props.RootStore.verifierStore.createIdentityContractFromAddress(row.identityAddr);
+    this.props.RootStore.verifierStore.setUserSelected(row.userAddr);
+    // const nameClaimArr = await window.identityContract.methods.getClaimIdsByTopic('101').call();
+    // const addressClaimArr = await window.identityContract.methods.getClaimIdsByTopic('102').call();
+    // const socialIdClaimArr = await window.identityContract.methods.getClaimIdsByTopic('103').call();
+    this.props.RootStore.verifierStore.populateWithValidClaims(row.userAddr);
+    // this.props.RootStore.verifierStore.selectAndPopulateUserClaims(row.userAddr,);
+
+  }
+
   render() {
     const { classes } = this.props;
     const { rowsPerPage, page } = this.state;
-    const rows = this.props.RootStore.verifierStore.pendingClaimList;
+    const rows = this.props.RootStore.verifierStore.allUsersList;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
     console.log('rows', rows);
     return (
@@ -101,15 +117,15 @@ class PendingUserTable extends React.Component {
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
                   <TableRow
-                    onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row.user); this.props.RootStore.verifierStore.getIdentityForSelectedUser(); }}
+                    onClick={() => { this.handleRowClick(row); }}
                     className={classes.rowRoot}
-                    key={`${row.user}.${row.value}`}
+                    key={`${row.identityAddr}.${row.userAddr}`}
                   >
                     <TableCell className={classes.profilePicContainer} padding="checkbox" scope="row">
-                      <ProfilePic size={6} seed={row.user} />
+                      <ProfilePic size={6} seed={row.userAddr} />
                     </TableCell>
                     <TableCell className={classes.textCell} component="td" scope="row">
-                      {truncateAddress(row.user, 18)}
+                      {truncateAddress(row.userAddr, 18)}
                     </TableCell>
                     <TableCell className={classes.arrowCell} component="td" scope="row">
                       <ChevronRight />
@@ -145,8 +161,8 @@ class PendingUserTable extends React.Component {
   }
 }
 
-PendingUserTable.propTypes = {
+VerifiedUserTable.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(PendingUserTable);
+export default withStyles(styles)(VerifiedUserTable);

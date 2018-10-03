@@ -13,6 +13,8 @@ import { identityHeavyGrey, disabledBackgroundColor } from '../constants/colors'
 import { inject, observer } from 'mobx-react';
 import { action } from 'mobx';
 import { fixedVerifierAddress } from '../constants/defaults';
+import UserMain from '../pages/UserMain';
+import VerifierMain from '../pages/VerifierMain';
 
 const styles = (theme) => {
   return ({
@@ -51,6 +53,10 @@ const styles = (theme) => {
       color: identityHeavyGrey,
       backgroundColor: disabledBackgroundColor,
     },
+    disabledTab: {
+      cursor: 'no-drop !important',
+      color: '#e3e7ed !important',
+    },
   });
 };
 @inject('RootStore') @observer
@@ -58,12 +64,15 @@ class Settings extends React.Component {
   state = { value: 0 };
   handleChange = (event, value) => {
     this.setState({ value });
-  };
+  }
+  componentDidMount() {
+    this.props.RootStore.initNetwork();
+  }
   render() {
     const { classes, t } = this.props;
     const WalletAddress = (props) => {
       if (!props.RootStore.commonStore.getIsUser()) {
-        return <p>{fixedVerifierAddress}</p>;
+        return <p>0xd102503E987a6402A1E0b220369ea4A4Bce911E8</p>;
       }
       if (!props.RootStore.userStore.isOnFixedAccount) {
         return <p>{props.RootStore.userStore.userAddr}</p>;
@@ -91,7 +100,7 @@ class Settings extends React.Component {
               classes={{ indicator: classes.indicator, root: classes.tabs }}
             >
               <Tab classes={{ textColorPrimary: classes.primaryColor }} value={0} label="ETH Wallet" />
-              <Tab classes={{ textColorPrimary: classes.primaryColor }} disabled={this.props.RootStore.commonStore.getIsUser()} value={1} label="Public Keys" />
+              <Tab classes={{ textColorPrimary: classes.primaryColor, disabled: classes.disabledTab }} disabled={this.props.RootStore.commonStore.getIsUser()} value={1} label="Public Keys" />
             </Tabs>
             {this.state.value === 0 &&
               <div>
@@ -105,7 +114,7 @@ class Settings extends React.Component {
 
             {this.state.value === 1 &&
               <div>
-                <p>Management Key</p>
+                <p>Claim Signing Key</p>
                 <div className={classes.greyBack}><WalletAddress {...this.props} /></div>
               </div>
             }

@@ -10,6 +10,7 @@ import { inject, observer } from 'mobx-react';
 
 import { modalShadow, searchBarButtonColor, toggleGrey, identityHeavyGrey, tabsUnselectedText, rippleColor } from '../../constants/colors';
 import PendingUserTable from './PendingUserTable';
+import VerifiedUserTable from './VerifiedUserTable';
 
 const styles = theme => ({
   root: {
@@ -113,7 +114,7 @@ class ManagementTabs extends React.Component {
             {value === 0 && <PendingUserTable />}
           </div>
           <div>
-            {value === 1 && <PendingUserTable />}
+            {value === 1 && <VerifiedUserTable />}
           </div>
         </SwipeableViews>
       </div>

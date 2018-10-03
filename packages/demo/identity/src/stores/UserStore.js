@@ -11,7 +11,7 @@ import MyTable from '../utils/MyTable';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
 import identityJson from '../build/contracts/Identity.json';
-import { fixedUserAddress, fixedUserRegistryContractAddress, fixedVerifierIdentityContractAddress } from '../constants/defaults';
+import { fixedUserAddress, fixedUserRegistryContractAddress, fixedVerifierIdentityContractAddress, dbPrefix, tableName } from '../constants/defaults';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
@@ -76,34 +76,34 @@ class UserStore {
   @observable finishiedRemovingClaim = false;
 
   @observable removeNotifyModalIsShowing = false;
-
+  @observable publishSubmitModalIsShowing = false;
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-
-    const myDb = new MyTable('rate3-test-v1', 'identity-demo');
-    if (myDb.hasTable('identity-demo')) {
-      myDb.getTable('identity-demo');
+    // localStorage.removeItem('rate3.identity-demo');
+    const myDb = new MyTable(dbPrefix, tableName);
+    if (myDb.hasTable(tableName)) {
+      myDb.getTable(tableName);
     } else {
       myDb.createTable();
     }
     runInAction(() => {
       this.db = myDb;
-      console.log(this.db.getTable('identity-demo'));
+      console.log(this.db.getTable(tableName));
     });
   }
   @action
   initDb() {
-    const myDb = new MyTable('rate3', 'identity-demo');
-    if (myDb.hasTable('identity-demo')) {
-      myDb.getTable('identity-demo');
+    const myDb = new MyTable(dbPrefix, tableName);
+    if (myDb.hasTable(tableName)) {
+      myDb.getTable(tableName);
     } else {
       myDb.createTable();
     }
     runInAction(() => {
       this.db = myDb;
-      console.log('this.db.getTable(identity-demo)', this.db.getTable('identity-demo'));
+      console.log('this.db.getTable(identity-demo)', this.db.getTable(tableName));
     });
   }
   @action
@@ -339,6 +339,7 @@ class UserStore {
       const claim = new Identity(data, 'socialId', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
       runInAction(() => { this.socialIdClaimList.push(claim); });
     }
+
     this.closeLoadingClaimModal();
   }
 
@@ -375,6 +376,7 @@ class UserStore {
             console.log('from addClaim callback');
             if (err) console.log(err);
             if (result) {
+              this.openPublishSubmitModal();
               console.log(result);
               this.db.deleteClaim(addr, claim);
             }
@@ -383,11 +385,13 @@ class UserStore {
     } else {
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, sig, data, location)
         .send(
-          { from: userAddress, gas: 6000000, price: gasPrice },
+          { from: userAddress, gas: 6000000 },
+          // { from: userAddress, gas: 6000000, price: gasPrice },
           (err, result) => {
             console.log('from addClaim callback');
             if (err) console.log(err);
             if (result) {
+              this.openPublishSubmitModal();
               console.log(result);
               this.db.deleteClaim(addr, claim);
             }
@@ -523,12 +527,25 @@ class UserStore {
     this.formTextInputValue = v;
   }
   @action
+  resetRegistrationForm() {
+    this.formTextInputValue = '';
+    this.verifierSelected = '_placeholder_';
+  }
+  @action
   setFormType(type) {
     this.formType = type;
   }
   @action
   openReOnboardModal() {
     this.reOnboardModalIsShowing = true;
+  }
+  @action
+  openPublishSubmitModal() {
+    this.publishSubmitModalIsShowing = true;
+  }
+  @action
+  closePublishSubmitModal() {
+    this.publishSubmitModalIsShowing = false;
   }
 }
 export default UserStore;

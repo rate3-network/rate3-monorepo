@@ -7,7 +7,7 @@ import {
 } from 'mobx';
 import Web3 from 'web3';
 import { ropsten, rinkeby, kovan, local, contractAddresses } from '../constants/addresses';
-import { verifierPrivKey } from '../constants/defaults';
+import { verifierPrivKey, managementAccountAddress } from '../constants/defaults';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
@@ -230,6 +230,16 @@ class CommonStore {
     } else {
       this.changeCommonNetwork('Ropsten');
     }
+
+    const verifierBalance = await window.web3.eth.getBalance(managementAccountAddress);   
+    console.log('verifierBalance',verifierBalance); 
+   
+    runInAction(() => {
+      const balance = window.web3.utils.fromWei(verifierBalance);
+      console.log('balance',balance); 
+      this.rootStore.verifierStore.balanceToShow = balance;
+    });
+
 
     const fixedAccountBalance = await window.web3.eth.getBalance(this.rootStore.userStore.fixedUserAddr);    
 

@@ -11,6 +11,7 @@ import Identity from '../utils/Identity';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
 import identityJson from '../build/contracts/Identity.json';
+import { fixedVerifierRegistryContractAddr, dbPrefix, tableName, managementAccountAddress } from '../constants/defaults';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
@@ -41,6 +42,11 @@ class VerifierStore {
   @observable socialIdClaimList = [];
   @observable pendingClaimList = [];
 
+  @observable allUsersList = [];
+  @observable currentSelectedUserNameList = [];
+  @observable currentSelectedUserAddressList = [];
+  @observable currentSelectedUserSocialIdList = [];
+
   // @observable verifierAddr = '0xE4Bfd8b40e78e539eb59719Ad695D0D0132FA502';
   verifierAddr = '0x05223E84769d33e75e692856216Ee881008d81FF'; // rinkeby
 
@@ -48,39 +54,44 @@ class VerifierStore {
   @observable verifierIdentityContractAddr = '0xeD976dc4DcE91321D9BB272380Bfa5b305823cB9'; // rinkeby
 
   // @observable registryContractAddr = '0x121159a9a1731fec0690ac92a448795ac3f5d97d';
-  @observable registryContractAddr = '0x04bb4bc5bced9d93b7bc98cf7e092469d5920a4a'; // rinkeby
+  @observable registryContractAddr = fixedVerifierRegistryContractAddr;
   @observable registryContract = {};
 
   @observable identityContractAddr = '';
   @observable identityContract = {};
+
+  @observable startedGettingClaim = false;
+  @observable finishedGettingClaim = false;
+
+  @observable balanceToShow = '';
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
     console.log('constructing verifier db');
-    const myDb = new MyTable('rate3', 'identity-demo');
-    if (myDb.hasTable('identity-demo')) {
-      myDb.getTable('identity-demo');
+    const myDb = new MyTable('rate3-test-v1', tableName);
+    if (myDb.hasTable(tableName)) {
+      myDb.getTable(tableName);
     } else {
       myDb.createTable();
     }
     runInAction(() => {
       this.db = myDb;
-      console.log(this.db.getTable('identity-demo'));
+      console.log(this.db.getTable(tableName));
     });
   }
 
   @action
   initDb() {
-    const myDb = new MyTable('rate3', 'identity-demo');
-    if (myDb.hasTable('identity-demo')) {
-      myDb.getTable('identity-demo');
+    const myDb = new MyTable(dbPrefix, tableName);
+    if (myDb.hasTable(tableName)) {
+      myDb.getTable(tableName);
     } else {
       myDb.createTable();
     }
     runInAction(() => {
       this.db = myDb;
-      console.log(this.db.getTable('identity-demo'));
+      console.log(this.db.getTable(tableName));
     });
   }
   @action
@@ -93,7 +104,7 @@ class VerifierStore {
   @action
   populateClaimLists() {
     console.log('populating verifier lists', this.db.getAllUnverifiedClaims());
-    console.log('from localdb', JSON.parse(window.localStorage['rate3.identity-demo']));
+
     this.db.getAllUnverifiedClaims().forEach((claim) => { this.pendingClaimList.push(claim); });
     console.log('pendingClaimList', this.pendingClaimList);
     // this.db.getAllNameClaims().forEach((claim) => { this.pendingClaimList.push(claim); this.nameClaimList.push(claim); });
@@ -103,13 +114,36 @@ class VerifierStore {
 
   @action
   getRegistryContract() {
-    
     const contract = new window.web3.eth.Contract(
       identityRegistryJson.abi,
       this.registryContractAddr,
     );
     this.registryContract = contract;
     window.registryContract = contract;
+    return contract;
+  }
+  @action
+  createIdentityContractFromAddress(addr) {
+    const identityContract = new window.web3.eth.Contract(identityJson.abi, addr);
+    window.identityContract = identityContract;
+    runInAction(() => {
+      this.identityContractAddr = addr;
+      this.identityContract = identityContract;
+    });
+    return identityContract;
+  }
+  @action
+  async getAllUsers() {
+    const contract = this.getRegistryContract();
+    const allIdentities = await contract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' });
+    const allIdentityList = allIdentities.map((event) => {
+      return {
+        identityAddr: event.returnValues.identityAddress,
+        userAddr: event.returnValues.senderAddress,
+      };
+    });
+    runInAction(() => { this.allUsersList = allIdentityList; });
+    console.log('Rate: VerifierStore -> asyncgetAllUsers -> allIdentities', allIdentityList);
   }
 
   @action
@@ -123,7 +157,56 @@ class VerifierStore {
     });
   }
 
+  @action
+  async getAliveClaims() {
+    const nameClaimArr = await this.identityContract.methods.getClaimIdsByTopic('101').call();
+    const addressClaimArr = await this.identityContract.methods.getClaimIdsByTopic('102').call();
+    const socialIdClaimArr = await this.identityContract.methods.getClaimIdsByTopic('103').call();
 
+    const combined = { nameClaimArr, addressClaimArr, socialIdClaimArr };
+
+    return new Promise((resolve) => {
+      resolve(combined);
+    });
+  }
+  @action
+  async populateWithValidClaims(userAddress) {
+    runInAction(() => { this.startedGettingClaim = true; });
+    const allAliveClaims = await this.getAliveClaims();
+    const { nameClaimArr, addressClaimArr, socialIdClaimArr } = allAliveClaims;
+    const allEvents = await this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' });
+    const addedAndChangedEvents = allEvents.filter((item) => { return item.event === 'ClaimAdded' || item.event === 'ClaimChanged'; });
+
+    let data;
+    if (nameClaimArr.length !== 0) {
+      const validNameClaims = addedAndChangedEvents.filter((item) => { return item.returnValues.topic === '101'; });
+      const validNameClaim = validNameClaims[validNameClaims.length - 1];
+
+      data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
+      const claim = new Identity(data, 'name', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
+      runInAction(() => { this.selectedUserNames.push(claim); });
+    }
+    if (addressClaimArr.length !== 0) {
+      const validNameClaims = addedAndChangedEvents.filter((item) => { return item.returnValues.topic === '102'; });
+      const validNameClaim = validNameClaims[validNameClaims.length - 1];
+      data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
+      const claim = new Identity(data, 'address', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
+      runInAction(() => { this.selectedUserAddresses.push(claim); });
+    }
+    if (socialIdClaimArr.length !== 0) {
+      const validNameClaims = addedAndChangedEvents.filter((item) => { return item.returnValues.topic === '103'; });
+      const validNameClaim = validNameClaims[validNameClaims.length - 1];
+      data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
+      const claim = new Identity(data, 'socialId', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
+      runInAction(() => { this.selectedUserSocialIds.push(claim); });
+    }
+    runInAction(() => { this.finishedGettingClaim = true; });
+  }
+  @action
+  resetGettingClaimStates() {
+    this.startedGettingClaim = false;
+    this.finishedGettingClaim = false;
+  }
   getCurrentTab() {
     return this.currentTab;
   }
@@ -182,7 +265,7 @@ class VerifierStore {
     itemFound.status = PENDING_ADD;
     this.pendingClaimList[indexFound] = itemFound;
     console.log('line 128 pendingClaimList', this.pendingClaimList);
-
+    console.log('this.currentVerification.value ', this.currentVerification.value);
     const data = window.web3.utils.asciiToHex(this.currentVerification.value);
     console.log('data ', data);
     const issuerAddr = this.identityContractAddr;
@@ -203,8 +286,6 @@ class VerifierStore {
       this.openVerifySuccessModal();
       this.closeVerificationModal();
     });
-    // 0xc85e6185ea29c7e8baccc64ac99ebdd288650e6262d978f02b21cb57f209cbe33665893cc02733f4a5f5075bd653f623c815225a36e6265dacc3c5dd850d728401
-    // 0xc85e6185ea29c7e8baccc64ac99ebdd288650e6262d978f02b21cb57f209cbe33665893cc02733f4a5f5075bd653f623c815225a36e6265dacc3c5dd850d72841c
   }
   @action
   openVerifySuccessModal() {
@@ -247,6 +328,14 @@ class VerifierStore {
         if (row.type === 'socialId') this.selectedUserSocialIds.push(row);
       }
     });
+  }
+
+  @action
+  selectAndPopulateUserClaims(user, claims) {
+    this.userSelected = user;
+    claims.names.forEach((item) => { this.selectedUserNames.push(item); });
+    claims.addresses.forEach((item) => { this.selectedUserAddresses.push(item); });
+    claims.socialIds.forEach((item) => { this.selectedUserSocialIds.push(item); });
   }
   @action
   resetUserSelected(value) {

@@ -74,7 +74,7 @@ const styles = theme => ({
     marginTop: 'auto',
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   topText: {
     fontSize: '1em',
@@ -146,7 +146,7 @@ const TopText = inject('RootStore')(withRouter(withStyles(styles)((props) => {
   const { classes } = props;
   return (
     <div className={classes.topText}>
-      <div style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/faq'); }}>
+      <div style={{ cursor: 'pointer' }} onClick={() => { props.history.push(props.RootStore.commonStore.getIsUser() ? '/user/faq' : '/verifier/faq'); }}>
         FAQ
       </div>
       <div
@@ -165,33 +165,42 @@ const TopText = inject('RootStore')(withRouter(withStyles(styles)((props) => {
   );
 })));
 
-const UserInfo = observer(withStyles(styles)((props) => {
-  
+const UserInfo = inject('RootStore')(observer(withStyles(styles)((props) => {
   const { classes } = props;
+  const goToLink = () => {
+    let addr;
+    if (props.RootStore.commonStore.getIsUser()) {
+      addr = props.RootStore.userStore.isOnFixedAccount ? props.RootStore.userStore.fixedUserAddr : props.RootStore.userStore.userAddr
+    } else {
+      addr = '0xd102503E987a6402A1E0b220369ea4A4Bce911E8';
+    }
+    const link = `https://${props.RootStore.currentNetwork}.etherscan.io/address/${addr}`;
+    window.open(link, '_blank');
+  };
   return (
     <div>
       <div className={classes.userName}>
         {props.isUser ? 'USER' : 'VERIFIER'}
       </div>
       <div>
-        <span className={classes.walletNameText}>ETH wallet</span>
+        <span className={classes.walletNameText} onClick={goToLink}>ETH wallet</span>
         :
         <span className={classes.amountText}> {props.balance} </span>
         <span className={classes.unitText}> ETH</span>
       </div>
     </div>
   );
-}));
+})));
 
 
-const Settings = withRouter(withStyles(styles)((props) => {
+const Settings = inject('RootStore')(observer(withRouter(withStyles(styles)((props) => {
   const { classes } = props;
   return (
-    <span style={{ cursor: 'pointer' }} onClick={() => { props.history.push('/settings'); }} className={classes.faqText}>
+    <span style={{ cursor: 'pointer' }} onClick={() => { props.history.push(props.RootStore.commonStore.getIsUser() ? '/user/settings' : '/verifier/settings'); }} className={classes.faqText}>
       Settings
     </span>
   );
-}));
+}))));
 
 
 const HomeSidebar = inject('RootStore')(observer((props) => {
@@ -217,7 +226,11 @@ const HomeSidebar = inject('RootStore')(observer((props) => {
         <div className={classes.userInfo}>
           <UserInfo
             isUser={props.RootStore.commonStore.getIsUser()}
-            balance={props.RootStore.userStore.isOnFixedAccount ? props.RootStore.commonStore.fixedAccountBalance : props.RootStore.commonStore.metamaskBalance}
+            balance={
+              !props.RootStore.commonStore.getIsUser() ?
+                props.RootStore.verifierStore.balanceToShow :
+              props.RootStore.userStore.isOnFixedAccount ? props.RootStore.commonStore.fixedAccountBalance : props.RootStore.commonStore.metamaskBalance
+            }
           />
         </div>
         <div className={classes.networkBox}>
@@ -249,7 +262,7 @@ const HomeSidebar = inject('RootStore')(observer((props) => {
           />
         </div>
         {/* <Keys isUser={props.RootStore.commonStore.getIsUser()}/> */}
-        <div className={classes.bottomItems}><LanguageDropdown /><Settings /></div>
+        <div className={classes.bottomItems}><Settings /></div>
       </div>
     </Drawer>
   );

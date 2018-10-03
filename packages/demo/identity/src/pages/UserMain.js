@@ -4,8 +4,10 @@ import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
 import { when, runInAction } from 'mobx';
 import { translate } from 'react-i18next';
-import { withRouter } from 'react-router-dom';
+import { withRouter, Route, Switch } from 'react-router-dom';
 
+import Faq from './Faq';
+import Settings from './Settings';
 import ExpandablePanel from '../components/ExpandablePanel';
 import FixedPanel from '../components/FixedPanel';
 import InstructionModal from '../components/InstructionModal';
@@ -177,6 +179,10 @@ class UserMain extends React.Component {
     const instructionLength = 4;
     return (
       <div className={classes.container}>
+        <Switch>
+          <Route path="/user/faq" component={Faq} />
+          <Route path="/user/settings" component={Settings} />
+        </Switch>
         <InstructionModal
           open={userStore.getUserModalIsShowing()}
           onClose={userStore.closeModal.bind(userStore)}
@@ -217,19 +223,25 @@ class UserMain extends React.Component {
         <ReOnboardModal open={RootStore.reonboardModalIsShowing} />
         <RegistrationModal
           open={userStore.getRegisterModalIsShowing()}
-          onClose={userStore.closeRegisterModal.bind(userStore)}
+          onClose={() => { userStore.resetRegistrationForm(); userStore.closeRegisterModal(); }}
           handleClick={(e) => { userStore.setVerifierSelected(e.target.value); }}
           textInputValue={userStore.getFormTextInputValue()}
           handleChange={(e) => { userStore.setFormTextInputValue(e.target.value); }}
           verifierList={userStore.getVerifierList()}
           verifier={userStore.getVerifierSelected()}
-          onRegisterSuccess={this.onRegisterSuccess.bind(this)}
+          onRegisterSuccess={() => { this.onRegisterSuccess(); userStore.resetRegistrationForm(); }}
         />
         <SuccessModal
           open={userStore.getRegisterSuccessModalIsShowing()}
           onClose={userStore.closeRegisterSuccessModal.bind(userStore)}
           title={t('registrationSuccessTitle')}
           content={t('registrationSuccessContent')}
+        />
+        <SuccessModal
+          open={userStore.publishSubmitModalIsShowing}
+          onClose={userStore.closePublishSubmitModal.bind(userStore)}
+          title="Publishing Your Identity"
+          content="Preparing your unique blockchain identity, this might take from a few seconds to a few minutes.!"
         />
         <SuccessModal
           open={userStore.startedAddingClaim && userStore.finishedAddingClaim}
@@ -240,13 +252,13 @@ class UserMain extends React.Component {
         <SuccessModal
           open={userStore.removeNotifyModalIsShowing}
           onClose={userStore.closeRemoveNotifyModal.bind(userStore)}
-          title={t('Request Submitted')}
+          title={t('Removing Your Identity')}
           content={t('Your claim is being removed from the blockchain, this usually takes from a few seconds to a few minutes.')}
         />
         
         <h1 className={classes.title}>My Identity</h1>
         <div className={classes.descriptionBox}>
-          <p>This is your reusuable identity that is improved by verifications which authenticates a part of your identity.</p>
+          <p>This is your self-sovereign blockchain identity on Ethereum (ERC725). Only verification claims are public and stored on-chain.</p>
           {userStore.nameClaimList.length > 0 ?
             <ExpandablePanel isUser={this.props.RootStore.commonStore.getIsUser()} title="Name" items={userStore.nameClaimList} /> :
             <FixedPanel isUser={this.props.RootStore.commonStore.getIsUser()} handleClick={() => {userStore.openRegisterModal("name");}} title="Name" />
