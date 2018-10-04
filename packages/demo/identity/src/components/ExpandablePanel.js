@@ -11,7 +11,9 @@ import { observer, inject } from 'mobx-react';
 import { pendingTextColor,identityBlue, disabledGrey, actionRequiredBoxBg } from '../constants/colors';
 import identityIcon from '../assets/identityIcon.svg';
 import SubPanel from './SubPanel';
-
+import NameIcon from '../assets/Name.svg';
+import AddressIcon from '../assets/Address.svg';
+import SocialIdIcon from '../assets/SocialID.svg';
 import { VERIFIED, PENDING_ADD, PENDING_REVIEW } from '../constants/general';
 
 const styles = theme => ({
@@ -119,8 +121,13 @@ class DetailedExpansionPanel extends React.Component {
     const { classes } = this.props;
     const noVerified = this.props.items.filter(item => item.status === VERIFIED).length;
     const noPending = this.props.items.filter(item => item.status === PENDING_REVIEW).length;
+    const noPendingAdd = this.props.items.filter(item => item.status === PENDING_ADD).length;
     const needAction = this.props.items.filter(item => item.status === PENDING_ADD).length > 0;
     let shouldShowAction;
+    let icon;
+    if (this.props.title === 'Name') icon = NameIcon;
+    if (this.props.title === 'Address') icon = AddressIcon;
+    if (this.props.title === 'Social ID') icon = SocialIdIcon;
     if (this.props.title === 'Name' && this.props.isUser) {
       shouldShowAction = needAction && !this.props.RootStore.panelButtonsStore.userPublishNameButtonConfirmed;
     }
@@ -130,17 +137,19 @@ class DetailedExpansionPanel extends React.Component {
     if (this.props.title === 'Social ID' && this.props.isUser) {
       shouldShowAction = needAction && !this.props.RootStore.panelButtonsStore.userPublishSocialIdButtonConfirmed;
     }
+
     return (
       <div className={classes.root}>
         <ExpansionPanel className={classes.paper}>
           <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
             <div className={classes.header}>
-              <img src={identityIcon} className={classes.image} alt="Identity Icon" />
+              <img src={icon} className={classes.image} alt="Identity Icon" />
               <div className={classes.textGroup}>
                 <Typography className={classes.title}>{this.props.title}</Typography>
                 <div className={classes.titleInOneRow}>
                   {noVerified > 0 && <Typography className={classes.verificationStatus}>{noVerified} Verification </Typography>}
                   {noPending > 0 && <Typography className={classes.disabledVerificationStatus}>{noPending} Pending</Typography>}
+                  {noPendingAdd > 0 && <Typography className={classes.disabledVerificationStatus}>{noPendingAdd} Pending</Typography>}
                 </div>
               </div>
               {/* for verifier  */}

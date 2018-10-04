@@ -2,20 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { observer, inject } from 'mobx-react';
-import { observable, when, action, runInAction } from 'mobx';
-import { withRouter, Route, Switch } from 'react-router-dom';
+import { when } from 'mobx';
 
-import Faq from './Faq';
-import Settings from './Settings';
-import SearchBar from '../components/verifier/SearchBar';
+import ErrorModal from '../components/ErrorModal';
 import ManagementTabs from '../components/verifier/ManagementTabs';
 import ManageIndividualUser from './verifier/ManageIndividualUser';
 import InstructionModal from '../components/InstructionModal';
 import VerifierInstructions from '../components/VerifierInstructions';
-import { verifierPrivKey } from '../constants/defaults';
 import LoadingModal from '../components/LoadingModal';
-import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
-import identityJson from '../build/contracts/Identity.json';
 
 const styles = (theme) => {
   return ({
@@ -88,6 +82,7 @@ class VerifierMain extends React.Component {
     const instructionLength = 4;
     return (
       <div className={classes.container}>
+        <ErrorModal open={RootStore.errorModalIsShowing} errMsg={RootStore.errorMessage} />
         <p>{this.identityAddress}</p>
         <InstructionModal
           open={verifierStore.getVerifierModalIsShowing()}

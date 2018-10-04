@@ -215,13 +215,8 @@ const PaymentModal = inject('RootStore')(observer((props) => {
               }}
               endAdornment={<InputAdornment className={classes.adornment} disableTypography position="end">GWEI</InputAdornment>}
             />
-            <div className={classes.inputLabel}>
-              <p>
-                {props.RootStore.paymentStore.maxFee}
-              </p>
-            </div>
             <div className={classes.maxFee}>
-              <img className={classes.ether} src={Ether} alt="" /><p>0.000000000003 ETH</p>
+              <img className={classes.ether} src={Ether} alt="" /><p>{props.RootStore.paymentStore.maxFee} ETH</p>
             </div>
             <div className={classes.buttonContainer}>
               <div className={classes.individualButton}>

@@ -32,6 +32,18 @@ class RootStore {
   @observable startInitFixedNetwork: Boolean = false;
 
   @observable reonboardModalIsShowing: Boolean = false;
+
+  @observable errorModalIsShowing = false;
+  @observable error = 'We have encountered an unknown error.';
+
+  @computed get errorMessage() {
+    return `${this.error} Please refresh your page to restart the identity demonstration.`;
+  }
+  @action
+  displayErrorModal(msg) {
+    this.errorModalIsShowing = true;
+    this.error = msg;
+  }
   @computed get currentNetwork() {
     if (this.commonStore.getIsUser()) {
       if (!this.userStore.isOnFixedAccount) return this.commonStore.metamaskCurrentNetwork;

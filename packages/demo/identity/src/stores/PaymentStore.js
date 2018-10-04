@@ -14,7 +14,7 @@ class PaymentStore {
   gasLimit = 0.003;
 
   @observable paymentModalIsShowing = false;
-  @observable gasPrice = 1000000;
+  @observable gasPrice = 1;
 
   @observable claimToAdd = {};
   /* JSDOC: MARK END OBSERVABLE */
@@ -39,14 +39,26 @@ class PaymentStore {
   }
   @action
   setGasPrice(price) {
-    if (price.toString().length > 8) {
-      return;
-    }
-    if (price > 6000000) {
-      this.gasPrice = 5999999;
+    if (price > 1000) {
+      this.gasPrice = 1000;
     } else {
       this.gasPrice = price;
     }
+  }
+
+  @computed get gasPriceInWei() {
+    let result = 0;
+    if (typeof this.gasPrice === 'string') {
+      if (this.gasPrice === '') {
+        result = 0;
+      }
+      result = web3.utils.toWei(this.gasPrice, 'gwei');
+    }
+    if (typeof this.gasPrice === 'number') {
+      result = web3.utils.toWei(this.gasPrice.toString(), 'gwei');
+    }
+    console.log('gas price: ', result);
+    return result;
   }
 
   @action

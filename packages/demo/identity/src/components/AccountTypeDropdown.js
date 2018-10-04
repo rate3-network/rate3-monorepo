@@ -13,7 +13,7 @@ import classNames from 'classnames';
 
 import { disabledBackgroundColor, borderColor, disabledIconColor, materialGrey } from '../constants/colors';
 import MetamaskIcon from '../assets/metamask.svg';
-import OnboardingWalletIcon from '../assets/OnboardingWallet.svg';
+import OnboardingWalletIcon from '../assets/BuiltInWallet.svg';
 
 
 const styles = theme => ({

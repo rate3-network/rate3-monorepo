@@ -9,6 +9,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { disabledGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
 import identityIcon from '../assets/identityIcon.svg';
+import NameIcon from '../assets/Name.svg';
+import AddressIcon from '../assets/Address.svg';
+import SocialIdIcon from '../assets/SocialID.svg';
 
 const styles = theme => ({
   root: {
@@ -86,12 +89,16 @@ const RegisterButton = withStyles(styles)((props) => {
 
 const FixedPanel = (props) => {
   const { classes } = props;
+  let icon;
+  if (props.title === 'Name') icon = NameIcon;
+  if (props.title === 'Address') icon = AddressIcon;
+  if (props.title === 'Social ID') icon = SocialIdIcon;
   return (
     <div className={classes.root}>
       <ExpansionPanel className={classes.paper} expanded={false}>
         <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={props.isUser ? <RegisterButton {...props} /> : <React.Fragment /> }>
           <div className={classes.header}>
-            <img src={identityIcon} className={classes.image} alt="Identity Icon" />
+            <img src={icon} className={classes.image} alt="Identity Icon" />
             <div className={classes.textGroup}>
               <Typography className={classes.title}>{props.title}</Typography>
               <Typography className={classes.verificationStatus}>

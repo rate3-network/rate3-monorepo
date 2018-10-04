@@ -20,6 +20,7 @@ import RootStore from './stores/RootStore';
 import { identityBlue, homeTextGreyUser, homeTextGreyVerifier } from './constants/colors';
 import { userPrivKey, verifierPrivKey } from './constants/defaults';
 
+
 const i18next = TranslationHandler.init();
 
 const theme = createMuiTheme({

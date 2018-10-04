@@ -20,7 +20,6 @@ class CommonStore {
   @observable currentLanguage: String = 'en';
   @observable commonNetwork: String = 'Rinkeby';
   // true: completed; false: not done;
-  @observable setupWalletProgress: Array = [false, false, false, false];
   @observable shouldRenderOnboardTransition: Boolean = false;
 
 
@@ -102,9 +101,6 @@ class CommonStore {
     return this.commonNetwork;
   }
 
-  getSetupWalletProgress(id) {
-    return this.setupWalletProgress[id];
-  }
   /**
    * Change role to Verifier
    *
@@ -165,11 +161,6 @@ class CommonStore {
   }
 
   @action
-  completeSetupWalletProgress(id) {
-    this.setupWalletProgress[id] = true;
-  }
-
-  @action
   setTrueShouldRenderOnboardTransition() {
     this.shouldRenderOnboardTransition = true;
   }
@@ -212,12 +203,6 @@ class CommonStore {
   }
 
   @action
-  completeSetupWallet() {
-    console.error('comletinggggg');
-    this.setupWalletProgress = [true, true, true, true];
-  }
-
-  @action
   async initCommonNetwork() {
     this.rootStore.finishInitNetwork = false;
     console.log('init common network');
@@ -232,11 +217,11 @@ class CommonStore {
     }
 
     const verifierBalance = await window.web3.eth.getBalance(managementAccountAddress);   
-    console.log('verifierBalance',verifierBalance); 
+    console.log('verifierBalance', verifierBalance);
    
     runInAction(() => {
       const balance = window.web3.utils.fromWei(verifierBalance);
-      console.log('balance',balance); 
+      console.log('balance', balance);
       this.rootStore.verifierStore.balanceToShow = balance;
     });
 
@@ -248,7 +233,6 @@ class CommonStore {
         this.fixedAccountBalance = fixedAccountBalance;
         this.fixedAccountBalance = window.web3.utils.fromWei(this.fixedAccountBalance);
         console.log('Rate: CommonStore -> asyncinitCommonNetwork -> this.fixedAccountBalance', this.fixedAccountBalance);
-        this.setupWalletProgress = [true, true, true, true];
         this.rootStore.globalSpinnerIsShowing = false;
         this.rootStore.finishInitNetwork = true;
       });

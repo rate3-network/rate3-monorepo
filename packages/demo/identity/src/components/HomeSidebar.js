@@ -89,6 +89,7 @@ const styles = theme => ({
     justifyContent: 'space-between',
   },
   walletNameText: {
+    cursor: 'pointer',
     fontSize: '0.95em',
     textDecoration: 'underline',
     letterSpacing: '0.05em',

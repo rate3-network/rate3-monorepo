@@ -4,7 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import { observer, inject } from 'mobx-react';
 
-import LanguageDropdown from './LanguageDropdown';
 import { identityBlue, sidebarShadow } from './../constants/colors';
 import Rate3Logo from './../assets/rate3Logo.svg';
 
@@ -45,7 +44,6 @@ const OnboardSideBar = (props) => {
       <div className={classes.container}>
         <img className={classes.logo} src={Rate3Logo} alt="rate3 logo" />
         <img className={classes.image} src={props.imageSrc} alt="Onboard 1" />
-        <LanguageDropdown />
       </div>
     </Drawer>
   );

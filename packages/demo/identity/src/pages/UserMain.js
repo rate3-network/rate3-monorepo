@@ -6,19 +6,20 @@ import { when, runInAction } from 'mobx';
 import { translate } from 'react-i18next';
 import { withRouter, Route, Switch } from 'react-router-dom';
 
-import Faq from './Faq';
-import Settings from './Settings';
-import ExpandablePanel from '../components/ExpandablePanel';
-import FixedPanel from '../components/FixedPanel';
-import InstructionModal from '../components/InstructionModal';
-import UserInstructions from '../components/user/UserInstructions';
-import RegistrationModal from '../components/user/RegistrationModal';
-import SuccessModal from '../components/SuccessModal';
-import LoadingModal from '../components/LoadingModal';
-import ReOnboardModal from '../components/ReOnboardModal';
-import PaymentModal from '../components/PaymentModal';
-import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
 import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
+import ErrorModal from '../components/ErrorModal';
+import ExpandablePanel from '../components/ExpandablePanel';
+import Faq from './Faq';
+import FixedPanel from '../components/FixedPanel';
+import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
+import InstructionModal from '../components/InstructionModal';
+import LoadingModal from '../components/LoadingModal';
+import PaymentModal from '../components/PaymentModal';
+import RegistrationModal from '../components/user/RegistrationModal';
+import ReOnboardModal from '../components/ReOnboardModal';
+import Settings from './Settings';
+import SuccessModal from '../components/SuccessModal';
+import UserInstructions from '../components/user/UserInstructions';
 
 const styles = (theme) => {
   return ({
@@ -184,6 +185,7 @@ class UserMain extends React.Component {
           <Route path="/user/faq" component={Faq} />
           <Route path="/user/settings" component={Settings} />
         </Switch>
+        <ErrorModal open={RootStore.errorModalIsShowing} errMsg={RootStore.errorMessage} />
         <InstructionModal
           open={userStore.getUserModalIsShowing()}
           onClose={userStore.closeModal.bind(userStore)}

@@ -7,10 +7,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+import { inject, observer } from 'mobx-react';
 
 import AccountTypeDropdown from '../components/AccountTypeDropdown';
 import { identityHeavyGrey, disabledBackgroundColor } from '../constants/colors';
-import { inject, observer } from 'mobx-react';
 import { action } from 'mobx';
 import { fixedVerifierAddress } from '../constants/defaults';
 import UserMain from '../pages/UserMain';
@@ -31,7 +31,8 @@ const styles = (theme) => {
       lineHeight: '1.5em',
     },
     descriptionBox: {
-      width: '100%',
+      width: '40vw',
+      maxWidth: '30em',
       fontSize: '1.2em',
       lineHeight: '1.55em',
       fontWeight: '400',
@@ -48,14 +49,24 @@ const styles = (theme) => {
     },
     greyBack: {
       padding: '0.5em',
+      paddingLeft: '1em',
       borderRadius: '0.5em',
       fontWeight: 'bold',
       color: identityHeavyGrey,
       backgroundColor: disabledBackgroundColor,
+      overflowWrap: 'break-word',
+      '& p': {
+        overflowWrap: 'break-word',
+      },
     },
     disabledTab: {
+      pointerEvents: 'auto !important',
       cursor: 'no-drop !important',
       color: '#e3e7ed !important',
+    },
+    noMargin: {
+      marginBlockStart: '0em',
+      marginBlockEnd: '0em',
     },
   });
 };
@@ -72,12 +83,12 @@ class Settings extends React.Component {
     const { classes, t } = this.props;
     const WalletAddress = (props) => {
       if (!props.RootStore.commonStore.getIsUser()) {
-        return <p>0xd102503E987a6402A1E0b220369ea4A4Bce911E8</p>;
+        return <p className={classes.noMargin}>0xd102503E987a6402A1E0b220369ea4A4Bce911E8</p>;
       }
       if (!props.RootStore.userStore.isOnFixedAccount) {
-        return <p>{props.RootStore.userStore.userAddr}</p>;
+        return <p className={classes.noMargin}>{props.RootStore.userStore.userAddr}</p>;
       }
-      return <p>{props.RootStore.userStore.fixedUserAddr}</p>;
+      return <p className={classes.noMargin}>{props.RootStore.userStore.fixedUserAddr}</p>;
     };
     return (
       <div>
@@ -103,7 +114,7 @@ class Settings extends React.Component {
               <Tab classes={{ textColorPrimary: classes.primaryColor, disabled: classes.disabledTab }} disabled={this.props.RootStore.commonStore.getIsUser()} value={1} label="Public Keys" />
             </Tabs>
             {this.state.value === 0 &&
-              <div>
+              <div style={{ paddingTop: '1.5em' }}>
                 <AccountTypeDropdown variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} isOnSidebar isUser={this.props.RootStore.commonStore.getIsUser()} />
                 <p>Account Name</p>
                 <div className={classes.greyBack}>{this.props.RootStore.commonStore.getIsUser() ? 'User' : 'Verifier' }</div>
@@ -113,9 +124,9 @@ class Settings extends React.Component {
             }
 
             {this.state.value === 1 &&
-              <div>
+              <div style={{ paddingTop: '1em' }}>
                 <p>Claim Signing Key</p>
-                <div className={classes.greyBack}><WalletAddress {...this.props} /></div>
+                <div className={classes.greyBack}>0x05223E84769d33e75e692856216Ee881008d81FF</div>
               </div>
             }
           </div>

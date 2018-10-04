@@ -4,12 +4,10 @@ import {
   action,
   runInAction,
 } from 'mobx';
-import Web3 from 'web3';
 
 import Identity from '../utils/Identity';
 import MyTable from '../utils/MyTable';
-import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
-import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
+import { VERIFIED } from '../constants/general';
 import identityJson from '../build/contracts/Identity.json';
 import { fixedUserAddress, fixedUserRegistryContractAddress, fixedVerifierIdentityContractAddress, dbPrefix, tableName } from '../constants/defaults';
 
@@ -161,23 +159,10 @@ class UserStore {
         });
       }
     } catch (err) {
-      console.error(err);
+      this.rootStore.displayErrorModal('We have encountered an error while getting your Metamask account.');
     }
   }
-  createIdentity() {
-    this.registryContract.methods.createIdentity().send(
-      { from: this.userAddr, gas: 4000000 },
-      (err, result) => {
-        console.log(result);
-      },
-    );
-  }
-  getPastEvents() {
-    
-  }
-  checkHasIdentity() {
-    this.registryContract.methods.hasIdentity(this.userAddr).call().then(console.log);
-  }
+
 
   listenToNewIdentityEvent() {
     const checkNewIdentity = () => {
@@ -185,6 +170,7 @@ class UserStore {
       this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         if (error) {
           console.error(error);
+          this.rootStore.displayErrorModal('Encountered an error while listening to new Identity events.');
         }
         if (events) {
           events.forEach((ev) => {
@@ -204,15 +190,14 @@ class UserStore {
   listenToNewClaimEvent() {
     const checkNewClaim = () => {
       console.log('polling for new claim');
-      console.log('Rate: checkNewClaim -> this.startedAddingClaim', this.startedAddingClaim);
       this.identityContract.getPastEvents('ClaimAdded', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         if (error) {
           console.error(error);
+          this.rootStore.displayErrorModal('Encountered an error while listening to new Claim events.');
         }
         if (events) {
           events.forEach((ev) => {
             if (ev.returnValues.signature === this.signature) {
-              console.log('cleared interval for polling new claim');
               runInAction(() =>{ this.finishedAddingClaim = true; });
               this.resetClaimLists();
               this.getValidClaims();
@@ -235,7 +220,8 @@ class UserStore {
       console.log('polling for claim removed events');
       this.identityContract.getPastEvents('ClaimRemoved', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         if (error) {
-          console.error('hey here', error);
+          this.rootStore.displayErrorModal('Encountered an error while listening to new Removal events.');
+          console.error(error);
         }
         if (events) {
           events.forEach((ev) => {
@@ -254,9 +240,7 @@ class UserStore {
         }
       });
     };
-    // runInAction(() => { this.startedLoadingClaims = true; this.finishedLoadingClaims = false; });
     let polling = setInterval(checkNewClaimRemove, 1000);
-    // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
   }
   
   @action
@@ -375,27 +359,34 @@ class UserStore {
     console.log('signature from db: ', this.signature);
     this.startedAddingClaim = true;
     this.listenToNewClaimEvent();
+
     if (!this.isOnFixedAccount) {
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, this.signature, data, location)
-        .send({ from: userAddress, gas: 6000000 },
+        .send(
+          { from: userAddress, gas: 6000000 },
           (err, result) => {
             console.log('from addClaim callback');
-            if (err) console.log(err);
+            if (err) {
+              console.log(err);
+              this.rootStore.displayErrorModal('Encountered an error while adding your Claim to the blockchain. It might be caused by a pending transaction. You can try with a higher gas price.');
+            }
             if (result) {
               this.openPublishSubmitModal();
               console.log(result);
               this.db.deleteClaim(addr, claim);
             }
-          }
+          },
         );
     } else {
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, sig, data, location)
         .send(
-          { from: userAddress, gas: 6000000 },
-          // { from: userAddress, gas: 6000000, price: gasPrice },
+          { from: userAddress, gas: 6000000, gasPrice: this.rootStore.paymentStore.gasPriceInWei },
           (err, result) => {
             console.log('from addClaim callback');
-            if (err) console.log(err);
+            if (err) {
+              console.error(err);
+              this.rootStore.displayErrorModal('Encountered an error while adding your Claim to the blockchain. It might be caused by a pending transaction. You can try with a higher gas price.');
+            }
             if (result) {
               this.openPublishSubmitModal();
               console.log(result);
@@ -415,10 +406,14 @@ class UserStore {
           this.fixedUserAddr :
           this.userAddr,
         gas: 6000000,
+        // gasPrice: '10000000000',
       },
       (err, result) => {
         console.log('from remove claim callback');
-        if (err) console.log(err);
+        if (err) {
+          console.error(err);
+          this.rootStore.displayErrorModal('Encountered an error while removing your Claim.');
+        }
         if (result) {
           console.log(result);
         }

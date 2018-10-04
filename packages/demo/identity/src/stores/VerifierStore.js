@@ -135,46 +135,68 @@ class VerifierStore {
   @action
   async getAllUsers() {
     const contract = this.getRegistryContract();
-    const allIdentities = await contract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' });
-    const allIdentityList = allIdentities.map((event) => {
-      return {
-        identityAddr: event.returnValues.identityAddress,
-        userAddr: event.returnValues.senderAddress,
-      };
-    });
-    runInAction(() => { this.allUsersList = allIdentityList; });
-    console.log('Rate: VerifierStore -> asyncgetAllUsers -> allIdentities', allIdentityList);
+    try {
+      const allIdentities = await contract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' });
+      const allIdentityList = allIdentities.map((event) => {
+        return {
+          identityAddr: event.returnValues.identityAddress,
+          userAddr: event.returnValues.senderAddress,
+        };
+      });
+      runInAction(() => { this.allUsersList = allIdentityList; });
+    } catch (err) {
+      this.rootStore.displayErrorModal('Encountered an error while getting identities for users.');
+    }
   }
 
   @action
   async getIdentityForSelectedUser() {
-    const idContractAddr = await this.registryContract.methods.identities(this.userSelected).call();
-    const identityContract = new window.web3.eth.Contract(identityJson.abi, idContractAddr);
-    window.identityContract = identityContract;
-    runInAction(() => {
-      this.identityContractAddr = idContractAddr;
-      this.identityContract = identityContract;
-    });
+    try {
+      const idContractAddr = await this.registryContract.methods.identities(this.userSelected).call();
+      const identityContract = new window.web3.eth.Contract(identityJson.abi, idContractAddr);
+      window.identityContract = identityContract;
+      runInAction(() => {
+        this.identityContractAddr = idContractAddr;
+        this.identityContract = identityContract;
+      });
+    } catch (err) {
+      this.rootStore.displayErrorModal('Encountered an error while getting identity for the user selected.');
+    }
   }
 
   @action
   async getAliveClaims() {
-    const nameClaimArr = await this.identityContract.methods.getClaimIdsByTopic('101').call();
-    const addressClaimArr = await this.identityContract.methods.getClaimIdsByTopic('102').call();
-    const socialIdClaimArr = await this.identityContract.methods.getClaimIdsByTopic('103').call();
+    try {
+      const nameClaimArr = await this.identityContract.methods.getClaimIdsByTopic('101').call();
+      const addressClaimArr = await this.identityContract.methods.getClaimIdsByTopic('102').call();
+      const socialIdClaimArr = await this.identityContract.methods.getClaimIdsByTopic('103').call();
 
-    const combined = { nameClaimArr, addressClaimArr, socialIdClaimArr };
+      const combined = { nameClaimArr, addressClaimArr, socialIdClaimArr };
 
-    return new Promise((resolve) => {
-      resolve(combined);
-    });
+      return new Promise((resolve) => {
+        resolve(combined);
+      });
+    } catch (err) {
+      this.rootStore.displayErrorModal('Encountered an error while getting past claims for user.');
+    }
   }
   @action
   async populateWithValidClaims(userAddress) {
     runInAction(() => { this.startedGettingClaim = true; });
-    const allAliveClaims = await this.getAliveClaims();
+    let allAliveClaims;
+    try {
+      allAliveClaims = await this.getAliveClaims();
+    } catch (err) {
+      this.rootStore.displayErrorModal('Encountered an error while getting past claims for user.');
+    }
     const { nameClaimArr, addressClaimArr, socialIdClaimArr } = allAliveClaims;
-    const allEvents = await this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' });
+    let allEvents;
+    try {
+      allEvents = await this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' });
+    } catch (err) {
+      this.rootStore.displayErrorModal('Encountered an error while getting all past events for user.');
+    }
+
     const addedAndChangedEvents = allEvents.filter((item) => { return item.event === 'ClaimAdded' || item.event === 'ClaimChanged'; });
 
     let data;
