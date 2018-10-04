@@ -79,6 +79,10 @@ class PendingUserTable extends React.Component {
     rowsPerPage: 5,
   };
 
+  componentDidMount() {
+    console.log('Rate: PendingUserTable -> componentDidMount -> this.props.RootStore.verifierStore.pendingClaimList', this.props.RootStore.verifierStore.pendingClaimList);
+  }
+
   handleChangePage = (event, page) => {
     this.setState({ page });
   };
@@ -90,7 +94,17 @@ class PendingUserTable extends React.Component {
   render() {
     const { classes } = this.props;
     const { rowsPerPage, page } = this.state;
-    const rows = this.props.RootStore.verifierStore.pendingClaimList;
+    const list = this.props.RootStore.verifierStore.pendingClaimList;
+    let rows;
+    if (list.length > 0) {
+      rows = list.map((el) => { return el.user; });
+      const uniqueArray = rows.filter((elem, index, self) => {
+        return index === self.indexOf(elem);
+      });
+      rows = uniqueArray;
+    } else {
+      rows = [];
+    }
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
     console.log('rows', rows);
     return (
@@ -101,15 +115,15 @@ class PendingUserTable extends React.Component {
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
                   <TableRow
-                    onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row.user); this.props.RootStore.verifierStore.getIdentityForSelectedUser(); }}
+                    onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row); this.props.RootStore.verifierStore.getIdentityForSelectedUser(); }}
                     className={classes.rowRoot}
-                    key={`${row.user}.${row.value}`}
+                    key={row}
                   >
                     <TableCell className={classes.profilePicContainer} padding="checkbox" scope="row">
-                      <ProfilePic size={6} seed={row.user} />
+                      <ProfilePic size={6} seed={row} />
                     </TableCell>
                     <TableCell className={classes.textCell} component="td" scope="row">
-                      {truncateAddress(row.user, 18)}
+                      {truncateAddress(row, 18)}
                     </TableCell>
                     <TableCell className={classes.arrowCell} component="td" scope="row">
                       <ChevronRight />

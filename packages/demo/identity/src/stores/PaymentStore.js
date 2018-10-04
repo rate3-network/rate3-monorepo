@@ -57,6 +57,9 @@ class PaymentStore {
 
   @action
   confirmAddClaim() {
+    if (this.claimToAdd.type === 'name') this.rootStore.panelButtonsStore.confirmPublishName();
+    if (this.claimToAdd.type === 'address') this.rootStore.panelButtonsStore.confirmPublishAddress();
+    if (this.claimToAdd.type === 'socialId') this.rootStore.panelButtonsStore.confirmPublishSocialId();
     this.rootStore.userStore.addClaim(this.claimToAdd, this.gasPrice);
     this.closePaymentModal();
   }

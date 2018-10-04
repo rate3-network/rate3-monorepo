@@ -108,6 +108,7 @@ class UserStore {
   }
   @action
   resetClaimLists() {
+    console.log('resseting claim lists');
     this.nameClaimList = [];
     this.addressClaimList = [];
     this.socialIdClaimList = [];
@@ -304,6 +305,7 @@ class UserStore {
   }
   @action
   async getValidClaims() {
+    
     this.openLoadingClaimModal();
     const allAliveClaims = await this.getAliveClaims();
     const { nameClaimArr, addressClaimArr, socialIdClaimArr } = allAliveClaims;
@@ -323,21 +325,25 @@ class UserStore {
 
       data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
       const claim = new Identity(data, 'name', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
-      runInAction(() => { this.nameClaimList.push(claim); });
+      const foundIndex = this.nameClaimList.findIndex((el) => { return el.txHash === claim.txHash; });
+      if (foundIndex === -1) runInAction(() => { this.nameClaimList.push(claim); });
     }
     if (addressClaimArr.length !== 0) {
       const validNameClaims = addedAndChangedEvents.filter((item) => { return item.returnValues.topic === '102'; });
       const validNameClaim = validNameClaims[validNameClaims.length - 1];
       data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
       const claim = new Identity(data, 'address', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
-      runInAction(() => { this.addressClaimList.push(claim); });
+      // only add it if it's not in the list
+      const foundIndex = this.addressClaimList.findIndex((el) => { return el.txHash === claim.txHash; });
+      if (foundIndex === -1) runInAction(() => { this.addressClaimList.push(claim); });
     }
     if (socialIdClaimArr.length !== 0) {
       const validNameClaims = addedAndChangedEvents.filter((item) => { return item.returnValues.topic === '103'; });
       const validNameClaim = validNameClaims[validNameClaims.length - 1];
       data = window.web3.utils.hexToAscii(validNameClaim.returnValues.data);
       const claim = new Identity(data, 'socialId', userAddress, 'Verifier X', validNameClaim.returnValues.signature, validNameClaim.transactionHash, validNameClaim.returnValues.claimId, VERIFIED);
-      runInAction(() => { this.socialIdClaimList.push(claim); });
+      const foundIndex = this.socialIdClaimList.findIndex((el) => { return el.txHash === claim.txHash; });
+      if (foundIndex === -1) runInAction(() => { this.socialIdClaimList.push(claim); });
     }
 
     this.closeLoadingClaimModal();

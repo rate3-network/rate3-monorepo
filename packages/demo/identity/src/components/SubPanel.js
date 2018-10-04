@@ -139,12 +139,18 @@ const styles = theme => ({
 
 @inject('RootStore') @observer
 class SubPanel extends React.Component {
-  constructor(props) {
-    super(props);
-  }
+  state = {
+    addButtonClicked: false,
+    removeButtonClicked: false,
+  };
 
   handleAdd() {
     console.log(this.props.item);
+    console.log(this.state.addButtonClicked);
+    this.setState({ addButtonClicked: true });
+    console.log(this.state.addButtonClicked);
+
+    // this.props.onPublishButtonClick();
     this.props.RootStore.paymentStore.openPaymentModal(this.props.item);
     // this.props.RootStore.userStore.addClaim(this.props.item);
   }
@@ -156,23 +162,9 @@ class SubPanel extends React.Component {
   }
 
   handleRemove() {
+    this.setState({ removeButtonClicked: true });
     this.props.RootStore.userStore.openRemoveNotifyModal();
     this.props.RootStore.userStore.removeClaim(this.props.item.claimId, this.props.item.signature);
-    // window.identityContract.methods.removeClaim(this.props.item.claimId).send(
-    //   {
-    //     from: this.props.RootStore.userStore.isOnFixedAccount ?
-    //       this.props.RootStore.userStore.fixedUserAddr :
-    //       this.props.RootStore.userStore.userAddr,
-    //     gas: 6000000,
-    //   },
-    //   (err, result) => {
-    //     console.log('from remove claim callback');
-    //     if (err) console.log(err);
-    //     if (result) {
-    //       console.log(result);
-    //     }
-    //   },
-    // );
   }
 
   handleExpand() {
@@ -184,21 +176,6 @@ class SubPanel extends React.Component {
   render() {
     const { classes } = this.props;
 
-    const ActionButton = observer(withStyles(styles)((props) => {
-      
-      if (this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim) {
-        return (<div onClick={this.handleAdd.bind(this)} className={classes.addButton}><AddButton /></div>);
-      }
-      if (!this.props.isUser && this.props.item.status === PENDING_REVIEW) {
-        return (<div onClick={this.handleVerify.bind(this)} className={classes.addButton}><VerifyButton /></div>);
-      }
-      
-      if (this.props.isUser && this.props.item.status === VERIFIED) {
-        return (<div onClick={this.handleRemove.bind(this)} className={classes.addButton}><RemoveButton /></div>);
-      }
-      console.log('should not display button');
-      return null;
-    }));
     const AddButton = observer(withStyles(styles)((props) => {
       return (
         <div>
@@ -273,20 +250,20 @@ class SubPanel extends React.Component {
                     <div className={classes.publishedText}>Published</div>
                   }
                   {this.props.item.status === PENDING_REVIEW &&
-                    <div className={classes.pendingText}><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Pending Review</div>
+                    <div className={classes.pendingText}>Pending Review</div>
                   }
                   {this.props.item.status === PENDING_ADD &&
-                    <div className={classes.pendingText}><img className={classes.smallLogo} src={pendingIcon} alt="icon" /> Ready to Publish</div>
+                    <div className={classes.pendingText}>Ready to Publish</div>
                   }
                 </div>
               </div>
-              {this.props.isUser && this.props.item.status === PENDING_ADD && !this.props.RootStore.userStore.startedAddingClaim &&
+              {this.props.isUser && this.props.item.status === PENDING_ADD && !this.state.addButtonClicked &&
                 <div onClick={this.handleAdd.bind(this)} className={classes.addButton}><AddButton /></div>
               }
               {!this.props.isUser && this.props.item.status === PENDING_REVIEW &&
                 <div onClick={this.handleVerify.bind(this)} className={classes.addButton}><VerifyButton /></div>
               }
-              {this.props.isUser && this.props.item.status === VERIFIED && !this.props.RootStore.userStore.startedRemovingClaim &&
+              {this.props.isUser && this.props.item.status === VERIFIED && !this.state.removeButtonClicked &&
                 <div onClick={this.handleRemove.bind(this)} className={classes.addButton}><RemoveButton /></div>
               }
             </div>

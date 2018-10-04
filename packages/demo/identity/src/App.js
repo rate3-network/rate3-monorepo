@@ -89,13 +89,7 @@ class App extends React.Component {
                   <Route
                     exact
                     render={() => {
-                      if (RootStore.commonStore.getIsUser() && RootStore.commonStore.getIsUserOnboardDone()) {
-                        return <Home />;
-                      }
-                      if (!RootStore.commonStore.getIsUser() && RootStore.commonStore.getIsVerifierOnboardDone()) {
-                        return <Home />;
-                      }
-                      return <Onboard />;
+                      return <Home />;
                     }}
                   />
                 </Switch>

@@ -95,6 +95,7 @@ class UserMain extends React.Component {
       () => this.props.RootStore.userStore.userAddr && this.props.RootStore.finishInitMetamaskNetwork,
       () => {
         console.log('getting identites for ', this.props.RootStore.userStore.userAddr);
+        this.props.RootStore.userStore.resetClaimLists();
         this.props.RootStore.userStore.populateClaimLists();
         // this.props.RootStore.userStore.getIdentities();
         // this.props.RootStore.userStore.getIdentityContractFromBlockchain().then((contract) => { console.log(contract); });
@@ -241,7 +242,7 @@ class UserMain extends React.Component {
           open={userStore.publishSubmitModalIsShowing}
           onClose={userStore.closePublishSubmitModal.bind(userStore)}
           title="Publishing Your Identity"
-          content="Preparing your unique blockchain identity, this might take from a few seconds to a few minutes.!"
+          content="Preparing your unique blockchain identity, this might take from a few seconds to a few minutes."
         />
         <SuccessModal
           open={userStore.startedAddingClaim && userStore.finishedAddingClaim}

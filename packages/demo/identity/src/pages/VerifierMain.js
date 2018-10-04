@@ -50,11 +50,9 @@ class VerifierMain extends React.Component {
         this.props.RootStore.verifierStore.closeModal();
       } else {
         this.props.RootStore.verifierStore.openModal();
-        window.localStorage.setItem('verifierModalHasShown', 'true');
       }
     } else {
       this.props.RootStore.verifierStore.openModal();
-      window.localStorage.setItem('verifierModalHasShown', 'true');
     }
 
     this.props.RootStore.setStartInitNetworkTrue();
@@ -93,7 +91,7 @@ class VerifierMain extends React.Component {
         <p>{this.identityAddress}</p>
         <InstructionModal
           open={verifierStore.getVerifierModalIsShowing()}
-          onClose={verifierStore.closeModal.bind(verifierStore)}
+          onClose={() => {verifierStore.closeModal(); window.localStorage.setItem('verifierModalHasShown', 'true'); }}
           handleNext={verifierStore.handleModalNext.bind(verifierStore)}
           handleBack={verifierStore.handleModalBack.bind(verifierStore)}
           activeStep={verifierStore.getModalPage()}

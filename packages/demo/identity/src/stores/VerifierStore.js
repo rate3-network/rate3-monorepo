@@ -263,8 +263,9 @@ class VerifierStore {
         item.type === this.currentVerification.type);
     });
     itemFound.status = PENDING_ADD;
+    console.log('line 266 pendingClaimList', this.pendingClaimList);
     this.pendingClaimList[indexFound] = itemFound;
-    console.log('line 128 pendingClaimList', this.pendingClaimList);
+    console.log('line 268 pendingClaimList', this.pendingClaimList);
     console.log('this.currentVerification.value ', this.currentVerification.value);
     const data = window.web3.utils.asciiToHex(this.currentVerification.value);
     console.log('data ', data);
@@ -281,8 +282,10 @@ class VerifierStore {
     window.web3.eth.sign(dataToSign, this.verifierAddr).then((str) => {
       sig = str;
       console.log('signature: ', str);
+      console.log('Rate: VerifierStore -> approveCurrentVerification -> this.pendingClaimList', this.pendingClaimList);
       this.db.approveClaim(this.currentVerification.user, this.currentVerification.value, sig);
       this.setUserSelected(this.userSelected);
+      console.log('Rate: VerifierStore -> approveCurrentVerification -> this.pendingClaimList', this.pendingClaimList);
       this.openVerifySuccessModal();
       this.closeVerificationModal();
     });
@@ -318,6 +321,7 @@ class VerifierStore {
   @action
   setUserSelected(user) {
     this.userSelected = user;
+    this.resetUserSelectedLists();
     console.log('set user selected', this.userSelected);
     this.pendingClaimList.forEach((row) => {
       // const newId = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
@@ -344,6 +348,12 @@ class VerifierStore {
     this.selectedUserAddresses = [];
     this.selectedUserSocialIds = [];
     console.log('resetUserSelected');
+  }
+  @action
+  resetUserSelectedLists() {
+    this.selectedUserNames = [];
+    this.selectedUserAddresses = [];
+    this.selectedUserSocialIds = [];
   }
   @action
   setCurrentTab(value) {

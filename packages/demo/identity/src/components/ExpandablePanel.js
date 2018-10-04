@@ -109,41 +109,59 @@ const ArrowIcon = withStyles(styles)((props) => {
   const { classes } = props;
   return <ExpandMoreIcon className={classes.icon} />;
 });
+@inject('RootStore') @observer
+class DetailedExpansionPanel extends React.Component {
+  state = {
+    publishClicked: false,
+  };
 
-const DetailedExpansionPanel = (props) => {
-  const { classes } = props;
-  const noVerified = props.items.filter(item => item.status === VERIFIED).length;
-  const noPending = props.items.filter(item => item.status === PENDING_ADD || item.status === PENDING_REVIEW).length;
-  const needAction = props.items.filter(item => item.status === PENDING_ADD).length > 0;
-  return (
-    <div className={classes.root}>
-      <ExpansionPanel className={classes.paper}>
-        <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
-          <div className={classes.header}>
-            <img src={identityIcon} className={classes.image} alt="Identity Icon" />
-            <div className={classes.textGroup}>
-              <Typography className={classes.title}>{props.title}</Typography>
-              <div className={classes.titleInOneRow}>
-                {noVerified > 0 && <Typography className={classes.verificationStatus}>{noVerified} Verification </Typography>}
-                {noPending > 0 && <Typography className={classes.disabledVerificationStatus}>{noPending} Pending</Typography>}
+  render() {
+    const { classes } = this.props;
+    const noVerified = this.props.items.filter(item => item.status === VERIFIED).length;
+    const noPending = this.props.items.filter(item => item.status === PENDING_REVIEW).length;
+    const needAction = this.props.items.filter(item => item.status === PENDING_ADD).length > 0;
+    let shouldShowAction;
+    if (this.props.title === 'Name' && this.props.isUser) {
+      shouldShowAction = needAction && !this.props.RootStore.panelButtonsStore.userPublishNameButtonConfirmed;
+    }
+    if (this.props.title === 'Address' && this.props.isUser) {
+      shouldShowAction = needAction && !this.props.RootStore.panelButtonsStore.userPublishAddressButtonConfirmed;
+    }
+    if (this.props.title === 'Social ID' && this.props.isUser) {
+      shouldShowAction = needAction && !this.props.RootStore.panelButtonsStore.userPublishSocialIdButtonConfirmed;
+    }
+    return (
+      <div className={classes.root}>
+        <ExpansionPanel className={classes.paper}>
+          <ExpansionPanelSummary classes={{ expandIcon: classes.iconButton }} expandIcon={<ArrowIcon />}>
+            <div className={classes.header}>
+              <img src={identityIcon} className={classes.image} alt="Identity Icon" />
+              <div className={classes.textGroup}>
+                <Typography className={classes.title}>{this.props.title}</Typography>
+                <div className={classes.titleInOneRow}>
+                  {noVerified > 0 && <Typography className={classes.verificationStatus}>{noVerified} Verification </Typography>}
+                  {noPending > 0 && <Typography className={classes.disabledVerificationStatus}>{noPending} Pending</Typography>}
+                </div>
               </div>
+              {/* for verifier  */}
+              {(!this.props.isUser && noPending > 0) && <div className={classes.actionRequiredBox}>Action Required</div>}
+              {/* for user  */}
+              {this.props.isUser && shouldShowAction && <div className={classes.actionRequiredBox}>Action Required</div>}
             </div>
-            {(noPending > 0 && !props.isUser) && <div className={classes.actionRequiredBox}>Action Required</div>}
-            {needAction && <div className={classes.actionRequiredBox}>Action Required</div>}
-          </div>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails className={classes.details}>
-          {props.items.map((item) => {
-            return (<SubPanel isUser={props.isUser} key={JSON.stringify(item)} item={item} />);
-          })}
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-    </div>
-  );
-};
+          </ExpansionPanelSummary>
+          <ExpansionPanelDetails className={classes.details}>
+            {this.props.items.map((item) => {
+              return (<SubPanel isUser={this.props.isUser} key={JSON.stringify(item)} item={item} />);
+            })}
+          </ExpansionPanelDetails>
+        </ExpansionPanel>
+      </div>
+    );
+  }
+}
 
 DetailedExpansionPanel.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default inject('RootStore')(observer(withStyles(styles)(DetailedExpansionPanel)));
+export default withStyles(styles)(DetailedExpansionPanel);
