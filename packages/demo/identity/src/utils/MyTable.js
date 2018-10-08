@@ -119,10 +119,3 @@ class MyTable {
 }
 
 export default MyTable;
-// let mytable = new MyTable('test-prefix')
-// mytable.createTable('my-table')
-// mytable.getTable('my-table')
-// mytable.addClaim('some value', 'address', '0x12ffdf', '0xsadfsa', 1)
-
-// mytable.containsClaim('0x12ffdf', 'some value')
-// mytable.getClaim('0x12ffdf', 'some value')

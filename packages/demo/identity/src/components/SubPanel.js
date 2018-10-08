@@ -145,18 +145,13 @@ class SubPanel extends React.Component {
   };
 
   handleAdd() {
-    console.log(this.props.item);
-    console.log(this.state.addButtonClicked);
     this.setState({ addButtonClicked: true });
-    console.log(this.state.addButtonClicked);
-
     // this.props.onPublishButtonClick();
     this.props.RootStore.paymentStore.openPaymentModal(this.props.item);
     // this.props.RootStore.userStore.addClaim(this.props.item);
   }
 
   handleVerify() {
-    console.log(this.props.item);
     this.props.RootStore.verifierStore.setCurrentVerification(this.props.item.user, this.props.item.value, this.props.item.type);
     this.props.RootStore.verifierStore.openVerificationModal();
   }

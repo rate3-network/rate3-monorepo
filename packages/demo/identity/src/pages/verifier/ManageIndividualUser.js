@@ -57,7 +57,6 @@ class ManageIndividualUser extends Component {
   }
   render() {
     const { classes, RootStore, t } = this.props;
-    console.log('selected user names',RootStore.verifierStore.selectedUserNames);
     return (
       <div className={classes.container}>
         <VerifyModal open={RootStore.verifierStore.verifyModalIsShowing} onClose={RootStore.verifierStore.closeVerificationModal.bind(RootStore.verifierStore)} />

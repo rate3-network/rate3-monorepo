@@ -86,21 +86,11 @@ class VerifiedUserTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
-  getClaim(arr) {
-    if (arr.length > 0) {
-      
-    }
-  }
   async handleRowClick(row) {
     // get identity contract for the user first
-    const identityContract = this.props.RootStore.verifierStore.createIdentityContractFromAddress(row.identityAddr);
     this.props.RootStore.verifierStore.setUserSelected(row.userAddr);
-    // const nameClaimArr = await window.identityContract.methods.getClaimIdsByTopic('101').call();
-    // const addressClaimArr = await window.identityContract.methods.getClaimIdsByTopic('102').call();
-    // const socialIdClaimArr = await window.identityContract.methods.getClaimIdsByTopic('103').call();
-    this.props.RootStore.verifierStore.populateWithValidClaims(row.userAddr);
-    // this.props.RootStore.verifierStore.selectAndPopulateUserClaims(row.userAddr,);
 
+    this.props.RootStore.verifierStore.populateWithValidClaims(row.userAddr);
   }
 
   render() {
@@ -108,7 +98,6 @@ class VerifiedUserTable extends React.Component {
     const { rowsPerPage, page } = this.state;
     const rows = this.props.RootStore.verifierStore.allUsersList;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-    console.log('rows', rows);
     return (
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
@@ -119,7 +108,7 @@ class VerifiedUserTable extends React.Component {
                   <TableRow
                     onClick={() => { this.handleRowClick(row); }}
                     className={classes.rowRoot}
-                    key={`${row.identityAddr}.${row.userAddr}`}
+                    key={`${row.userAddr}`}
                   >
                     <TableCell className={classes.profilePicContainer} padding="checkbox" scope="row">
                       <ProfilePic size={6} seed={row.userAddr} />

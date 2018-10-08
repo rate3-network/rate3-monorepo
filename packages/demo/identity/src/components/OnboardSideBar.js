@@ -44,6 +44,7 @@ const OnboardSideBar = (props) => {
       <div className={classes.container}>
         <img className={classes.logo} src={Rate3Logo} alt="rate3 logo" />
         <img className={classes.image} src={props.imageSrc} alt="Onboard 1" />
+        <div />
       </div>
     </Drawer>
   );

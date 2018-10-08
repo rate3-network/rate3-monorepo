@@ -55,11 +55,9 @@ class UserMain extends React.Component {
     if (window.localStorage.accountType === 'fixed') {
       this.props.RootStore.userStore.changeToFixedAccount();
       this.props.RootStore.initNetwork();
-      console.log('changing to fixed account');
     } else if (window.localStorage.accountType === 'metamask') {
       this.props.RootStore.userStore.changeToMetaMaskAccount();
       this.props.RootStore.initNetwork();
-      console.log('changing to metamask');
     } else {
       this.props.RootStore.initNetwork();
     }
@@ -82,7 +80,6 @@ class UserMain extends React.Component {
     when(
       () => !this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitMetamaskNetwork && this.props.RootStore.commonStore.isWalletSetupDone,
       () => {
-        console.log('getting claims from blockchain');
         this.props.RootStore.userStore.getUserAddr();
         const contract = new window.web3.eth.Contract(
           identityRegistryJson.abi,
@@ -95,11 +92,8 @@ class UserMain extends React.Component {
     when(
       () => this.props.RootStore.userStore.userAddr && this.props.RootStore.finishInitMetamaskNetwork,
       () => {
-        console.log('getting identites for ', this.props.RootStore.userStore.userAddr);
         this.props.RootStore.userStore.resetClaimLists();
         this.props.RootStore.userStore.populateClaimLists();
-        // this.props.RootStore.userStore.getIdentities();
-        // this.props.RootStore.userStore.getIdentityContractFromBlockchain().then((contract) => { console.log(contract); });
         this.props.RootStore.userStore.getValidClaims();
       },
     );
@@ -108,7 +102,6 @@ class UserMain extends React.Component {
     when(
       () => this.props.RootStore.userStore.isOnFixedAccount && this.props.RootStore.finishInitNetwork,
       () => {
-        
         const contract = new window.web3.eth.Contract(
           identityRegistryJson.abi,
           this.props.RootStore.userStore.registryContractAddr,
@@ -117,7 +110,6 @@ class UserMain extends React.Component {
         window.registryContract = contract;
 
         this.props.RootStore.userStore.populateClaimLists();
-        // this.props.RootStore.userStore.getIdentities();
         this.props.RootStore.userStore.getValidClaims();
       },
     );
@@ -128,14 +120,10 @@ class UserMain extends React.Component {
         this.props.RootStore.closeReonboardModal();
       },
     );
-    // const fixedAccountReady = this.
-    
-
   }
 
   onRegisterSuccess() {
     this.props.RootStore.userStore.closeRegisterModal();
-    console.log('on register succ', this.props.RootStore.userStore.getFormTextInputValue(), this.props.RootStore.userStore.getVerifierSelected());
 
     const claimToStore = {
       status: PENDING_REVIEW,

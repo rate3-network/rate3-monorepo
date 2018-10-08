@@ -205,11 +205,9 @@ class CommonStore {
   @action
   async initCommonNetwork() {
     this.rootStore.finishInitNetwork = false;
-    console.log('init common network');
     // const web3 = new Web3(new Web3.providers.WebsocketProvider(ropsten.endpoint));
     const web3 = new Web3(ropsten.endpoint);
     window.web3 = web3;
-    console.log(`web3js version: ${window.web3.version}`);
     if (typeof localStorage.commonNetwork !== 'undefined') {
       this.changeCommonNetwork(localStorage.commonNetwork);
     } else {
@@ -217,11 +215,9 @@ class CommonStore {
     }
 
     const verifierBalance = await window.web3.eth.getBalance(managementAccountAddress);   
-    console.log('verifierBalance', verifierBalance);
    
     runInAction(() => {
       const balance = window.web3.utils.fromWei(verifierBalance);
-      console.log('balance', balance);
       this.rootStore.verifierStore.balanceToShow = balance;
     });
 
@@ -232,14 +228,12 @@ class CommonStore {
       runInAction(() => {
         this.fixedAccountBalance = fixedAccountBalance;
         this.fixedAccountBalance = window.web3.utils.fromWei(this.fixedAccountBalance);
-        console.log('Rate: CommonStore -> asyncinitCommonNetwork -> this.fixedAccountBalance', this.fixedAccountBalance);
         this.rootStore.globalSpinnerIsShowing = false;
         this.rootStore.finishInitNetwork = true;
       });
     } catch (err) {
       console.error(err);
     }
-    
   }
 
   web3HasMetamaskProvider() {
@@ -264,7 +258,6 @@ class CommonStore {
 
     let web3;
     if (window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true) {
-      console.log('from user store: is meta mask');
       web3 = new Web3(window.web3.currentProvider);
     } else {
       web3 = new Web3(this.rootStore.browserProvider);
@@ -273,7 +266,6 @@ class CommonStore {
 
     try {
       const accounts = await window.web3.eth.getAccounts();
-      if (accounts.length === 0) console.log('User is not logged in to MetaMask');
       if (accounts.length > 0) {
         runInAction(() => {
           this.isMetamaskSignedIn = true;
@@ -327,7 +319,6 @@ class CommonStore {
       console.error('An error occurred while checking balance');
     }
 
-    console.log('Listening to metamask account change');
     if (!window.web3.eth.givenProvider) return;
     window.web3.eth.givenProvider.publicConfigStore.on('update', (change) => {
       if (this.accountUsedForDetectingChange === null && change.selectedAddress !== '') {

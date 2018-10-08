@@ -12,6 +12,7 @@ import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
 import identityRegistryJson from '../build/contracts/IdentityRegistry.json';
 import identityJson from '../build/contracts/Identity.json';
 import { fixedVerifierRegistryContractAddr, dbPrefix, tableName, managementAccountAddress } from '../constants/defaults';
+import { deflateRawSync } from 'zlib';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
@@ -68,8 +69,7 @@ class VerifierStore {
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-    console.log('constructing verifier db');
-    const myDb = new MyTable('rate3-test-v1', tableName);
+    const myDb = new MyTable(dbPrefix, tableName);
     if (myDb.hasTable(tableName)) {
       myDb.getTable(tableName);
     } else {
@@ -77,7 +77,7 @@ class VerifierStore {
     }
     runInAction(() => {
       this.db = myDb;
-      console.log(this.db.getTable(tableName));
+      this.db.getTable(tableName);
     });
   }
 
@@ -91,7 +91,7 @@ class VerifierStore {
     }
     runInAction(() => {
       this.db = myDb;
-      console.log(this.db.getTable(tableName));
+      this.db.getTable(tableName);
     });
   }
   @action
@@ -103,13 +103,7 @@ class VerifierStore {
   }
   @action
   populateClaimLists() {
-    console.log('populating verifier lists', this.db.getAllUnverifiedClaims());
-
     this.db.getAllUnverifiedClaims().forEach((claim) => { this.pendingClaimList.push(claim); });
-    console.log('pendingClaimList', this.pendingClaimList);
-    // this.db.getAllNameClaims().forEach((claim) => { this.pendingClaimList.push(claim); this.nameClaimList.push(claim); });
-    // this.db.getAllAddressClaims().forEach((claim) => { this.pendingClaimList.push(claim); this.addressClaimList.push(claim); });
-    // this.db.getAllSocialIdClaims().forEach((claim) => { this.pendingClaimList.push(claim); this.socialIdClaimList.push(claim); });
   }
 
   @action
@@ -133,20 +127,28 @@ class VerifierStore {
     return identityContract;
   }
   @action
+  async createIdentityContractFromUserAddress(addr) {
+    const userIdentityContractAddress = await window.registryContract.methods.identities(addr).call();
+    const identityContract = new window.web3.eth.Contract(identityJson.abi, userIdentityContractAddress);
+    window.identityContract = identityContract;
+    runInAction(() => {
+      this.identityContractAddr = addr;
+      this.identityContract = identityContract;
+    });
+    return new Promise((resolve) => {
+      resolve(identityContract);
+    });
+  }
+  @action
   async getAllUsers() {
-    const contract = this.getRegistryContract();
-    try {
-      const allIdentities = await contract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' });
-      const allIdentityList = allIdentities.map((event) => {
-        return {
-          identityAddr: event.returnValues.identityAddress,
-          userAddr: event.returnValues.senderAddress,
-        };
-      });
-      runInAction(() => { this.allUsersList = allIdentityList; });
-    } catch (err) {
-      this.rootStore.displayErrorModal('Encountered an error while getting identities for users.');
-    }
+    this.getRegistryContract();
+    const rawVerifiedUserList = JSON.parse(window.localStorage.getItem(`${dbPrefix}.verified-user-list`));
+    const unique = [...new Set(rawVerifiedUserList)];
+    const verifiedUserList = [];
+    unique.forEach((user) => {
+      verifiedUserList.push({ userAddr: user });
+    });
+    this.allUsersList = verifiedUserList;
   }
 
   @action
@@ -166,23 +168,24 @@ class VerifierStore {
 
   @action
   async getAliveClaims() {
+    let combined;
     try {
       const nameClaimArr = await this.identityContract.methods.getClaimIdsByTopic('101').call();
       const addressClaimArr = await this.identityContract.methods.getClaimIdsByTopic('102').call();
       const socialIdClaimArr = await this.identityContract.methods.getClaimIdsByTopic('103').call();
-
-      const combined = { nameClaimArr, addressClaimArr, socialIdClaimArr };
-
-      return new Promise((resolve) => {
-        resolve(combined);
-      });
+      combined = { nameClaimArr, addressClaimArr, socialIdClaimArr };
     } catch (err) {
       this.rootStore.displayErrorModal('Encountered an error while getting past claims for user.');
     }
+    return new Promise((resolve) => {
+      resolve(combined);
+    });
   }
   @action
   async populateWithValidClaims(userAddress) {
     runInAction(() => { this.startedGettingClaim = true; });
+    
+    await this.createIdentityContractFromUserAddress(userAddress);
     let allAliveClaims;
     try {
       allAliveClaims = await this.getAliveClaims();
@@ -190,6 +193,7 @@ class VerifierStore {
       this.rootStore.displayErrorModal('Encountered an error while getting past claims for user.');
     }
     const { nameClaimArr, addressClaimArr, socialIdClaimArr } = allAliveClaims;
+    
     let allEvents;
     try {
       allEvents = await this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' });
@@ -258,8 +262,6 @@ class VerifierStore {
   // set the verification details on verification modal
   @action
   setCurrentVerification(user, value, type) {
-    console.log('calling set current veri', user, value, type);
-    console.log(this.pendingClaimList);
     const itemFound = this.pendingClaimList.find((item) => {
       return (item.user === user && item.value === value && item.type === type);
     });
@@ -273,7 +275,6 @@ class VerifierStore {
 
   @action
   approveCurrentVerification() {
-    console.log('approiving');
     const itemFound = this.pendingClaimList.find((item) => {
       return (item.user === this.currentVerification.user &&
         item.value === this.currentVerification.value &&
@@ -285,32 +286,34 @@ class VerifierStore {
         item.type === this.currentVerification.type);
     });
     itemFound.status = PENDING_ADD;
-    console.log('line 266 pendingClaimList', this.pendingClaimList);
     this.pendingClaimList[indexFound] = itemFound;
-    console.log('line 268 pendingClaimList', this.pendingClaimList);
-    console.log('this.currentVerification.value ', this.currentVerification.value);
     const data = window.web3.utils.asciiToHex(this.currentVerification.value);
-    console.log('data ', data);
     const issuerAddr = this.identityContractAddr;
-    console.log('issuerAddr ', issuerAddr);
     let topic;
     if (this.currentVerification.type === 'name') topic = 101;
     if (this.currentVerification.type === 'address') topic = 102;
     if (this.currentVerification.type === 'socialId') topic = 103;
-    console.log('topic ', topic);
     const dataToSign = window.web3.utils.soliditySha3(issuerAddr, topic, data);
-    console.log('dataToSign ', dataToSign);
     let sig;
     window.web3.eth.sign(dataToSign, this.verifierAddr).then((str) => {
       sig = str;
-      console.log('signature: ', str);
-      console.log('Rate: VerifierStore -> approveCurrentVerification -> this.pendingClaimList', this.pendingClaimList);
       this.db.approveClaim(this.currentVerification.user, this.currentVerification.value, sig);
       this.setUserSelected(this.userSelected);
-      console.log('Rate: VerifierStore -> approveCurrentVerification -> this.pendingClaimList', this.pendingClaimList);
       this.openVerifySuccessModal();
       this.closeVerificationModal();
     });
+
+    if (window.localStorage.getItem(`${dbPrefix}.verified-user-list`) === null) {
+      window.localStorage.setItem(`${dbPrefix}.verified-user-list`, []);
+    }
+    let verifiedUserList = [];
+    if (window.localStorage.getItem(`${dbPrefix}.verified-user-list`) === '') {
+      verifiedUserList = [];
+    } else {
+      verifiedUserList = JSON.parse(window.localStorage.getItem(`${dbPrefix}.verified-user-list`));
+    }
+    verifiedUserList.push(this.currentVerification.user);
+    window.localStorage.setItem(`${dbPrefix}.verified-user-list`, JSON.stringify(verifiedUserList));
   }
   @action
   openVerifySuccessModal() {
@@ -323,7 +326,6 @@ class VerifierStore {
   @action
   closeModal() {
     this.verifierModalIsShowing = false;
-    console.log(this.verifierModalIsShowing);
   }
 
   @action
@@ -344,10 +346,7 @@ class VerifierStore {
   setUserSelected(user) {
     this.userSelected = user;
     this.resetUserSelectedLists();
-    console.log('set user selected', this.userSelected);
     this.pendingClaimList.forEach((row) => {
-      // const newId = new Identity(row.value, row.value, row.type, row.user, row.verifier, row.status);
-      // console.log('newID', newId);
       if (row.user === user) {
         if (row.type === 'name') this.selectedUserNames.push(row);
         if (row.type === 'address') this.selectedUserAddresses.push(row);
@@ -369,7 +368,6 @@ class VerifierStore {
     this.selectedUserNames = [];
     this.selectedUserAddresses = [];
     this.selectedUserSocialIds = [];
-    console.log('resetUserSelected');
   }
   @action
   resetUserSelectedLists() {

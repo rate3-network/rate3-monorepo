@@ -6,6 +6,7 @@ import {
   runInAction,
 } from 'mobx';
 import web3 from 'web3';
+import { dbPrefix } from '../constants/defaults';
 
 configure({ enforceActions: 'always' }); // don't allow state modifications outside actions
 
@@ -57,7 +58,6 @@ class PaymentStore {
     if (typeof this.gasPrice === 'number') {
       result = web3.utils.toWei(this.gasPrice.toString(), 'gwei');
     }
-    console.log('gas price: ', result);
     return result;
   }
 

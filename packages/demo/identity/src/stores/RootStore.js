@@ -60,7 +60,6 @@ class RootStore {
   @action
   initNetwork() {
     // for user using own account, must detect metamask first
-    console.log('init root network');
     if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
       if (typeof window.web3 === 'undefined') {
         console.error('no web3 is installed or metamask not enabled');
@@ -68,12 +67,10 @@ class RootStore {
       }
     }
     if (typeof window.web3 !== 'undefined' && this.commonStore.web3HasMetamaskProvider() && window.web3.currentProvider.isMetaMask) {
-      console.log('store metamask in root store');
       this.browserProvider = window.web3.currentProvider;
     }
     
     if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
-      console.log('init metamask from root store');
       this.startInitMetamaskNetwork = true;
       // this.userStore.initMetamaskNetwork();
       // this.userStore.listenToMetaMaskAccountChange();
@@ -83,13 +80,11 @@ class RootStore {
     if (this.commonStore.getIsUser() && this.userStore.isOnFixedAccount) {
       this.commonStore.initCommonNetwork();
       window.web3.eth.accounts.wallet.add(fixedUserPrivKey); // user
-      console.log('init user fixed network from root store');
       return;
     }
     if (!this.commonStore.getIsUser()) {
       this.commonStore.initCommonNetwork();
       window.web3.eth.accounts.wallet.add(fixedVerifierPrivKey); // verifier
-      console.log('init verifier fixed network from root store');
     }
   }
   @action

@@ -88,7 +88,7 @@ class UserStore {
     }
     runInAction(() => {
       this.db = myDb;
-      console.log(this.db.getTable(tableName));
+      this.db.getTable(tableName);
     });
   }
   @action
@@ -101,12 +101,11 @@ class UserStore {
     }
     runInAction(() => {
       this.db = myDb;
-      console.log('this.db.getTable(identity-demo)', this.db.getTable(tableName));
+      this.db.getTable(tableName);
     });
   }
   @action
   resetClaimLists() {
-    console.log('resseting claim lists');
     this.nameClaimList = [];
     this.addressClaimList = [];
     this.socialIdClaimList = [];
@@ -138,9 +137,7 @@ class UserStore {
   changeToMetaMaskAccount() {
     this.isOnFixedAccount = false;
     window.localStorage.setItem('accountType', 'metamask');
-    console.log('changing to metamask account in user store 1');
     if (!this.rootStore.commonStore.isWalletSetupDone) this.rootStore.openReonboardModal();
-    console.log('changing to metamask account in user store');
   }
   @action
   changeToFixedAccount() {
@@ -155,7 +152,6 @@ class UserStore {
       if (accounts.length > 0) {
         runInAction(() => {
           [this.userAddr] = accounts;
-          console.log('user addr', this.userAddr);
         });
       }
     } catch (err) {
@@ -166,7 +162,6 @@ class UserStore {
 
   listenToNewIdentityEvent() {
     const checkNewIdentity = () => {
-      console.log('polling');
       this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         if (error) {
           console.error(error);
@@ -175,8 +170,7 @@ class UserStore {
         if (events) {
           events.forEach((ev) => {
             if (ev.returnValues.senderAddress === this.userAddr) {
-              console.log('cleared interval');
-              runInAction(()=>{this.finishedDeployingIdentity = true;});
+              runInAction(() => { this.finishedDeployingIdentity = true; });
               clearInterval(polling);
             }
           });
@@ -184,12 +178,10 @@ class UserStore {
       });
     };
     let polling = setInterval(checkNewIdentity, 1000);
-    // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
   }
 
   listenToNewClaimEvent() {
     const checkNewClaim = () => {
-      console.log('polling for new claim');
       this.identityContract.getPastEvents('ClaimAdded', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         if (error) {
           console.error(error);
@@ -198,26 +190,21 @@ class UserStore {
         if (events) {
           events.forEach((ev) => {
             if (ev.returnValues.signature === this.signature) {
-              runInAction(() =>{ this.finishedAddingClaim = true; });
+              runInAction(() => { this.finishedAddingClaim = true; });
               this.resetClaimLists();
               this.getValidClaims();
               this.initDb();
               this.populateClaimLists();
-              // runInAction(() => { this.finishedLoadingClaims = true; });
               clearInterval(polling);
-              // window.location.reload();
             }
           });
         }
       });
     };
-    // runInAction(() => { this.startedLoadingClaims = true; this.finishedLoadingClaims = false; });
     let polling = setInterval(checkNewClaim, 1000);
-    // this.registryContract.getPastEvents('NewIdentity', { fromBlock: 0, toBlock: 'latest' }, (error, events) => { console.log(events); });
   }
   listenToNewClaimRemovedEvent(id, sig) {
     const checkNewClaimRemove = () => {
-      console.log('polling for claim removed events');
       this.identityContract.getPastEvents('ClaimRemoved', { fromBlock: 0, toBlock: 'latest' }, (error, events) => {
         if (error) {
           this.rootStore.displayErrorModal('Encountered an error while listening to new Removal events.');
@@ -226,15 +213,12 @@ class UserStore {
         if (events) {
           events.forEach((ev) => {
             if (ev.returnValues.claimId === id && ev.returnValues.signature === sig) {
-              console.log('cleared interval for polling new claim');
               runInAction(() => { this.finishedRemovingClaim = true; });
               this.resetClaimLists();
               this.getValidClaims();
               this.initDb();
               this.populateClaimLists();
-              // runInAction(() => { this.finishedLoadingClaims = true; });
               clearInterval(polling);
-              // window.location.reload();
             }
           });
         }
@@ -245,7 +229,6 @@ class UserStore {
   
   @action
   async getIdentityContractFromBlockchain() {
-    console.log('this.registryContract', window.registryContract);
     runInAction(() => { this.startedLoadingClaims = true; });
     let userAddress = '';
     if (this.isOnFixedAccount) {
@@ -341,14 +324,10 @@ class UserStore {
     } else {
       userAddress = this.userAddr;
     }
-    console.log('item', item);
     const claim = item.value;
     const data = window.web3.utils.asciiToHex(claim);
-    console.log('data', data);
     const addr = userAddress;
-    // const issuerAddr = this.verifierIdentityContractAddr;
     let topic;
-    // if (item.sss)
     if (item.type === 'name') topic = 101;
     if (item.type === 'address') topic = 102;
     if (item.type === 'socialId') topic = 103;
@@ -356,7 +335,6 @@ class UserStore {
     const location = 'some location';
     const sig = item.signature;
     this.signature = sig;
-    console.log('signature from db: ', this.signature);
     this.startedAddingClaim = true;
     this.listenToNewClaimEvent();
 
@@ -365,14 +343,12 @@ class UserStore {
         .send(
           { from: userAddress, gas: 6000000 },
           (err, result) => {
-            console.log('from addClaim callback');
             if (err) {
-              console.log(err);
+              console.error(err);
               this.rootStore.displayErrorModal('Encountered an error while adding your Claim to the blockchain. It might be caused by a pending transaction. You can try with a higher gas price.');
             }
             if (result) {
               this.openPublishSubmitModal();
-              console.log(result);
               this.db.deleteClaim(addr, claim);
             }
           },
@@ -382,14 +358,12 @@ class UserStore {
         .send(
           { from: userAddress, gas: 6000000, gasPrice: this.rootStore.paymentStore.gasPriceInWei },
           (err, result) => {
-            console.log('from addClaim callback');
             if (err) {
               console.error(err);
               this.rootStore.displayErrorModal('Encountered an error while adding your Claim to the blockchain. It might be caused by a pending transaction. You can try with a higher gas price.');
             }
             if (result) {
               this.openPublishSubmitModal();
-              console.log(result);
               this.db.deleteClaim(addr, claim);
             }
           },
@@ -409,13 +383,11 @@ class UserStore {
         // gasPrice: '10000000000',
       },
       (err, result) => {
-        console.log('from remove claim callback');
         if (err) {
           console.error(err);
           this.rootStore.displayErrorModal('Encountered an error while removing your Claim.');
         }
         if (result) {
-          console.log(result);
         }
       },
     );
@@ -432,7 +404,6 @@ class UserStore {
   }
   @action
   listenToMetaMaskAccountChange() {
-    console.log('listener mounted');
     if (!window.web3.eth.givenProvider) return;
     window.web3.eth.givenProvider.publicConfigStore.on('update', (change) => {
       if (this.accountUsedForDetectingChange === null) {
@@ -472,14 +443,12 @@ class UserStore {
 
   @action
   openModal() {
-    console.log('aa');
     this.userModalIsShowing = true;
   }
 
   @action
   closeModal() {
     this.userModalIsShowing = false;
-    console.log(this.userModalIsShowing);
   }
 
   @action

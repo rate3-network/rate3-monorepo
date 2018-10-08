@@ -53,11 +53,9 @@ class VerifierMain extends React.Component {
     if (window.localStorage.accountType === 'fixed') {
       this.props.RootStore.userStore.changeToFixedAccount();
       this.props.RootStore.initNetwork();
-      console.log('changing to fixed account');
     } else if (window.localStorage.accountType === 'metamask') {
       this.props.RootStore.userStore.changeToMetaMaskAccount();
       this.props.RootStore.initNetwork();
-      console.log('changing to metamask');
     } else {
       this.props.RootStore.initNetwork();
     }
@@ -68,9 +66,7 @@ class VerifierMain extends React.Component {
     when(
       () => this.props.RootStore.finishInitNetwork,
       () => {
-        console.log('adding to wallet');
         const account = window.web3.eth.accounts.wallet.add('0xdee21b0158a640ec97638aafa4b4dc3da04e3e314cdfc6835d52029ada3dc4ba');
-        console.log(window.web3.eth.accounts.wallet);
         this.props.RootStore.verifierStore.getAllUsers();
       },
     );
