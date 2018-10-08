@@ -70,6 +70,7 @@ class App extends React.Component {
       RootStore.commonStore.changeToVerifier();
     }
     if (localStorage.getItem('commonNetwork') !== null) {
+      RootStore.initNetwork();
       RootStore.commonStore.changeCommonNetwork(localStorage.getItem('commonNetwork'));
     }
   }

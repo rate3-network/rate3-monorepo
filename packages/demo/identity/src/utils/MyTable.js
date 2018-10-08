@@ -92,7 +92,7 @@ class MyTable {
     if (this.table.length > 0) {
       return this.table.filter((claim) => { return claim.status === PENDING_REVIEW; });
     }
-    console.error('table length is 0');
+    // console.error('table length is 0');
     return this.table.filter((claim) => { return claim.type === 'name'; });
   }
   getAllNameClaims() {
