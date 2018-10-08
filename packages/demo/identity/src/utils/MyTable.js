@@ -49,8 +49,8 @@ class MyTable {
       status,
       signature: '',
     };
-    console.log('this.table', this.table);
-    console.log('this.table type ', typeof this.table)
+    // console.log('this.table', this.table);
+    // console.log('this.table type ', typeof this.table);
     const table = this.table;
     table.push(claim);
     this.table = table;
@@ -61,18 +61,18 @@ class MyTable {
     if (this.table.length > 0) {
       return this.table.some((claim) => {return claim.id === `${userAddr}.${value}`});
     }
-    console.warn('table length is 0');
+    // console.warn('table length is 0');
     return false;
   }
 
   getClaim(userAddr, value) {
     if (this.table.length > 0) {
       if (!this.containsClaim(userAddr, value)) {
-        console.error('there is no such claim');
+        // console.error('there is no such claim');
       }
       return this.table.find((claim) => {return claim.id === `${userAddr}.${value}`});
     }
-    console.error('table length is 0');
+    // console.error('table length is 0');
     return this.table.find((claim) => {return claim.id === `${userAddr}.${value}`});
   }
 
@@ -99,21 +99,21 @@ class MyTable {
     if (this.table.length > 0) {
       return this.table.filter((claim) => { return claim.type === 'name'; });
     }
-    console.error('table length is 0');
+    // console.error('table length is 0');
     return this.table.filter((claim) => { return claim.type === 'name'; });
   }
   getAllAddressClaims() {
     if (this.table.length > 0) {
       return this.table.filter((claim) => {return claim.type === 'address'; });
     }
-    console.error('table length is 0');
+    // console.error('table length is 0');
     return this.table.filter((claim) => { return claim.type === 'address'; });
   }
   getAllSocialIdClaims() {
     if (this.table.length > 0) {
       return this.table.filter((claim) => { return claim.type === 'socialId'; });
     }
-    console.error('table length is 0');
+    // console.error('table length is 0');
     return this.table.filter((claim) => { return claim.type === 'socialId'; });
   }
 }
