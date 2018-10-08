@@ -58,25 +58,31 @@ const styles = theme => ({
     backgroundColor: 'white',
   },
 });
-const Onboard = inject('RootStore')(observer((props) => {
-  const { classes } = props;
+@inject('RootStore') @observer
+class Onboard extends React.Component {
+  componentDidMount() {
+    window.analytics.page('user');
+  }
+  render() {
+    const { classes } = this.props;
 
-  return (
-    <div className={classes.root}>
-      <OnboardSideBar imageSrc={onboardImgs[props.RootStore.commonStore.getActiveOnboardStep() - 1]} />
-      <div className={classes.content}>
-        
-        <div className={classes.dropdownContainer}>
-          {/* <div className={classes.demoDropdown}>CROSS-CHAIN IDENTITY DEMO</div>
-          <ExpandMore className={classes.icon} /> */}
-        </div>
-        <div className={classes.onboardDetailContainer}>
-          <OnboardStepper />
+    return (
+      <div className={classes.root}>
+        <OnboardSideBar imageSrc={onboardImgs[this.props.RootStore.commonStore.getActiveOnboardStep() - 1]} />
+        <div className={classes.content}>
+          
+          <div className={classes.dropdownContainer}>
+            {/* <div className={classes.demoDropdown}>CROSS-CHAIN IDENTITY DEMO</div>
+            <ExpandMore className={classes.icon} /> */}
+          </div>
+          <div className={classes.onboardDetailContainer}>
+            <OnboardStepper />
+          </div>
         </div>
       </div>
-    </div>
-  );
-}));
+    );
+  }
+}
 
 Onboard.propTypes = {
   classes: PropTypes.object.isRequired,

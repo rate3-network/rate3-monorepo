@@ -39,6 +39,7 @@ class VerifierMain extends React.Component {
     }
   }
   componentDidMount() {
+    window.analytics.page('verifier');
     if (window.localStorage.getItem('verifierModalHasShown') !== null) {
       if (window.localStorage.getItem('verifierModalHasShown') === 'true') {
         this.props.RootStore.verifierStore.closeModal();

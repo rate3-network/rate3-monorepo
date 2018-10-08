@@ -77,6 +77,7 @@ class Settings extends React.Component {
     this.setState({ value });
   }
   componentDidMount() {
+    window.analytics.page('settings');
     this.props.RootStore.initNetwork();
   }
   render() {

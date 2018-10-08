@@ -35,6 +35,7 @@ const styles = (theme) => {
 @inject('RootStore') @observer
 class Faq extends React.Component {
   componentDidMount() {
+    window.analytics.page('faq');
     this.props.RootStore.initNetwork();
   }
   render() {
