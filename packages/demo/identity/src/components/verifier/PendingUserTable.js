@@ -74,13 +74,11 @@ const styles = theme => ({
 @inject('RootStore') @observer
 class PendingUserTable extends React.Component {
   state = {
-    
     page: 0,
     rowsPerPage: 5,
   };
 
   componentDidMount() {
-    console.log('Rate: PendingUserTable -> componentDidMount -> this.props.RootStore.verifierStore.pendingClaimList', this.props.RootStore.verifierStore.pendingClaimList);
   }
 
   handleChangePage = (event, page) => {
@@ -106,7 +104,6 @@ class PendingUserTable extends React.Component {
       rows = [];
     }
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-    console.log('rows', rows);
     return (
       <Paper className={classes.root}>
         <div className={classes.tableWrapper}>
@@ -115,7 +112,11 @@ class PendingUserTable extends React.Component {
               {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                 return (
                   <TableRow
-                    onClick={() => { this.props.RootStore.verifierStore.setUserSelected(row); this.props.RootStore.verifierStore.getIdentityForSelectedUser(); }}
+                    onClick={() => {
+                      this.props.RootStore.verifierStore.setUserSelected(row);
+                      this.props.RootStore.verifierStore.getIdentityForSelectedUser();
+                      this.props.RootStore.verifierStore.populateWithValidClaims(row);
+                    }}
                     className={classes.rowRoot}
                     key={row}
                   >

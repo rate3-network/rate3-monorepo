@@ -69,6 +69,9 @@ class App extends React.Component {
     if (localStorage.isUser === false.toString()) {
       RootStore.commonStore.changeToVerifier();
     }
+    if (localStorage.getItem('commonNetwork') !== null) {
+      RootStore.commonStore.changeCommonNetwork(localStorage.getItem('commonNetwork'));
+    }
   }
   componentDidMount() {
     // RootStore.initNetwork();

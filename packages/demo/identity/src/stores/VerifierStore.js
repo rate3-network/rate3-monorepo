@@ -181,10 +181,10 @@ class VerifierStore {
       resolve(combined);
     });
   }
+
   @action
   async populateWithValidClaims(userAddress) {
     runInAction(() => { this.startedGettingClaim = true; });
-    
     await this.createIdentityContractFromUserAddress(userAddress);
     let allAliveClaims;
     try {
@@ -193,7 +193,6 @@ class VerifierStore {
       this.rootStore.displayErrorModal('Encountered an error while getting past claims for user.');
     }
     const { nameClaimArr, addressClaimArr, socialIdClaimArr } = allAliveClaims;
-    
     let allEvents;
     try {
       allEvents = await this.identityContract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' });
@@ -322,6 +321,7 @@ class VerifierStore {
   @action
   closeVerifySuccessModal() {
     this.verifySuccessModalIsShowing = false;
+    window.location.reload();
   }
   @action
   closeModal() {
