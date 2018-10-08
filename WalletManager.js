@@ -282,7 +282,7 @@ class WalletManager {
   }
 
   /**
-   * 
+   *
    * @param {string} password - the password
    * @returns {ByteStringBuffer} the object containing the encrypted string
    */

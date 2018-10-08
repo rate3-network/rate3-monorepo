@@ -213,9 +213,32 @@ test('anchorInfo', async () => {
  * GET TRANSFER_SERVER/transactions
  * sample response
  * {
- * "how" : "1Nh7uHdvY6fNwtQtM1G5EZAFPLC33B59rB",
- * "fee_fixed" : 0.0002
- * }
+  "transactions": [
+    {
+      "id": "82fhs729f63dh0v4",
+      "kind": "deposit",
+      "status": "pending_external",
+      "status_eta": 3600,
+      "external_transaction_id": "2dd16cb409513026fbe7defc0c6f826c2d2c65c3da993f747d09bf7dafd31093",
+      "amount_in": "18.34",
+      "amount_out": "18.24",
+      "amount_fee": "0.1",
+      "started_at": "2017-03-20T17:05:32Z"
+    },
+    {
+      "id": "82fhs729f63dh0v4",
+      "kind": "withdrawal",
+      "status": "completed",
+      "amount_in": "500",
+      "amount_out": "495",
+      "amount_fee": "3",
+      "started_at": "2017-03-20T17:00:02Z",
+      "completed_at": "2017-03-20T17:09:58Z",
+      "stellar_transaction_id": "17a670bc424ff5ce3b386dbfaae9990b66a2a37b4fbe51547e8794962a3f9e6a",
+      "external_transaction_id": "2dd16cb409513026fbe7defc0c6f826c2d2c65c3da993f747d09bf7dafd31093"
+    }
+  ]
+}
  */
 test('anchorTransactions', async () => {
   const asset_code = '123';
@@ -255,5 +278,27 @@ test('anchorTransactions', async () => {
 
   const response = await account3Stellar.getTransactionHistory(mockURL, asset_code, account);
   const expectedResponse = { transactions };
+  expect(response).toEqual(expectedResponse);
+});
+
+/**
+ * If the transaction history is empty
+ */
+test('anchorTransactions', async () => {
+  const asset_code = '123';
+  const account = 'G123123';
+  const emptyTransactionResponse = { error: 'This anchor doesn\'t support the given currency code: ETH' };
+  nock(mockURL)
+    .get('/transactions')
+    .query({
+      asset_code,
+      account,
+    })
+    .reply(200, {
+      emptyTransactionResponse,
+    });
+
+  const response = await account3Stellar.getTransactionHistory(mockURL, asset_code, account);
+  const expectedResponse = { emptyTransactionResponse };
   expect(response).toEqual(expectedResponse);
 });
