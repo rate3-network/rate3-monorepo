@@ -1,20 +1,35 @@
 'use strict';
 
 import Eth from '@ledgerhq/hw-app-eth';
-import Transport from '@ledgerhq/hw-transport-node-hid';
+import TransportNodeHid from '@ledgerhq/hw-transport-node-hid';
 
-// const transport = new Transport();
-// const transport = Transport.create();
-// const eth = new Eth(transport);
-// console.log(transport);
+/**
+ * 
+ * @param {string} path - the path that the account will be derived
+ * If not specified, will derive the 0th account
+ * Ledger path is as follows
+ * m / 44' / 60' / 0' / address_index
+ * This is not BIP 44, without /change
+ * https://ledger.readthedocs.io/en/latest/background/hd_use_cases.html#coin-types
+ */
+async function getInfos(path = "44'/60'/0'/0") {
+  let transport;
+  try {
+    transport = await TransportNodeHid.create();
+    const eth = new Eth(transport);
+    eth.getAddress(
+      path,
+      true,
+      true,
+    ).then(function(publicKey) {
+      console.log(JSON.stringify(publicKey));
+    }).catch(function(err) {
+      console.log(err);
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+getInfos();
 
-console.log('get Eth address');
-const getEthAddress = async () => {
-  const transport = await Transport.create();
-  const eth = new Eth(transport);
-  const result = await eth.getWalletPublicKey("44'/0'/0'/0/0");
-  console.log('result');
-  return result.bitcoinAddress;
-};
-getEthAddress().then(a => console.log(a, 'call back'));
 console.log('end');
