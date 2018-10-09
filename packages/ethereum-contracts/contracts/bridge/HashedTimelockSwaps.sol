@@ -28,27 +28,27 @@ contract HashedTimelockSwaps {
     event Close(bytes32 _swapID, bytes _secretKey);
 
     modifier onlyInvalidSwaps(bytes32 _swapID) {
-        require (swapStates[_swapID] == States.INVALID, "Swap should be invalid.");
+        require(swapStates[_swapID] == States.INVALID, "Swap should be invalid.");
         _;
     }
 
     modifier onlyOpenSwaps(bytes32 _swapID) {
-        require (swapStates[_swapID] == States.OPEN, "Swap should be open.");
+        require(swapStates[_swapID] == States.OPEN, "Swap should be open.");
         _;
     }
 
     modifier onlyClosedSwaps(bytes32 _swapID) {
-        require (swapStates[_swapID] == States.CLOSED, "Swap should be closed.");
+        require(swapStates[_swapID] == States.CLOSED, "Swap should be closed.");
         _;
     }
 
     modifier onlyExpirableSwaps(bytes32 _swapID) {
-        require (swaps[_swapID].timelock <= block.timestamp, "Swap is not yet expired.");
+        require(swaps[_swapID].timelock <= block.timestamp, "Swap is not yet expired.");
         _;
     }
 
     modifier onlyWithSecretKey(bytes32 _swapID, bytes _secretKey) {
-        require (swaps[_swapID].secretLock == keccak256(_secretKey), "Secret key invalid.");
+        require(swaps[_swapID].secretLock == sha256(_secretKey), "Secret key invalid.");
         _;
     }
 
