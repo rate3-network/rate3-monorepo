@@ -7,6 +7,7 @@ import {
 
 import Identity from '../utils/Identity';
 import MyTable from '../utils/MyTable';
+import LocalList from '../utils/LocalList';
 import { VERIFIED } from '../constants/general';
 import identityJson from '../build/contracts/Identity.json';
 import { fixedUserAddress, fixedUserRegistryContractAddress, fixedVerifierIdentityContractAddress, dbPrefix, tableName } from '../constants/defaults';
@@ -75,11 +76,17 @@ class UserStore {
 
   @observable removeNotifyModalIsShowing = false;
   @observable publishSubmitModalIsShowing = false;
+
+  @observable removalList = [];
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
     this.rootStore = rootStore;
-    // localStorage.removeItem('rate3.identity-demo');
+    localStorage.removeItem('rate3-test-v1.identity-demo');
+    localStorage.removeItem('rate3-test-v2.identity-demo');
+    localStorage.removeItem('rate3-test-v2.verified-user-list');
+    const removalList = new LocalList(dbPrefix, 'removal-list');
+    
     const myDb = new MyTable(dbPrefix, tableName);
     if (myDb.hasTable(tableName)) {
       myDb.getTable(tableName);
@@ -89,6 +96,8 @@ class UserStore {
     runInAction(() => {
       this.db = myDb;
       this.db.getTable(tableName);
+
+      this.removalList = removalList;
     });
   }
   @action
@@ -371,16 +380,16 @@ class UserStore {
     }
   }
   @action
-  removeClaim(id, sig) {
+  removeClaim(item) {
     this.startedRemovingClaim = true;
-    this.listenToNewClaimRemovedEvent(id, sig);
-    window.identityContract.methods.removeClaim(id).send(
+    this.listenToNewClaimRemovedEvent(item.claimId, item.signature);
+    window.identityContract.methods.removeClaim(item.claimId).send(
       {
         from: this.isOnFixedAccount ?
           this.fixedUserAddr :
           this.userAddr,
         gas: 6000000,
-        // gasPrice: '10000000000',
+        gasPrice: '500000000',
       },
       (err, result) => {
         if (err) {
@@ -388,6 +397,8 @@ class UserStore {
           this.rootStore.displayErrorModal('Encountered an error while removing your Claim.');
         }
         if (result) {
+          console.log('removalList pushing in ', result, this.rootStore.currentNetwork, item)
+          this.removalList.push(result, this.rootStore.currentNetwork, item);
         }
       },
     );

@@ -120,8 +120,58 @@ class UserMain extends React.Component {
         this.props.RootStore.closeReonboardModal();
       },
     );
-  }
 
+    when(
+      () => this.props.RootStore.userStore.startedLoadingClaims && this.props.RootStore.userStore.finishedLoadingClaims,
+      () => {
+        console.log('finished loading');
+        console.log(this.props.RootStore.userStore.removalList);
+        const { nameClaimList, removalList } = this.props.RootStore.userStore;
+        const nameRemovalList = removalList.getNameClaimRemovals();
+        if (nameClaimList.length > 0 && typeof nameRemovalList !== 'undefined' && nameRemovalList.length > 0) {
+          const nameClaim = nameClaimList[0];
+          
+          console.log('nameClaim', nameClaim);
+          console.log('nameRemovalList', nameRemovalList);
+
+          const foundId = removalList.findIndexByClaim(nameClaim);
+          
+          if (typeof foundId === 'number' && foundId > -1) {
+            console.log(foundId);
+            console.log('same claim found, lets start polling');
+            this.pollForTransaction(removalList.getList()[foundId].hash);
+            // set the claim status to pending removal / removing
+          } else {
+            console.log('not the same');
+          }
+        }
+      },
+    );
+  }
+  test() {
+
+  }
+  pollForTransaction(removalTxHash) {
+    const checkTransactionStatus = async () => {
+      console.log('polling');
+      const receipt = await window.web3.eth.getTransactionReceipt(removalTxHash);
+      if (receipt !== null) {
+        if (receipt.status) { // if tx successful
+          // modal: removed. refresh to see
+          console.log('modal: removed. refresh to see');
+          clearInterval(polling);
+        } else { // if tx failed
+          console.log('delete from removalList');
+          // delete from removalList
+          clearInterval(polling);
+        }
+      }
+    };
+    let polling = setInterval(checkTransactionStatus, 1000);
+  }
+  // pollForTransaction(removalTxHash) {
+  //   window.web3.eth.getTransaction(removalTxHash);
+  // }
   onRegisterSuccess() {
     this.props.RootStore.userStore.closeRegisterModal();
 

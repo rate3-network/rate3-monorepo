@@ -159,7 +159,7 @@ class SubPanel extends React.Component {
   handleRemove() {
     this.setState({ removeButtonClicked: true });
     this.props.RootStore.userStore.openRemoveNotifyModal();
-    this.props.RootStore.userStore.removeClaim(this.props.item.claimId, this.props.item.signature);
+    this.props.RootStore.userStore.removeClaim(this.props.item);
   }
 
   handleExpand() {

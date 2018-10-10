@@ -256,7 +256,6 @@ const HomeSidebar = inject('RootStore')(observer((props) => {
               props.RootStore.commonStore.toggleRole(); // Change role when click on switch
               props.RootStore.initNetwork();
               props.history.push(props.RootStore.commonStore.getIsUser() ? '/user' : '/verifier'); // Change routes when click on switch
-              console.log('reloading');
               window.location.reload();
               }
             }

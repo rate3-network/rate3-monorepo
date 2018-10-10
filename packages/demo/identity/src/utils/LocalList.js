@@ -1,7 +1,7 @@
 class LocalList {
   constructor(prefix, name) {
     this.listName = `${prefix}.${name}`;
-    this.store = window.localStorage;
+    this.store = window.sessionStorage;
     this.list = [];
     if (this.retrieveList() !== null) {
       this.list = this.retrieveList();
@@ -58,6 +58,25 @@ class LocalList {
   deleteByIndex(id) {
     this.list.splice(id, 1);
     this.save();
+  }
+
+  getNameClaimRemovals() {
+    const temp = this.list.filter((item) => {
+      return item.claim.type === 'name';
+    });
+    return temp;
+  }
+  getAddressClaimRemovals() {
+    const temp = this.list.filter((item) => {
+      return item.claim.type === 'address';
+    });
+    return temp;
+  }
+  getSocialIdClaimRemovals() {
+    const temp = this.list.filter((item) => {
+      return item.claim.type === 'socialId';
+    });
+    return temp;
   }
 }
 
