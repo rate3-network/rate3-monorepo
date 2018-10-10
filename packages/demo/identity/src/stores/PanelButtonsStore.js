@@ -22,17 +22,14 @@ class PanelButtonsStore {
 
   @action
   confirmPublishName() {
-    console.log('Rate: PanelButtonsStore -> confirmPublishSocialId -> confirmPublishName');
     this.userPublishNameButtonConfirmed = true;
   }
   @action
   confirmPublishAddress() {
-    console.log('Rate: PanelButtonsStore -> confirmPublishSocialId -> confirmPublishAddress');
     this.userPublishAddressButtonConfirmed = true;
   }
   @action
   confirmPublishSocialId() {
-    console.log('Rate: PanelButtonsStore -> confirmPublishSocialId -> confirmPublishSocialId');
     this.userPublishSocialIdButtonConfirmed = true;
   }
 

@@ -319,7 +319,6 @@ class UserStore {
 
   @action
   addClaim(item, gasPrice) {
-    console.log(item);
     let userAddress = '';
     if (this.isOnFixedAccount) {
       userAddress = this.fixedUserAddr;
@@ -355,7 +354,6 @@ class UserStore {
           },
         );
     } else {
-      console.log(topic, 1, this.verifierIdentityContractAddr, sig, data, location);
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, sig, data, location)
         .send(
           { from: userAddress, gas: 500000, gasPrice: this.rootStore.paymentStore.gasPriceInWei },

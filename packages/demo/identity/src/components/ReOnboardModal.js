@@ -108,13 +108,11 @@ const styles = (theme) => {
 
 const LoadingModal = inject('RootStore')(observer((props) => {
   const cancelAndGoBackToFixed = () => {
-    console.log('cancel');
     props.RootStore.userStore.changeToFixedAccount();
     props.RootStore.initNetwork();
     props.RootStore.closeReonboardModal();
   };
   const continueToMetamask = () => {
-    console.log('continue');
     props.RootStore.closeReonboardModal();
   };
 
