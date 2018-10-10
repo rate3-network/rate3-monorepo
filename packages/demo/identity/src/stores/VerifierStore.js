@@ -117,22 +117,12 @@ class VerifierStore {
     return contract;
   }
   @action
-  createIdentityContractFromAddress(addr) {
-    const identityContract = new window.web3.eth.Contract(identityJson.abi, addr);
-    window.identityContract = identityContract;
-    runInAction(() => {
-      this.identityContractAddr = addr;
-      this.identityContract = identityContract;
-    });
-    return identityContract;
-  }
-  @action
   async createIdentityContractFromUserAddress(addr) {
     const userIdentityContractAddress = await window.registryContract.methods.identities(addr).call();
     const identityContract = new window.web3.eth.Contract(identityJson.abi, userIdentityContractAddress);
     window.identityContract = identityContract;
     runInAction(() => {
-      this.identityContractAddr = addr;
+      this.identityContractAddr = userIdentityContractAddress;
       this.identityContract = identityContract;
     });
     return new Promise((resolve) => {

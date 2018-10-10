@@ -39,7 +39,7 @@ class MyTable {
     this.setItem(this.tableName, this.table);
   }
 
-  addClaim(value, type, user, verifier, status) {
+  addClaim(value, type, user, verifier, status, network) {
     const claim = {
       id: `${user}.${value}`,
       value,
@@ -48,9 +48,9 @@ class MyTable {
       verifier,
       status,
       signature: '',
+      network,
     };
-    // console.log('this.table', this.table);
-    // console.log('this.table type ', typeof this.table);
+
     const table = this.table;
     table.push(claim);
     this.table = table;

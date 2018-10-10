@@ -118,14 +118,15 @@ class UserStore {
     } else {
       userAddress = this.userAddr;
     }
+    //  && claim.network === this.rootStore.currentNetwork
     this.db.getAllNameClaims().forEach((claim) => {
-      if (claim.user === userAddress) this.nameClaimList.push(claim);
+      if (claim.user === userAddress && claim.network === this.rootStore.currentNetwork) this.nameClaimList.push(claim);
     });
     this.db.getAllAddressClaims().forEach((claim) => {
-      if (claim.user === userAddress) this.addressClaimList.push(claim);
+      if (claim.user === userAddress && claim.network === this.rootStore.currentNetwork) this.addressClaimList.push(claim);
     });
     this.db.getAllSocialIdClaims().forEach((claim) => {
-      if (claim.user === userAddress) this.socialIdClaimList.push(claim);
+      if (claim.user === userAddress && claim.network === this.rootStore.currentNetwork) this.socialIdClaimList.push(claim);
     });
   }
   @action
@@ -317,7 +318,8 @@ class UserStore {
   }
 
   @action
-  addClaim(item, gasPrice = 1) {
+  addClaim(item, gasPrice) {
+    console.log(item);
     let userAddress = '';
     if (this.isOnFixedAccount) {
       userAddress = this.fixedUserAddr;
@@ -337,11 +339,10 @@ class UserStore {
     this.signature = sig;
     this.startedAddingClaim = true;
     this.listenToNewClaimEvent();
-
     if (!this.isOnFixedAccount) {
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, this.signature, data, location)
         .send(
-          { from: userAddress, gas: 6000000 },
+          { from: userAddress, gas: 500000 },
           (err, result) => {
             if (err) {
               console.error(err);
@@ -354,9 +355,10 @@ class UserStore {
           },
         );
     } else {
+      console.log(topic, 1, this.verifierIdentityContractAddr, sig, data, location);
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, sig, data, location)
         .send(
-          { from: userAddress, gas: 6000000, gasPrice: this.rootStore.paymentStore.gasPriceInWei },
+          { from: userAddress, gas: 500000, gasPrice: this.rootStore.paymentStore.gasPriceInWei },
           (err, result) => {
             if (err) {
               console.error(err);

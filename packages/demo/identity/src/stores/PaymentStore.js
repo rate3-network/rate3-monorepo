@@ -12,10 +12,9 @@ configure({ enforceActions: 'always' }); // don't allow state modifications outs
 
 class PaymentStore {
   /* JSDOC: MARK START OBSERVABLE */
-  gasLimit = 0.003;
 
   @observable paymentModalIsShowing = false;
-  @observable gasPrice = 1;
+  @observable gasPrice = 5;
 
   @observable claimToAdd = {};
   /* JSDOC: MARK END OBSERVABLE */

@@ -138,6 +138,7 @@ class UserMain extends React.Component {
       this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr,
       this.props.RootStore.userStore.getVerifierSelected(),
       PENDING_REVIEW,
+      this.props.RootStore.currentNetwork,
     );
     switch (this.props.RootStore.userStore.formType) {
       case 'name':
