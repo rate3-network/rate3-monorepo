@@ -114,14 +114,14 @@ class Account {
       case 'stellar':
         this.account = originalAccount;
         await this.loadBalance(this.getAddress());
-        if (this.balance === '0.0000000') {
+        if (this.balance === '0.0000000' || this.balance === undefined) {
           try {
             await rp({
               url: 'https://friendbot.stellar.org',
               qs: { addr: this.getAddress() },
               json: true,
             });
-            this.balance = await this.loadBalance(this.getAddress());
+            await this.loadBalance(this.getAddress());
           } catch (err) {
             console.log(err);
           }
@@ -416,6 +416,173 @@ class Account {
         return null;
     }
   }
+
+  // Phase 3 Anchor Bridge, client side implementation of SEP-0006
+  // They should be static functions, having no relation with this account
+
+  /**
+   * Deposit external assets with an anchor.
+   * Parameter descriptions are from SEP-0006.
+   * The parameter naming follows SEP-0006, and does not use camel case
+   * @param {string} url - the url of this get request, without slash at the end
+   * @param {string} asset_code - The code of the asset the user is wanting to deposit with
+   * the anchor. Ex BTC,ETH,USD,INR,etc
+   * @param {string} account - The stellar account ID of the user that wants to deposit.
+   * This is where the asset token will be sent.
+   * @param {string} memo_type - (optional) type of memo that anchor should attach to the Stellar
+   *  payment transaction, one of text, id or hash
+   * @param {string} memo - (optional) value of memo to attach to transaction,
+   * for hash this should be base64-encoded.
+   * @param {string} email_address - (optional) Email address of depositor.
+   * If desired, an anchor can use this to send email updates to the user about the deposit.
+   * @param {string} type - (optional) Type of deposit. If the anchor supports
+   *  multiple deposit methods (e.g. SEPA or SWIFT), the wallet should specify type.
+   */
+  async getDeposit(url, asset_code, account, memo_type = null, memo = null,
+    email_address = null, type = null) {
+    this.anchorUrl = url;
+    try {
+      const qsConstruct = {
+        asset_code, account, memo_type, memo, email_address, type,
+      };
+      // eslint-disable-next-line no-restricted-syntax
+      for (const property in qsConstruct) {
+        if (!qsConstruct[property]) {
+          delete qsConstruct[property];
+        }
+      }
+      // verifies that the parameters are valid
+      if (account.charAt(0) !== 'G') {
+        console.log('The account must start with letter G.');
+        return null;
+      }
+      const options = {
+        uri: `${this.anchorUrl}/deposit`,
+        qs: qsConstruct, // query params
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  /**
+   * Withdraw assets from an anchor
+   * @param {string} url - the url of this get request, without slash at the end
+   * @param {string} type - Type of withdrawal. Can be: crypto, bank_account, cash, mobile,
+   *  bill_payment or other custom values
+   * @param {string} asset_code - Code of the asset the user wants to withdraw
+   * @param {string} dest - The account that the user wants to withdraw their funds to.
+   *  This can be a crypto account, a bank account number, IBAN, mobile number, or email address.
+   * @param {string} dest_extra - (optional) Extra information to specify withdrawal location.
+   *  For crypto it may be a memo in addition to the dest address. It can also be a routing number
+   *  for a bank, a BIC, or the name of a partner handling the withdrawal.
+   * @param {string} account - (optional) The stellar account ID of the user that wants to do
+   *  the withdrawal. This is only needed if the anchor requires KYC information for withdrawal.
+   *  The anchor can use account to look up the user's KYC information.
+   * @param {string} memo - (optional) A wallet will send this to uniquely identify a user
+   *  if the wallet has multiple users sharing one Stellar account. The anchor can use this
+   *  along with account to look up the user's KYC info.
+   * @param {string} memo_type - (optional) type of memo. One of text, id or hash
+   */
+  async getWithdraw(url, type, asset_code, dest, dest_extra = '', account = '', memo = '', memo_type = '') {
+    this.anchorUrl = url;
+    try {
+      const qsConstruct = {
+        asset_code, dest, dest_extra, account, memo_type, memo, type,
+      };
+      // eslint-disable-next-line no-restricted-syntax
+      for (const property in qsConstruct) {
+        if (!qsConstruct[property]) {
+          delete qsConstruct[property];
+        }
+      }
+      // verifies that the parameters are valid
+      if (account &amp;&amp; account.charAt(0) !== 'G') {
+        console.log('The account must start with letter G.');
+        return null;
+      }
+      const options = {
+        uri: `${this.anchorUrl}/withdraw`,
+        qs: qsConstruct,
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  // have not handled interactive/non-interactive customer information needed response
+  // and not accepted, error
+
+  /**
+   * Allows an anchor to communicate basic info about what
+   * their TRANSFER_SERVER supports to wallets and clients.
+   * @param {string} url - the url of this get request, without slash at the end
+   * @param {string} lang - (optional) Defaults to en. Language code specified using ISO 639-1.
+   * description fields in the response should be in this language
+   */
+  async getInfo(url, lang = 'en') {
+    this.anchorUrl = url;
+    try {
+      const qsConstruct = {};
+      if (lang !== 'en') {
+        qsConstruct.lang = lang;
+      }
+      const options = {
+        uri: `${this.anchorUrl}/info`,
+        qs: qsConstruct,
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
+
+  /**
+   * View history of deposits and withdrawals involving the user
+   * @param {string} url - the url of this get request, without slash at the end
+   * @param {string} asset_code - The code of the asset of interest. E.g. BTC,ETH,USD,INR,etc
+   * @param {string} account - The stellar account ID involved in the transactions
+   * @param {string} no_older_than - (optional) The response should contain transactions
+   *  starting on or after this date &amp; time
+   * @param {int} limit - (optional) the response should contain at most limit transactions
+   * @param {string} paging_id - (optional) the response should contain transactions
+   *  starting prior to this ID (exclusive)
+   */
+  async getTransactionHistory(url, asset_code, account, no_older_than = '', limit = '', paging_id = '') {
+    this.anchorUrl = url;
+    try {
+      const qsConstruct = {
+        asset_code, account, no_older_than, limit, paging_id,
+      };
+      // eslint-disable-next-line no-restricted-syntax
+      for (const property in qsConstruct) {
+        if (!qsConstruct[property]) {
+          delete qsConstruct[property];
+        }
+      }
+      const options = {
+        uri: `${this.anchorUrl}/transactions`,
+        qs: qsConstruct,
+        json: true, // Automatically stringifies the body to JSON
+      };
+      const response = await rp(options);
+      return response;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  }
 }
 
 module.exports = Account;
@@ -429,13 +596,13 @@ module.exports = Account;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Account.html">Account</a></li><li><a href="WalletManager.html">WalletManager</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Account.html">Account</a></li><li><a href="Ledger.html">Ledger</a></li><li><a href="Trezor.html">Trezor</a></li><li><a href="WalletManager.html">WalletManager</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Sep 28 2018 11:45:07 GMT+0800 (+08)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 11 2018 14:58:31 GMT+0800 (+08)
 </footer>
 
 <script> prettyPrint(); </script>
