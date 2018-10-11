@@ -1,5 +1,9 @@
 const TrezorConnect = require('trezor-connect').default;
 
+/**
+ * The class wraps api from trezor-connect
+ * with ES6 async/await syntax
+ */
 class Trezor {
   /**
    * the params for trezor-connect api are key-value pairs inside Object
@@ -51,6 +55,7 @@ class Trezor {
   }
 
   /**
+   * This methods is for Ethereum only.
    * @param {string} path - the path of the account to sign
    * @param {string} message - the message to sign
    * @param {boolean} hex - whether the signed message is converted to hex
@@ -63,6 +68,28 @@ class Trezor {
       result = await TrezorConnect.ethereumSignMessage(params);
     } else {
       console.log('Stellar Signing messages is not supported by Trezor.');
+      result = false;
+    }
+    return result;
+  }
+
+  /**
+   * verify message, which is only for Ethereum
+   * @param {string} address - the singer address, "0x" prefix is optional
+   * @param {string} message - the message to verify
+   * @param {string} signature -  signature in hexadecimal format. "0x" prefix is optional
+   * @param {boolean} hex - whether to convert message *from* hex
+   * @returns {JSON} success or error message
+   */
+  async verifyMessage(address, message, signature, hex = false) {
+    let result;
+    if (this.currency === 'Ethereum') {
+      const params = {
+        address, message, signature, hex,
+      };
+      result = await TrezorConnect.ethereumVerifyMessage(params);
+    } else {
+      console.log('Stellar verifying messages is not supported by Trezor.');
       result = false;
     }
     return result;

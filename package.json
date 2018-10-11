@@ -11,6 +11,7 @@
   "dependencies": {
     "@colony/purser-metamask": "^1.1.1",
     "@ledgerhq/hw-app-eth": "^4.23.0",
+    "@ledgerhq/hw-app-str": "^4.24.0",
     "@ledgerhq/hw-transport": "^4.21.0",
     "@ledgerhq/hw-transport-node-hid": "^4.23.0",
     "@ledgerhq/hw-transport-u2f": "^4.21.0",
