@@ -6,6 +6,7 @@ wallet_back_up/
 
 # vscode files
 .vscode/launch.json
+.vscode/
 
 # encrypted data
 *.enc
