@@ -1,0 +1,72 @@
+const TrezorConnect = require('trezor-connect').default;
+
+class Trezor {
+  /**
+   * the params for trezor-connect api are key-value pairs inside Object
+   * @param {string} currency - Stellar or Ethereum only
+   */
+  constructor(currency) {
+    this.currency = currency;
+  }
+
+  /**
+   * derivation path for Ethereum (BIP44):
+   * "m/44'/60'/i'", i = 0,1,2...
+   * for Stellar:
+   * "m/44'/148'/i'", i = 0,1,2...
+   * "m/44'/1'/0'/0'/i'", i = 0,1,2...
+   * @param {string} path - derivation path
+   * @returns {JSON} containing address, path, serialized path or error if failed
+   */
+  async getPublicKey(path) {
+    let result;
+    const params = { path };
+    if (this.currency === 'Ethereum') {
+      result = await TrezorConnect.ethereumGetAddress(params);
+    } else {
+      result = await TrezorConnect.stellarGetAddress(params);
+    }
+    return result;
+  }
+
+  /**
+   * sign a transaction
+   * @param {string} path - The derivation path of the signing account
+   * @param {string} networkPassphrase - specific to Stellar
+   * @param {object} transaction - the transaction to sign
+   * The transaction object differs for Stellar and Ethereum
+   * @returns {JSON} JSON containing the public key and signature (Stellar)
+   * / v,r,s (Ethereum) or error
+   */
+  async signTransaction(path, networkPassphrase, transaction) {
+    let result;
+    const paramsStellar = { path, networkPassphrase, transaction };
+    const paramsEthereum = { path, transaction };
+    if (this.currency === 'Ethereum') {
+      result = await TrezorConnect.ethereumSignTransaction(paramsEthereum);
+    } else {
+      result = await TrezorConnect.stellarSignTransaction(paramsStellar);
+    }
+    return result;
+  }
+
+  /**
+   * @param {string} path - the path of the account to sign
+   * @param {string} message - the message to sign
+   * @param {boolean} hex - whether the signed message is converted to hex
+   * @returns {JSON|boolean} containing the address and signature, or false if failed
+   */
+  async signMessage(path, message, hex = false) {
+    let result;
+    if (this.currency === 'Ethereum') {
+      const params = { path, message, hex };
+      result = await TrezorConnect.ethereumSignMessage(params);
+    } else {
+      console.log('Stellar Signing messages is not supported by Trezor.');
+      result = false;
+    }
+    return result;
+  }
+}
+
+module.exports = Trezor;
