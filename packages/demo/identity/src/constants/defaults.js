@@ -23,5 +23,5 @@ export const verifierBlockie = {
   size: 8,
 };
 
-export const dbPrefix = 'rate3-prod-v1';
+export const dbPrefix = 'rate3-prod-v2';
 export const tableName = 'identity-demo';

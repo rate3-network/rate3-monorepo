@@ -72,12 +72,21 @@ class Settings extends React.Component {
   
   componentDidMount() {
     window.analytics.page('settings');
+    this.props.RootStore.setStartInitNetworkTrue();
+    if (window.localStorage.accountType === 'fixed') {
+      this.props.RootStore.userStore.changeToFixedAccount();
+      this.props.RootStore.initNetwork();
+    } else if (window.localStorage.accountType === 'metamask') {
+      this.props.RootStore.userStore.changeToMetaMaskAccount();
+      this.props.RootStore.initNetwork();
+    } else {
+      this.props.RootStore.initNetwork();
+    }
   }
   handleChange = (event, value) => {
     this.setState({ value });
   }
   render() {
-    console.log(this.props.RootStore.userStore.isOnFixedAccount);
     const { classes, t } = this.props;
     const WalletAddress = (props) => {
       if (!props.RootStore.commonStore.getIsUser()) {

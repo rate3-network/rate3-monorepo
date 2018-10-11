@@ -103,18 +103,7 @@ const accountTypes = [
 ];
 @inject('RootStore') @observer
 class AccountTypeDropdown extends React.Component {
-  componentDidMount() {
-    this.props.RootStore.setStartInitNetworkTrue();
-    if (window.localStorage.accountType === 'fixed') {
-      this.props.RootStore.userStore.changeToFixedAccount();
-      this.props.RootStore.initNetwork();
-    } else if (window.localStorage.accountType === 'metamask') {
-      this.props.RootStore.userStore.changeToMetaMaskAccount();
-      this.props.RootStore.initNetwork();
-    } else {
-      this.props.RootStore.initNetwork();
-    }
-  }
+
   handleClick = (e) => {
     if (e.target.value === 'metamask') {
       this.props.RootStore.userStore.changeToMetaMaskAccount();
@@ -122,7 +111,6 @@ class AccountTypeDropdown extends React.Component {
       this.props.RootStore.userStore.changeToFixedAccount();
     }
     this.props.RootStore.initNetwork();
-
   };
   handleSidebarClick = (e) => {
     if (e.target.value === 'metamask') {
@@ -136,19 +124,9 @@ class AccountTypeDropdown extends React.Component {
       this.props.RootStore.userStore.changeToFixedAccount();
       this.props.RootStore.initNetwork();
     }
-    console.log('reloading');
     window.location.reload();
   }
 
-  // handleSettingsPageClick = (e) => {
-  //   if (e.target.value === 'metamask') {
-  //     this.props.RootStore.userStore.changeToMetaMaskAccount();
-  //   } else {
-  //     this.props.RootStore.userStore.changeToFixedAccount();
-  //   }
-  //   this.props.RootStore.initNetwork();
-
-  // };
   render() {
     const imgStyle = { width: '1.3em' };
     const { classes, variant, isOnSidebar, isUser } = this.props;

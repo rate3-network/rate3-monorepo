@@ -86,7 +86,9 @@ class UserStore {
     this.rootStore = rootStore;
     localStorage.removeItem('rate3-test-v1.identity-demo');
     localStorage.removeItem('rate3-test-v2.identity-demo');
+    localStorage.removeItem('rate3-prod-v1.identity-demo');
     localStorage.removeItem('rate3-test-v2.verified-user-list');
+    localStorage.removeItem('rate3-prod-v1.verified-user-list');
     const removalList = new LocalList(dbPrefix, 'removal-list');
     const publishingList = new LocalList(dbPrefix, 'publishing-list');
     const myDb = new MyTable(dbPrefix, tableName);

@@ -53,15 +53,6 @@ class UserMain extends React.Component {
 
   componentDidMount() {
     this.props.RootStore.setStartInitNetworkTrue();
-    // if (window.localStorage.accountType === 'fixed') {
-    //   this.props.RootStore.userStore.changeToFixedAccount();
-    //   this.props.RootStore.initNetwork();
-    // } else if (window.localStorage.accountType === 'metamask') {
-    //   this.props.RootStore.userStore.changeToMetaMaskAccount();
-    //   this.props.RootStore.initNetwork();
-    // } else {
-    //   this.props.RootStore.initNetwork();
-    // }
     if (window.localStorage.getItem('userModalHasShown') !== null) {
       if (window.localStorage.getItem('userModalHasShown') === 'true') {
         this.props.RootStore.userStore.closeModal();
@@ -207,17 +198,14 @@ class UserMain extends React.Component {
   /* eslint react/sort-comp: off */
   pollForRemovalTransaction(removalTxHash, id) {
     const checkTransactionStatus = async () => {
-      console.log('polling removal tx');
       const receipt = await window.web3.eth.getTransactionReceipt(removalTxHash);
       if (receipt !== null) {
         this.props.RootStore.userStore.removalList.deleteByIndex(id);
         if (receipt.status) { // if tx successful
           // modal: removed. refresh to see
-          console.log('modal: removed. refresh to see');
           this.props.RootStore.modalStore.openInfoModal('Your Claim has been removed.');
           clearInterval(polling);
         } else { // if tx failed
-          console.log('delete from removalList');
           // delete from removalList
           clearInterval(polling);
         }
@@ -228,17 +216,14 @@ class UserMain extends React.Component {
   /* eslint react/sort-comp: off */
   pollForPublishTransaction(publishTxHash, id) {
     const checkTransactionStatus = async () => {
-      console.log('polling publish tx');
       const receipt = await window.web3.eth.getTransactionReceipt(publishTxHash);
       if (receipt !== null) {
         this.props.RootStore.userStore.publishingList.deleteByIndex(id);
         if (receipt.status) { // if tx successful
           // modal: removed. refresh to see
-          console.log('modal: added. refresh to see');
           this.props.RootStore.modalStore.openInfoModal('Your Claim has been published.');
           clearInterval(polling);
         } else { // if tx failed
-          console.log('delete from publishing list');
           // delete from removalList
           clearInterval(polling);
         }
