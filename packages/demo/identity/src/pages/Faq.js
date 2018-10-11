@@ -6,8 +6,7 @@ import ChevronLeft from '@material-ui/icons/ChevronLeftRounded';
 import IconButton from '@material-ui/core/IconButton';
 import { observer, inject } from 'mobx-react';
 
-import UserMain from '../pages/UserMain';
-import VerifierMain from '../pages/VerifierMain';
+import ReOnboardModal from '../components/ReOnboardModal';
 
 const styles = (theme) => {
   return ({
@@ -42,6 +41,7 @@ class Faq extends React.Component {
     const { classes, t } = this.props;
     return (
       <div>
+        <ReOnboardModal open={this.props.RootStore.reonboardModalIsShowing} />
         <h1 className={classes.title}>
           <IconButton
             onClick={() => {this.props.history.goBack()}}

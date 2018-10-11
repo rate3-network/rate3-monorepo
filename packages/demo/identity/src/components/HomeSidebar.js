@@ -171,7 +171,8 @@ const UserInfo = inject('RootStore')(observer(withStyles(styles)((props) => {
   const goToLink = () => {
     let addr;
     if (props.RootStore.commonStore.getIsUser()) {
-      addr = props.RootStore.userStore.isOnFixedAccount ? props.RootStore.userStore.fixedUserAddr : props.RootStore.userStore.userAddr
+      addr = props.RootStore.userStore.isOnFixedAccount ?
+        props.RootStore.userStore.fixedUserAddr : props.RootStore.commonStore.metamaskAccount;
     } else {
       addr = '0xd102503E987a6402A1E0b220369ea4A4Bce911E8';
     }

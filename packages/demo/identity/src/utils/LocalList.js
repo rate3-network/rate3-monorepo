@@ -82,21 +82,24 @@ class LocalList {
     return temp;
   }
 
-  getNameClaimPublish() {
+  getPendingAddNameClaimByAddrAndNetwork(addr, network) {
     const temp = this.list.filter((item) => {
-      return item.claim.status === PENDING_ADD && item.claim.type === 'name';
+      return item.claim.status === PENDING_ADD && item.claim.type === 'name' &&
+      item.claim.user === addr && item.claim.network === network;
     });
     return temp;
   }
-  getAddressClaimPublish() {
+  getPendingAddAddressClaimByAddrAndNetwork(addr, network) {
     const temp = this.list.filter((item) => {
-      return item.claim.status === PENDING_ADD && item.claim.type === 'address';
+      return item.claim.status === PENDING_ADD && item.claim.type === 'address' &&
+      item.claim.user === addr && item.claim.network === network;
     });
     return temp;
   }
-  getSocialIdClaimPublish() {
+  getPendingAddSocialIdClaimByAddrAndNetwork(addr, network) {
     const temp = this.list.filter((item) => {
-      return item.claim.status === PENDING_ADD && item.claim.type === 'socialId';
+      return item.claim.status === PENDING_ADD && item.claim.type === 'socialId' &&
+      item.claim.user === addr && item.claim.network === network;
     });
     return temp;
   }

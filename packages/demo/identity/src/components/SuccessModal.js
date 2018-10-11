@@ -102,7 +102,7 @@ const SuccessModal = inject('RootStore')(observer((props) => {
 }));
 
 SuccessModal.propTypes = {
-  
+  // open: PropTypes.bool,
 };
 
 export default withStyles(styles)(SuccessModal);

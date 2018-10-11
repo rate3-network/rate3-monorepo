@@ -9,7 +9,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { observer, inject } from 'mobx-react';
 
 import { pendingTextColor,identityBlue, disabledGrey, actionRequiredBoxBg } from '../constants/colors';
-import identityIcon from '../assets/identityIcon.svg';
 import SubPanel from './SubPanel';
 import NameIcon from '../assets/Name.svg';
 import AddressIcon from '../assets/Address.svg';
@@ -122,6 +121,7 @@ class DetailedExpansionPanel extends React.Component {
     const noVerified = this.props.items.filter(item => item.status === VERIFIED).length;
     const noPending = this.props.items.filter(item => item.status === PENDING_REVIEW).length;
     const noPendingAdd = this.props.items.filter(item => item.status === PENDING_ADD).length;
+    const noPublishing = this.props.items.filter(item => item.status === PUBLISHING).length;
     const noRemoving = this.props.items.filter(item => item.status === REMOVING).length;
     const needAction = this.props.items.filter(item => item.status === PENDING_ADD).length > 0;
     let shouldShowAction;
@@ -151,6 +151,8 @@ class DetailedExpansionPanel extends React.Component {
                   {noVerified > 0 && <Typography className={classes.verificationStatus}>{noVerified} Verification </Typography>}
                   {noPending > 0 && <Typography className={classes.disabledVerificationStatus}>{noPending} Pending</Typography>}
                   {noPendingAdd > 0 && <Typography className={classes.disabledVerificationStatus}>{noPendingAdd} Pending</Typography>}
+                  
+                  {noPublishing > 0 && <Typography className={classes.disabledVerificationStatus}>{noPublishing} Publishing</Typography>}
                   {noRemoving > 0 && <Typography className={classes.disabledVerificationStatus}>{noRemoving} Removing</Typography>}
                 </div>
               </div>

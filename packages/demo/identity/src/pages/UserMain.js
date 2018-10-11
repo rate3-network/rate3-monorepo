@@ -53,15 +53,15 @@ class UserMain extends React.Component {
 
   componentDidMount() {
     this.props.RootStore.setStartInitNetworkTrue();
-    if (window.localStorage.accountType === 'fixed') {
-      this.props.RootStore.userStore.changeToFixedAccount();
-      this.props.RootStore.initNetwork();
-    } else if (window.localStorage.accountType === 'metamask') {
-      this.props.RootStore.userStore.changeToMetaMaskAccount();
-      this.props.RootStore.initNetwork();
-    } else {
-      this.props.RootStore.initNetwork();
-    }
+    // if (window.localStorage.accountType === 'fixed') {
+    //   this.props.RootStore.userStore.changeToFixedAccount();
+    //   this.props.RootStore.initNetwork();
+    // } else if (window.localStorage.accountType === 'metamask') {
+    //   this.props.RootStore.userStore.changeToMetaMaskAccount();
+    //   this.props.RootStore.initNetwork();
+    // } else {
+    //   this.props.RootStore.initNetwork();
+    // }
     if (window.localStorage.getItem('userModalHasShown') !== null) {
       if (window.localStorage.getItem('userModalHasShown') === 'true') {
         this.props.RootStore.userStore.closeModal();
@@ -125,48 +125,89 @@ class UserMain extends React.Component {
     when(
       () => this.props.RootStore.userStore.startedLoadingClaims && this.props.RootStore.userStore.finishedLoadingClaims,
       () => {
-        console.log('finished loading');
-        console.log(this.props.RootStore.userStore.removalList);
-        const { nameClaimList, addressClaimList, socialIdClaimList, removalList } = this.props.RootStore.userStore;
+        const userAccount = this.props.RootStore.userStore.isOnFixedAccount ?
+          this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr;
+
+        const { nameClaimList, addressClaimList, socialIdClaimList, removalList, publishingList } = this.props.RootStore.userStore;
         const nameRemovalList = removalList.getNameClaimRemovals();
         const addressRemovalList = removalList.getAddressClaimRemovals();
         const socialIdRemovalList = removalList.getSocialIdClaimRemovals();
-        if (nameClaimList.length > 0 && typeof nameRemovalList !== 'undefined' && nameRemovalList.length > 0) {
-          const nameClaim = nameClaimList[0];
-          const foundId = removalList.findIndexByClaim(nameClaim);
-          if (typeof foundId === 'number' && foundId > -1) {
-            this.pollForTransaction(removalList.getList()[foundId].hash, foundId);
-            // set the claim status to pending removal / removing
-            this.props.RootStore.userStore.setNameClaimToRemoving();
+
+        const namePublishList = publishingList.getPendingAddNameClaimByAddrAndNetwork(userAccount, this.props.RootStore.currentNetwork);
+        const addressPublishList = publishingList.getPendingAddAddressClaimByAddrAndNetwork(userAccount, this.props.RootStore.currentNetwork);
+        const socialIdPublishList = publishingList.getPendingAddSocialIdClaimByAddrAndNetwork(userAccount, this.props.RootStore.currentNetwork);
+
+        if (nameClaimList.length > 0) { // if claim is not empty, check if there are pending removal
+          if (typeof nameRemovalList !== 'undefined' && nameRemovalList.length > 0) {
+            const nameClaim = nameClaimList[0];
+            const foundId = removalList.findIndexByClaim(nameClaim);
+            if (typeof foundId === 'number' && foundId > -1) {
+              this.pollForRemovalTransaction(removalList.getList()[foundId].hash, foundId);
+              // set the claim status to pending removal / removing
+              this.props.RootStore.userStore.setNameClaimToRemoving();
+            }
+          }
+        } else { // if claim is empty, check if there are pending publish
+          /* eslint no-lonely-if: off */
+          if (typeof namePublishList !== 'undefined' && namePublishList.length > 0) {
+            const nameClaim = namePublishList[0];
+            const foundId = publishingList.findIndexByClaim(nameClaim.claim);
+            this.pollForPublishTransaction(nameClaim.hash, foundId);
+            const tempClaim = JSON.parse(JSON.stringify(nameClaim.claim));
+            tempClaim.status = PUBLISHING;
+            this.props.RootStore.userStore.addToNameClaimList(tempClaim);
           }
         }
 
-        if (addressClaimList.length > 0 && typeof addressRemovalList !== 'undefined' && addressRemovalList.length > 0) {
-          const addressClaim = addressClaimList[0];
-          const foundId = removalList.findIndexByClaim(addressClaim);
-          if (typeof foundId === 'number' && foundId > -1) {
-            this.pollForTransaction(removalList.getList()[foundId].hash, foundId);
-            // set the claim status to pending removal / removing
-            this.props.RootStore.userStore.setAddressClaimToRemoving();
+        if (addressClaimList.length > 0) {
+          if (typeof addressRemovalList !== 'undefined' && addressRemovalList.length > 0) {
+            const addressClaim = addressClaimList[0];
+            const foundId = removalList.findIndexByClaim(addressClaim);
+            if (typeof foundId === 'number' && foundId > -1) {
+              this.pollForRemovalTransaction(removalList.getList()[foundId].hash, foundId);
+              this.props.RootStore.userStore.setAddressClaimToRemoving();
+            }
+          }
+        } else { // if claim is empty, check if there are pending publish
+          /* eslint no-lonely-if: off */
+          if (typeof addressPublishList !== 'undefined' && addressPublishList.length > 0) {
+            const addressClaim = addressPublishList[0];
+            const foundId = publishingList.findIndexByClaim(addressClaim.claim);
+            this.pollForPublishTransaction(addressClaim.hash, foundId);
+            const tempClaim = JSON.parse(JSON.stringify(addressClaim.claim));
+            tempClaim.status = PUBLISHING;
+            this.props.RootStore.userStore.addToAddressClaimList(tempClaim);
           }
         }
 
-        if (socialIdClaimList.length > 0 && typeof socialIdRemovalList !== 'undefined' && socialIdRemovalList.length > 0) {
-          const nameClaim = socialIdClaimList[0];
-          const foundId = removalList.findIndexByClaim(nameClaim);
-          if (typeof foundId === 'number' && foundId > -1) {
-            this.pollForTransaction(removalList.getList()[foundId].hash, foundId);
-            // set the claim status to pending removal / removing
-            this.props.RootStore.userStore.setSocialIdClaimToRemoving();
+        if (socialIdClaimList.length > 0) {
+          if (typeof socialIdRemovalList !== 'undefined' && socialIdRemovalList.length > 0) {
+            const nameClaim = socialIdClaimList[0];
+            const foundId = removalList.findIndexByClaim(nameClaim);
+            if (typeof foundId === 'number' && foundId > -1) {
+              this.pollForRemovalTransaction(removalList.getList()[foundId].hash, foundId);
+              // set the claim status to pending removal / removing
+              this.props.RootStore.userStore.setSocialIdClaimToRemoving();
+            }
+          }
+        } else { // if claim is empty, check if there are pending publish
+          /* eslint no-lonely-if: off */
+          if (typeof socialIdPublishList !== 'undefined' && socialIdPublishList.length > 0) {
+            const socialIdClaim = socialIdPublishList[0];
+            const foundId = publishingList.findIndexByClaim(socialIdClaim.claim);
+            this.pollForPublishTransaction(socialIdClaim.hash, foundId);
+            const tempClaim = JSON.parse(JSON.stringify(socialIdClaim.claim));
+            tempClaim.status = PUBLISHING;
+            this.props.RootStore.userStore.addToSocialIdClaimList(tempClaim);
           }
         }
       },
     );
   }
   /* eslint react/sort-comp: off */
-  pollForTransaction(removalTxHash, id) {
+  pollForRemovalTransaction(removalTxHash, id) {
     const checkTransactionStatus = async () => {
-      console.log('polling');
+      console.log('polling removal tx');
       const receipt = await window.web3.eth.getTransactionReceipt(removalTxHash);
       if (receipt !== null) {
         this.props.RootStore.userStore.removalList.deleteByIndex(id);
@@ -184,15 +225,35 @@ class UserMain extends React.Component {
     };
     let polling = setInterval(checkTransactionStatus, 1000);
   }
-  // pollForTransaction(removalTxHash) {
-  //   window.web3.eth.getTransaction(removalTxHash);
-  // }
+  /* eslint react/sort-comp: off */
+  pollForPublishTransaction(publishTxHash, id) {
+    const checkTransactionStatus = async () => {
+      console.log('polling publish tx');
+      const receipt = await window.web3.eth.getTransactionReceipt(publishTxHash);
+      if (receipt !== null) {
+        this.props.RootStore.userStore.publishingList.deleteByIndex(id);
+        if (receipt.status) { // if tx successful
+          // modal: removed. refresh to see
+          console.log('modal: added. refresh to see');
+          this.props.RootStore.modalStore.openInfoModal('Your Claim has been published.');
+          clearInterval(polling);
+        } else { // if tx failed
+          console.log('delete from publishing list');
+          // delete from removalList
+          clearInterval(polling);
+        }
+      }
+    };
+    let polling = setInterval(checkTransactionStatus, 1000);
+  }
   onRegisterSuccess() {
     this.props.RootStore.userStore.closeRegisterModal();
 
     const claimToStore = {
       status: PENDING_REVIEW,
-      user: this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr,
+      user: this.props.RootStore.userStore.isOnFixedAccount ?
+        this.props.RootStore.userStore.fixedUserAddr :
+        this.props.RootStore.userStore.userAddr,
       type: this.props.RootStore.userStore.formType,
       value: this.props.RootStore.userStore.getFormTextInputValue(),
       verifier: this.props.RootStore.userStore.getVerifierSelected(),
@@ -200,7 +261,9 @@ class UserMain extends React.Component {
     this.props.RootStore.userStore.db.addClaim(
       this.props.RootStore.userStore.getFormTextInputValue(),
       this.props.RootStore.userStore.formType,
-      this.props.RootStore.userStore.isOnFixedAccount ? this.props.RootStore.userStore.fixedUserAddr : this.props.RootStore.userStore.userAddr,
+      this.props.RootStore.userStore.isOnFixedAccount ?
+        this.props.RootStore.userStore.fixedUserAddr :
+        this.props.RootStore.userStore.userAddr,
       this.props.RootStore.userStore.getVerifierSelected(),
       PENDING_REVIEW,
       this.props.RootStore.currentNetwork,
@@ -302,32 +365,46 @@ class UserMain extends React.Component {
           content="Preparing your unique blockchain identity, this might take from a few seconds to a few minutes."
         />
         <SuccessModal
+          open={userStore.removeNotifyModalIsShowing}
+          // open={true}
+          onClose={userStore.closeRemoveNotifyModal.bind(userStore)}
+          title={t('Removing Your Identity')}
+          content={t('Your claim is being removed from the blockchain, this usually takes from a few seconds to a few minutes.')}
+        />
+        <SuccessModal
           open={userStore.startedAddingClaim && userStore.finishedAddingClaim}
           onClose={userStore.resetPublishClaim.bind(userStore)}
           title={t('publicationSuccessTitle')}
           content={t('publicationSuccessContent')}
         />
-        <SuccessModal
-          open={userStore.removeNotifyModalIsShowing}
-          onClose={userStore.closeRemoveNotifyModal.bind(userStore)}
-          title={t('Removing Your Identity')}
-          content={t('Your claim is being removed from the blockchain, this usually takes from a few seconds to a few minutes.')}
-        />
         
+
         <h1 className={classes.title}>My Identity</h1>
         <div className={classes.descriptionBox}>
           <p>This is your self-sovereign blockchain identity on Ethereum (ERC725). Only verification claims are public and stored on-chain.</p>
           {userStore.nameClaimList.length > 0 ?
             <ExpandablePanel isUser={this.props.RootStore.commonStore.getIsUser()} title="Name" items={userStore.nameClaimList} /> :
-            <FixedPanel isUser={this.props.RootStore.commonStore.getIsUser()} handleClick={() => {userStore.openRegisterModal("name");}} title="Name" />
+            <FixedPanel
+              isUser={this.props.RootStore.commonStore.getIsUser()}
+              handleClick={() => { userStore.openRegisterModal('name'); }}
+              title="Name"
+            />
           }
           {userStore.addressClaimList.length > 0 ?
             <ExpandablePanel isUser={this.props.RootStore.commonStore.getIsUser()} title="Address" items={userStore.addressClaimList} /> :
-            <FixedPanel isUser={this.props.RootStore.commonStore.getIsUser()} handleClick={() => {userStore.openRegisterModal("address");}} title="Address" />
+            <FixedPanel
+              isUser={this.props.RootStore.commonStore.getIsUser()}
+              handleClick={() => { userStore.openRegisterModal('address'); }}
+              title="Address"
+            />
           }
           {userStore.socialIdClaimList.length > 0 ?
             <ExpandablePanel isUser={this.props.RootStore.commonStore.getIsUser()} title="Social ID" items={userStore.socialIdClaimList} /> :
-            <FixedPanel isUser={this.props.RootStore.commonStore.getIsUser()} handleClick={() => {userStore.openRegisterModal("socialId");}} title="Social ID" />
+            <FixedPanel
+              isUser={this.props.RootStore.commonStore.getIsUser()}
+              handleClick={() => { userStore.openRegisterModal('socialId'); }}
+              title="Social ID"
+            />
           }
         </div>
       </div>

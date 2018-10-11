@@ -4,8 +4,7 @@ import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Modal from '@material-ui/core/Modal';
 import { observer, inject } from 'mobx-react';
-import { inputBorderGrey, identityBlue, homeBg, backdropColor, modalShadow, homeTextGreyVerifier, materialGrey, buttonTextGrey } from '../constants/colors';
-import BlueButton from './BlueButton';
+import { identityBlue, backdropColor, modalShadow } from '../constants/colors';
 
 const styles = (theme) => {
   return ({

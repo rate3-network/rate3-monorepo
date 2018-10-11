@@ -72,11 +72,12 @@ class UserStore {
   @observable reOnboardModalIsShowing = false;
 
   @observable startedRemovingClaim = false;
-  @observable finishiedRemovingClaim = false;
+  @observable finishedRemovingClaim = false;
 
   @observable removeNotifyModalIsShowing = false;
   @observable publishSubmitModalIsShowing = false;
 
+  // local lists to keep track of transaction status
   @observable removalList = [];
   @observable publishingList = [];
   /* JSDOC: MARK END OBSERVABLE */
@@ -139,6 +140,18 @@ class UserStore {
     this.db.getAllSocialIdClaims().forEach((claim) => {
       if (claim.user === userAddress && claim.network === this.rootStore.currentNetwork) this.socialIdClaimList.push(claim);
     });
+  }
+  @action
+  addToNameClaimList(c) {
+    this.nameClaimList.push(c);
+  }
+  @action
+  addToAddressClaimList(c) {
+    this.addressClaimList.push(c);
+  }
+  @action
+  addToSocialIdClaimList(c) {
+    this.socialIdClaimList.push(c);
   }
   @action
   resetPublishClaim() {
@@ -352,7 +365,7 @@ class UserStore {
     if (!this.isOnFixedAccount) {
       window.identityContract.methods.addClaim(topic, 1, this.verifierIdentityContractAddr, this.signature, data, location)
         .send(
-          { from: userAddress, gas: 500000 },
+          { from: userAddress, gas: 500000, gasPrice: '5000000000' },
           (err, result) => {
             if (err) {
               console.error(err);
@@ -362,6 +375,9 @@ class UserStore {
               this.publishingList.push(result, this.rootStore.currentNetwork, item);
               this.openPublishSubmitModal();
               this.db.deleteClaim(addr, claim);
+              if (item.type === 'name') this.setNameClaimToPublishing();
+              if (item.type === 'address') this.setAddressClaimToPublishing();
+              if (item.type === 'socialId') this.setSocialIdClaimToPublishing();
             }
           },
         );
@@ -378,6 +394,9 @@ class UserStore {
               this.publishingList.push(result, this.rootStore.currentNetwork, item);
               this.openPublishSubmitModal();
               this.db.deleteClaim(addr, claim);
+              if (item.type === 'name') this.setNameClaimToPublishing();
+              if (item.type === 'address') this.setAddressClaimToPublishing();
+              if (item.type === 'socialId') this.setSocialIdClaimToPublishing();
             }
           },
         );
@@ -392,7 +411,7 @@ class UserStore {
         from: this.isOnFixedAccount ?
           this.fixedUserAddr :
           this.userAddr,
-        gas: 6000000,
+        gas: 500000,
         gasPrice: '5000000000',
       },
       (err, result) => {
@@ -402,6 +421,9 @@ class UserStore {
         }
         if (result) {
           this.removalList.push(result, this.rootStore.currentNetwork, item);
+          if (item.type === 'name') this.setNameClaimToRemoving();
+          if (item.type === 'address') this.setAddressClaimToRemoving();
+          if (item.type === 'socialId') this.setSocialIdClaimToRemoving();
         }
       },
     );
@@ -547,6 +569,25 @@ class UserStore {
   setSocialIdClaimToRemoving() {
     const copy = this.socialIdClaimList.slice();
     copy[0].status = REMOVING;
+    this.socialIdClaimList = copy;
+  }
+
+  @action
+  setNameClaimToPublishing() {
+    const copy = this.nameClaimList.slice();
+    copy[0].status = PUBLISHING;
+    this.nameClaimList = copy;
+  }
+  @action
+  setAddressClaimToPublishing() {
+    const copy = this.addressClaimList.slice();
+    copy[0].status = PUBLISHING;
+    this.addressClaimList = copy;
+  }
+  @action
+  setSocialIdClaimToPublishing() {
+    const copy = this.socialIdClaimList.slice();
+    copy[0].status = PUBLISHING;
     this.socialIdClaimList = copy;
   }
 }

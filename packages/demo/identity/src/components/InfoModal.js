@@ -85,7 +85,7 @@ const InfoModal = inject('RootStore')(observer((props) => {
         <div className={classes.paper}>
           <div className={classes.content}>
             <h1>Success!</h1>
-            <p>{props.RootStore.modalStore.infoModalText}. Please Click OK to refresh the page.</p>
+            <p>{props.RootStore.modalStore.infoModalText} Please Click OK to refresh the page.</p>
             <div className={classes.buttonContainer}>
               <BlueButton
                 classes={{

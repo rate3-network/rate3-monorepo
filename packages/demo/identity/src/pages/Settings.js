@@ -4,17 +4,13 @@ import { withStyles } from '@material-ui/core/styles';
 import { translate } from 'react-i18next';
 import ChevronLeft from '@material-ui/icons/ChevronLeftRounded';
 import IconButton from '@material-ui/core/IconButton';
-import Paper from '@material-ui/core/Paper';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { inject, observer } from 'mobx-react';
 
 import AccountTypeDropdown from '../components/AccountTypeDropdown';
 import { identityHeavyGrey, disabledBackgroundColor } from '../constants/colors';
-import { action } from 'mobx';
-import { fixedVerifierAddress } from '../constants/defaults';
-import UserMain from '../pages/UserMain';
-import VerifierMain from '../pages/VerifierMain';
+import ReOnboardModal from '../components/ReOnboardModal';
 
 const styles = (theme) => {
   return ({
@@ -73,26 +69,28 @@ const styles = (theme) => {
 @inject('RootStore') @observer
 class Settings extends React.Component {
   state = { value: 0 };
+  
+  componentDidMount() {
+    window.analytics.page('settings');
+  }
   handleChange = (event, value) => {
     this.setState({ value });
   }
-  componentDidMount() {
-    window.analytics.page('settings');
-    this.props.RootStore.initNetwork();
-  }
   render() {
+    console.log(this.props.RootStore.userStore.isOnFixedAccount);
     const { classes, t } = this.props;
     const WalletAddress = (props) => {
       if (!props.RootStore.commonStore.getIsUser()) {
         return <p className={classes.noMargin}>0xd102503E987a6402A1E0b220369ea4A4Bce911E8</p>;
       }
-      if (!props.RootStore.userStore.isOnFixedAccount) {
-        return <p className={classes.noMargin}>{props.RootStore.userStore.userAddr}</p>;
+      if (!props.onFixedAccount) {
+        return <p className={classes.noMargin}>{props.userAddress}</p>;
       }
       return <p className={classes.noMargin}>{props.RootStore.userStore.fixedUserAddr}</p>;
     };
     return (
       <div>
+        <ReOnboardModal open={this.props.RootStore.reonboardModalIsShowing} />
         <h1 className={classes.title}>
           <IconButton
             onClick={() => { this.props.history.goBack(); }}
@@ -116,11 +114,21 @@ class Settings extends React.Component {
             </Tabs>
             {this.state.value === 0 &&
               <div style={{ paddingTop: '1.5em' }}>
-                <AccountTypeDropdown variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'} isOnSidebar isUser={this.props.RootStore.commonStore.getIsUser()} />
+                <AccountTypeDropdown
+                  variant={this.props.RootStore.commonStore.getIsUser() ? 'user' : 'verifier'}
+                  isOnSidebar
+                  isUser={this.props.RootStore.commonStore.getIsUser()}
+                />
                 <p>Account Name</p>
                 <div className={classes.greyBack}>{this.props.RootStore.commonStore.getIsUser() ? 'User' : 'Verifier' }</div>
                 <p>Wallet Address</p>
-                <div className={classes.greyBack}><WalletAddress {...this.props} /></div>
+                <div className={classes.greyBack}>
+                  <WalletAddress
+                    {...this.props}
+                    onFixedAccount={this.props.RootStore.userStore.isOnFixedAccount}
+                    userAddress={this.props.RootStore.commonStore.metamaskAccount}
+                  />
+                </div>
               </div>
             }
 
