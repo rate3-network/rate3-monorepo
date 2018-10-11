@@ -6,7 +6,7 @@ import { when, runInAction } from 'mobx';
 import { translate } from 'react-i18next';
 import { withRouter, Route, Switch } from 'react-router-dom';
 
-import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
+import { PENDING_REVIEW, PENDING_ADD, VERIFIED, PUBLISHING, REMOVING } from '../constants/general';
 import ErrorModal from '../components/ErrorModal';
 import ExpandablePanel from '../components/ExpandablePanel';
 import Faq from './Faq';
@@ -133,19 +133,31 @@ class UserMain extends React.Component {
         const socialIdRemovalList = removalList.getSocialIdClaimRemovals();
         if (nameClaimList.length > 0 && typeof nameRemovalList !== 'undefined' && nameRemovalList.length > 0) {
           const nameClaim = nameClaimList[0];
-          
-          console.log('nameClaim', nameClaim);
-          console.log('nameRemovalList', nameRemovalList);
-
           const foundId = removalList.findIndexByClaim(nameClaim);
-          
           if (typeof foundId === 'number' && foundId > -1) {
-            console.log(foundId);
-            console.log('same claim found, lets start polling');
             this.pollForTransaction(removalList.getList()[foundId].hash, foundId);
             // set the claim status to pending removal / removing
-          } else {
-            console.log('not the same');
+            this.props.RootStore.userStore.setNameClaimToRemoving();
+          }
+        }
+
+        if (addressClaimList.length > 0 && typeof addressRemovalList !== 'undefined' && addressRemovalList.length > 0) {
+          const addressClaim = addressClaimList[0];
+          const foundId = removalList.findIndexByClaim(addressClaim);
+          if (typeof foundId === 'number' && foundId > -1) {
+            this.pollForTransaction(removalList.getList()[foundId].hash, foundId);
+            // set the claim status to pending removal / removing
+            this.props.RootStore.userStore.setAddressClaimToRemoving();
+          }
+        }
+
+        if (socialIdClaimList.length > 0 && typeof socialIdRemovalList !== 'undefined' && socialIdRemovalList.length > 0) {
+          const nameClaim = socialIdClaimList[0];
+          const foundId = removalList.findIndexByClaim(nameClaim);
+          if (typeof foundId === 'number' && foundId > -1) {
+            this.pollForTransaction(removalList.getList()[foundId].hash, foundId);
+            // set the claim status to pending removal / removing
+            this.props.RootStore.userStore.setSocialIdClaimToRemoving();
           }
         }
       },

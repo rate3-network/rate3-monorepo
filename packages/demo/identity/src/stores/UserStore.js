@@ -8,7 +8,7 @@ import {
 import Identity from '../utils/Identity';
 import MyTable from '../utils/MyTable';
 import LocalList from '../utils/LocalList';
-import { VERIFIED } from '../constants/general';
+import { VERIFIED, PUBLISHING, REMOVING } from '../constants/general';
 import identityJson from '../build/contracts/Identity.json';
 import { fixedUserAddress, fixedUserRegistryContractAddress, fixedVerifierIdentityContractAddress, dbPrefix, tableName } from '../constants/defaults';
 
@@ -78,6 +78,7 @@ class UserStore {
   @observable publishSubmitModalIsShowing = false;
 
   @observable removalList = [];
+  @observable publishingList = [];
   /* JSDOC: MARK END OBSERVABLE */
 
   constructor(rootStore) {
@@ -86,7 +87,7 @@ class UserStore {
     localStorage.removeItem('rate3-test-v2.identity-demo');
     localStorage.removeItem('rate3-test-v2.verified-user-list');
     const removalList = new LocalList(dbPrefix, 'removal-list');
-    
+    const publishingList = new LocalList(dbPrefix, 'publishing-list');
     const myDb = new MyTable(dbPrefix, tableName);
     if (myDb.hasTable(tableName)) {
       myDb.getTable(tableName);
@@ -98,6 +99,7 @@ class UserStore {
       this.db.getTable(tableName);
 
       this.removalList = removalList;
+      this.publishingList = publishingList;
     });
   }
   @action
@@ -357,6 +359,7 @@ class UserStore {
               this.rootStore.displayErrorModal('Encountered an error while adding your Claim to the blockchain. It might be caused by a pending transaction. You can try with a higher gas price.');
             }
             if (result) {
+              this.publishingList.push(result, this.rootStore.currentNetwork, item);
               this.openPublishSubmitModal();
               this.db.deleteClaim(addr, claim);
             }
@@ -372,6 +375,7 @@ class UserStore {
               this.rootStore.displayErrorModal('Encountered an error while adding your Claim to the blockchain. It might be caused by a pending transaction. You can try with a higher gas price.');
             }
             if (result) {
+              this.publishingList.push(result, this.rootStore.currentNetwork, item);
               this.openPublishSubmitModal();
               this.db.deleteClaim(addr, claim);
             }
@@ -389,7 +393,7 @@ class UserStore {
           this.fixedUserAddr :
           this.userAddr,
         gas: 6000000,
-        gasPrice: '200000000',
+        gasPrice: '5000000000',
       },
       (err, result) => {
         if (err) {
@@ -397,7 +401,6 @@ class UserStore {
           this.rootStore.displayErrorModal('Encountered an error while removing your Claim.');
         }
         if (result) {
-          console.log('removalList pushing in ', result, this.rootStore.currentNetwork, item)
           this.removalList.push(result, this.rootStore.currentNetwork, item);
         }
       },
@@ -527,6 +530,24 @@ class UserStore {
   @action
   closePublishSubmitModal() {
     this.publishSubmitModalIsShowing = false;
+  }
+  @action
+  setNameClaimToRemoving() {
+    const copy = this.nameClaimList.slice();
+    copy[0].status = REMOVING;
+    this.nameClaimList = copy;
+  }
+  @action
+  setAddressClaimToRemoving() {
+    const copy = this.addressClaimList.slice();
+    copy[0].status = REMOVING;
+    this.addressClaimList = copy;
+  }
+  @action
+  setSocialIdClaimToRemoving() {
+    const copy = this.socialIdClaimList.slice();
+    copy[0].status = REMOVING;
+    this.socialIdClaimList = copy;
   }
 }
 export default UserStore;

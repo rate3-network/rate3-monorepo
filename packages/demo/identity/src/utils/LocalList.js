@@ -1,3 +1,6 @@
+
+import { PENDING_REVIEW, PENDING_ADD, VERIFIED, PUBLISHING, REMOVING } from '../constants/general';
+
 class LocalList {
   constructor(prefix, name) {
     this.listName = `${prefix}.${name}`;
@@ -62,19 +65,38 @@ class LocalList {
 
   getNameClaimRemovals() {
     const temp = this.list.filter((item) => {
-      return item.claim.type === 'name';
+      return item.claim.status === VERIFIED && item.claim.type === 'name';
     });
     return temp;
   }
   getAddressClaimRemovals() {
     const temp = this.list.filter((item) => {
-      return item.claim.type === 'address';
+      return item.claim.status === VERIFIED && item.claim.type === 'address';
     });
     return temp;
   }
   getSocialIdClaimRemovals() {
     const temp = this.list.filter((item) => {
-      return item.claim.type === 'socialId';
+      return item.claim.status === VERIFIED && item.claim.type === 'socialId';
+    });
+    return temp;
+  }
+
+  getNameClaimPublish() {
+    const temp = this.list.filter((item) => {
+      return item.claim.status === PENDING_ADD && item.claim.type === 'name';
+    });
+    return temp;
+  }
+  getAddressClaimPublish() {
+    const temp = this.list.filter((item) => {
+      return item.claim.status === PENDING_ADD && item.claim.type === 'address';
+    });
+    return temp;
+  }
+  getSocialIdClaimPublish() {
+    const temp = this.list.filter((item) => {
+      return item.claim.status === PENDING_ADD && item.claim.type === 'socialId';
     });
     return temp;
   }

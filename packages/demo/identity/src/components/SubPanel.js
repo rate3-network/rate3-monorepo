@@ -9,7 +9,7 @@ import { observer, inject } from 'mobx-react';
 
 import { identityHeavyGrey, pendingTextColor, identityBlue, pendintSigGrey } from '../constants/colors';
 import BlueButton from './BlueButton';
-import { PENDING_REVIEW, PENDING_ADD, VERIFIED } from '../constants/general';
+import { PENDING_REVIEW, PENDING_ADD, VERIFIED, PUBLISHING, REMOVING } from '../constants/general';
 import Rate3LogoSmall from '../assets/Rate3LogoSmall.svg';
 import addedIcon from '../assets/addedIcon.svg';
 import pendingIcon from '../assets/pendingIcon.svg';
@@ -250,6 +250,12 @@ class SubPanel extends React.Component {
                   {this.props.item.status === PENDING_ADD &&
                     <div className={classes.pendingText}>Ready to Publish</div>
                   }
+                  {this.props.item.status === PUBLISHING &&
+                    <div className={classes.pendingText}>Publishing</div>
+                  }
+                  {this.props.item.status === REMOVING &&
+                    <div className={classes.pendingText}>Removing</div>
+                  }
                 </div>
               </div>
               {this.props.isUser && this.props.item.status === PENDING_ADD && !this.state.addButtonClicked &&
@@ -267,14 +273,14 @@ class SubPanel extends React.Component {
           <ExpansionPanelDetails className={classes.details}>
             <div className={classes.content}>
               <div className={classes.contentHeaderCol}>
-                {this.props.item.status === VERIFIED ?
+                {(this.props.item.status === VERIFIED || this.props.item.status === REMOVING) ?
                   <React.Fragment><div>TxHsh</div><div>Data</div><div>Signature</div></React.Fragment> :
                   <React.Fragment> <div>{this.props.isUser ? 'Your Data' : 'Data'}</div><div>Signature</div></React.Fragment>
                 }
               </div>
               <div className={classes.contentCol}>
                 {/* transaction hash */}
-                {this.props.item.status === VERIFIED &&
+                {(this.props.item.status === VERIFIED || this.props.item.status === REMOVING) &&
                   <div
                     className={classes.transaction}
                     onClick={() => { window.open(getEtherScanLink(this.props.item.txHash), '_blank'); }}
@@ -285,12 +291,11 @@ class SubPanel extends React.Component {
                 {/* data */}
                 <div className={classes.data}>{this.props.item.value}</div>
                 {/* signature */}
-                <div className={classes.data}>{
-                  this.props.item.signature ?
-                    truncateAddress(this.props.item.signature, 10):
-                    <div className={classes.pending}>Pending</div>
-                }</div>
-
+                <div className={classes.data}>
+                  {this.props.item.signature ?
+                      truncateAddress(this.props.item.signature, 10) :
+                      <div className={classes.pending}>Pending</div>}
+                </div>
               </div>
             </div>
           </ExpansionPanelDetails>

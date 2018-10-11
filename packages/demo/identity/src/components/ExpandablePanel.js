@@ -14,7 +14,7 @@ import SubPanel from './SubPanel';
 import NameIcon from '../assets/Name.svg';
 import AddressIcon from '../assets/Address.svg';
 import SocialIdIcon from '../assets/SocialID.svg';
-import { VERIFIED, PENDING_ADD, PENDING_REVIEW } from '../constants/general';
+import { VERIFIED, PENDING_ADD, PENDING_REVIEW, PUBLISHING, REMOVING } from '../constants/general';
 
 const styles = theme => ({
   root: {
@@ -122,6 +122,7 @@ class DetailedExpansionPanel extends React.Component {
     const noVerified = this.props.items.filter(item => item.status === VERIFIED).length;
     const noPending = this.props.items.filter(item => item.status === PENDING_REVIEW).length;
     const noPendingAdd = this.props.items.filter(item => item.status === PENDING_ADD).length;
+    const noRemoving = this.props.items.filter(item => item.status === REMOVING).length;
     const needAction = this.props.items.filter(item => item.status === PENDING_ADD).length > 0;
     let shouldShowAction;
     let icon;
@@ -150,6 +151,7 @@ class DetailedExpansionPanel extends React.Component {
                   {noVerified > 0 && <Typography className={classes.verificationStatus}>{noVerified} Verification </Typography>}
                   {noPending > 0 && <Typography className={classes.disabledVerificationStatus}>{noPending} Pending</Typography>}
                   {noPendingAdd > 0 && <Typography className={classes.disabledVerificationStatus}>{noPendingAdd} Pending</Typography>}
+                  {noRemoving > 0 && <Typography className={classes.disabledVerificationStatus}>{noRemoving} Removing</Typography>}
                 </div>
               </div>
               {/* for verifier  */}
