@@ -1,7 +1,7 @@
 /**
  * Phase 3 Anchor Bridge, test on client side.
  * Test data are (and only) from SEP-0006,
- * which covers some common cases.
+ * which covers successful cases.
  */
 const nock = require('nock');
 const WalletManager = require('./WalletManager');
@@ -12,10 +12,9 @@ walletStellar.setSeed(seedPhrases);
 walletStellar.setWallet();
 let account3Stellar = null;
 
-const mockURL = 'http://api.example.com'; // Use Python 3 Flask framework to respond
+const mockURL = 'http://api.example.com';
 
 beforeAll(async () => {
-  // Clears the database and adds some testing data.
   // Jest will wait for this promise to resolve before running tests.
   account3Stellar = await walletStellar.getAccount(3);
 });

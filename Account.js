@@ -1,6 +1,8 @@
 const rp = require('request-promise');
 const StellarSdk = require('stellar-sdk');
 const Web3 = require('web3');
+const openurl = require('openurl');
+const toml = require('toml');
 
 const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
 const web3 = new Web3('https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7');
@@ -393,7 +395,26 @@ class Account {
   // They should be static functions, having no relation with this account
 
   /**
-   * Deposit external assets with an anchor.
+   * The url of transfer server can be found in the stellar.toml file
+   * if it is not known.
+   * @param {string} domain - domain of the Stellar anchor
+   * @returns {string|error} the url of the transfer server in stellar.toml
+   * or error if an error occurs
+   */
+  async getTransferServerUrl(domain) {
+    try {
+      this.stellarTomlUrl = `https://${domain}/.well-known/stellar.toml`;
+      const stellarToml = await rp(this.stellarTomlUrl);
+      this.transferServer = toml.parse(stellarToml).TRANSFER_SERVER;
+      return this.transferServer;
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
+  /**
+   * Deposit external assets with an anchor. The anchor then sends to user's Stellar account
    * Parameter descriptions are from SEP-0006.
    * The parameter naming follows SEP-0006, and does not use camel case
    * @param {string} url - the url of this get request, without slash at the end
@@ -554,6 +575,29 @@ class Account {
       console.log(error);
       return null;
     }
+  }
+
+  // response 403 non-interactive requires implementatoin
+  // of SEP-0012, which is not handled here
+
+  // response 403 account information rejected, this is also not handled
+  // as it may be because the account info is wrong,
+  // and the caller needs to correct that.
+
+  /**
+   * Implementation of handling response 403 interactive
+   * as described in SEP 0006
+   * @param {JSON} response - The response 403, and it is interactive
+   * @returns {boolean|error} true if succeeds, error otherwise
+   */
+  // eslint-disable-next-line class-methods-use-this
+  handleInteractiveResponse(response) {
+    try {
+      openurl.open(response.url);
+    } catch (error) {
+      return error;
+    }
+    return true;
   }
 }
 
