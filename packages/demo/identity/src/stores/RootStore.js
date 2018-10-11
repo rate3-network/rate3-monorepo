@@ -10,6 +10,7 @@ import UserStore from './UserStore';
 import VerifierStore from './VerifierStore';
 import PaymentStore from './PaymentStore';
 import PanelButtonsStore from './PanelButtonsStore';
+import ModalStore from './ModalStore';
 import { fixedUserPrivKey, fixedVerifierPrivKey } from '../constants/defaults';
 
 class RootStore {
@@ -20,6 +21,7 @@ class RootStore {
   @observable verifierStore = new VerifierStore(this);
   @observable paymentStore = new PaymentStore(this);
   @observable panelButtonsStore = new PanelButtonsStore(this);
+  @observable modalStore = new ModalStore(this);
   @observable browserProvider = null;
 
   @observable globalSpinnerIsShowing: Boolean = false;

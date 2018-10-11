@@ -389,7 +389,7 @@ class UserStore {
           this.fixedUserAddr :
           this.userAddr,
         gas: 6000000,
-        gasPrice: '500000000',
+        gasPrice: '200000000',
       },
       (err, result) => {
         if (err) {

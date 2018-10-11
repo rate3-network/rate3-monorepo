@@ -20,6 +20,7 @@ import ReOnboardModal from '../components/ReOnboardModal';
 import Settings from './Settings';
 import SuccessModal from '../components/SuccessModal';
 import UserInstructions from '../components/user/UserInstructions';
+import InfoModal from '../components/InfoModal';
 
 const styles = (theme) => {
   return ({
@@ -126,8 +127,10 @@ class UserMain extends React.Component {
       () => {
         console.log('finished loading');
         console.log(this.props.RootStore.userStore.removalList);
-        const { nameClaimList, removalList } = this.props.RootStore.userStore;
+        const { nameClaimList, addressClaimList, socialIdClaimList, removalList } = this.props.RootStore.userStore;
         const nameRemovalList = removalList.getNameClaimRemovals();
+        const addressRemovalList = removalList.getAddressClaimRemovals();
+        const socialIdRemovalList = removalList.getSocialIdClaimRemovals();
         if (nameClaimList.length > 0 && typeof nameRemovalList !== 'undefined' && nameRemovalList.length > 0) {
           const nameClaim = nameClaimList[0];
           
@@ -139,7 +142,7 @@ class UserMain extends React.Component {
           if (typeof foundId === 'number' && foundId > -1) {
             console.log(foundId);
             console.log('same claim found, lets start polling');
-            this.pollForTransaction(removalList.getList()[foundId].hash);
+            this.pollForTransaction(removalList.getList()[foundId].hash, foundId);
             // set the claim status to pending removal / removing
           } else {
             console.log('not the same');
@@ -148,17 +151,17 @@ class UserMain extends React.Component {
       },
     );
   }
-  test() {
-
-  }
-  pollForTransaction(removalTxHash) {
+  /* eslint react/sort-comp: off */
+  pollForTransaction(removalTxHash, id) {
     const checkTransactionStatus = async () => {
       console.log('polling');
       const receipt = await window.web3.eth.getTransactionReceipt(removalTxHash);
       if (receipt !== null) {
+        this.props.RootStore.userStore.removalList.deleteByIndex(id);
         if (receipt.status) { // if tx successful
           // modal: removed. refresh to see
           console.log('modal: removed. refresh to see');
+          this.props.RootStore.modalStore.openInfoModal('Your Claim has been removed.');
           clearInterval(polling);
         } else { // if tx failed
           console.log('delete from removalList');
@@ -259,6 +262,7 @@ class UserMain extends React.Component {
         <PaymentModal
           open={paymentStore.paymentModalIsShowing}
         />
+        <InfoModal />
         <LoadingModal open={userStore.startedLoadingClaims && !userStore.finishedLoadingClaims}>
           Loading Claims...
         </LoadingModal>
