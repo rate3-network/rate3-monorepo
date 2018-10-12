@@ -21,6 +21,7 @@ const styles = theme => ({
     backgroundColor: homeBg,
   },
   main: {
+    width: 'calc(100vw - 20rem)',
     padding: '5.5em 4em 10em 5em',
     marginLeft: '20rem',
   },

@@ -4,8 +4,6 @@ import { withStyles } from '@material-ui/core/styles';
 import Blockies from 'react-blockies';
 import { observer, inject } from 'mobx-react';
 
-import { userBlockieSeed, verifierBlockieSeed } from '../constants/general';
-
 const styles = (theme) => {
   return ({
     container: {

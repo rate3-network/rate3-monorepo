@@ -98,9 +98,10 @@ const styles = theme => ({
   },
   data: {
     paddingLeft: '3em',
-    overflow: 'hidden',
+    overflow: 'hidden !important',
     textOverflow: 'ellipsis',
-    maxWidth: '10em',
+    maxWidth: '14em',
+    width: '14em',
     color: identityHeavyGrey,
   },
   transaction: {
@@ -289,7 +290,7 @@ class SubPanel extends React.Component {
                   </div>
                 }
                 {/* data */}
-                <div className={classes.data}>{this.props.item.value}</div>
+                <div className={classes.data}>{truncateAddress(this.props.item.value, 22)}</div>
                 {/* signature */}
                 <div className={classes.data}>
                   {this.props.item.signature ?

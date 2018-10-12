@@ -21,7 +21,7 @@ const styles = (theme) => {
       letterSpacing: '0.02em',
     },
     descriptionBox: {
-      width: '75%',
+      width: '65%',
       fontSize: '1.2em',
       lineHeight: '1.55em',
       fontWeight: '400',
