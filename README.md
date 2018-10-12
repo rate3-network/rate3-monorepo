@@ -12,8 +12,12 @@ These instructions will get you a copy of the project up and running on your loc
 * Tests are wirtten using [Jest](https://jestjs.io/) library.
 * Run `npm test` to run all the tests.
 * You can configure testing in the `package.json` file, or by adding arguments to the command.
+* E.g. change *line 7* in `package.json` to `"test": "jest --coverage WalletManager.test.js"`.
+* Test files include `Account.test.js`, `Account.async.test.js`, `Account.anchor.test.js`, `WalletManager.test.js`
 * From the test cases you can see how to use this package.
 * Ledger/Trezor integration is not tested with the hardware devices.
+## Commandline demo
+* Run `node StellarDemo.js` or `node EthereumDemo.js` to demostrate some functions in phase 1 and 2. Enter numbers 1,2,3... sequentially to excute step by step. Please wait for the previous step to finish before enterning new commands.
 ## Documentation
 * Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.
 * Run the following command to create the documentation for a certain `.js` file. For example `jsdoc Account.js`.

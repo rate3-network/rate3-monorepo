@@ -4,7 +4,7 @@
   "description": "a wrapper over stellar, ethereum, and possibly others",
   "main": "WalletManager.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage WalletManager.test.js"
   },
   "author": "",
   "license": "ISC",

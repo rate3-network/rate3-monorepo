@@ -127,7 +127,7 @@ test('setAccountStellar', async () => {
 
   expect(account.getPrivateKey()).toBe(expectedPrivateKey);
   expect(account.getAddress()).toBe(expectedPublicKey);
-  expect(account.getBalance()).toBe('15000.0000000');
+  expect(account.getBalance()).toBe(expectedBalance);
 
   expectedPrivateKey = 'SCHDEOGWKZYYHDTCQFEXMQ3VVDCOZIUBVSJN4DGTOCB5FCCKBYQEG4PA';
   expectedPublicKey = 'GCUTV7FC4GITQI6KJASMKH7WX3NTDLNUBHFZNXVJB4DJGGTUL6I7XAVT';
@@ -167,18 +167,18 @@ test('encryptAndDecryptAccountETH', async () => {
   expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork());
 });
 
-test('encryptAndDecryptAccountStellar', async () => {
-  const wallet = new WalletManager('stellar');
-  wallet.setSeed(seedPhrases);
-  wallet.setWallet();
+// test('encryptAndDecryptAccountStellar', async () => {
+//   const wallet = new WalletManager('stellar');
+//   wallet.setSeed(seedPhrases);
+//   wallet.setWallet();
 
-  const account = await wallet.getAccount();
-  const encrypted = wallet.encrypt(account, password);
-  const decryptedAccount = wallet.decrypt(encrypted, password);
-  expect(decryptedAccount.getAddress()).toEqual(account.getAddress());
-  expect(decryptedAccount.getPrivateKey()).toEqual(account.getPrivateKey());
-  expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork());
-});
+//   const account = await wallet.getAccount();
+//   const encrypted = wallet.encrypt(account, password);
+//   const decryptedAccount = wallet.decrypt(encrypted, password);
+//   expect(decryptedAccount.getAddress()).toEqual(account.getAddress());
+//   expect(decryptedAccount.getPrivateKey()).toEqual(account.getPrivateKey());
+//   expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork());
+// });
 
 test('encryptAndDecryptSeedPhrases', async () => {
   const wallet = new WalletManager('stellar'); // the currency does not matter
