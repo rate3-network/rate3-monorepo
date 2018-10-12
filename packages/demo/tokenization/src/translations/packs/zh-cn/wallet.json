@@ -1,0 +1,14 @@
+{
+  "bankAccountTab": "银行账户",
+  "ethWalletTab": "以太坊钱包",
+
+  "linkBankAccount": "连接银行帐户以进行交易",
+
+  "verified": "已核实",
+  "inUse": "使用中",
+
+  "ropsten": "Ropsten 测试网络",
+  "rinkeby": "Rinkeby 测试网络",
+  "kovan": "Kovan 测试网络",
+  "localhost": "Localhost 8545"
+}

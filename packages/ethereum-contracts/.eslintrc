@@ -1,0 +1,20 @@
+{
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 6
+  },
+  "env": {
+    "mocha": true
+  },
+  "parser": "babel-eslint",
+  "extends": "airbnb-base",
+  "globals": {
+    "artifacts": true,
+    "contract": true,
+    "assert": true,
+    "web3": true
+  },
+  "rules": {
+    "indent": ["warn", 4]
+  }
+}

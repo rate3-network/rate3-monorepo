@@ -1,0 +1,7 @@
+{
+  "amountToTokenize": "代币化金额",
+  "amountToWithdraw": "提取额",
+  "wireTransferDetails": "转账信息",
+  "gasLimitAndPrice": "Gas限制与价格",
+  "confirmation": "确认"
+}

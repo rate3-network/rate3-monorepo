@@ -1,0 +1,47 @@
+{
+  "tokenizationHeader": "Tokenization",
+  "tokenizationDescription": "The process of converting rights of an asset into a digital token on a blockchain. This transaction generally involves a user and a trustee.",
+
+  "tokenize": "Tokenize",
+  "tokenizeDesc": "Convert SGD into SGDR",
+  "withdraw": "Withdraw",
+  "withdrawDesc": "Convert SGDR into SGD",
+
+  "approve": "Approve",
+  "approveDesc": "Approve users’ tokenization requests",
+  "monitor": "Monitor",
+  "monitorDesc": "Monitor users’ transactions",
+
+  "stepNumber": "Step <1>{{stepNumber}}</1>:",
+  "chooseRole": "Choose Your Role",
+  "verifyBankAccount": "Verify Bank Account",
+  "verifyTrustDetails": "Verify Trust Details",
+  "setUpTrusteeWallet": "Set Up Trustee Wallet",
+  "setUpUserWallet": "Set Up User Wallet",
+
+  "selectBankAccount": "Select Bank Account",
+  "trustAccount": "Trust Account",
+  "selectETHWallet": "Select ETH Wallet",
+
+  "verifyBankAccountDesc1": "Your bank account is used to <1>wire SGD</1> to the Trust during <3>tokenization</3>.",
+  "verifyBankAccountDesc2": "Your bank account is used to <1>receive SGD</1> from the Trust during <3>withdrawal</3>.",
+  "verifyBankAccountDesc1Short": "<1>Wire SGD</1> to the Trust during <3>tokenization</3>.",
+  "verifyBankAccountDesc2Short": "<1>Receive SGD</1> from the Trust during <3>withdrawal</3>.",
+
+  "verifyTrustDetailsDesc1": "The Trust <1>receives SGD</1> from users during <3>tokenization</3> requests.",
+  "verifyTrustDetailsDesc2": "The Trust <1>transfers SGD</1> to users during <3>withdrawal</3> requests.",
+  "verifyTrustDetailsDesc1Short": "<1>Receives SGD</1> from users during <3>tokenization</3>.",
+  "verifyTrustDetailsDesc2Short": "<1>Transfers SGD</1> to users during <3>withdrawal</3>.",
+
+  "userSetUpWalletDesc1": "ETH wallet address is your <1>unique identifier</1>.",
+  "userSetUpWalletDesc2": "ETH wallet is used to submit tokenization and withdrawal requests.",
+
+  "trusteeSetUpWalletDesc1": "ETH wallet address is the trustee's <1>unique identifier</1>.",
+  "trusteeSetUpWalletDesc2": "ETH wallet is used to approve tokenization and withdrawal requests.",
+
+  "switchingToTrustee": "Switching to Trustee?",
+  "switchingToUser": "Switching to User?",
+  "switchToTrusteeMessage": "You need to verify the trust account\nand set up the trustee ETH wallet",
+  "switchToUserMessage": "You will need to set up your personal bank account\nand ETH wallet",
+  "switchSubMessage": "You only need to do this once"
+}

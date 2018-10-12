@@ -1,0 +1,52 @@
+body {
+  font-family: 'Questrial', sans-serif;
+  color: #fff;
+}
+
+.cornflowerblue-text {
+  color: cornflowerblue !important;
+}
+
+.honey-text {
+  color: #ff9007 !important;
+}
+
+.blueish-grey {
+  background-color: #2F4459;
+}
+
+.card, .modal-content {
+  background-color: #1b2836;
+}
+
+.list-group-item {
+  background-color: #1b2836;
+  border-color: #000;
+}
+
+.hover-underline:hover {
+  text-decoration: underline !important;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.btn:hover {
+  box-shadow: none;
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-card:hover, .btn-card:active {
+  border: 1px solid #fff !important;
+  cursor: pointer;
+}
+
+.btn-card {
+  border: 1px solid transparent;
+}

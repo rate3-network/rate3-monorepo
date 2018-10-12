@@ -1,0 +1,26 @@
+{
+  "filter": "Filter",
+
+  "txHash": "TxHash",
+  "from": "From",
+  "date/time": "Date/Time",
+  "amount": "Amount",
+  "type": "Type",
+  "status": "Status",
+
+  "typeTokenize": "Tokenize",
+  "typeWithdraw": "Withdrawal",
+
+  "statusPendingNetwork": "Pending Network",
+  "statusPendingApproval": "Pending Approval",
+  "statusPendingFinalize": "Pending Finalize",
+  "statusTimeLock": "Time Lock",
+  "statusSuccess": "Success",
+  "statusFailure": "Failure",
+
+  "rowsPerPage": "Rows per page:",
+  "tableDisplayedRows": "<0>{{from}}</0>-<2>{{to}}</2> of <4>{{count}}</4>",
+
+  "finalizeOrRevokeDesc": "Select one approved tokenization request to finalize or revoke",
+  "finalizeOrRevokeDescNote": "Tokenization Requests can only be finalized after the time lock period"
+}

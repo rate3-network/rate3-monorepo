@@ -1,0 +1,27 @@
+{
+  "amountToWithdrawFieldLabel": "Enter amount to withdraw",
+  "amountToTokenizeFieldLabel": "Enter amount to tokenize",
+  "trustBankFieldLabel": "Trust Bank",
+  "trustSwiftCodeFieldLabel": "Trust Swiftcode",
+  "trustAccountFieldLabel": "Trust Account",
+  "gasLimitFieldLabel": "Gas Limit",
+  "gasPriceFieldLabel": "Gas Price",
+
+  "receiveInReturn": "You will receive <1>{{amount}}</1> <2></2> in return.",
+
+  "addressLabel": "Address",
+  "txHashLabel": "Tx Hash",
+  "amountToWithdrawLabel": "Amount to withdraw",
+  "amountToReceiveLabel": "Amount to receive",
+  "amountToTokenizeLabel": "Amount to tokenize",
+  "amountToIssueLabel": "Amount to issue",
+  "trustBankLabel": "Trust Bank",
+  "trustSwiftCodeLabel": "Trust Swiftcode",
+  "trustAccountLabel": "Trust Account",
+  "gasLimitLabel": "Gas Limit",
+  "gasPriceLabel": "Gas Price",
+  "maxFeeLabel": "Max Fee",
+
+  "tokenizeAmountOverLimitError": "Tokenization amount cannot be higher than bank account balance",
+  "withdrawAmountOverLimitError": "Withdrawal amount cannot be higher than token balance"
+}

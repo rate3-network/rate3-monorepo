@@ -1,0 +1,33 @@
+{
+  "tokenizationDemo": "토큰화 데모",
+  "user": "사용자",
+  "trustee": "수탁자",
+  "faq": "자주 묻는 질문",
+  "walletSettings": "지갑 설정",
+  "tokenize": "토큰화 하기",
+  "withdraw": "출금",
+  "approval": "토큰화 승인",
+  "finalization": "토큰화 완료하기",
+  "revocation": "토큰화 취소하기",
+  "finalizationOrRevocation": "토큰화 완료/취소",
+  "transactions": "거래",
+  "bankAccount": "은행\n계좌",
+  "ethWallet": "이더리움\n지갑",
+  "circulatingTokens": "유통되는\n토큰",
+  "trustBalance": "신탁\n잔액",
+  "pendingAmount": "<1>{{value}}</1>\n대기중",
+
+  "next": "다음",
+  "back": "되돌아가기",
+  "submit": "제출",
+  "approve": "승인",
+  "finalize": "완료하다",
+  "revoke": "취소하다",
+
+  "startDemo": "데모 시작",
+  "setUp": "설치",
+  "verify": "검증",
+  "finish": "완료",
+  "backToUser": "사용자로 돌아가기",
+  "backToTrustee": "수탁자로 돌아가기"
+}

@@ -1,0 +1,54 @@
+{
+  "name": "document-submission-poc",
+  "version": "1.0.0",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "prebuild": "rm -rf _build && mv build _build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "postbuild": "rm -rf dist && mv build dist && mv _build build && rm -f dist/service-worker.js",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "author": "Rate3 Network",
+  "license": "ISC",
+  "keywords": [],
+  "homepage": ".",
+  "devDependencies": {
+    "babel-eslint": "^8.2.5",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.23.0",
+    "chai": "^4.0.2",
+    "chai-as-promised": "^7.0.0",
+    "chai-bignumber": "^2.0.0",
+    "dotenv": "^6.0.0",
+    "eslint": "^5.1.0",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.10.0",
+    "ipfs-api": "^22.3.0",
+    "lodash": "^4.17.10",
+    "truffle-hdwallet-provider": "0.0.6"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.1.0",
+    "bootstrap": "^4.1.2",
+    "bs58": "^4.0.1",
+    "classnames": "^2.2.6",
+    "openpgp": "^3.1.0",
+    "openzeppelin-solidity": "1.10.0",
+    "promisify-smart-contract-func": "^1.0.2",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-scripts": "1.1.4",
+    "react-spinkit": "^3.0.0",
+    "react-tooltip": "^3.6.1"
+  },
+  "description": ""
+}

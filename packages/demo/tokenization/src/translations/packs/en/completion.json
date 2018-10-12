@@ -1,0 +1,35 @@
+{
+  "tokenizeSubmittedHeader": "The transaction is submitted.",
+  "tokenizeFailedHeader": "The transaction failed.",
+  "withdrawSubmittedHeader": "The withdraw is submitted.",
+  "withdrawFailedHeader": "The withdraw failed.",
+  "approvalSubmittedHeader": "The approval is submitted.",
+  "approvalFailedHeader": "The approval failed.",
+  "finalizeSubmittedHeader": "The tokenization is finalized.",
+  "finalizeFailedHeader": "The finalization failed.",
+  "revokeSubmittedHeader": "The tokenization is revoked.",
+  "revokeFailedHeader": "The revocation failed.",
+
+  "txHashLabel": "TxHash:",
+  "pleaseTryAgainLater": "Please try again later",
+
+
+  "tokenizeSubmission": "Transaction Submission",
+  "withdrawSubmission": "Transaction Submission",
+  "approvalSubmission": "Approval Submission",
+
+  "networkConfirmation": "Network Confirmation",
+
+  "trusteeApproval": "Trustee Approval",
+  "wireTransferCompleted": "Wire Transfer Completed",
+  "tokensIssued": "Tokens Issued",
+  "timeLock": "Time Lock",
+  "tokenizationFinalized": "Tokenization Finalized",
+  "tokenizationRevoked": "Tokenization Revoked",
+
+  "seeTransactions": "See transactions",
+
+  "backToMainPage": "Back to main page",
+  "backToTokenize": "Back to tokenize",
+  "backToWithdraw": "Back to withdraw"
+}
