@@ -41,6 +41,13 @@ class RootStore {
   @computed get errorMessage() {
     return `${this.error} Please refresh your page to restart the identity demonstration.`;
   }
+  @computed get computedUserAddr() {
+    if (this.commonStore.getIsUser()) {
+      if (this.userStore.isOnFixedAccount) return this.userStore.fixedUserAddr;
+      return this.commonStore.metamaskAccount;
+    }
+    return '0xd102503E987a6402A1E0b220369ea4A4Bce911E8'; // verifier address
+  }
   @action
   displayErrorModal(msg) {
     this.errorModalIsShowing = true;

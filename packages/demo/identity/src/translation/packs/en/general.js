@@ -12,21 +12,21 @@ export default {
   howDoesItWork: 'How do I try this out?',
   howDoesItWorkPara1: '1. Start off with the ‘User’ perspective.',
   howDoesItWorkPara2: '2. Choose the data you want to verify.',
-  howDoesItWorkPara3: '3. Once you have made a verification request, swap to a \‘Verifier\' and approve or reject the verification requests.',
+  howDoesItWorkPara3: '3. Once you have made a verification request, swap to a \'Verifier\' and approve or reject the verification requests.',
   howDoesItWorkPara4: '4. Switch back to ‘User’ and proceed to put the claim on the blockchain.',
 
   whyImportant: 'Why is this important?',
   whyImportantPara1: 'This Proof-of-Concept showcases the entire flow for both users and verifiers, within a beautiful and easy user experience. More importantly, it highlights the core technical elements of decentralised identity and claims made against the user. We will continue to build upon this proof-of-concept demo with additional features, such as registering Stellar addresses, interface to look up public identities and claims, making self-asserted claims.',
 
   registrationSuccessTitle: 'Registration Submitted',
-  registrationSuccessContent: 'Thank you, your registration has been submitted, you will be able to add it to the blockchain once reviewed.',
+  registrationSuccessContent: 'Thank You, Your Registration Has Been Submitted, You Will Be Able to Add It to the Blockchain Once Reviewed.',
 
   verifySuccessTitle: 'Signature Sent',
-  verifySuccessContent: 'Thank you, your signature for the verification has been sent to the user. No further action is required.',
+  verifySuccessContent: 'Thank You, Your Signature for the Verification Has Been Sent to the User. No Further Action Is Required.',
 
   publicationSuccessTitle: 'Verification Published',
-  publicationSuccessContent: 'Thank you, your verification has been added to the blockchain. You can view the transaction by clicking on the transaction hash or in Metamask.',
+  publicationSuccessContent: 'Thank You, Your Verification Has Been Added to the Blockchain. You Can View the Transaction by Clicking on the Transaction Hash or in Metamask.',
 
   deploySuccessTitle: 'Identity Deployed',
-  deploySuccessContent: 'Thank you, your Rate3 Identity has been added to the blockchain. You can view the transaction in Metamask.',
+  deploySuccessContent: 'Thank You, Your Rate3 Identity Has Been Added to the Blockchain. You Can View the Transaction in Metamask.',
 };

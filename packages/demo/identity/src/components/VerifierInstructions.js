@@ -85,33 +85,12 @@ const styles = theme => ({
 const BoldItalic = (props) => {
   return (<b><i>{props.children}</i></b>);
 };
+
+/* eslint react/prefer-stateless-function: off */
 class VerifierInstructions extends React.Component {
-  state = {
-    activeStep: 0,
-  };
-
-  handleNext = () => {
-    this.setState(prevState => ({
-      activeStep: prevState.activeStep + 1,
-    }));
-  };
-
-  handleBack = () => {
-    this.setState(prevState => ({
-      activeStep: prevState.activeStep - 1,
-    }));
-  };
-
-  handleStepChange = (activeStep) => {
-    this.setState({ activeStep });
-  };
-
   render() {
     const { classes, theme, t } = this.props;
-    const { activeStep } = this.state;
-
     const MAX_STEP = 4;
-    
 
     return (
       <div className={classes.root}>

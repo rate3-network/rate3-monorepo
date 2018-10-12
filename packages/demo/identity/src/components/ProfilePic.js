@@ -21,14 +21,13 @@ const styles = (theme) => {
 };
 
 const ProfilePic = inject('RootStore')(observer((props) => {
-  const seed = props.RootStore.commonStore.getIsUser() ? userBlockieSeed : verifierBlockieSeed;
+  const seed = props.RootStore.computedUserAddr;
   const { classes } = props;
   return (
     <div className={classes.container}>
       <Blockies
         className={classes.icon}
         seed={props.seed ? props.seed.toString() : seed}
-        // color={getRandomColor(props.seed)}
         scale={props.size - 1}
         size={props.size}
       />

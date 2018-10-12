@@ -193,7 +193,7 @@ const PaymentModal = inject('RootStore')(observer((props) => {
               disableUnderline
               fullWidth
               disabled
-              value="6000000"
+              value="500000"
               endAdornment={<InputAdornment className={classes.adornment} disableTypography position="end">UNITS</InputAdornment>}
             />
             <div className={classes.inputLabel}>

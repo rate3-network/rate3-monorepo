@@ -164,7 +164,7 @@ class UserStore {
   changeToMetaMaskAccount() {
     this.isOnFixedAccount = false;
     window.localStorage.setItem('accountType', 'metamask');
-    if (!this.rootStore.commonStore.isWalletSetupDone) this.rootStore.openReonboardModal();
+    if (!this.rootStore.commonStore.isWalletSetupDone && this.rootStore.commonStore.getIsUser()) this.rootStore.openReonboardModal();
   }
   @action
   changeToFixedAccount() {

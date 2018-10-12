@@ -53,6 +53,16 @@ class UserMain extends React.Component {
 
   componentDidMount() {
     this.props.RootStore.setStartInitNetworkTrue();
+    if (window.localStorage.accountType === 'fixed') {
+      this.props.RootStore.userStore.changeToFixedAccount();
+      this.props.RootStore.initNetwork();
+    } else if (window.localStorage.accountType === 'metamask') {
+      this.props.RootStore.userStore.changeToMetaMaskAccount();
+      this.props.RootStore.initNetwork();
+    } else {
+      this.props.RootStore.initNetwork();
+    }
+    this.props.RootStore.setStartInitNetworkTrue();
     if (window.localStorage.getItem('userModalHasShown') !== null) {
       if (window.localStorage.getItem('userModalHasShown') === 'true') {
         this.props.RootStore.userStore.closeModal();
@@ -303,7 +313,7 @@ class UserMain extends React.Component {
         </InstructionModal>
         <LoadingModal
           open={userStore.startedDeployingIdentity && !userStore.finishedDeployingIdentity}
-          subText="Please wait while your Rate3 identity is deploying"
+          subText="Please Wait While Your Rate3 Identity Is Deploying"
         >
           Deploying Contract...
         </LoadingModal>
@@ -317,7 +327,7 @@ class UserMain extends React.Component {
           open={userStore.startedRemovingClaim && userStore.finishedRemovingClaim}
           onClose={() => { window.location.reload(); }}
           title={t('Claim Removed')}
-          content={t('Your verification has been removed from the blockchain. You can view the transaction in Metamask.')}
+          content={t('Your Verification Has Been Removed from the Blockchain. You Can View the Transaction in Metamask.')}
         />
         <PaymentModal
           open={paymentStore.paymentModalIsShowing}
@@ -347,14 +357,14 @@ class UserMain extends React.Component {
           open={userStore.publishSubmitModalIsShowing}
           onClose={userStore.closePublishSubmitModal.bind(userStore)}
           title="Publishing Your Identity"
-          content="Preparing your unique blockchain identity, this might take from a few seconds to a few minutes."
+          content="Publishing Your Identity Claim. This Might Take from a Few Seconds to a Few Minutes."
         />
         <SuccessModal
           open={userStore.removeNotifyModalIsShowing}
           // open={true}
           onClose={userStore.closeRemoveNotifyModal.bind(userStore)}
           title={t('Removing Your Identity')}
-          content={t('Your claim is being removed from the blockchain, this usually takes from a few seconds to a few minutes.')}
+          content={t('Your Claim Is Being Removed from the Blockchain, This Usually Takes from a Few Seconds to a Few Minutes.')}
         />
         <SuccessModal
           open={userStore.startedAddingClaim && userStore.finishedAddingClaim}

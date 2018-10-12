@@ -8,6 +8,7 @@ import { observer, inject } from 'mobx-react';
 import { identityHeavyGrey, buttonShadow, identityBlue, homeBg, backdropColor, modalShadow, homeTextGreyVerifier, materialGrey, buttonTextGrey } from '../../constants/colors';
 import BlueButton from '../BlueButton';
 import { truncateAddress } from '../../utils';
+import { fixedVerifierAddress } from '../../constants/defaults';
 
 const styles = (theme) => {
   return ({
@@ -104,7 +105,7 @@ const VerifyModal = inject('RootStore')(observer((props) => {
             <div className={classes.label}><p>User Address</p></div>
             <div className={classes.text}><p>{props.RootStore.verifierStore.currentVerification.user && truncateAddress(props.RootStore.verifierStore.currentVerification.user, 18)}</p></div>
             <div className={classes.label}><p>Verifier Address</p></div>
-            <div className={classes.text}><p>{props.RootStore.verifierStore.currentVerification.verifier}</p></div>
+            <div className={classes.text}><p>{truncateAddress(fixedVerifierAddress, 18)}</p></div>
             <div className={classes.buttonContainer}>
               <BlueButton
                 buttonText="Sign"
