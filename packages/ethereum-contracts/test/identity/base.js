@@ -325,7 +325,6 @@ export const setupTest = async (
 
     // Init self-claims to be sent in constructor
     if (claims.length > 0) {
-        const claimStore = await ClaimStore.deployed();
         await Promise.all(claims.map(async ({
             topic,
             data,
@@ -333,7 +332,7 @@ export const setupTest = async (
             self,
         }) => {
             // Claim hash
-            const claimHash = await claimStore.claimToSign(identity.address, topic, data);
+            const claimHash = getToSign(identity.address, topic, data);
             // Sign using CLAIM_SIGNER_KEY
             const claimSigner = self
                 ? accountsSetupConfig.identityAccount.addr

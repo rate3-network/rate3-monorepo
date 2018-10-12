@@ -6,15 +6,15 @@ import {
     Scheme,
     Claim,
     getClaimId,
+    getToSign,
 } from './base';
 import {
     printTestGas,
     assertOkTx,
     assertRevert,
+    ecrecover,
 } from './util';
 import getEvents from '../helpers/getEvents';
-
-const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 
 const assertClaim = async (identityContract, _claim) => {
     const [
@@ -100,8 +100,6 @@ contract('ClaimManager Tests', async (addrs) => {
 
     describe('Test - Add claim', () => {
         it('can recover signature', async () => {
-            const claimStore = await ClaimStore.deployed();
-
             const claim = new Claim(
                 Topic.LABEL,
                 Scheme.ECDSA,
@@ -112,14 +110,10 @@ contract('ClaimManager Tests', async (addrs) => {
             );
             const label = 'test';
             // Claim hash
-            const toSign = await claimStore.claimToSign(
-                identity.address,
-                Topic.LABEL,
-                label,
-            );
+            const toSign = getToSign(identity.address, Topic.LABEL, label);
             toSign.should.be.equal(claim.toSign);
             // Recover address from signature
-            const signedBy = await claimStore.getSignatureAddress(toSign, claim.signature);
+            const signedBy = ecrecover(toSign, claim.signature);
             assert.equal(signedBy, claim.signerAddr);
         });
 
