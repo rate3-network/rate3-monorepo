@@ -41,6 +41,11 @@ const purposeNames = {
     [Purpose.ENCRYPT]: 'encrypt',
 };
 
+export const Blockchain = {
+    ETHEREUM: 1,
+    STELLAR: 2,
+};
+
 export const assertKeyCount = async (identity, purpose, count) => {
     const keys = await identity.getKeysByPurpose(purpose);
     assert.equal(keys.length, count);
