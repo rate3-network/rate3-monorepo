@@ -1,0 +1,18 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  /* color: #818CA1; */
+  /* overflow: hidden; */
+  margin: 0px;
+}
+.blue-text {
+  color: #4392F1 !important;
+}
+.white-text {
+  color: #ffffff !important;
+}
+.toggle-gradient-text {
+  background: linear-gradient(to right, #4392F1 0%,#56CBF9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

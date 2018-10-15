@@ -1,0 +1,71 @@
+{
+  "extends": [ "airbnb", "react-app"],
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true,
+    "mocha": true
+  },
+  "rules": {
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
+    "arrow-body-style": [
+      "error",
+      "always"
+    ],
+    "react/forbid-prop-types": [
+      0,
+      {
+        "forbid": [
+        ]
+      }
+    ],
+    "class-methods-use-this": [
+      0,
+      {
+        "exceptMethods": []
+      }
+    ],
+    "jsx-a11y/no-static-element-interactions": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "import/prefer-default-export": "off",
+    "no-eval": "off",
+    "no-use-before-define": "off",
+    "no-did-mount-set-state": "off",
+    "react/jsx-no-bind": [
+      1,
+      {
+        "allowArrowFunctions": true,
+        "allowBind": true
+      }
+    ],
+    "valid-jsdoc": [
+      "error",
+      {
+        "requireReturn": true,
+        "requireReturnType": true,
+        "requireParamDescription": true,
+        "requireReturnDescription": true
+      }
+    ],
+    "require-jsdoc": [
+      "error",
+      {
+        "require": {
+          "FunctionDeclaration": false,
+          "MethodDefinition": false,
+          "ClassDeclaration": false
+        }
+      }
+    ]
+  }
+}
