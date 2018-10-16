@@ -7,16 +7,16 @@ export function HashedTimelockContracts(stellar, Stellar) {
         return { holdingKeys };
     }
 
-    async function createHoldingAccount(
+    async function createHoldingAccount({
         assetCode,
         hashlock,
         swapAmount,
         refundTime,
         baseReserve,
-        holdingAccountAddress,
         depositorAccountAddress,
         claimerAccountAddress,
-    ) {
+        holdingAccountAddress,
+    }) {
         let depositor = await stellar.loadAccount(depositorAccountAddress);
 
         depositor.incrementSequenceNumber();
@@ -96,12 +96,38 @@ export function HashedTimelockContracts(stellar, Stellar) {
         return { refundTx, holdingTx };
     }
 
-    async function depositToHoldingAccount() {
+    async function depositToHoldingAccount({
+        assetCode,
+        swapAmount,
+        depositorAccountAddress,
+        holdingAccountAddress,
+    }) {
+        const depositor = await stellar.loadAccount(depositorAccountAddress);
+        const moveTx = new Stellar.TransactionBuilder(depositor)
+            .addOperation(Stellar.Operation.payment({
+                asset: assetCode,
+                amount: swapAmount,
+                destination: holdingAccountAddress,
+                source: depositorAccountAddress,
+            }))
+            .build();
 
+        return { moveTx };
     }
 
-    async function claimFromHoldingAccount() {
+    async function claimFromHoldingAccount({
+        claimerAccountAddress,
+        holdingAccountAddress
+    }) {
+        const holding = await stellar.loadAccount(holdingAccountAddress);
+        const claimTx = new Stellar.TransactionBuilder(holding)
+          .addOperation(Stellar.Operation.accountMerge({
+            destination: claimerAccountAddress,
+            source: holdingAccountAddress,
+          }))
+          .build();
 
+        return { claimTx };
     }
 
     return {
