@@ -39,6 +39,39 @@ contract StellarIdentityAccounts is Ownable, IdentityAccounts {
     }
 
     /**
+     * @dev Modifier that only allows the contract owner or the identity owner.
+     */
+    modifier onlyOwnerOrIdentity(address identity) {
+        require(
+            msg.sender == owner || msg.sender == identity,
+            "Operation can only be called by identity owner or contract owner"
+        );
+        _;
+    }
+
+    /**
+     * @dev Modifier that only allows account that is linked to identity.
+     */
+    modifier onlyLinkedAccount(address identity, bytes32 account) {
+        require(
+            identities[account] == identity,
+            "Account is not linked to identity"
+        );
+        _;
+    }
+
+    /**
+     * @dev Modifier that only allows account that is not linked to identity.
+     */
+    modifier onlyUnlinkedAccount(bytes32 account) {
+        require(
+            identities[account] == address(0),
+            "Account is linked to an identity"
+        );
+        _;
+    }
+
+    /**
      * @dev Find the identity address, if account is tied to an identity
      * @param account Ethereum address in bytes32 form
      * @return address(0) if account is not tied to an identity, else the
@@ -74,13 +107,10 @@ contract StellarIdentityAccounts is Ownable, IdentityAccounts {
     function addAccount(address identity, bytes32 account)
         public
         onlyOwner
+        onlyUnlinkedAccount(account)
         returns (bool)
     {
         require(identity != address(0), "Invalid identity address");
-        require(
-            identities[account] == address(0),
-            "Account is attached to an identity"
-        );
 
         pending[account] = identity;
 
@@ -100,12 +130,9 @@ contract StellarIdentityAccounts is Ownable, IdentityAccounts {
     function approve(address identity, bytes32 account)
         public
         onlyIdentity(identity)
+        onlyUnlinkedAccount(account)
         returns (bool)
     {
-        require(
-            identities[account] == address(0),
-            "Account is attached to an identity"
-        );
         require(
             pending[account] == identity,
             "Account is not pending addition to identity"
@@ -129,17 +156,10 @@ contract StellarIdentityAccounts is Ownable, IdentityAccounts {
      */
     function removeAccount(address identity, bytes32 account)
         public
+        onlyOwnerOrIdentity(identity)
+        onlyLinkedAccount(identity, account)
         returns (bool)
     {
-        require(
-            msg.sender == identity || msg.sender == owner,
-            "Operation can only be called by identity owner or contract owner"
-        );
-        require(
-            identities[account] == identity,
-            "Account is not attached to identity"
-        );
-
         accounts[identity].remove(account);
         delete identities[account];
 
