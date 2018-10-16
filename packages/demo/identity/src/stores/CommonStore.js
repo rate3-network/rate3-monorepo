@@ -18,7 +18,7 @@ class CommonStore {
   @observable isVerifierOnboardDone: Boolean = false;
   @observable activeOnboardStep: Number = 1; // 1 - 3: Onboarding, 4: Homepage
   @observable currentLanguage: String = 'en';
-  @observable commonNetwork: String = 'Rinkeby';
+  @observable commonNetwork: String = 'Kovan';
   // true: completed; false: not done;
   @observable shouldRenderOnboardTransition: Boolean = false;
 
@@ -206,12 +206,12 @@ class CommonStore {
   async initCommonNetwork() {
     this.rootStore.finishInitNetwork = false;
     // const web3 = new Web3(new Web3.providers.WebsocketProvider(ropsten.endpoint));
-    const web3 = new Web3(ropsten.endpoint);
+    const web3 = new Web3(kovan.endpoint);
     window.web3 = web3;
     if (typeof localStorage.commonNetwork !== 'undefined') {
       this.changeCommonNetwork(localStorage.commonNetwork);
     } else {
-      this.changeCommonNetwork('Ropsten');
+      this.changeCommonNetwork('Kovan');
     }
 
     const verifierBalance = await window.web3.eth.getBalance(managementAccountAddress);   
@@ -257,7 +257,16 @@ class CommonStore {
     }
 
     let web3;
-    if (window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true) {
+    if (window.ethereum) {
+      web3 = new Web3(window.ethereum);
+      window.web3 = web3;
+      try {
+        // Request account access if needed
+        await window.ethereum.enable();
+      } catch (error) {
+        console.error(error);
+      }
+    } else if (window.web3.currentProvider !== null && window.web3.currentProvider.isMetaMask === true) {
       web3 = new Web3(window.web3.currentProvider);
     } else {
       web3 = new Web3(this.rootStore.browserProvider);
