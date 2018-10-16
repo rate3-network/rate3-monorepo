@@ -7,10 +7,10 @@ import {
 import {
     printTestGas,
     assertOkTx,
+    ecrecover,
 } from './util';
 
 const TestContract = artifacts.require('./identity/TestContract.sol');
-const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 const KeyStore = artifacts.require('./identity/lib/KeyStore.sol');
 
 contract('Identity Tests', async (addrs) => {
@@ -86,9 +86,8 @@ contract('Identity Tests', async (addrs) => {
         const signature = web3.eth.sign(accounts.action[0].addr, challenge);
         // I recover address from signature
         // Using contract helper function here, but any implementation of ECRecover will do
-        const claimStore = await ClaimStore.deployed();
         const keyStore = await KeyStore.deployed();
-        const signedBy = await claimStore.getSignatureAddress(challenge, signature);
+        const signedBy = ecrecover(challenge, signature);
         const signedByKey = await keyStore.addrToKey(signedBy);
         // Check if this is an action key in the identity you claim
         assert.isTrue(await identity.keyHasPurpose(signedByKey, Purpose.ACTION));

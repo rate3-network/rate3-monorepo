@@ -1,7 +1,6 @@
 pragma solidity 0.4.24;
 
 import "../../lib/Arrays.sol";
-import "../../lib/ECRecovery.sol";
 
 
 /**
@@ -40,7 +39,6 @@ library ClaimStore {
         string uri
     );
 
-    using ECRecovery for bytes32;
     using Arrays for Arrays.bytes32NoDup;
 
     bytes constant internal ETH_PREFIX = "\x19Ethereum Signed Message:\n32";
@@ -87,20 +85,6 @@ library ClaimStore {
         returns (bytes32)
     {
         return keccak256(abi.encodePacked(subject, topic, data));
-    }
-
-    /**
-     * @dev Recover address used to sign a claim
-     * @param toSign Hash to be signed, potentially generated with `claimToSign`
-     * @param signature Signature data i.e. signed hash
-     * @return address recovered from `signature` which signed the `toSign` hash
-     */
-    function getSignatureAddress(bytes32 toSign, bytes signature)
-        public
-        pure
-        returns (address)
-    {
-        return keccak256(abi.encodePacked(ETH_PREFIX, toSign)).recover(signature);
     }
 
     /**

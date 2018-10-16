@@ -7,7 +7,6 @@ import {
 
 const Identity = artifacts.require('./identity/Identity.sol');
 const KeyEnums = artifacts.require('./identity/constants/KeyEnums.sol');
-const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 
 // Constants
 export const Purpose = {
@@ -162,7 +161,7 @@ export class Claim {
      * @param {string} [uri=""] Optional uri
      * @memberof Claim
      */
-    constructor(topic, scheme, signerAddr, issuerAddr, identityAddr, data, uri = "") {
+    constructor(topic, scheme, signerAddr, issuerAddr, identityAddr, data, uri = '') {
         this.topic = topic;
         this.scheme = scheme;
         this.issuerAddr = issuerAddr;
@@ -325,7 +324,6 @@ export const setupTest = async (
 
     // Init self-claims to be sent in constructor
     if (claims.length > 0) {
-        const claimStore = await ClaimStore.deployed();
         await Promise.all(claims.map(async ({
             topic,
             data,
@@ -333,7 +331,7 @@ export const setupTest = async (
             self,
         }) => {
             // Claim hash
-            const claimHash = await claimStore.claimToSign(identity.address, topic, data);
+            const claimHash = getToSign(identity.address, topic, data);
             // Sign using CLAIM_SIGNER_KEY
             const claimSigner = self
                 ? accountsSetupConfig.identityAccount.addr
