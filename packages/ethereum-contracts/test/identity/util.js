@@ -48,7 +48,7 @@ export const assertRevert = async (promise) => {
     should.fail('Expected revert not received');
 };
 
-const fromRpcSig = (sig) => {
+export const fromRpcSig = (sig) => {
     // NOTE: with potential introduction of chainId this might need to be updated
     if (sig.length !== 65) {
         throw new Error('Invalid signature length');
@@ -67,18 +67,22 @@ const fromRpcSig = (sig) => {
     };
 };
 
-export const ecrecover = (msg, signature) => {
+export const ecrecover = (msg, signature, chainId) => {
     const sigBuffer = signature.slice(0, 2) === '0x'
         ? Buffer.from(signature.slice(2), 'hex')
         : Buffer.from(signature, 'hex');
 
+    const hexMessage = web3.toHex(msg).slice(2);
+    const bytesLength = Buffer.from(hexMessage, 'hex').length;
+
     const hashedMessage = web3.sha3(
-        `${web3.toHex('\x19Ethereum Signed Message:\n32')}${web3.toHex(msg).slice(2)}`,
+        `${web3.toHex(`\x19Ethereum Signed Message:\n${bytesLength}`)}${hexMessage}`,
         { encoding: 'hex' },
     );
 
     const { v, r, s } = fromRpcSig(sigBuffer);
-    const recovery = v - 27;
+    // See https://github.com/ethereum/EIPs/blob/master/EIPS/eip-155.md
+    const recovery = chainId ? v - (2 * chainId + 35) : v - 27;
     if (!(recovery === 0 || recovery === 1)) {
         throw new Error('Invalid signature v value');
     }

@@ -7,7 +7,6 @@ import {
 
 const Identity = artifacts.require('./identity/Identity.sol');
 const KeyEnums = artifacts.require('./identity/constants/KeyEnums.sol');
-const ClaimStore = artifacts.require('./identity/lib/ClaimStore.sol');
 
 // Constants
 export const Purpose = {
@@ -162,7 +161,7 @@ export class Claim {
      * @param {string} [uri=""] Optional uri
      * @memberof Claim
      */
-    constructor(topic, scheme, signerAddr, issuerAddr, identityAddr, data, uri = "") {
+    constructor(topic, scheme, signerAddr, issuerAddr, identityAddr, data, uri = '') {
         this.topic = topic;
         this.scheme = scheme;
         this.issuerAddr = issuerAddr;

@@ -81,7 +81,6 @@ contract('ClaimManager Tests', async (addrs) => {
                 },
             ],
         ));
-
     });
 
     describe('Test - ERC165', () => {
