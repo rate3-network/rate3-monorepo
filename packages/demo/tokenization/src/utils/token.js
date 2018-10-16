@@ -5,7 +5,7 @@ export const toTokenAmount = amount => (
   (new Decimal(amount))
     .times((new Decimal(10)).toPower(18))
     .todp(0, Decimal.ROUND_DOWN)
-    .toString()
+    .toFixed()
 );
 
 export const fromTokenAmount = (amount, dp) => (
