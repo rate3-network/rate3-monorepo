@@ -4,6 +4,11 @@ import { advanceBlock } from '../helpers/advanceToBlock';
 import { assertRevert } from '../helpers/assertRevert';
 import expectEvent from '../helpers/expectEvent';
 
+import { StrKey } from 'stellar-base';
+import {
+    addrToBytes32,
+} from '../identity/base';
+
 const ConversionReceiver = artifacts.require("./bridge/ConversionReceiver.sol");
 
 // Token to be used as conversion
@@ -28,8 +33,11 @@ contract('ConversionReceiver Tests', function(accounts) {
     const [_, owner, alice, ...rest] = accounts;
 
     // For testing purposes, obviously.
-    const STELLAR_ADDRESS = 'GDOLD5H3UWDJ6GSOERAIF4TBJ4WPCQTQBKCRHYTPYSVC4B3DAUAP77OL';
+    const STELLAR_PUBLICKEY = 'GDOLD5H3UWDJ6GSOERAIF4TBJ4WPCQTQBKCRHYTPYSVC4B3DAUAP77OL';
     const STELLAR_SECRET = 'SALZVKPAM3IQXFEDMHRXPBNHF46RDGDSZHNLVIOKNYTB5NVQVHOYRDU4';
+    const STELLAR_ADDRESS = `0x${
+        StrKey.decodeEd25519PublicKey(STELLAR_PUBLICKEY).toString('hex')
+    }`;
 
     beforeEach(async function () {
         // Initialize token.
@@ -54,27 +62,27 @@ contract('ConversionReceiver Tests', function(accounts) {
 
     describe('Test - request conversion', function() {
         it('request conversion without allowance should fail', async function() {
-            await assertRevert(this.receiver.requestConversion(new web3.BigNumber('1000e+18'), STELLAR_ADDRESS, { from: alice }));
+            await assertRevert(this.receiver.requestConversion(new web3.BigNumber('1000e+18'), addrToBytes32(STELLAR_ADDRESS), { from: alice }));
         });
 
         it('request conversion exceeding token balance should fail', async function() {
             await this.token.approve(this.receiver.address, new web3.BigNumber('1500e+18'), { from: alice });
-            await assertRevert(this.receiver.requestConversion(new web3.BigNumber('1500e+18'), STELLAR_ADDRESS, { from: alice }));
+            await assertRevert(this.receiver.requestConversion(new web3.BigNumber('1500e+18'), addrToBytes32(STELLAR_ADDRESS), { from: alice }));
         });
 
         it('request conversion should pass if balance and allowance are right', async function() {
             await this.token.approve(this.receiver.address, new web3.BigNumber('1500e+18'), { from: alice });
-            await this.receiver.requestConversion(new web3.BigNumber('1000e+18'), STELLAR_ADDRESS, { from: alice });
+            await this.receiver.requestConversion(new web3.BigNumber('1000e+18'), addrToBytes32(STELLAR_ADDRESS), { from: alice });
         });
 
-        // it('request conversion event emitted', async function() {
-        //     await this.token.approve(this.receiver.address, new web3.BigNumber('1500e+18'), { from: alice });
-        //     let { logs } = await this.receiver.requestConversion(new web3.BigNumber('400e+18'), STELLAR_ADDRESS, { from: alice });
-        //     console.log(logs, web3.fromAscii(STELLAR_ADDRESS), web3.toHex(STELLAR_ADDRESS));
-        //     const event1 = expectEvent.inLogs(logs, 'ConversionRequested', {
-        //         ethAddress: alice,
-        //         stellarAddress: web3.fromAscii(STELLAR_ADDRESS),
-        //     });
-        // })
+        it('request conversion event emitted', async function() {
+            await this.token.approve(this.receiver.address, new web3.BigNumber('1500e+18'), { from: alice });
+            let { logs } = await this.receiver.requestConversion(new web3.BigNumber('400e+18'), STELLAR_ADDRESS, { from: alice });
+            console.log(logs, web3.fromAscii(STELLAR_ADDRESS), web3.toHex(STELLAR_ADDRESS));
+            const event1 = expectEvent.inLogs(logs, 'ConversionRequested', {
+                ethAddress: alice,
+                stellarAddress: addrToBytes32(STELLAR_ADDRESS),
+            });
+        })
     });
 });
