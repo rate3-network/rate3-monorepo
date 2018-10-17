@@ -92,6 +92,7 @@ contract HashedTimelockSwaps {
         onlyOpenSwaps(_swapID)
         onlyWithSecretKey(_swapID, _secretKey)
     {
+        // TODO: Consider checking for expiration and deny close.
         // Close the swap.
         Swap memory swap = swaps[_swapID];
         swaps[_swapID].secretKey = _secretKey;
