@@ -53,7 +53,7 @@ class NewDocPanel extends Component {
 
   onSubmit = (e) => {
     const { events } = this.props;
-    const { web3: { contracts: { ipfsDoc } } } = this.props;
+    const { web3: { contracts: { ipfsDoc }, address } } = this.props;
     e.preventDefault();
     const {
       ipfsHash,
@@ -81,6 +81,7 @@ class NewDocPanel extends Component {
       parseInt(bs58.decode(ipfsHash).toString('hex'), 16),
       docType,
       recipient,
+      { from: address },
     ).then((transaction) => {
       this.setState({ pending: transaction });
       events.addToPending(transaction);

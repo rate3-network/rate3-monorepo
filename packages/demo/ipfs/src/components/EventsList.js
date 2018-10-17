@@ -32,20 +32,11 @@ const EventsList = ({
       <div>
         {
           eventItems.map((item) => {
-            /* eslint-disable no-unused-vars */
             const {
-              logIndex,
-              transactionIndex,
               transactionHash,
-              blockHash,
-              blockNumber,
-              address,
-              type,
-              event,
               args,
               timestamp,
             } = item;
-            /* eslint-enable no-unused-vars */
             const {
               docHash,
               docTypeId,
