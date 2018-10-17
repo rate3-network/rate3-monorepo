@@ -22,7 +22,7 @@ contract ConversionReceiver is Claimable {
         REJECTED
     }
 
-    event ConversionRequest(uint256 indexID, address indexed ethAddress, bytes32 stellarAddress, uint256 amount);
+    event ConversionRequested(uint256 indexID, address indexed ethAddress, bytes32 stellarAddress, uint256 amount);
     event ConversionRejected(uint256 indexID, address indexed ethAddress, bytes32 stellarAddress, uint256 amount);
     event ConversionAccepted(uint256 indexID, address indexed ethAddress, bytes32 stellarAddress, uint256 amount);
 
@@ -53,7 +53,7 @@ contract ConversionReceiver is Claimable {
 
         conversions.push(Conversion(msg.sender, _stellarAddress, _amount, States.OPEN));
 
-        emit ConversionRequest(index, msg.sender, _stellarAddress, _amount);
+        emit ConversionRequested(index, msg.sender, _stellarAddress, _amount);
     }
 
     function rejectConversion(uint256 _index) public onlyOwner onlyOpenConversions(_index) {
