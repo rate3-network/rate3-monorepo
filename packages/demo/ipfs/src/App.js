@@ -8,10 +8,9 @@ import GlobalLogger from './global/GlobalLogger';
 import { docHistoryAddr, ipfsDocAddr } from './constants/ContractAddresses';
 import DocHistoryAbi from './constants/DocHistoryContract';
 import IpfsDocAbi from './constants/IpfsDocContract';
-import web3jsState from './constants/web3jsState';
 
 import {
-  MetamaskPrompt,
+  InstallMetamask,
   NewDocPanel,
   Tabs,
   SubmissionsPanel,
@@ -29,7 +28,7 @@ import {
 class App extends Component {
   state = {
     web3js: {
-      availability: web3jsState.UNKNOWN,
+      availability: false,
       address: null,
     },
     events: {
@@ -72,21 +71,8 @@ class App extends Component {
     this.setupWeb3Context();
   }
 
-  async setupWeb3Context() {
+  setupWeb3Context() {
     const { web3js } = this.state;
-
-    try {
-      await window.ethereum.enable();
-    } catch (error) {
-      GlobalLogger.log('Web3 not enabled');
-      this.setState({
-        web3js: {
-          ...web3js,
-          availability: web3jsState.NOT_APPROVED,
-        },
-      });
-      return;
-    }
 
     if (typeof web3 !== 'undefined') {
       window.web3 = new Web3(window.web3.currentProvider); /* global Web3 */
@@ -104,7 +90,7 @@ class App extends Component {
           this.setState({
             web3js: {
               ...web3js,
-              availability: web3jsState.OK,
+              availability: true,
               address: userAddress,
             },
           }, async () => {
@@ -139,7 +125,7 @@ class App extends Component {
         this.setState({
           web3js: {
             ...web3js,
-            availability: web3jsState.NOT_INSTALLED,
+            availability: false,
           },
         });
       }
@@ -149,7 +135,7 @@ class App extends Component {
       this.setState({
         web3js: {
           ...web3js,
-          availability: web3jsState.NOT_INSTALLED,
+          availability: false,
         },
       });
     }
@@ -283,50 +269,6 @@ class App extends Component {
     this.getDocTypes(docHistory);
   }
 
-  renderContent(web3js) {
-    switch (web3js.availability) {
-      case web3jsState.OK: {
-        return (
-          <Tabs>
-            <NewDocPanel
-              tabName="New Submission"
-              tabIcon="fas fa-file-signature"
-              path="new"
-            />
-            <SubmissionsPanel
-              tabName="Submissions"
-              tabIcon="fa fa-file-alt"
-              path="submissions"
-            />
-            <ReceiptsPanel
-              tabName="Received Documents"
-              tabIcon="fas fa-file-invoice"
-              path="received"
-            />
-            <DownloadPanel
-              tabName="Download Document"
-              tabIcon="fa fa-download"
-              path="download"
-            />
-            <FaqPanel
-              tabName="F.A.Q."
-              tabIcon="fa fa-question-circle"
-              path="faq"
-            />
-          </Tabs>
-        );
-      }
-      case web3jsState.UNKNOWN:
-      case web3jsState.NOT_APPROVED:
-      case web3jsState.NOT_INSTALLED: {
-        return <MetamaskPrompt availability={web3js.availability} />;
-      }
-      default: {
-        return null;
-      }
-    }
-  }
-
   render() {
     const {
       web3js,
@@ -343,7 +285,39 @@ class App extends Component {
                 style={{ minHeight: '100vh', backgroundColor: '#141d26' }}
                 className="d-flex flex-column container-fluid"
               >
-                {this.renderContent(web3js)}
+                {
+                  web3js.availability
+                    ? (
+                      <Tabs>
+                        <NewDocPanel
+                          tabName="New Submission"
+                          tabIcon="fas fa-file-signature"
+                          path="new"
+                        />
+                        <SubmissionsPanel
+                          tabName="Submissions"
+                          tabIcon="fa fa-file-alt"
+                          path="submissions"
+                        />
+                        <ReceiptsPanel
+                          tabName="Received Documents"
+                          tabIcon="fas fa-file-invoice"
+                          path="received"
+                        />
+                        <DownloadPanel
+                          tabName="Download Document"
+                          tabIcon="fa fa-download"
+                          path="download"
+                        />
+                        <FaqPanel
+                          tabName="F.A.Q."
+                          tabIcon="fa fa-question-circle"
+                          path="faq"
+                        />
+                      </Tabs>
+                    )
+                    : <InstallMetamask />
+                }
               </div>
             </div>
           </DocTypesContext.Provider>

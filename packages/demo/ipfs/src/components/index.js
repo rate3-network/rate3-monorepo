@@ -1,4 +1,4 @@
-export { default as MetamaskPrompt } from './MetamaskPrompt';
+export { default as InstallMetamask } from './InstallMetamask';
 export { default as NewDocPanel } from './NewDocPanel';
 export { default as SubmissionsPanel } from './SubmissionsPanel';
 export { default as ReceiptsPanel } from './ReceiptsPanel';
