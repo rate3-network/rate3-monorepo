@@ -78,11 +78,55 @@ contract('ConversionReceiver Tests', function(accounts) {
         it('request conversion event emitted', async function() {
             await this.token.approve(this.receiver.address, new web3.BigNumber('1500e+18'), { from: alice });
             let { logs } = await this.receiver.requestConversion(new web3.BigNumber('400e+18'), STELLAR_ADDRESS, { from: alice });
-            console.log(logs, web3.fromAscii(STELLAR_ADDRESS), web3.toHex(STELLAR_ADDRESS));
+
             const event1 = expectEvent.inLogs(logs, 'ConversionRequested', {
                 ethAddress: alice,
                 stellarAddress: addrToBytes32(STELLAR_ADDRESS),
             });
         })
+    });
+
+    describe('Test - reject conversion', function() {
+        beforeEach(async function () {
+            await this.token.approve(this.receiver.address, new web3.BigNumber('1500e+18'), { from: alice });
+            await this.receiver.requestConversion(new web3.BigNumber('500e+18'), addrToBytes32(STELLAR_ADDRESS), { from: alice });
+            await this.receiver.requestConversion(new web3.BigNumber('500e+18'), addrToBytes32(STELLAR_ADDRESS), { from: alice });
+        });
+
+        it('only owner can reject conversion', async function() {
+            await assertRevert(this.receiver.rejectConversion(0, { from: alice }));
+            await this.receiver.rejectConversion(0, { from: owner });
+        });
+
+        it('only can reject open conversion', async function() {
+            await this.receiver.rejectConversion(0, { from: owner });
+            await assertRevert(this.receiver.rejectConversion(0, { from: owner }));
+
+            await this.receiver.acceptConversion(1, { from: owner });
+            await assertRevert(this.receiver.rejectConversion(1, { from: owner }));
+        });
+
+        it('reject conversion event emitted', async function() {
+            let { logs } = await this.receiver.rejectConversion(0, { from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'ConversionRejected', {
+                ethAddress: alice,
+                stellarAddress: addrToBytes32(STELLAR_ADDRESS),
+            });
+        })
+
+        it('tokens should be refunded in rejection', async function() {
+            let amount1 = await this.token.balanceOf(alice);
+            await this.receiver.rejectConversion(0, { from: owner });
+
+            let amount2 = await this.token.balanceOf(alice);
+            await this.receiver.rejectConversion(1, { from: owner });
+
+            let amount3 = await this.token.balanceOf(alice);
+
+            amount1.should.be.bignumber.equal(new web3.BigNumber(0));
+            amount2.should.be.bignumber.equal(new web3.BigNumber('500e+18'));
+            amount3.should.be.bignumber.equal(new web3.BigNumber('1000e+18'));
+        });
     });
 });

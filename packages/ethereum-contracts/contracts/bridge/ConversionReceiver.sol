@@ -65,7 +65,7 @@ contract ConversionReceiver is Claimable {
     }
 
     function acceptConversion(uint256 _index) public onlyOwner onlyOpenConversions(_index) {
-        Conversion memory conversion = conversions[_index];
+        Conversion storage conversion = conversions[_index];
         conversion.state = States.ACCEPTED;
         emit ConversionAccepted(_index, conversion.ethAddress, conversion.stellarAddress, conversion.amount);
     }
