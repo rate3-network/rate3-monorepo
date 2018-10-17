@@ -48,7 +48,8 @@
     "react-dom": "^16.4.1",
     "react-scripts": "1.1.4",
     "react-spinkit": "^3.0.0",
-    "react-tooltip": "^3.6.1"
+    "react-tooltip": "^3.6.1",
+    "web3": "^0.20.7"
   },
   "description": ""
 }
