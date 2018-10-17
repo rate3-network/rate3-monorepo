@@ -341,7 +341,7 @@ class WalletManager {
         // get derived bytes
         const salt = forge.random.getBytesSync(8);
         const derivedBytes = forge.pbe.opensslDeriveBytes(
-          password, salt, keySize + ivSize,
+          password, salt, keySize + ivSize
         ); /* , md */
         const buffer = forge.util.createBuffer(derivedBytes);
         const key = buffer.getBytes(keySize);
@@ -364,7 +364,7 @@ class WalletManager {
         return {
           original: web3.eth.accounts.encrypt(account.getPrivateKey(), password),
           network: this.network,
-          balance: account.balance,
+          balance: account.balance
         };
         // return this.getOriginalAccount().encrypt(this.getPrivateKey(), password)
       default:

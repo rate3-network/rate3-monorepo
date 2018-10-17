@@ -49,7 +49,7 @@ class Account {
         const transaction = new StellarSdk.TransactionBuilder(receiver)
           .addOperation(StellarSdk.Operation.changeTrust({
             asset: newAsset,
-            limit,
+            limit
           }))
           .build();
         transaction.sign(this.account);
@@ -93,7 +93,7 @@ class Account {
             await rp({
               url: 'https://friendbot.stellar.org',
               qs: { addr: this.getAddress() },
-              json: true,
+              json: true
             });
             await this.loadBalance(this.getAddress());
           } catch (err) {
@@ -154,7 +154,7 @@ class Account {
             .addOperation(StellarSdk.Operation.payment({
               destination: to,
               asset: StellarSdk.Asset.native(),
-              amount,
+              amount
             })).build();
           transaction.sign(this.account);
           return await server.submitTransaction(transaction);
@@ -166,7 +166,7 @@ class Account {
             to,
             value: web3.utils.toHex(web3.utils.toWei(amount, 'ether')), // e.g. '0.001'
             gas: 30000,
-            chainId: 4, // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
+            chainId: 4 // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
           };
 
           const signedTx = await this.account.signTransaction(rawTransaction);
@@ -263,9 +263,9 @@ class Account {
           const options = {
             uri: webAuthEndpoint,
             qs: {
-              account: this.getAddress(),
+              account: this.getAddress()
             },
-            json: true, // Automatically parses the JSON string in the response
+            json: true // Automatically parses the JSON string in the response
           };
           const response = await rp(options);
           return response.transaction;
@@ -310,9 +310,9 @@ class Account {
         method: 'POST',
         uri: this.webAuthEndpoint,
         body: {
-          transaction: signedTransaction,
+          transaction: signedTransaction
         },
-        json: true, // Automatically stringifies the body to JSON
+        json: true // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
       return response;
@@ -436,7 +436,7 @@ class Account {
     this.anchorUrl = url;
     try {
       const qsConstruct = {
-        asset_code, account, memo_type, memo, email_address, type,
+        asset_code, account, memo_type, memo, email_address, type
       };
       // eslint-disable-next-line no-restricted-syntax
       for (const property in qsConstruct) {
@@ -452,7 +452,7 @@ class Account {
       const options = {
         uri: `${this.anchorUrl}/deposit`,
         qs: qsConstruct, // query params
-        json: true, // Automatically stringifies the body to JSON
+        json: true // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
       return response;
@@ -485,7 +485,7 @@ class Account {
     this.anchorUrl = url;
     try {
       const qsConstruct = {
-        asset_code, dest, dest_extra, account, memo_type, memo, type,
+        asset_code, dest, dest_extra, account, memo_type, memo, type
       };
       // eslint-disable-next-line no-restricted-syntax
       for (const property in qsConstruct) {
@@ -501,7 +501,7 @@ class Account {
       const options = {
         uri: `${this.anchorUrl}/withdraw`,
         qs: qsConstruct,
-        json: true, // Automatically stringifies the body to JSON
+        json: true // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
       return response;
@@ -531,7 +531,7 @@ class Account {
       const options = {
         uri: `${this.anchorUrl}/info`,
         qs: qsConstruct,
-        json: true, // Automatically stringifies the body to JSON
+        json: true // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
       return response;
@@ -556,7 +556,7 @@ class Account {
     this.anchorUrl = url;
     try {
       const qsConstruct = {
-        asset_code, account, no_older_than, limit, paging_id,
+        asset_code, account, no_older_than, limit, paging_id
       };
       // eslint-disable-next-line no-restricted-syntax
       for (const property in qsConstruct) {
@@ -567,7 +567,7 @@ class Account {
       const options = {
         uri: `${this.anchorUrl}/transactions`,
         qs: qsConstruct,
-        json: true, // Automatically stringifies the body to JSON
+        json: true // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
       return response;
