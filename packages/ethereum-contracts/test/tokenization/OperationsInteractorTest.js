@@ -79,6 +79,13 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
         });
 
+        it('mint requests blocked if blacklisted', async function() {
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+        });
+
         it('mint requests blocked if paused', async function() {
             await this.interactor.pauseOperations({ from: owner });
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
@@ -152,6 +159,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
+        it('mint approval blocked if blacklisted', async function() {
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
         it('mint approval blocked if paused', async function() {
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.pauseOperations({ from: owner });
@@ -221,6 +234,11 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('mint finalize blocked if not whitelisted', async function() {
             await this.interactor.whitelistForMint(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
+        });
+
+        it('mint finalize blocked if blacklisted', async function() {
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
@@ -378,6 +396,13 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
         });
 
+        it('burn requests blocked if blacklisted', async function() {
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
+            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+        }); 
+
         it('burn requests blocked if paused', async function() {
             await this.interactor.pauseOperations({ from: owner });
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
@@ -461,6 +486,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
+        it('burn approval blocked if blacklisted', async function() {
+            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
         it('burn approval blocked if paused', async function() {
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.pauseOperations({ from: owner });
@@ -540,6 +571,11 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('burn finalize blocked if not whitelisted', async function() {
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+        });
+
+        it('burn finalize blocked if blacklisted', async function() {
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
             await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 

@@ -76,6 +76,16 @@ contract OperationsInteractor is AdminInteractor {
         _;
     }
 
+    /**
+     * @notice Check if requestor address is not blacklisted.
+     *
+     * @param _requestorAddress Requestor address.
+     */
+    modifier notBlacklistedForRequest(address _requestorAddress) {
+        require(!TokenInterface(token).isBlacklisted(_requestorAddress), "Blacklisted");
+        _;
+    }
+
     /// Events
     event MintOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
     event BurnOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
@@ -94,7 +104,7 @@ contract OperationsInteractor is AdminInteractor {
      *
      * @param _value Amount of tokens to mint.
      */
-    function requestMint(uint256 _value) public operationsNotPaused whitelistedForMint(msg.sender) {
+    function requestMint(uint256 _value) public operationsNotPaused whitelistedForMint(msg.sender) notBlacklistedForRequest(msg.sender) {
         require(_value > 0, "Mint value should be more than 0");
 
         uint256 requestTimestamp = block.timestamp;
@@ -112,7 +122,16 @@ contract OperationsInteractor is AdminInteractor {
      * @param _requestor Requestor of MintRequestOperation.
      * @param _index Index of MintRequestOperation by _requestor.
      */
-    function approveMint(address _requestor, uint256 _index) public onlyAdmin1 operationsNotPaused whitelistedForMint(_requestor) {
+    function approveMint(
+        address _requestor,
+        uint256 _index
+    )
+        public
+        onlyAdmin1
+        operationsNotPaused
+        whitelistedForMint(_requestor)
+        notBlacklistedForRequest(_requestor)
+    {
         MintRequestOperation storage mintRequestOperation = mintRequestOperations[_requestor][_index];
 
         require(!mintRequestOperation.approved, "MintRequestOperation is already approved");
@@ -135,7 +154,16 @@ contract OperationsInteractor is AdminInteractor {
      * @param _requestor Requestor of MintRequestOperation.
      * @param _index Index of MintRequestOperation by _requestor.
      */
-    function finalizeMint(address _requestor, uint256 _index) public onlyAdmin2 operationsNotPaused whitelistedForMint(_requestor) {
+    function finalizeMint(
+        address _requestor,
+        uint256 _index
+    ) 
+        public
+        onlyAdmin2
+        operationsNotPaused
+        whitelistedForMint(_requestor)
+        notBlacklistedForRequest(_requestor)
+    {
         MintRequestOperation memory mintRequestOperation = mintRequestOperations[_requestor][_index];
 
         require(mintRequestOperation.approved, "Mint Operation is not approved");
@@ -167,7 +195,7 @@ contract OperationsInteractor is AdminInteractor {
      *
      * @param _value Number of tokens to burn.
      */
-    function requestBurn(uint256 _value) public operationsNotPaused whitelistedForBurn(msg.sender) {
+    function requestBurn(uint256 _value) public operationsNotPaused whitelistedForBurn(msg.sender) notBlacklistedForRequest(msg.sender) {
         require(_value > 0, "Burn value should be more than 0");
 
         uint256 requestTimestamp = block.timestamp;
@@ -185,7 +213,16 @@ contract OperationsInteractor is AdminInteractor {
      * @param _requestor Requestor of BurnRequestOperation.
      * @param _index Index of BurnRequestOperation by _requestor.
      */
-    function approveBurn(address _requestor, uint256 _index) public onlyAdmin1 operationsNotPaused whitelistedForBurn(_requestor) {
+    function approveBurn(
+        address _requestor,
+        uint256 _index
+    )
+        public
+        onlyAdmin1
+        operationsNotPaused
+        whitelistedForBurn(_requestor)
+        notBlacklistedForRequest(_requestor)
+    {
         BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
 
         require(!burnRequestOperation.approved, "BurnRequestOperation is already approved");
@@ -208,7 +245,16 @@ contract OperationsInteractor is AdminInteractor {
      * @param _requestor Requestor of BurnRequestOperation.
      * @param _index Index of BurnRequestOperation by _requestor.
      */
-    function finalizeBurn(address _requestor, uint256 _index) public onlyAdmin2 operationsNotPaused whitelistedForBurn(_requestor) {
+    function finalizeBurn(
+        address _requestor,
+        uint256 _index
+    )
+        public
+        onlyAdmin2
+        operationsNotPaused
+        whitelistedForBurn(_requestor)
+        notBlacklistedForRequest(_requestor)
+    {
         BurnRequestOperation memory burnRequestOperation = burnRequestOperations[_requestor][_index];
 
         require(burnRequestOperation.approved, "Burn Operation is not approved");
