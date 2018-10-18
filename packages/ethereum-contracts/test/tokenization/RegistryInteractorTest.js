@@ -161,9 +161,9 @@ contract('RegistryInteractor Tests', function(accounts) {
 
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
 
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveMint(rest[0], 1, { from: admin1 });
-
+            // Already blocked by OperationsInteractor
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
+            await this.interactor.approveMint(rest[0], 1, { from: admin1 }).should.be.rejected;
             await this.interactor.finalizeMint(rest[0], 1, { from: admin2 }).should.be.rejected;
         });
 
@@ -182,9 +182,9 @@ contract('RegistryInteractor Tests', function(accounts) {
 
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
 
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveBurn(rest[0], 1, { from: admin1 });
-
+            // Already blocked by OperationsInteractor
+            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
+            await this.interactor.approveBurn(rest[0], 1, { from: admin1 }).should.be.rejected;
             await this.interactor.finalizeBurn(rest[0], 1, { from: admin2 }).should.be.rejected;
         });
 
