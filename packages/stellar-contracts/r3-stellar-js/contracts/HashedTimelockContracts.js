@@ -13,11 +13,11 @@ export function HashedTimelockContracts(stellar, Stellar) {
         swapAmount,
         refundTime,
         baseReserve,
-        depositorAccountAddress,
-        claimerAccountAddress,
-        holdingAccountAddress,
+        depositorAccountPublicKey,
+        claimerAccountPublicKey,
+        holdingAccountPublicKey,
     }) => {
-        let depositor = await stellar.loadAccount(depositorAccountAddress);
+        let depositor = await stellar.loadAccount(depositorAccountPublicKey);
 
         depositor.incrementSequenceNumber();
 
@@ -31,19 +31,19 @@ export function HashedTimelockContracts(stellar, Stellar) {
 
         // Merge accounts of original depositor and holding account.
         .addOperation(Stellar.Operation.accountMerge({
-            destination: depositorAccountAddress,
-            source: holdingAccountAddress,
+            destination: depositorAccountPublicKey,
+            source: holdingAccountPublicKey,
         }))
         .build();
 
-        depositor = await stellar.loadAccount(depositorAccountAddress);
+        depositor = await stellar.loadAccount(depositorAccountPublicKey);
 
         // Create the actual holding transaction.
         const holdingTx = new Stellar.TransactionBuilder(depositor)
             // Create holding account.
             // 5 = 2 + 1 hashlock signer + 1 claimer signer + 1 asset trustline
             .addOperation(Stellar.Operation.createAccount({
-                destination: holdingAccountAddress,
+                destination: holdingAccountPublicKey,
                 startingBalance: 5 * baseReserve,
             }))
 
@@ -51,16 +51,16 @@ export function HashedTimelockContracts(stellar, Stellar) {
             .addOperation(Stellar.Operation.changeTrust({
                 asset: asset,
                 limit: swapAmount,
-                source: holdingAccountAddress,
+                source: holdingAccountPublicKey,
             }))
 
             // Add claimer as signer.
             .addOperation(Stellar.Operation.setOptions({
                 signer: {
-                    ed25519PublicKey: claimerAccountAddress,
+                    ed25519PublicKey: claimerAccountPublicKey,
                     weight: 1,
                 },
-                source: holdingAccountAddress,
+                source: holdingAccountPublicKey,
             }))
 
             // Set hashlock signer.
@@ -69,7 +69,7 @@ export function HashedTimelockContracts(stellar, Stellar) {
                     sha256Hash: hashlock,
                     weight: 1,
                 },
-                source: holdingAccountAddress,
+                source: holdingAccountPublicKey,
             }))
 
             // Preauthorize refund transaction
@@ -78,7 +78,7 @@ export function HashedTimelockContracts(stellar, Stellar) {
                     preAuthTx: refundTx.hash(),
                     weight: 2,
                 },
-                source: holdingAccountAddress,
+                source: holdingAccountPublicKey,
             }))
 
             // Configure signing thresholds.
@@ -89,7 +89,7 @@ export function HashedTimelockContracts(stellar, Stellar) {
                 lowThreshold: 2,
                 medThreshold: 2,
                 highThreshold: 2,
-                source: holdingAccountAddress,
+                source: holdingAccountPublicKey,
             }))
             .build();
 
@@ -99,16 +99,16 @@ export function HashedTimelockContracts(stellar, Stellar) {
     const depositToHoldingAccount = async ({
         asset,
         swapAmount,
-        depositorAccountAddress,
-        holdingAccountAddress,
+        depositorAccountPublicKey,
+        holdingAccountPublicKey,
     }) => {
-        const depositor = await stellar.loadAccount(depositorAccountAddress);
+        const depositor = await stellar.loadAccount(depositorAccountPublicKey);
         const moveTx = new Stellar.TransactionBuilder(depositor)
             .addOperation(Stellar.Operation.payment({
                 asset: asset,
                 amount: swapAmount,
-                destination: holdingAccountAddress,
-                source: depositorAccountAddress,
+                destination: holdingAccountPublicKey,
+                source: depositorAccountPublicKey,
             }))
             .build();
 
@@ -116,14 +116,14 @@ export function HashedTimelockContracts(stellar, Stellar) {
     }
 
     const claimFromHoldingAccount = async ({
-        claimerAccountAddress,
-        holdingAccountAddress
+        claimerAccountPublicKey,
+        holdingAccountPublicKey
     }) => {
-        const holding = await stellar.loadAccount(holdingAccountAddress);
+        const holding = await stellar.loadAccount(holdingAccountPublicKey);
         const claimTx = new Stellar.TransactionBuilder(holding)
             .addOperation(Stellar.Operation.accountMerge({
-                destination: claimerAccountAddress,
-                source: holdingAccountAddress,
+                destination: claimerAccountPublicKey,
+                source: holdingAccountPublicKey,
             }))
             .build();
 
