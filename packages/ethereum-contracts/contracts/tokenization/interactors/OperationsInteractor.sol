@@ -306,7 +306,7 @@ contract OperationsInteractor is AdminInteractor {
         whitelistedForBurn(_requestor)
         notBlacklistedForRequest(_requestor)
     {
-        BurnRequestOperation memory burnRequestOperation = burnRequestOperations[_requestor][_index];
+        BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
 
         require(burnRequestOperation.status == OperationStates.APPROVED, "BurnRequestOperation is not at APPROVED state");
 
