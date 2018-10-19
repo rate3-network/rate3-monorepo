@@ -1,5 +1,11 @@
 const TrezorConnect = require('trezor-connect').default;
 
+TrezorConnect.getPublicKey({
+  path: "m/49'/0'/4'",
+  coin: 'btc'
+}).then(function x (result) {
+  console.log(result);
+});
 /**
  * The class wraps api from trezor-connect
  * with ES6 async/await syntax
@@ -85,7 +91,7 @@ class Trezor {
     let result;
     if (this.currency === 'Ethereum') {
       const params = {
-        address, message, signature, hex,
+        address, message, signature, hex
       };
       result = await TrezorConnect.ethereumVerifyMessage(params);
     } else {

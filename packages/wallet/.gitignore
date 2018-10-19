@@ -16,6 +16,8 @@ promiseTest.js
 sendTest.js
 hellonode.js
 demo.html
+Trezor.test.js
+test1.html
 
 coverage/
 .eslintrc

@@ -23,10 +23,6 @@ These instructions will get you a copy of the project up and running on your loc
 * Run the following command to create the documentation for a certain `.js` file. For example `jsdoc Account.js`.
 * Run `jsdoc Ledger.js WalletManager.js Trezor.js Account.js -d Docs` to generate documentation for all in the Docs folder.
 * The [documentation](Docs/index.html) is in the `out` or `Docs` folder. You can view it in the browser.
-### Development Plan
-* [Development Plan](https://drive.google.com/open?id=1dW2DiS1rvbvnWDNURoTbekyViuE3FPY7)
-* Also, see this [issue](https://github.com/rate-engineering/rate3-monorepo/issues/9).
-* My current progress is at the end of Phase 3 (out of 6 phases), plus Ledger and Trezor integration.
 ## Built With
 * [bip39](https://www.npmjs.com/package/bip39) - Mnemonic code for generating deterministic keys
 * [ethereumjs-wallet](https://www.npmjs.com/package/ethereumjs-wallet) - A lightweight Ethereum wallet implementation
