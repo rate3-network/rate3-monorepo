@@ -12,9 +12,6 @@ contract OperationsInteractor is AdminInteractor {
     /**
      * @notice MintRequestOperation keeps track of the state of a requested
      * mint, and updated accordingly during approval and finalization stages.
-     *
-     * @dev Since minimum mint amount > 0, a revoked MintRequestOperation is
-     * identified by value == 0.
      */
     struct MintRequestOperation {
         address by;
@@ -32,9 +29,6 @@ contract OperationsInteractor is AdminInteractor {
     /**
      * @notice BurnRequestOperation keeps track of the state of a requested
      * burn, and updated accordingly during approval and finalization stages.
-     *
-     * @dev Since minimum burn amount > 0, a revoked BurnRequestOperation is
-     * identified by value == 0.
      */
     struct BurnRequestOperation {
         address by;
