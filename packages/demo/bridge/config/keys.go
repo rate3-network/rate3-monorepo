@@ -7,6 +7,7 @@ import (
 
 	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/config/key"
 	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/support/crypto"
+	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/support/terminal"
 )
 
 type keys struct {
@@ -51,21 +52,21 @@ func (k *keys) getEncryptedEthereumPrivateKey() ([]byte, error) {
 	return k.Ethereum.GetEncryptedPrivateKey()
 }
 
-func InitKeys(_config *Config) (err error) {
+func InitKeys(_config *Config, reader terminal.PasswordReader) (err error) {
 	if !_config.HasPassphrase() {
-		return initKeysOverrideExisting(_config)
+		return initKeysOverrideExisting(_config, reader)
 	}
 
-	return initKeysFromExisting(_config)
+	return initKeysFromExisting(_config, reader)
 }
 
-func initKeysOverrideExisting(_config *Config) (err error) {
-	ethKey, err := key.PromptEthereumPrivateKey()
+func initKeysOverrideExisting(_config *Config, reader terminal.PasswordReader) (err error) {
+	ethKey, err := key.PromptEthereumPrivateKey(reader)
 	if err != nil {
 		return err
 	}
 
-	stellarKey, err := key.PromptStellarSecret()
+	stellarKey, err := key.PromptStellarSecret(reader)
 	if err != nil {
 		return err
 	}
@@ -75,7 +76,7 @@ func initKeysOverrideExisting(_config *Config) (err error) {
 		return err
 	}
 
-	passphrase, err := crypto.PromptPassphrase(true)
+	passphrase, err := crypto.PromptPassphrase(true, reader)
 	if err != nil {
 		return err
 	}
@@ -100,7 +101,7 @@ func initKeysOverrideExisting(_config *Config) (err error) {
 	return nil
 }
 
-func initKeysFromExisting(_config *Config) (err error) {
+func initKeysFromExisting(_config *Config, reader terminal.PasswordReader) (err error) {
 	var nonce []byte
 	var ethPrivateKeyEnc []byte
 	var stellarSecretEnc []byte
@@ -122,7 +123,7 @@ func initKeysFromExisting(_config *Config) (err error) {
 
 	for !isValidPassphrase {
 		isValidPassphrase = true // Only invalid if cannot decode key
-		if passphrase, err = crypto.PromptPassphrase(false); err != nil {
+		if passphrase, err = crypto.PromptPassphrase(false, reader); err != nil {
 			return err
 		}
 
@@ -161,7 +162,7 @@ func initKeysFromExisting(_config *Config) (err error) {
 
 	if ethPrivateKeyEnc == nil {
 		var ethKey *key.Ethereum
-		if ethKey, err = key.PromptEthereumPrivateKey(); err != nil {
+		if ethKey, err = key.PromptEthereumPrivateKey(reader); err != nil {
 			return err
 		}
 		if ethPrivateKeyEnc, err = crypto.EncryptAES(passphrase, ethPrivateKey, nonce); err != nil {
@@ -173,7 +174,7 @@ func initKeysFromExisting(_config *Config) (err error) {
 
 	if stellarSecretEnc == nil {
 		var stellarKey *key.Stellar
-		if stellarKey, err = key.PromptStellarSecret(); err != nil {
+		if stellarKey, err = key.PromptStellarSecret(reader); err != nil {
 			return err
 		}
 		if stellarSecretEnc, err = crypto.EncryptAES(passphrase, stellarSecret, nonce); err != nil {

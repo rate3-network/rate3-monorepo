@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/config"
+	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/support/terminal"
 )
 
 func main() {
@@ -22,7 +23,8 @@ func main() {
 		}
 	}
 
-	err := config.InitKeys(cfg)
+	reader := terminal.NewTerminalPasswordReader()
+	err := config.InitKeys(cfg, reader)
 	if err != nil {
 		log.Fatal(err)
 	}
