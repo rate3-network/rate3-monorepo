@@ -159,11 +159,12 @@ class WalletManager {
    * @returns {Account} the account created/imported
    */
   async getAccount() {
+    // stop if the wallet is not set, otherwise continue
+    if (this.wallet == null) {
+      console.log('The wallet is not initialized.');
+      return null;
+    }
     if (arguments.length === 0) {
-      if (this.wallet == null) {
-        console.log('The wallet is not initialized.');
-        return null;
-      }
       // generate the 0th account in the wallet
       switch (this.network) {
         case 'stellar': {
@@ -211,7 +212,8 @@ class WalletManager {
         switch (this.network) {
           case 'stellar': {
             if (arguments[0].charAt(0) === 'S') {
-              // generate account from private key
+              // generate account from private key; the encoding standard is at
+              // https://github.com/stellar/js-stellar-base/blob/74ac176199e9f0a5dd16311b80fc116e16ef57ea/src/strkey.js#L8
               this.account = new Account(this.network);
               await this.account.setAccount(StellarSdk.Keypair.fromSecret(arguments[0]));
               this.accountArray.push(Object.assign({}, this.account));
@@ -289,20 +291,24 @@ class WalletManager {
   encryptSeed(password) {
     // generate a random key and IV
     // Note: a key size of 16 bytes will use AES-128, 24 => AES-192, 32 => AES-256
-    this.iv = forge.random.getBytesSync(16);
+    // forge uses Fortuna as its pseudorandom number generator, mentioned at the following link
+    // https://www.npmjs.com/package/node-forge#prng
+    // Ehe seed is added with extra randomness collected from the user, e.g. mouse movement
+    this.iv = forge.random.getBytesSync(12);
 
     // alternatively, generate a password-based 16-byte key
     this.salt = forge.random.getBytesSync(128);
     const key = forge.pkcs5.pbkdf2(password, this.salt, 10, 16); // numIterations set to 10
 
-    // encrypt some bytes using CBC mode
-    // (other modes include: ECB, CFB, OFB, CTR, and GCM)
+    // encrypt some bytes using GCM mode
+    // (other modes include: CBC, ECB, CFB, OFB, CTR)
     // Note: CBC and ECB modes use PKCS#7 padding as default
-    const cipher = forge.cipher.createCipher('AES-CBC', key);
+    const cipher = forge.cipher.createCipher('AES-GCM', key);
     cipher.start({ iv: this.iv });
     cipher.update(forge.util.createBuffer(this.getSeed()));
     cipher.finish();
     const encrypted = cipher.output;
+    this.tag = cipher.mode.tag;
     // outputs encrypted hex
     // console.log(encrypted.toHex());
     return encrypted;
@@ -315,13 +321,18 @@ class WalletManager {
    */
   decryptSeed(password, encrypted) {
     const key = forge.pkcs5.pbkdf2(password, this.salt, 10, 16); // numIterations set to 10
-    const decipher = forge.cipher.createDecipher('AES-CBC', key);
-    decipher.start({ iv: this.iv });
+    const decipher = forge.cipher.createDecipher('AES-GCM', key);
+    decipher.start({ iv: this.iv, tag: this.tag });
     decipher.update(encrypted);
+    const pass = decipher.finish();
     // const result = decipher.finish(); // check 'result' for true/false
     // outputs decrypted hex
     // console.log(decipher.output.toHex());
-    return decipher.output.data;
+    if (pass) {
+      return decipher.output.data;
+    }
+    console.log('Authentication failed.');
+    return false;
   }
 
   /**
