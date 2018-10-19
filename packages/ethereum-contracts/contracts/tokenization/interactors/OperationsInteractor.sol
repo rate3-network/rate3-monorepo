@@ -19,10 +19,14 @@ contract OperationsInteractor is AdminInteractor {
     struct MintRequestOperation {
         address by;
         uint256 value;
+        OperationStates status;
         uint256 requestTimestamp;
         address approvedBy;
-        bool approved;
-        uint256 approvalTimestamp;
+        uint256 approvedTimestamp;
+        address finalizedBy;
+        uint256 finalizedTimestamp;
+        address revokedBy;
+        uint256 revokedTimestamp;
     }
 
     /**
@@ -35,10 +39,22 @@ contract OperationsInteractor is AdminInteractor {
     struct BurnRequestOperation {
         address by;
         uint256 value;
+        OperationStates status;
         uint256 requestTimestamp;
         address approvedBy;
-        bool approved;
-        uint256 approvalTimestamp;
+        uint256 approvedTimestamp;
+        address finalizedBy;
+        uint256 finalizedTimestamp;
+        address revokedBy;
+        uint256 revokedTimestamp;
+    }
+
+    enum OperationStates {
+        INVALID,
+        REQUESTED,
+        APPROVED,
+        FINALIZED,
+        REVOKED
     }
 
     /// @notice Each address has an array of MintRequestOperations in order.
@@ -90,14 +106,14 @@ contract OperationsInteractor is AdminInteractor {
     event MintOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
     event BurnOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
 
-    event MintOperationApproved(address indexed by, address indexed approvedBy, uint256 approvalTimestamp, uint256 index);
-    event BurnOperationApproved(address indexed by, address indexed approvedBy, uint256 approvalTimestamp, uint256 index);
+    event MintOperationApproved(address indexed by, uint256 value, address indexed approvedBy, uint256 approvedTimestamp, uint256 index);
+    event BurnOperationApproved(address indexed by, uint256 value, address indexed approvedBy, uint256 approvedTimestamp, uint256 index);
 
-    event MintOperationFinalized(address indexed by, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
-    event BurnOperationFinalized(address indexed by, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
+    event MintOperationFinalized(address indexed by, uint256 value, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
+    event BurnOperationFinalized(address indexed by, uint256 value, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
 
-    event MintOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
-    event BurnOperationRevoked(address indexed by, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
+    event MintOperationRevoked(address indexed by, uint256 value, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
+    event BurnOperationRevoked(address indexed by, uint256 value, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
 
     /**
      * @notice Request mint, fires off a MintOperationRequested event.
@@ -108,9 +124,22 @@ contract OperationsInteractor is AdminInteractor {
         require(_value > 0, "Mint value should be more than 0");
 
         uint256 requestTimestamp = block.timestamp;
-        MintRequestOperation memory mintRequestOperation = MintRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0);
+        MintRequestOperation memory mintRequestOperation = MintRequestOperation(
+            msg.sender,
+            _value,
+            OperationStates.REQUESTED,
+            requestTimestamp,
+            address(0),
+            0,
+            address(0),
+            0,
+            address(0),
+            0
+        );
 
+        // Record and emit index of operation before pushing to array.
         emit MintOperationRequested(msg.sender, _value, requestTimestamp, mintRequestOperations[msg.sender].length);
+
         mintRequestOperations[msg.sender].push(mintRequestOperation);
     }
 
@@ -134,14 +163,13 @@ contract OperationsInteractor is AdminInteractor {
     {
         MintRequestOperation storage mintRequestOperation = mintRequestOperations[_requestor][_index];
 
-        require(!mintRequestOperation.approved, "MintRequestOperation is already approved");
-        require(mintRequestOperation.value > 0, "MintRequestOperation does not exist");
+        require(mintRequestOperation.status == OperationStates.REQUESTED, "MintRequestOperation is not at REQUESTED state");
 
+        mintRequestOperation.status = OperationStates.APPROVED;
         mintRequestOperation.approvedBy = msg.sender;
-        mintRequestOperation.approved = true;
-        mintRequestOperation.approvalTimestamp = block.timestamp;
+        mintRequestOperation.approvedTimestamp = block.timestamp;
 
-        emit MintOperationApproved(_requestor, msg.sender, block.timestamp, _index);
+        emit MintOperationApproved(_requestor, mintRequestOperation.value, msg.sender, block.timestamp, _index);
     }
 
     /**
@@ -164,17 +192,20 @@ contract OperationsInteractor is AdminInteractor {
         whitelistedForMint(_requestor)
         notBlacklistedForRequest(_requestor)
     {
-        MintRequestOperation memory mintRequestOperation = mintRequestOperations[_requestor][_index];
+        MintRequestOperation storage mintRequestOperation = mintRequestOperations[_requestor][_index];
 
-        require(mintRequestOperation.approved, "Mint Operation is not approved");
-        require(mintRequestOperation.value > 0, "MintRequestOperation does not exist");
+        require(mintRequestOperation.status == OperationStates.APPROVED, "MintRequestOperation is not at APPROVED state");
 
         address mintAddress = mintRequestOperation.by;
         uint256 value = mintRequestOperation.value;
-        delete mintRequestOperations[_requestor][_index];
+
+        mintRequestOperation.status = OperationStates.FINALIZED;
+        mintRequestOperation.finalizedBy = msg.sender;
+        mintRequestOperation.finalizedTimestamp = block.timestamp;
+
         TokenInterface(token).mint(mintAddress, value);
 
-        emit MintOperationFinalized(_requestor, msg.sender, block.timestamp, _index);
+        emit MintOperationFinalized(_requestor, mintRequestOperation.value, msg.sender, block.timestamp, _index);
     }
 
     /**
@@ -186,8 +217,16 @@ contract OperationsInteractor is AdminInteractor {
      * @param _index Index of MintRequestOperation by _requestor.
      */
     function revokeMint(address _requestor, uint256 _index) public onlyAdmin {
-        delete mintRequestOperations[_requestor][_index];
-        emit MintOperationRevoked(_requestor, msg.sender, block.timestamp, _index);
+        MintRequestOperation storage mintRequestOperation = mintRequestOperations[_requestor][_index];
+
+        require(mintRequestOperation.status != OperationStates.FINALIZED, "MintRequestOperation is already FINALIZED");
+        require(mintRequestOperation.status != OperationStates.REVOKED, "MintRequestOperation is already REVOKED");
+
+        mintRequestOperation.status = OperationStates.REVOKED;
+        mintRequestOperation.revokedBy = msg.sender;
+        mintRequestOperation.revokedTimestamp = block.timestamp;
+
+        emit MintOperationRevoked(_requestor, mintRequestOperation.value, msg.sender, block.timestamp, _index);
     }
 
     /**
@@ -199,9 +238,22 @@ contract OperationsInteractor is AdminInteractor {
         require(_value > 0, "Burn value should be more than 0");
 
         uint256 requestTimestamp = block.timestamp;
-        BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(msg.sender, _value, requestTimestamp, address(0), false, 0);
+        BurnRequestOperation memory burnRequestOperation = BurnRequestOperation(
+            msg.sender,
+            _value,
+            OperationStates.REQUESTED,
+            requestTimestamp,
+            address(0),
+            0,
+            address(0),
+            0,
+            address(0),
+            0
+        );
 
+        // Record and emit index of operation before pushing to array.
         emit BurnOperationRequested(msg.sender, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
+
         burnRequestOperations[msg.sender].push(burnRequestOperation);
     }
 
@@ -225,14 +277,13 @@ contract OperationsInteractor is AdminInteractor {
     {
         BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
 
-        require(!burnRequestOperation.approved, "BurnRequestOperation is already approved");
-        require(burnRequestOperation.value > 0, "BurnRequestOperation does not exist");
+        require(burnRequestOperation.status == OperationStates.REQUESTED, "BurnRequestOperation is not at REQUESTED state");
 
+        burnRequestOperation.status = OperationStates.APPROVED;
         burnRequestOperation.approvedBy = msg.sender;
-        burnRequestOperation.approved = true;
-        burnRequestOperation.approvalTimestamp = block.timestamp;
+        burnRequestOperation.approvedTimestamp = block.timestamp;
 
-        emit BurnOperationApproved(_requestor, msg.sender, block.timestamp, _index);
+        emit BurnOperationApproved(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
     }
 
     /**
@@ -257,15 +308,18 @@ contract OperationsInteractor is AdminInteractor {
     {
         BurnRequestOperation memory burnRequestOperation = burnRequestOperations[_requestor][_index];
 
-        require(burnRequestOperation.approved, "Burn Operation is not approved");
-        require(burnRequestOperation.value > 0, "BurnRequestOperation does not exist");
+        require(burnRequestOperation.status == OperationStates.APPROVED, "BurnRequestOperation is not at APPROVED state");
 
         address burnAddress = burnRequestOperation.by;
         uint256 value = burnRequestOperation.value;
-        delete burnRequestOperations[_requestor][_index];
+
+        burnRequestOperation.status = OperationStates.FINALIZED;
+        burnRequestOperation.finalizedBy = msg.sender;
+        burnRequestOperation.finalizedTimestamp = block.timestamp;
+
         TokenInterface(token).burn(burnAddress, value);
 
-        emit BurnOperationFinalized(_requestor, msg.sender, block.timestamp, _index);
+        emit BurnOperationFinalized(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
     }
 
     /**
@@ -277,8 +331,16 @@ contract OperationsInteractor is AdminInteractor {
      * @param _index Index of BurnRequestOperation by _requestor.
      */
     function revokeBurn(address _requestor, uint256 _index) public onlyAdmin {
-        delete burnRequestOperations[_requestor][_index];
-        emit BurnOperationRevoked(_requestor, msg.sender, block.timestamp, _index);
+        BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
+
+        require(burnRequestOperation.status != OperationStates.FINALIZED, "BurnRequestOperation is already FINALIZED");
+        require(burnRequestOperation.status != OperationStates.REVOKED, "BurnRequestOperation is already REVOKED");
+
+        burnRequestOperation.status = OperationStates.REVOKED;
+        burnRequestOperation.revokedBy = msg.sender;
+        burnRequestOperation.revokedTimestamp = block.timestamp;
+
+        emit BurnOperationRevoked(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
     }
 
     /**
