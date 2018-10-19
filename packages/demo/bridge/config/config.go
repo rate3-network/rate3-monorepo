@@ -21,6 +21,7 @@ func NewConfig() *Config {
 type Config struct {
 	Database string
 	Keys     *keys
+	Networks networks
 }
 
 // HasPassphrase checks that a passphrase has been used to encrypt either the
