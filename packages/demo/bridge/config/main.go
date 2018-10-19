@@ -48,7 +48,7 @@ func Init() (*Config, error) {
 		}
 	}
 
-	reader := terminal.NewTerminalPasswordReader()
+	reader := terminal.NewTerminalPasswordPrompt(os.Stdout)
 	err := initKeys(cfg, reader)
 	if err != nil {
 		return nil, err

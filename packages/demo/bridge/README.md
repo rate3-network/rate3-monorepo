@@ -40,6 +40,18 @@ Each non-test file can have a test counterpart like normal, whose name ends with
 
 Generally, file contents are sorted by exported/unexported, then declaration type  (ordered as consts, vars, types, then funcs), then finally alphabetically.
 
+### Mocks
+
+Mock structs are kept in the `mocks` folder, they can be automatically generated using [mockery](https://github.com/vektra/mockery) with the command:
+
+```bash
+$ mockery -all -recursive -dir <subdir> -output ./mocks/<subdir> -keeptree
+```
+
+*Note*:
+- `<subdir>` is used here instead of `-recursive` because `-recursive` includes vendor folder.
+- `-keeptree` will prevent any name collisions.
+
 ## Coding conventions
 
 - Always document exported package elements: vars, consts, funcs, types, etc.

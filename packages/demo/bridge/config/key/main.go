@@ -77,7 +77,7 @@ func StellarKeypairFromSecret(secret []byte) (*keypair.Full, error) {
 
 // PromptEthereumPrivateKey reads a line without the echo, validates that the
 // input is a valid ethereum private key and returns the new Ethereum struct.
-func PromptEthereumPrivateKey(reader terminal.PasswordReader) (key *Ethereum, err error) {
+func PromptEthereumPrivateKey(reader terminal.PasswordPrompt) (key *Ethereum, err error) {
 	for {
 		ethPrivateKey, err := terminal.PromptPassword(promptEthPrivateKey, reader)
 		if err != nil {
@@ -94,7 +94,7 @@ func PromptEthereumPrivateKey(reader terminal.PasswordReader) (key *Ethereum, er
 
 // PromptStellarSecret reads a line without the echo, validates that the
 // input is a valid stellar secret and returns the new Stellar struct.
-func PromptStellarSecret(reader terminal.PasswordReader) (key *Stellar, err error) {
+func PromptStellarSecret(reader terminal.PasswordPrompt) (key *Stellar, err error) {
 	for {
 		stellarSecret, err := terminal.PromptPassword(promptStellarSecret, reader)
 		if err != nil {

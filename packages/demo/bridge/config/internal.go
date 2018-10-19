@@ -9,7 +9,7 @@ import (
 	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/support/terminal"
 )
 
-func initKeys(_config *Config, reader terminal.PasswordReader) (err error) {
+func initKeys(_config *Config, reader terminal.PasswordPrompt) (err error) {
 	if !_config.HasPassphrase() {
 		return initKeysOverrideExisting(_config, reader)
 	}
@@ -17,7 +17,7 @@ func initKeys(_config *Config, reader terminal.PasswordReader) (err error) {
 	return initKeysFromExisting(_config, reader)
 }
 
-func initKeysOverrideExisting(_config *Config, reader terminal.PasswordReader) (err error) {
+func initKeysOverrideExisting(_config *Config, reader terminal.PasswordPrompt) (err error) {
 	ethKey, err := key.PromptEthereumPrivateKey(reader)
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func initKeysOverrideExisting(_config *Config, reader terminal.PasswordReader) (
 	return nil
 }
 
-func initKeysFromExisting(_config *Config, reader terminal.PasswordReader) (err error) {
+func initKeysFromExisting(_config *Config, reader terminal.PasswordPrompt) (err error) {
 	var nonce []byte
 	var ethPrivateKeyEnc []byte
 	var stellarSecretEnc []byte
@@ -147,7 +147,7 @@ func initKeysFromExisting(_config *Config, reader terminal.PasswordReader) (err 
 func keyDecryptAndValidate(passphrase, encrypted, nonce []byte, validator func([]byte) bool) (decrypted []byte, validated bool, err error) {
 	decrypted, err = crypto.DecryptAES(passphrase, encrypted, nonce)
 	if err != nil {
-		if !isMessageAuthenticationFailed(err) {
+		if isMessageAuthenticationFailed(err) {
 			return nil, false, nil // Not an error
 		}
 		return nil, false, err
