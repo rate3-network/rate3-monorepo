@@ -1,6 +1,6 @@
 'use strict';
 
-export function AssetContracts(stellar, Stellar) {
+function AssetContracts(stellar, Stellar) {
 
     const trustIssuingAccount = async ({
         asset,
@@ -71,3 +71,5 @@ export function AssetContracts(stellar, Stellar) {
         mintAsset,
     };
 }
+
+module.exports = AssetContracts;

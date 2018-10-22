@@ -1,6 +1,6 @@
 'use strict';
 
-export function HashedTimelockContracts(stellar, Stellar) {
+function HashedTimelockContracts(stellar, Stellar) {
 
     const makeHoldingKeys = async () => {
         const holdingKeys = Stellar.Keypair.random();
@@ -136,3 +136,5 @@ export function HashedTimelockContracts(stellar, Stellar) {
         claimFromHoldingAccount,
     };
 }
+
+module.exports = HashedTimelockContracts;
