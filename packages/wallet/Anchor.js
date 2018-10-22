@@ -4,6 +4,7 @@ const openurl = require('openurl');
 const toml = require('toml');
 const setting = require('./setting');
 
+
 class Anchor {
   /**
    * @constructor - currently the anchor only supports Stellar
@@ -77,7 +78,7 @@ class Anchor {
       }
       // verifies that the parameters are valid
       if (account.charAt(0) !== 'G') {
-        console.log('The account must start with letter G.');
+        console.log(setting.stellarPublicKeyDebug);
         return null;
       }
       const options = {
@@ -126,7 +127,7 @@ class Anchor {
       }
       // verifies that the parameters are valid
       if (account && account.charAt(0) !== 'G') {
-        console.log('The account must start with letter G.');
+        console.log(setting.stellarPublicKeyDebug);
         return null;
       }
       const options = {

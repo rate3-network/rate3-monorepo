@@ -24,7 +24,7 @@ class WalletManager {
         this.network = network;
         break;
       default:
-        console.log('The name of the network must be stellar or ethereum.');
+        console.log(setting.networkError);
     }
   }
 
@@ -41,7 +41,7 @@ class WalletManager {
         this.account = null;
         break;
       default:
-        console.log('The name of the network must be stellar or ethereum.');
+        console.log(setting.networkError);
     }
   }
 
@@ -50,7 +50,7 @@ class WalletManager {
    */
   getNetwork() {
     if (!this.isNetworkSet()) {
-      console.log('The network of the wallet manager is not set.');
+      console.log(setting.networkError);
       return null;
     }
     return this.network;
@@ -73,7 +73,7 @@ class WalletManager {
           break;
         default:
           this.seed = null;
-          console.log('The network has not been set.');
+          console.log(setting.networkError);
       }
     } else if (arguments.length === 1) {
       if ([12, 18, 21, 24].includes(arguments[0])) {
@@ -133,7 +133,7 @@ class WalletManager {
         break;
       default:
         this.wallet = null;
-        console.log('The seed is not specified or not valid.');
+        console.log(setting.networkError);
     }
     return this.wallet;
   }
@@ -143,7 +143,7 @@ class WalletManager {
    */
   getWallet() {
     if (this.wallet == null) {
-      console.log('The wallet is not set.');
+      console.log(setting.nullWalletError);
       return null;
     }
     return this.wallet;
@@ -162,7 +162,7 @@ class WalletManager {
   async getAccount() {
     // stop if the wallet is not set, otherwise continue
     if (this.wallet == null) {
-      console.log('The wallet is not initialized.');
+      console.log(setting.nullWalletError);
       return null;
     }
     if (arguments.length === 0) {
@@ -180,7 +180,7 @@ class WalletManager {
           return this.account;
         }
         default:
-          console.log('The network is not set.');
+          console.log(setting.networkError);
           return null;
       }
     }
@@ -200,7 +200,7 @@ class WalletManager {
         }
         default:
           this.account = null;
-          console.log('The network has not been set.');
+          console.log(setting.networkError);
       }
       return this.account;
     }
@@ -215,7 +215,7 @@ class WalletManager {
               await this.account.setAccount(StellarSdk.Keypair.fromSecret(arguments[0]));
             } else {
               this.account = null;
-              console.log('The starting char must be S (private key)');
+              console.log(setting.stellarrivateKeyDebug);
             }
             break;
           }
@@ -226,7 +226,7 @@ class WalletManager {
           }
           default:
             this.account = null;
-            console.log('The network has not been set.');
+            console.log(setting.networkError);
         }
         return null;
       } catch (err) {
@@ -250,7 +250,7 @@ class WalletManager {
     const accountArray = new Array(arrayLength);
     let newAccount = null;
     if (!this.isNetworkSet()) {
-      console.log('The network is not set correctly');
+      console.log(setting.networkError);
       return false;
     }
     for (let i = 0; i < arrayLength; i++) {
@@ -269,7 +269,7 @@ class WalletManager {
         }
         default:
         // the default case actually will not reach, since it is checked above
-          console.log('The network has not been set.');
+          console.log(setting.networkError);
       }
       accountArray[i] = newAccount;
     }
@@ -304,7 +304,7 @@ class WalletManager {
     // encrypt some bytes using GCM mode
     // (other modes include: CBC, ECB, CFB, OFB, CTR)
     // Note: CBC and ECB modes use PKCS#7 padding as default
-    const cipher = forge.cipher.createCipher('AES-GCM', key);
+    const cipher = forge.cipher.createCipher(setting.cipherMode, key);
     cipher.start({ iv: this.iv });
     cipher.update(forge.util.createBuffer(data));
     cipher.finish();
@@ -323,7 +323,7 @@ class WalletManager {
    */
   decrypt(encrypted, password) {
     const key = forge.pkcs5.pbkdf2(password, this.salt, 10, 16); // numIterations set to 10
-    const decipher = forge.cipher.createDecipher('AES-GCM', key);
+    const decipher = forge.cipher.createDecipher(setting.cipherMode, key);
     decipher.start({ iv: this.iv, tag: this.tag });
     decipher.update(encrypted);
     const pass = decipher.finish();

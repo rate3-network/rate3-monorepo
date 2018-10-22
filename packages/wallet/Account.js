@@ -23,7 +23,7 @@ class Account {
     switch (network) {
       case 'stellar':
         this.network = 'stellar';
-        this.testAddress = 'https://horizon-testnet.stellar.org/accounts/';
+        this.testAddress = `${setting.horizonEndpoint}/accounts/`;
         StellarSdk.Network.useTestNetwork();
         this.balance = -1;
         break;
@@ -32,7 +32,7 @@ class Account {
         this.balance = -1;
         break;
       default:
-        console.log('The name of the network must be stellar or ethereum.');
+        console.log(setting.networkError);
     }
   }
 
@@ -61,7 +61,7 @@ class Account {
         console.log('Change trust is not for ethereum.');
         break;
       default:
-        console.log('The network is not set correctly.');
+        console.log(setting.networkError);
     }
     return null;
   }
@@ -90,10 +90,10 @@ class Account {
       case 'stellar':
         this.nativeAccount = account;
         await this.loadBalance(this.getAddress());
-        if (this.balance === '0.0000000' || this.balance === undefined) {
+        if (this.balance === '0.0000000' || this.balance === undefined || this.balance === -1) {
           try {
             await rp({
-              url: 'https://friendbot.stellar.org',
+              url: setting.stellarFundUrl,
               qs: { addr: this.getAddress() },
               json: true
             });
@@ -115,7 +115,7 @@ class Account {
       }
       default:
         this.nativeAccount = null;
-        console.log('The account network is not correctly set.');
+        console.log(setting.networkError);
     }
   }
 
@@ -135,7 +135,7 @@ class Account {
       case 'ethereum':
         return web3.eth.accounts.sign(data, this.getPrivateKey());
       default:
-        console.log('The network is not correct');
+        console.log(setting.networkError);
         return null;
     }
   }
@@ -168,7 +168,9 @@ class Account {
             to,
             value: web3.utils.toHex(web3.utils.toWei(amount, 'ether')), // e.g. '0.001'
             gas: 30000,
-            chainId: 4 // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
+            chainId: 4
+            // reference link
+            // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
           };
 
           const signedTx = await this.nativeAccount.signTransaction(rawTransaction);
@@ -177,10 +179,10 @@ class Account {
         }
         // infura accepts only raw transactions, because it does not handle private keys
         default:
-          console.log('The network is not correct');
+          console.log(setting.networkError);
       }
     } catch (err) {
-      console.log('ethereum send transaction error', err);
+      console.log('ethereum send transaction error ', err);
       return null;
     }
     return null;
@@ -197,19 +199,19 @@ class Account {
     try {
       switch (this.network) {
         case 'stellar': {
-          const url = `https://horizon-testnet.stellar.org/accounts/${this.getAddress()}/payments`;
+          const url = `${setting.horizonEndpoint}/accounts/${this.getAddress()}/payments`;
           const response = await rp(url);
           this.history = JSON.parse(response)._embedded.records;
           return this.history;
         }
         case 'ethereum': {
-          const url = `http://api-rinkeby.etherscan.io/api?module=account&action=txlist&address=${this.getAddress()}&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken`;
+          const url = `${setting.rinkebyEtherscanUrl}module=account&action=txlist&address=${this.getAddress()}&startblock=0&endblock=99999999&sort=asc&apikey=YourApiKeyToken`;
           const response = await rp(url);
           this.history = JSON.parse(response).result;
           return this.history;
         }
         default:
-          console.log('The network is not correct');
+          console.log(setting.networkError);
           return null;
       }
     } catch (err) {
@@ -242,11 +244,11 @@ class Account {
           return web3.eth.accounts.signTransaction(tx, this.getPrivateKey());
         }
         default:
-          console.log('The network is not correct');
+          console.log(setting.networkError);
           return null;
       }
     } catch (err) {
-      console.log('Error in delegated signing', err);
+      console.log('Error in delegated signing ', err);
     }
     return null;
   }
@@ -277,7 +279,7 @@ class Account {
           return null;
         }
         default:
-          console.log('The network is not correct');
+          console.log(setting.networkError);
           return null;
       }
     } catch (error) {
@@ -372,7 +374,7 @@ class Account {
       case 'ethereum':
         return this.nativeAccount.address;
       default:
-        console.log('The network is not set correctly.');
+        console.log(setting.networkError);
         return null;
     }
   }
@@ -388,7 +390,7 @@ class Account {
       case 'ethereum':
         return this.nativeAccount.privateKey;
       default:
-        console.log('The network is not set correctly.');
+        console.log(setting.networkError);
         return null;
     }
   }
