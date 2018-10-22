@@ -38,7 +38,7 @@ async function dSign() {
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout,
+  output: process.stdout
 });
 rl.on('line', (input) => {
   switch (input) {

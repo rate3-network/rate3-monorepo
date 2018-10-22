@@ -8,7 +8,23 @@ These instructions will get you a copy of the project up and running on your loc
 ### Installing
 1. Clone or download the repo.
 2. Run `npm install` in this directory in the command line.
-## Running the tests
+### Code example
+This section shows an example flow of using this package.
+```
+// import the WalletManaget package
+const WalletManager = require('./WalletManager');
+// create an instance of the wallet
+const wallet = new WalletManager('stellar');
+// create accounts in this wallet
+const account0 = wallet.getAccount();
+const account1 = wallet.getAccount(1);
+// send a transaction
+const response = await account0.send(account1.getAddress(), '100');
+// view the response to the transaction
+console.log(response)
+```
+You can copy the *xdr encoded transaction* in the output of the code above, and view it at [Stellar laboratory](https://www.stellar.org/laboratory/#?network=test)
+## Running The Tests
 * Tests are wirtten using [Jest](https://jestjs.io/) library.
 * Run `npm test` to run all the tests.
 * You can configure testing in the `package.json` file, or by adding arguments to the command.
@@ -16,7 +32,7 @@ These instructions will get you a copy of the project up and running on your loc
 * Test files include `Account.test.js`, `Account.async.test.js`, `Account.anchor.test.js`, `WalletManager.test.js`
 * From the test cases you can see how to use this package.
 * Ledger/Trezor integration is not tested with the hardware devices.
-## Commandline demo
+## Commandline Demo
 * Run `node StellarDemo.js` or `node EthereumDemo.js` to demostrate some functions in phase 1 and 2. Enter numbers 1,2,3... sequentially to excute step by step. Please wait for the previous step to finish before enterning new commands.
 ## Documentation
 * Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.

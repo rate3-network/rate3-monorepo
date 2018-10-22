@@ -4,8 +4,9 @@ const hdkey = require('ethereumjs-wallet/hdkey');
 const stellarHDWallet = require('stellar-hd-wallet');
 const StellarSdk = require('stellar-sdk');
 const Web3 = require('web3');
+const setting = require('./setting');
 
-const web3 = new Web3('https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7');
+const web3 = new Web3(setting.infuraUrl);
 
 const Account = require('./Account');
 

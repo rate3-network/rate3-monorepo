@@ -1,9 +1,10 @@
 const rp = require('request-promise');
 const StellarSdk = require('stellar-sdk');
 const Web3 = require('web3');
+const setting = require('./setting');
 
-const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-const web3 = new Web3('https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7');
+const server = new StellarSdk.Server(setting.horizonEndpoint);
+const web3 = new Web3(setting.infuraUrl);
 
 /**
  * @class Account

@@ -2,8 +2,7 @@ const rp = require('request-promise');
 const StellarSdk = require('stellar-sdk');
 const openurl = require('openurl');
 const toml = require('toml');
-
-const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+const setting = require('./setting');
 
 class Anchor {
   /**
@@ -14,7 +13,7 @@ class Anchor {
     switch (network) {
       case 'stellar':
         this.network = 'stellar';
-        this.testAddress = 'https://horizon-testnet.stellar.org/accounts/';
+        this.testAddress = `${setting.horizonEndpoint}/accounts/`;
         StellarSdk.Network.useTestNetwork();
         this.balance = -1;
         break;
