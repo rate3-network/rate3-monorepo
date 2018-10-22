@@ -4,19 +4,13 @@
  * which covers successful cases.
  */
 const nock = require('nock');
-const WalletManager = require('./WalletManager');
+const Anchor = require('./Anchor');
 
-const seedPhrases = 'aspect body artist annual sketch know plug subway series noodle loyal word';
-const walletStellar = new WalletManager('stellar');
-walletStellar.setSeed(seedPhrases);
-walletStellar.setWallet();
-let account3Stellar = null;
-
+const anchor = new Anchor('stellar');
 const mockURL = 'http://api.example.com';
 
 beforeAll(async () => {
   // Jest will wait for this promise to resolve before running tests.
-  account3Stellar = await walletStellar.getAccount(3);
 });
 
 /**
@@ -37,14 +31,14 @@ test('anchorDeposit', async () => {
     .get('/deposit')
     .query({
       asset_code,
-      account,
+      account
     })
     .reply(200, {
       how,
-      fee_fixed,
+      fee_fixed
     });
 
-  const response = await account3Stellar.getDeposit(mockURL, asset_code, account);
+  const response = await anchor.getDeposit(mockURL, asset_code, account);
   const expectedResponse = { how, fee_fixed };
   expect(response).toEqual(expectedResponse);
 });
@@ -72,14 +66,14 @@ test('anchorWithdraw', async () => {
     .query({
       type: 'crypto',
       asset_code,
-      dest,
+      dest
     })
     .reply(200, {
       account_id,
       memo_type,
-      memo,
+      memo
     });
-  const response = await account3Stellar.getWithdraw(mockURL, 'crypto', asset_code, dest);
+  const response = await anchor.getWithdraw(mockURL, 'crypto', asset_code, dest);
   const expectedResponse = { account_id, memo_type, memo };
   expect(response).toEqual(expectedResponse);
 });
@@ -151,20 +145,20 @@ test('anchorInfo', async () => {
         dest: { description: 'your bank account number' },
         dest_extra: { description: 'your routing number' },
         bank_branch: { description: 'address of your bank branch' },
-        phone_number: { description: "your phone number in case there's an issue" },
-      },
+        phone_number: { description: "your phone number in case there's an issue" }
+      }
     },
     cash: {
       fields: {
-        dest: { description: 'your email address. Your cashout PIN will be sent here.' },
-      },
-    },
+        dest: { description: 'your email address. Your cashout PIN will be sent here.' }
+      }
+    }
   };
   const USD = {
-    enabled: true, fee_fixed: 5, fee_percent: 0, types,
+    enabled: true, fee_fixed: 5, fee_percent: 0, types
   };
   const ETH = {
-    enabled: false,
+    enabled: false
   };
 
   const deposit = {
@@ -175,22 +169,22 @@ test('anchorInfo', async () => {
       fields: {
         email_address: {
           description: 'your email address for transaction status updates',
-          optional: true,
+          optional: true
         },
         amount: {
-          description: 'amount in USD that you plan to deposit',
+          description: 'amount in USD that you plan to deposit'
         },
         type: {
           description: 'type of deposit to make',
-          choices: ['SEPA', 'SWIFT', 'cash'],
-        },
-      },
+          choices: ['SEPA', 'SWIFT', 'cash']
+        }
+      }
     },
     ETH: {
       enabled: true,
       fee_fixed: 0.002,
-      fee_percent: 0,
-    },
+      fee_percent: 0
+    }
   };
   const withdraw = { USD, ETH };
   const transactions = { enabled: true };
@@ -199,10 +193,10 @@ test('anchorInfo', async () => {
     .reply(200, {
       deposit,
       withdraw,
-      transactions,
+      transactions
     });
 
-  const response = await account3Stellar.getInfo(mockURL);
+  const response = await anchor.getInfo(mockURL);
   const expectedResponse = { deposit, withdraw, transactions };
   expect(response).toEqual(expectedResponse);
 });
@@ -251,7 +245,7 @@ test('anchorTransactions', async () => {
     amount_in: '18.34',
     amount_out: '18.24',
     amount_fee: '0.1',
-    started_at: '2017-03-20T17:05:32Z',
+    started_at: '2017-03-20T17:05:32Z'
   },
   {
     id: '82fhs729f63dh0v4',
@@ -263,19 +257,19 @@ test('anchorTransactions', async () => {
     started_at: '2017-03-20T17:00:02Z',
     completed_at: '2017-03-20T17:09:58Z',
     stellar_transaction_id: '17a670bc424ff5ce3b386dbfaae9990b66a2a37b4fbe51547e8794962a3f9e6a',
-    external_transaction_id: '2dd16cb409513026fbe7defc0c6f826c2d2c65c3da993f747d09bf7dafd31093',
+    external_transaction_id: '2dd16cb409513026fbe7defc0c6f826c2d2c65c3da993f747d09bf7dafd31093'
   }];
   nock(mockURL)
     .get('/transactions')
     .query({
       asset_code,
-      account,
+      account
     })
     .reply(200, {
-      transactions,
+      transactions
     });
 
-  const response = await account3Stellar.getTransactionHistory(mockURL, asset_code, account);
+  const response = await anchor.getTransactionHistory(mockURL, asset_code, account);
   const expectedResponse = { transactions };
   expect(response).toEqual(expectedResponse);
 });
@@ -291,13 +285,13 @@ test('anchorTransactions', async () => {
     .get('/transactions')
     .query({
       asset_code,
-      account,
+      account
     })
     .reply(200, {
-      emptyTransactionResponse,
+      emptyTransactionResponse
     });
 
-  const response = await account3Stellar.getTransactionHistory(mockURL, asset_code, account);
+  const response = await anchor.getTransactionHistory(mockURL, asset_code, account);
   const expectedResponse = { emptyTransactionResponse };
   expect(response).toEqual(expectedResponse);
 });

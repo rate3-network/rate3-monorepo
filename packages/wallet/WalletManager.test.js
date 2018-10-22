@@ -152,7 +152,41 @@ test('setAccountStellar', async () => {
   */
 });
 
-// setting inflation stellar
+// setting inflation stellar -TBD
+
+test('getMultipleAccountsETH', async () => {
+  jest.setTimeout(30000);
+  const wallet = new WalletManager('ethereum');
+  wallet.setSeed(seedPhrases);
+  wallet.setWallet();
+  // encrypt hd wallet, use case
+  const accountArray = await wallet.getMultipleAccounts([1, 3, 5]);
+  const expectedAddresses = ['0x2732CC3Bc2c377D550A31b994E60d692d5FE631d',
+    '0xfd3B37102b3882E08c8D38fF8BAc1b1b305dc103',
+    '0x2d8Cce8A8B308a077Eb0e39331258c355c55d04e'];
+  for (let i = 0; i < accountArray.length; i++) {
+    expect(accountArray[i].getAddress()).toBe(expectedAddresses[i]);
+  }
+  expect(wallet.account == null);
+  // the account and the account array are independent, thus
+  // the account should be null
+});
+
+test('getMultipleAccountsStellar', async () => {
+  jest.setTimeout(30000);
+  const wallet = new WalletManager('stellar');
+  wallet.setSeed(seedPhrases);
+  wallet.setWallet();
+  // encrypt hd wallet, use case
+  const accountArray = await wallet.getMultipleAccounts([100, 50, 0]);
+  const expectedAddresses = ['GAOCF4YC3DWM7ICUQR4BIPY34D3WRFT6KJXXDD3EX33XV6GENVMGTPDC',
+    'GBQONGHEAWFX4KKERQAMC6EZVTWK7RXSQI2XD23VGVW2F34TMQ4STJ2B',
+    'GCDAFTYQTU2YVNPCJVIZ6IT2MKSL2KRY724ODR3Y5AJ5NZ2CD6Z7A7GO'];
+  for (let i = 0; i < accountArray.length; i++) {
+    expect(accountArray[i].getAddress()).toBe(expectedAddresses[i]);
+  }
+  expect(wallet.account == null);
+});
 
 test('encryptAndDecryptAccountETH', async () => {
   const wallet = new WalletManager('ethereum');
@@ -160,25 +194,20 @@ test('encryptAndDecryptAccountETH', async () => {
   wallet.setWallet();
   // encrypt hd wallet, use case
   const account = await wallet.getAccount();
-  const encrypted = wallet.encrypt(account, password);
-  const decryptedAccount = wallet.decrypt(encrypted, password);
-  expect(decryptedAccount.getAddress()).toEqual(account.getAddress());
-  expect(decryptedAccount.getPrivateKey()).toEqual(account.getPrivateKey());
-  expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork());
+  const encrypted = wallet.encryptAccount(account, password);
+  const decrypted = wallet.decryptAccount(encrypted, password);
+  expect(decrypted).toEqual(account.getPrivateKey());
 });
 
-// test('encryptAndDecryptAccountStellar', async () => {
-//   const wallet = new WalletManager('stellar');
-//   wallet.setSeed(seedPhrases);
-//   wallet.setWallet();
-
-//   const account = await wallet.getAccount();
-//   const encrypted = wallet.encrypt(account, password);
-//   const decryptedAccount = wallet.decrypt(encrypted, password);
-//   expect(decryptedAccount.getAddress()).toEqual(account.getAddress());
-//   expect(decryptedAccount.getPrivateKey()).toEqual(account.getPrivateKey());
-//   expect(decryptedAccount.getNetwork()).toEqual(account.getNetwork());
-// });
+test('encryptAndDecryptAccountStellar', async () => {
+  const wallet = new WalletManager('stellar');
+  wallet.setSeed(seedPhrases);
+  wallet.setWallet();
+  const account = await wallet.getAccount();
+  const encrypted = wallet.encryptAccount(account, password);
+  const decrypted = wallet.decryptAccount(encrypted, password);
+  expect(decrypted).toEqual(account.getPrivateKey());
+});
 
 test('encryptAndDecryptSeedPhrases', async () => {
   const wallet = new WalletManager('stellar'); // the currency does not matter
@@ -186,6 +215,6 @@ test('encryptAndDecryptSeedPhrases', async () => {
   wallet.setWallet();
 
   const encrypted = wallet.encryptSeed(password);
-  const decrypted = wallet.decryptSeed(password, encrypted);
+  const decrypted = wallet.decryptSeed(encrypted, password);
   expect(decrypted).toMatch(seedPhrases); // toBe will fail
 });

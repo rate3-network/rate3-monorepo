@@ -246,7 +246,7 @@ class WalletManager {
    */
   async getMultipleAccounts(indexArray) {
     const arrayLength = indexArray.length;
-    const accountArray = {};
+    const accountArray = new Array(arrayLength);
     let newAccount = null;
     if (!this.isNetworkSet()) {
       console.log('The network is not set correctly');
@@ -257,21 +257,21 @@ class WalletManager {
       switch (this.network) {
         case 'stellar': {
           newAccount = new Account(this.network);
-          await this.account.setAccount(this.wallet.getKeypair(indexArray[i]));
+          await newAccount.setAccount(this.wallet.getKeypair(indexArray[i]));
           break;
         }
         case 'ethereum': {
           const privateKey = `0x${this.wallet.deriveChild(indexArray[i]).getWallet()._privKey.toString('hex')}`;
           newAccount = new Account(this.network);
-          await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey));
+          await newAccount.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey));
           break;
         }
         default:
         // the default case actually will not reach, since it is checked above
           console.log('The network has not been set.');
       }
+      accountArray[i] = newAccount;
     }
-    accountArray.push(newAccount);
     return accountArray;
   }
 
@@ -320,7 +320,7 @@ class WalletManager {
    * @param {ByteStringBuffer} encrypted - the encrypted object
    * @returns {string|boolean} the seed phrases if the password is correct, otherwise false
    */
-  decrypt(password, encrypted) {
+  decrypt(encrypted, password) {
     const key = forge.pkcs5.pbkdf2(password, this.salt, 10, 16); // numIterations set to 10
     const decipher = forge.cipher.createDecipher('AES-GCM', key);
     decipher.start({ iv: this.iv, tag: this.tag });
@@ -355,8 +355,8 @@ class WalletManager {
    * @param {ByteStringBuffer} - the encrypted object
    * @returns {string|boolean} the seed phrases if the password is correct, otherwise false
    */
-  decryptSeed(password, encrypted) {
-    return this.decrypt(password, encrypted);
+  decryptSeed(encrypted, password) {
+    return this.decrypt(encrypted, password);
   }
 
   /**
