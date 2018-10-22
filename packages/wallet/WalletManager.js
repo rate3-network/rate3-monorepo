@@ -17,10 +17,10 @@ class WalletManager {
    */
   constructor(network) {
     switch (network) {
+      // stellar and ethereum will share the initialization
       case 'stellar':
       case 'ethereum':
         this.network = network;
-        this.accountArray = [];
         break;
       default:
         console.log('The name of the network must be stellar or ethereum.');
@@ -33,10 +33,10 @@ class WalletManager {
    */
   changeNetwork(network) {
     switch (network) {
+      // stellar and ethereum will share the re-initialization
       case 'stellar':
       case 'ethereum':
         this.network = network;
-        this.accountArray = []; // discard the accounts in another network
         this.account = null;
         break;
       default:
@@ -48,7 +48,7 @@ class WalletManager {
    * @returns {string} the name of the current network
    */
   getNetwork() {
-    if (this.network == null) {
+    if (!this.isNetworkSet()) {
       console.log('The network of the wallet manager is not set.');
       return null;
     }
@@ -155,7 +155,7 @@ class WalletManager {
    * If the parameter is a number,
    * Generate the account in the wallet. Its index is the number.
    * If the parameter is a string,
-   * Use it as the private/public key to generate the account
+   * Use it as the private key to generate the account
    * @returns {Account} the account created/imported
    */
   async getAccount() {
@@ -170,14 +170,12 @@ class WalletManager {
         case 'stellar': {
           this.account = new Account(this.network);
           await this.account.setAccount(this.wallet.getKeypair(0));
-          this.accountArray.push(Object.assign({}, this.account));
           return this.account;
         }
         case 'ethereum': {
           const privateKey = `0x${this.wallet.deriveChild(0).getWallet()._privKey.toString('hex')}`;
           this.account = new Account(this.network);
           await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey));
-          this.accountArray.push(Object.assign({}, this.account));
           return this.account;
         }
         default:
@@ -191,14 +189,12 @@ class WalletManager {
         case 'stellar': {
           this.account = new Account(this.network);
           await this.account.setAccount(this.wallet.getKeypair(arguments[0]));
-          this.accountArray.push(Object.assign({}, this.account));
           return this.account;
         }
         case 'ethereum': {
           const privateKey = `0x${this.wallet.deriveChild(arguments[0]).getWallet()._privKey.toString('hex')}`;
           this.account = new Account(this.network);
           await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey));
-          this.accountArray.push(Object.assign({}, this.account));
           return this.account;
         }
         default:
@@ -216,7 +212,6 @@ class WalletManager {
               // https://github.com/stellar/js-stellar-base/blob/74ac176199e9f0a5dd16311b80fc116e16ef57ea/src/strkey.js#L8
               this.account = new Account(this.network);
               await this.account.setAccount(StellarSdk.Keypair.fromSecret(arguments[0]));
-              this.accountArray.push(Object.assign({}, this.account));
             } else {
               this.account = null;
               console.log('The starting char must be S (private key)');
@@ -226,7 +221,6 @@ class WalletManager {
           case 'ethereum': {
             this.account = new Account(this.network);
             await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(arguments[0]));
-            this.accountArray.push(Object.assign({}, this.account));
             break;
           }
           default:
@@ -245,50 +239,56 @@ class WalletManager {
   }
 
   /**
-   * A shorthand for creating multiple accounts.
-   * The accounts created will be the 0th, 1st, ... (n-1)th in the wallet
-   * @param {int} numberOfAccounts
+   * A shorthand to multiple accounts.
+   * The accounts created correspond to the index array in the wallet
+   * These accounts are only returned, not saved
+   * @param {Array} indexArray - An array of indexes of accounts to generate
    */
-  async setMultipleAccounts(numberOfAccounts) {
-    for (let i = 0; i < numberOfAccounts; i++) {
-      await this.getAccount(i);
+  async getMultipleAccounts(indexArray) {
+    const arrayLength = indexArray.length;
+    const accountArray = {};
+    let newAccount = null;
+    if (!this.isNetworkSet()) {
+      console.log('The network is not set correctly');
+      return false;
     }
+    for (let i = 0; i < arrayLength; i++) {
+      // generate the account of the wallet at the specified index
+      switch (this.network) {
+        case 'stellar': {
+          newAccount = new Account(this.network);
+          await this.account.setAccount(this.wallet.getKeypair(indexArray[i]));
+          break;
+        }
+        case 'ethereum': {
+          const privateKey = `0x${this.wallet.deriveChild(indexArray[i]).getWallet()._privKey.toString('hex')}`;
+          newAccount = new Account(this.network);
+          await this.account.setAccount(web3.eth.accounts.privateKeyToAccount(privateKey));
+          break;
+        }
+        default:
+        // the default case actually will not reach, since it is checked above
+          console.log('The network has not been set.');
+      }
+    }
+    accountArray.push(newAccount);
+    return accountArray;
   }
 
   /**
-   * Set the current account.
-   * @param {number} index - The index of the account in the accountArray
+   * a helper function to check if the network is set cottectly
    */
-  setCurrentAccount(index) {
-    const max = this.accountArray.length - 1;
-    if (index > max) {
-      console.log(`the maximum index is${max.toString()}`);
-    } else {
-      this.account = this.accountArray[index];
-    }
+  isNetworkSet() {
+    return this.network === 'stellar' || this.network === 'ethereum';
   }
 
   /**
-   * Return the account array.
-   * The index of accounts in this array can be different from the index
-   * of the account in the wallet,
-   * depending on the sequence the accounts are created.
-   * @returns {Array} the array of accounts
-   */
-  getAccountArray() {
-    if (this.accountArray == null) {
-      console.log('The account array is empty');
-      return null;
-    }
-    return this.accountArray;
-  }
-
-  /**
-   *
+   * The base method for encryption
+   * @param {string} data - the data to be encrypted
    * @param {string} password - the password
    * @returns {ByteStringBuffer} the object containing the encrypted string
    */
-  encryptSeed(password) {
+  encrypt(data, password) {
     // generate a random key and IV
     // Note: a key size of 16 bytes will use AES-128, 24 => AES-192, 32 => AES-256
     // forge uses Fortuna as its pseudorandom number generator, mentioned at the following link
@@ -305,7 +305,7 @@ class WalletManager {
     // Note: CBC and ECB modes use PKCS#7 padding as default
     const cipher = forge.cipher.createCipher('AES-GCM', key);
     cipher.start({ iv: this.iv });
-    cipher.update(forge.util.createBuffer(this.getSeed()));
+    cipher.update(forge.util.createBuffer(data));
     cipher.finish();
     const encrypted = cipher.output;
     this.tag = cipher.mode.tag;
@@ -315,11 +315,12 @@ class WalletManager {
   }
 
   /**
-   * It must be called after encryptSeed is called at least once
+   * The base decryption method
    * @param {string} password - The password to decrypt
-   * @returns {string} the seed phrases if the password is correct, otherwise a random string
+   * @param {ByteStringBuffer} encrypted - the encrypted object
+   * @returns {string|boolean} the seed phrases if the password is correct, otherwise false
    */
-  decryptSeed(password, encrypted) {
+  decrypt(password, encrypted) {
     const key = forge.pkcs5.pbkdf2(password, this.salt, 10, 16); // numIterations set to 10
     const decipher = forge.cipher.createDecipher('AES-GCM', key);
     decipher.start({ iv: this.iv, tag: this.tag });
@@ -336,96 +337,46 @@ class WalletManager {
   }
 
   /**
-   * @param {object} account - The account to be encrypted. Only the private key will be encrypted.
-   * @param {string} password - The password string used to encrypt the private key
-   * If on stellar, return the encrypted private key;
-   * If on ethereum, return the keystore V3 JSON.
-   * Plus all the auxiliary fields
-   * @returns the encrypted account
+   *
+   * @param {string} password - the password
+   * @returns {ByteStringBuffer|boolean} the object containing the encrypted string
+   * or false if there is no seed
    */
-  encrypt(account, password) {
-    switch (account.network) {
-      case 'stellar': {
-        // AES key and IV sizes
-        const keySize = 24;
-        const ivSize = 8;
-        // get derived bytes
-        const salt = forge.random.getBytesSync(8);
-        const derivedBytes = forge.pbe.opensslDeriveBytes(
-          password, salt, keySize + ivSize
-        ); /* , md */
-        const buffer = forge.util.createBuffer(derivedBytes);
-        const key = buffer.getBytes(keySize);
-        const iv = buffer.getBytes(ivSize);
-        const cipher = forge.cipher.createCipher('AES-CBC', key);
-        cipher.start({ iv });
-        cipher.update(forge.util.createBuffer(account.getPrivateKey(), 'binary'));
-        cipher.finish();
-        const output = forge.util.createBuffer();
-        // if using a salt, prepend this to the output:
-        if (salt !== null) {
-          output.putBytes('Salted__'); // (add to match openssl tool output)
-          output.putBytes(salt);
-        }
-        output.putBuffer(cipher.output);
-        return { original: output, network: this.network, balance: account.balance };
-      }
-
-      case 'ethereum':
-        return {
-          original: web3.eth.accounts.encrypt(account.getPrivateKey(), password),
-          network: this.network,
-          balance: account.balance
-        };
-        // return this.getOriginalAccount().encrypt(this.getPrivateKey(), password)
-      default:
-        console.log('The network is not correctly set');
-        return null;
+  encryptSeed(password) {
+    if (this.getSeed() == null) {
+      return false;
     }
+    return this.encrypt(this.getSeed(), password);
+  }
+
+  /**
+   * It must be called after encryptSeed is called at least once
+   * @param {string} password - The password to decrypt
+   * @param {ByteStringBuffer} - the encrypted object
+   * @returns {string|boolean} the seed phrases if the password is correct, otherwise false
+   */
+  decryptSeed(password, encrypted) {
+    return this.decrypt(password, encrypted);
+  }
+
+  /**
+   * Encrypt the private key of the account, only
+   * @param {object} account - The account to encrypt. Only the private key will be encrypted.
+   * @param {string} password - The password string used to encrypt the private key
+   * @returns {ByteStringBuffer|boolean} - the encrypted private key, or false if failed
+   */
+  encryptAccount(account, password) {
+    const privateKey = account.getPrivateKey();
+    return this.encrypt(privateKey, password);
   }
 
   /**
    * @param {object} cipher - The encrypted object
    * @param {string} password - The password that is used to encrypt the account
-   * Return an account, reconstructed from the cipher
-   * The fields remain the same, but methods are not.
-   * However, these methods will not be used, i.e. will use web3/stellar libraries.
-   * @returns {Account} the decrypted account
+   * @returns {string|boolean} the decrypted account private key, or false if failed
    */
-  decrypt(cipher, password) {
-    switch (this.network) {
-      case 'stellar': {
-        // parse salt from input
-        const input = forge.util.createBuffer(cipher.original, 'binary');
-        // skip "Salted__" (if known to be present)
-        input.getBytes('Salted__'.length);
-        // read 8-byte salt
-        const salt = input.getBytes(8);
-        // AES key and IV sizes
-        const keySize = 24;
-        const ivSize = 8;
-        const derivedBytes = forge.pbe.opensslDeriveBytes(password, salt, keySize + ivSize);
-        const buffer = forge.util.createBuffer(derivedBytes);
-        const key = buffer.getBytes(keySize);
-        const iv = buffer.getBytes(ivSize);
-        const decipher = forge.cipher.createDecipher('AES-CBC', key);
-        decipher.start({ iv });
-        decipher.update(input);
-        // const result = decipher.finish(); // check 'result' for true/false
-        const decryptedPrivateKey = decipher.output.data;
-        const decryptedStellarAccount = new Account(cipher.network);
-        decryptedStellarAccount.setAccount(StellarSdk.Keypair.fromSecret(decryptedPrivateKey));
-        return decryptedStellarAccount;
-      }
-      case 'ethereum': {
-        const decryptedAccount = new Account(cipher.network);
-        decryptedAccount.setAccount(web3.eth.accounts.decrypt(cipher.original, password));
-        return decryptedAccount;
-      }
-      default:
-        console.log('The network is not correctly set');
-        return null;
-    }
+  decryptAccount(cipher, password) {
+    return this.decrypt(cipher, password);
   }
 }
 

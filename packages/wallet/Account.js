@@ -17,6 +17,7 @@ const web3 = new Web3('https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff6
 class Account {
   /**
   * constructor
+  * Setting balance to -1, to differentiate from accounts with 0 balance
   * @param {string} network
   */
   constructor(network) {
@@ -25,9 +26,11 @@ class Account {
         this.network = 'stellar';
         this.testAddress = 'https://horizon-testnet.stellar.org/accounts/';
         StellarSdk.Network.useTestNetwork();
+        this.balance = -1;
         break;
       case 'ethereum':
         this.network = 'ethereum';
+        this.balance = -1;
         break;
       default:
         console.log('The name of the network must be stellar or ethereum.');
@@ -52,7 +55,7 @@ class Account {
             limit
           }))
           .build();
-        transaction.sign(this.account);
+        transaction.sign(this.nativeAccount);
         return server.submitTransaction(transaction);
       }
       case 'ethereum':
@@ -83,10 +86,10 @@ class Account {
    * For Ethereum, update its balance read on the Rinbeky testnet.
    * @param {object} account - A stellar or ethereum account
    */
-  async setAccount(originalAccount) {
+  async setAccount(account) {
     switch (this.network) {
       case 'stellar':
-        this.account = originalAccount;
+        this.nativeAccount = account;
         await this.loadBalance(this.getAddress());
         if (this.balance === '0.0000000' || this.balance === undefined) {
           try {
@@ -102,8 +105,8 @@ class Account {
         }
         break;
       case 'ethereum': {
-        this.account = originalAccount;
-        const response = await web3.eth.getBalance(originalAccount.address);
+        this.nativeAccount = account;
+        const response = await web3.eth.getBalance(account.address);
         if (typeof response === 'string') {
           this.balance = response;
         } else {
@@ -112,7 +115,7 @@ class Account {
         break;
       }
       default:
-        this.account = null;
+        this.nativeAccount = null;
         console.log('The account network is not correctly set.');
     }
   }
@@ -125,8 +128,8 @@ class Account {
   sign(data) {
     switch (this.network) {
       case 'stellar':
-        if (this.account.canSign()) {
-          return this.account.sign(data);
+        if (this.nativeAccount.canSign()) {
+          return this.nativeAccount.sign(data);
         }
         console.log('The Stellar account does not contain a private key and cannot sign');
         return null;
@@ -156,7 +159,7 @@ class Account {
               asset: StellarSdk.Asset.native(),
               amount
             })).build();
-          transaction.sign(this.account);
+          transaction.sign(this.nativeAccount);
           return await server.submitTransaction(transaction);
         }
 
@@ -169,7 +172,7 @@ class Account {
             chainId: 4 // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
           };
 
-          const signedTx = await this.account.signTransaction(rawTransaction);
+          const signedTx = await this.nativeAccount.signTransaction(rawTransaction);
           const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
           return receipt;
         }
@@ -231,7 +234,7 @@ class Account {
           const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(uri.slice(19), 'base64');
           // web+stellar:tx?xdr=... the xdr starts from position 19 of the string
           const tx1 = new StellarSdk.Transaction(txEnvelope);
-          tx1.sign(this.account);
+          tx1.sign(this.nativeAccount);
           return tx1;
         }
         case 'ethereum': {
@@ -294,7 +297,7 @@ class Account {
     const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(transaction, 'base64');
     const tx1 = new StellarSdk.Transaction(txEnvelope);
     // sign it
-    tx1.sign(this.account);
+    tx1.sign(this.nativeAccount);
     return tx1.toEnvelope().toXDR('base64');
   }
 
@@ -355,7 +358,7 @@ class Account {
    * @returns {object} the account that is passed into this wrapper class
    */
   getOriginalAccount() {
-    return this.account;
+    return this.nativeAccount;
   }
 
   /**
@@ -366,9 +369,9 @@ class Account {
   getAddress() {
     switch (this.network) {
       case 'stellar':
-        return this.account.publicKey();
+        return this.nativeAccount.publicKey();
       case 'ethereum':
-        return this.account.address;
+        return this.nativeAccount.address;
       default:
         console.log('The network is not set correctly.');
         return null;
@@ -382,9 +385,9 @@ class Account {
   getPrivateKey() {
     switch (this.network) {
       case 'stellar':
-        return this.account.secret();
+        return this.nativeAccount.secret();
       case 'ethereum':
-        return this.account.privateKey;
+        return this.nativeAccount.privateKey;
       default:
         console.log('The network is not set correctly.');
         return null;
