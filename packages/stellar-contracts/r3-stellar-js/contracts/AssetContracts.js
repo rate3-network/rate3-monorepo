@@ -19,18 +19,18 @@ function AssetContracts(stellar, Stellar) {
         const tx = new Stellar.TransactionBuilder(distributor)
             // The `changeTrust` operation creates (or alters) a trustline.
             // The `limit` parameter below is optional.
-            .addOperation(sdk.Operation.changeTrust(opts))
+            .addOperation(Stellar.Operation.changeTrust(opts))
             .build();
 
         return { tx };
     }
 
-    const mintAsset = async (
+    const mintAsset = async ({
         asset,
         amount,
         issuingAccountPublicKey,
         distributionAccountPublicKey,
-    ) => {      
+    }) => {      
         const issuer = await stellar.loadAccount(issuingAccountPublicKey);
         const tx = new Stellar.TransactionBuilder(issuer)
             .addOperation(Stellar.Operation.payment({
@@ -38,16 +38,16 @@ function AssetContracts(stellar, Stellar) {
                 destination: distributionAccountPublicKey,
                 amount: String(amount),
             }))
-            .build()
+            .build();
 
         return { tx };
     }
 
-    const setAssetAuthorization = async (
+    const setAssetAuthorization = async ({
         asset,
         issuingAccountPublicKey,
         authorization,
-    ) => {
+    }) => {
         const opts = {};
 
         if (authorization = 'required') {
@@ -60,8 +60,8 @@ function AssetContracts(stellar, Stellar) {
 
         const issuer = await stellar.loadAccount(issuingAccountPublicKey);
         const tx = new Stellar.TransactionBuilder(issuer)
-            .addOperation(StellarSdk.Operation.setOptions(opts))
-            .build()
+            .addOperation(Stellar.Operation.setOptions(opts))
+            .build();
 
         return { tx };
     }
