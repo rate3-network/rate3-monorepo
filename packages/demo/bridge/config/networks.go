@@ -6,6 +6,8 @@ type networks struct {
 		URL string
 	}
 	Ethereum struct {
-		URL string
+		URL                         string
+		StellarIdentityAccountsAddr string
+		IdentityRegistryAddr        string
 	}
 }

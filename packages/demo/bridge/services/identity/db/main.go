@@ -31,6 +31,14 @@ type Database interface {
 	CreateLinkRequest(request LinkRequest) (int64, error)
 
 	SetStellarAccountCursor(id int64, cursor string) (int64, error)
+
+	// Gets the next link request for processing, sets the sender address for the
+	// link request to process.
+	// This operation locks the table to ensure that no link request can be
+	// process by multiple workers at the same time.
+	GetNextLinkRequest(senderAddress string) (*LinkRequest, error)
+
+	UpdateLinkRequest(request LinkRequest) (int64, error)
 }
 
 type PostgresDB struct {
@@ -67,8 +75,11 @@ type ReceivedPayment struct {
 type LinkRequest struct {
 	ID                int64       `db:"id"`
 	ReceivedPaymentID int64       `db:"received_payment_id"`
+	StellarAccount    string      `db:"from_account"`
 	EthereumAddress   string      `db:"ethereum_address"`
 	TxHash            null.String `db:"tx_hash"`
+	SenderAddress     null.String `db:"sender_address"`
+	Nonce             null.Int    `db:"nonce"`
 	Status            int64       `db:"status"`
 	Remarks           null.String `db:"remarks"`
 	Timestamp

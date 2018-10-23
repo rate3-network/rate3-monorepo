@@ -86,6 +86,11 @@ func (h *StellarPaymentHandler) handleIncomingPayment(account *db.StellarAccount
 		EthereumAddress:   *ethAddress,
 		Status:            db.LinkRequestStatusPendingValidation,
 	}
+	h.Logger.Debug("Create link request",
+		zap.Any("Link Request", linkRequest),
+		zap.Any("Received payment", receivedPayment),
+	)
+
 	linkRequest.ID, err = h.DB.CreateLinkRequest(linkRequest)
 	if err != nil {
 		h.Logger.Error("Unable to create link request",
@@ -95,12 +100,6 @@ func (h *StellarPaymentHandler) handleIncomingPayment(account *db.StellarAccount
 		)
 		return
 	}
-
-	h.Logger.Debug("Enqueue link request",
-		zap.Any("Link Request", linkRequest),
-		zap.Any("Received payment", receivedPayment),
-	)
-	h.LinkRequests <- linkRequest
 }
 
 func (h *StellarPaymentHandler) parseMemo(payment *horizon.Payment) (ethAddress *string, memo null.String, memoType stellar.MemoType) {

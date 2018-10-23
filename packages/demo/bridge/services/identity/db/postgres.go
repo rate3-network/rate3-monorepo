@@ -1,8 +1,11 @@
 package db
 
 import (
+	"fmt"
+
 	"github.com/gocraft/dbr"
 	"go.uber.org/zap"
+	"gopkg.in/guregu/null.v3"
 )
 
 func (d *PostgresDB) LoadStellarAccount(address string) (*StellarAccount, error) {
@@ -181,4 +184,92 @@ func (d *PostgresDB) SetStellarAccountCursor(id int64, cursor string) (int64, er
 	}
 
 	return results.RowsAffected()
+}
+
+func (d *PostgresDB) GetNextLinkRequest(senderAddress string) (*LinkRequest, error) {
+	sess := d.Connection.NewSession(nil)
+	tx, err := sess.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.RollbackUnlessCommitted()
+
+	_, err = tx.Exec(fmt.Sprintf("LOCK TABLE %s IN ACCESS EXCLUSIVE MODE;", tableLinkRequests))
+	if err != nil {
+		d.Logger.Warn("Unable to lock link request table", zap.Error(err))
+		return nil, err
+	}
+
+	var res LinkRequest
+
+	err = tx.
+		Select(
+			fmt.Sprintf("%s.*", tableLinkRequests),
+			fmt.Sprintf("%s.%s", tableReceivedPayments, columnFromAccount),
+		).
+		From(tableLinkRequests).
+		LeftJoin(
+			tableReceivedPayments, fmt.Sprintf("%s.%s = %s.%s",
+				tableLinkRequests, columnReceivedPaymentID,
+				tableReceivedPayments, columnID),
+		).
+		Where(dbr.And(
+			dbr.Eq(
+				fmt.Sprintf("%s.%s", tableLinkRequests, columnStatus),
+				LinkRequestStatusPendingValidation,
+			),
+			dbr.Eq(
+				fmt.Sprintf("%s.%s", tableLinkRequests, columnSenderAddress),
+				nil,
+			),
+		)).
+		OrderDir(columnLastCreated, true).
+		Limit(1).
+		LoadOne(&res)
+
+	if err != nil {
+		if err == dbr.ErrNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	_, err = tx.
+		Update(tableLinkRequests).
+		Set(columnSenderAddress, senderAddress).
+		Where(dbr.And(
+			dbr.Eq(columnID, res.ID),
+		)).
+		Exec()
+
+	if err != nil {
+		return nil, err
+	}
+
+	res.SenderAddress = null.NewString(senderAddress, true)
+
+	return &res, tx.Commit()
+}
+
+func (d *PostgresDB) UpdateLinkRequest(request LinkRequest) (int64, error) {
+	sess := d.Connection.NewSession(nil)
+
+	res, err := sess.
+		Update(tableLinkRequests).
+		SetMap(map[string]interface{}{
+			columnTxHash:        request.TxHash,
+			columnSenderAddress: request.SenderAddress,
+			columnNonce:         request.Nonce,
+			columnStatus:        request.Status,
+			columnRemarks:       request.Remarks,
+		}).
+		Where(dbr.And(
+			dbr.Eq(columnID, request.ID),
+		)).
+		Exec()
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RowsAffected()
 }

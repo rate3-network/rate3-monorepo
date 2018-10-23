@@ -35,6 +35,8 @@ const (
 
 	columnReceivedPaymentID = "received_payment_id"
 	columnEthereumAddress   = "ethereum_address"
+	columnSenderAddress     = "sender_address"
+	columnNonce             = "nonce"
 )
 
 // pgTimeFormat is RFC3339 which has timezone information and accepted by pg
