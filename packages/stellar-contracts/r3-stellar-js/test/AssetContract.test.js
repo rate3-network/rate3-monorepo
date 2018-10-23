@@ -66,6 +66,22 @@ describe("AssetContract integration tests", function () {
 
             console.log(res);
         });
+
+        it("able to set asset authorization", async function () {
+            // Mint asset to distributor
+           const { tx } = await this.r3.assetContracts.setAssetAuthorization({
+               asset: this.asset,
+               issuingAccountPublicKey: this.issuerKeypair.publicKey(),
+               authorization: 'revocable'
+           });
+
+           // Sign transaction with issuer
+           tx.sign(this.issuerKeypair);
+
+           const res = await this.r3.stellar.submitTransaction(tx);
+
+           console.log(res);
+       });
     });
 
 });

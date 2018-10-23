@@ -69,6 +69,7 @@ function AssetContracts(stellar, Stellar) {
     return {
         trustIssuingAccount,
         mintAsset,
+        setAssetAuthorization,
     };
 }
 
