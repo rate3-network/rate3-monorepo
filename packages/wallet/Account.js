@@ -25,6 +25,7 @@ class Account {
     this.balance = -1;
     this.hardware = null;
     this.nativeAccount = null;
+    this.history = null;
     switch (network) {
       case 'stellar':
         this.network = 'stellar';
@@ -190,6 +191,7 @@ class Account {
     switch (this.network) {
       case 'stellar':
         if (this.nativeAccount.canSign()) {
+          console.log('sign without hardware')
           return this.nativeAccount.sign(data);
         }
         console.log('The Stellar account does not contain a private key and cannot sign');
@@ -330,13 +332,39 @@ class Account {
           const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(uri.slice(19), 'base64');
           // web+stellar:tx?xdr=... the xdr starts from position 19 of the string
           const tx1 = new StellarSdk.Transaction(txEnvelope);
-          tx1.sign(this.nativeAccount);
-          return tx1;
+          if (this.hardware != null) {
+            switch (this.hardware.hardware) {
+              case 'ledger':
+                return this.hardware.signTransaction(this.nativeAccount, tx1);
+              case 'trezor':
+                return this.hardware.signTransaction(this.nativeAccount,
+                  setting.stellarTestNetPassPhrase, tx1);
+              default:
+                console.log(setting.hardwareDebug);
+                return false;
+            }
+          } else {
+            tx1.sign(this.nativeAccount);
+            return tx1;
+          }
         }
         case 'ethereum': {
           // tx '0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda'
           const tx = await web3.eth.getTransaction(uri); // uri here is the transaction hash
-          return web3.eth.accounts.signTransaction(tx, this.getPrivateKey());
+          if (this.hardware != null) {
+            switch (this.hardware.hardware) {
+              case 'ledger':
+                return this.hardware.signTransaction(this.nativeAccount, tx);
+              case 'trezor':
+                return this.hardware.signTransaction(this.nativeAccount,
+                  setting.stellarTestNetPassPhrase, tx);
+              default:
+                console.log(setting.hardwareDebug);
+                return false;
+            }
+          } else {
+            return web3.eth.accounts.signTransaction(tx, this.getPrivateKey());
+          }
         }
         default:
           console.log(setting.networkError);
@@ -385,14 +413,31 @@ class Account {
 
   /**
    * Takes an XDR encoded transaction, build a transaction and sign it.
-   * @param {JSON} transaction
+   * @param {JSON} transactionJSON
    * @returns {string|null}the signed transaction XDR encoded, or null if failed
    */
-  signAuthenticationChallenge(transaction) {
+  signAuthenticationChallenge(transactionJSON) {
     // build the transaction
-    const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(transaction, 'base64');
+    const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(transactionJSON, 'base64');
     const tx1 = new StellarSdk.Transaction(txEnvelope);
     // sign it
+    if (this.hardware != null) {
+      if (this.hardware.currency === 'stellar') {
+        switch (this.hardware.hardware) {
+          case 'ledger':
+            return this.hardware.signTransaction(this.nativeAccount, tx1).toEnvelope().toXDR('base64');
+          case 'trezor':
+            return this.hardware.signTransaction(this.nativeAccount,
+              setting.stellarTestNetPassPhrase, tx1).toEnvelope().toXDR('base64');
+          default:
+            console.log(setting.hardwareDebug);
+            return false;
+        }
+      } else {
+        console.log('Authentication challenge is for stellar only');
+        return false;
+      }
+    }
     tx1.sign(this.nativeAccount);
     return tx1.toEnvelope().toXDR('base64');
   }
@@ -463,6 +508,13 @@ class Account {
    * @returns {string} the address
    */
   getAddress() {
+    if (this.hardware != null) {
+      if (this.nativeAccount == null) {
+        console.log('The native account is not set yet');
+        return null;
+      }
+      return this.nativeAccount;
+    }
     switch (this.network) {
       case 'stellar':
         return this.nativeAccount.publicKey();
@@ -479,6 +531,10 @@ class Account {
    * @returns {string} the private key
    */
   getPrivateKey() {
+    if (this.hardware != null) {
+      console.log('The private key is not available from the hardware');
+      return false;
+    }
     switch (this.network) {
       case 'stellar':
         return this.nativeAccount.secret();

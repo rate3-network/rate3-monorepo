@@ -31,7 +31,7 @@ beforeAll(async () => {
 // // standardize name
 // // load this signed
 test('signEthereum', async () => {
-  jest.setTimeout(60000);
+  jest.setTimeout(30000);
   const exptectedMesage = 'test';
   const expectedmesageHash = '0x4a5c5d454721bbbb25540c3317521e71c373ae36458f960d2ad46ef088110e95';
   const expectedSignature = '0xc381a96085965fa17411546b655332428a63886c912af4b5bf9c215e5d4a96a95e0a2e96a0187e55933b34bec263fc5d77a7c6017b954384bbd23e9ee55ed61a1b';
@@ -52,7 +52,7 @@ test('signEthereum', async () => {
 });
 
 test('signStellar', async () => {
-  jest.setTimeout(60000);
+  jest.setTimeout(30000);
   const wallet = new WalletManager('stellar');
   wallet.setSeed(seedPhrases);
   wallet.setWallet();
@@ -68,7 +68,7 @@ test('signStellar', async () => {
 });
 
 test('delegatedSigningStellar', async () => {
-  jest.setTimeout(60000);
+  jest.setTimeout(30000);
   const sampleXDR = 'web+stellar:tx?xdr=AAAAAKEXb+g8NGdB5fncWTVdm1VYU/+1EaZfac9+IUMSWlldAAAAZACpzYcAAAAKAAAAAAAAAAAAAAABAAAAAQAAAAChF2/oPDRnQeX53Fk1XZtVWFP/tRGmX2nPfiFDElpZXQAAAAEAAAAAINKkmbLvxl/YKqBHgvQ/pJjOY+EBY2HA3yzTtfbpE3oAAAAAAAAAAACYloAAAAAAAAAAAA==';
   const signedObject = await account3Stellar.delegatedSigning(sampleXDR);
   // show the transaction
@@ -119,7 +119,7 @@ test('delegatedSigningStellar', async () => {
 });
 
 test('delegatedSigningEthereum', async () => {
-  jest.setTimeout(60000);
+  jest.setTimeout(30000);
   const sampleTx = '0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda';
   const signedObject = await account3Ethereum.delegatedSigning(sampleTx);
   // explain the object
