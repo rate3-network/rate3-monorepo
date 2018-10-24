@@ -2,6 +2,8 @@ const rp = require('request-promise');
 const StellarSdk = require('stellar-sdk');
 const Web3 = require('web3');
 const setting = require('./setting');
+const Trezor = require('./Trezor');
+const Ledger = require('./Ledger');
 
 const server = new StellarSdk.Server(setting.horizonEndpoint);
 const web3 = new Web3(setting.infuraUrl);
@@ -20,16 +22,17 @@ class Account {
   * @param {string} network
   */
   constructor(network) {
+    this.balance = -1;
+    this.hardware = null;
+    this.nativeAccount = null;
     switch (network) {
       case 'stellar':
         this.network = 'stellar';
         this.testAddress = `${setting.horizonEndpoint}/accounts/`;
         StellarSdk.Network.useTestNetwork();
-        this.balance = -1;
         break;
       case 'ethereum':
         this.network = 'ethereum';
-        this.balance = -1;
         break;
       default:
         console.log(setting.networkError);
@@ -80,12 +83,57 @@ class Account {
   }
 
   /**
+   * Set the hardware of this account to be the hardware wallet object
+   * If using a hardware, this method must be called right after initialization.
+   * @param {string} hardware - Ledger of Trezor
+   */
+  setHardware(hardware) {
+    switch (hardware) {
+      case 'trezor':
+        this.hardware = new Trezor(this.network);
+        break;
+      case 'ledger':
+        this.hardware = new Ledger(this.network);
+        break;
+      default:
+        console.log('The hardware must be ledger or trezor');
+        return false;
+    }
+    return true;
+  }
+
+  /**
+   * Remove the hardware, and set the account using native account objects
+   */
+  removeHardware() {
+    this.hardware = null;
+  }
+
+  /**
    * Set the account field of this account to be the argument;
    * For Stellar, upload it to the testnet and update the balance;
    * For Ethereum, update its balance read on the Rinbeky testnet.
-   * @param {object} account - A stellar or ethereum account
+   * @param {object|string} account - A stellar or ethereum account
+   * or the derivation path of the account in the hardware wallet
+   * If using a hardware wallet, the nativeAccount field will be the derivation path
+   * This is for the convenience of using Ledger/Trezor APIs.
+   * The public key will be available in getAccount method,
+   * and the private key of the account is not released by the wallet.
    */
   async setAccount(account) {
+    if (this.hardware != null) {
+      switch (this.hardware.hardware) {
+        case 'ledger':
+        case 'trezor':
+          // they are the same initialization
+          this.nativeAccount = account;
+          break;
+        default:
+          console.log(setting.hardwareDebug);
+          return false;
+      }
+      return true;
+    }
     switch (this.network) {
       case 'stellar':
         this.nativeAccount = account;
@@ -116,27 +164,41 @@ class Account {
       default:
         this.nativeAccount = null;
         console.log(setting.networkError);
+        return false;
     }
+    return true;
   }
 
   /**
    * Sign the data using the private key of the current account
    * @param {string} data - the data (string) to be signed
-   * @returns {object} the signed object
+   * @returns {object|boolean} the signed object, or false if failed
    */
   sign(data) {
+    if (this.hardware != null) {
+      switch (this.hardware.hardware) {
+        case 'ledger':
+          return this.hardware.signMessage(this.nativeAccount, data);
+        case 'trezor':
+          return this.hardware.signMessage(this.nativeAccount, data, false);
+          // output not in hex
+        default:
+          console.log(setting.hardwareDebug);
+          return false;
+      }
+    }
     switch (this.network) {
       case 'stellar':
         if (this.nativeAccount.canSign()) {
           return this.nativeAccount.sign(data);
         }
         console.log('The Stellar account does not contain a private key and cannot sign');
-        return null;
+        return false;
       case 'ethereum':
         return web3.eth.accounts.sign(data, this.getPrivateKey());
       default:
         console.log(setting.networkError);
-        return null;
+        return false;
     }
   }
 
@@ -152,13 +214,28 @@ class Account {
         case 'stellar': {
           await server.loadAccount(to);
           const accontOnTestnet = await server.loadAccount(this.getAddress());
-          const transaction = new StellarSdk.TransactionBuilder(accontOnTestnet)
+          let transaction = new StellarSdk.TransactionBuilder(accontOnTestnet)
             .addOperation(StellarSdk.Operation.payment({
               destination: to,
               asset: StellarSdk.Asset.native(),
               amount
             })).build();
-          transaction.sign(this.nativeAccount);
+          if (this.hardware != null) {
+            switch (this.hardware.hardware) {
+              case 'ledger':
+                transaction = this.hardware.signTransaction(this.nativeAccount, transaction);
+                break;
+              case 'trezor':
+                transaction = this.hardware.signTransaction(this.nativeAccount,
+                  setting.stellarTestNetPassPhrase, transaction);
+                break;
+              default:
+                console.log(setting.hardwareDebug);
+                return false;
+            }
+          } else {
+            transaction.sign(this.nativeAccount);
+          }
           return await server.submitTransaction(transaction);
         }
 
@@ -173,19 +250,37 @@ class Account {
             // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
           };
 
-          const signedTx = await this.nativeAccount.signTransaction(rawTransaction);
-          const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+          let signedTx;
+          let receipt;
+          if (this.hardware != null) {
+            switch (this.hardware.hardware) {
+              case 'ledger':
+                signedTx = this.hardware.signTransaction(this.nativeAccount, rawTransaction.serialize().toString('hex'));
+                break;
+              case 'trezor':
+                signedTx = this.hardware.signTransaction(this.nativeAccount,
+                  setting.stellarTestNetPassPhrase, rawTransaction.serialize().toString('hex'));
+                break;
+              default:
+                console.log(setting.hardwareDebug);
+                return false;
+            }
+            receipt = await web3.eth.sendSignedTransaction(signedTx);
+          } else {
+            signedTx = await this.nativeAccount.signTransaction(rawTransaction);
+            receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+          }
           return receipt;
         }
         // infura accepts only raw transactions, because it does not handle private keys
         default:
           console.log(setting.networkError);
+          return false;
       }
     } catch (err) {
       console.log('ethereum send transaction error ', err);
-      return null;
+      return false;
     }
-    return null;
   }
 
   /**

@@ -1,11 +1,5 @@
 const TrezorConnect = require('trezor-connect').default;
 
-TrezorConnect.getPublicKey({
-  path: "m/49'/0'/4'",
-  coin: 'btc'
-}).then(function x (result) {
-  console.log(result);
-});
 /**
  * The class wraps api from trezor-connect
  * with ES6 async/await syntax
@@ -17,6 +11,7 @@ class Trezor {
    */
   constructor(currency) {
     this.currency = currency;
+    this.hardware = 'trezor';
   }
 
   /**
@@ -31,7 +26,7 @@ class Trezor {
   async getPublicKey(path) {
     let result;
     const params = { path };
-    if (this.currency === 'Ethereum') {
+    if (this.currency === 'ethereum') {
       result = await TrezorConnect.ethereumGetAddress(params);
     } else {
       result = await TrezorConnect.stellarGetAddress(params);
@@ -52,7 +47,7 @@ class Trezor {
     let result;
     const paramsStellar = { path, networkPassphrase, transaction };
     const paramsEthereum = { path, transaction };
-    if (this.currency === 'Ethereum') {
+    if (this.currency === 'ethereum') {
       result = await TrezorConnect.ethereumSignTransaction(paramsEthereum);
     } else {
       result = await TrezorConnect.stellarSignTransaction(paramsStellar);
@@ -69,7 +64,7 @@ class Trezor {
    */
   async signMessage(path, message, hex = false) {
     let result;
-    if (this.currency === 'Ethereum') {
+    if (this.currency === 'ethereum') {
       const params = { path, message, hex };
       result = await TrezorConnect.ethereumSignMessage(params);
     } else {
@@ -89,7 +84,7 @@ class Trezor {
    */
   async verifyMessage(address, message, signature, hex = false) {
     let result;
-    if (this.currency === 'Ethereum') {
+    if (this.currency === 'ethereum') {
       const params = {
         address, message, signature, hex
       };

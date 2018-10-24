@@ -13,6 +13,7 @@ class Ledger {
    */
   constructor(currency) {
     this.currency = currency;
+    this.hardware = 'ledger';
   }
 
   /**
@@ -22,7 +23,7 @@ class Ledger {
   async getAppVersion() {
     let result;
     const transport = await TransportNodeHid.create();
-    if (this.currency === 'Stellar') {
+    if (this.currency === 'stellar') {
       const str = new Str(transport);
       result = await str.getAppConfiguration();
     } else {
@@ -45,7 +46,7 @@ class Ledger {
   async getPublicKey(path, boolDisplay, boolValidateChaincode) {
     let result;
     const transport = await TransportNodeHid.create();
-    if (this.currency === 'Stellar') {
+    if (this.currency === 'stellar') {
       const str = new Str(transport);
       result = await str.getPublicKey(path, boolValidateChaincode, boolDisplay); // "44'/148'/0'"
       result = result.publicKey;
@@ -64,7 +65,7 @@ class Ledger {
   async signTransaction(path, transaction) {
     let result;
     const transport = await TransportNodeHid.create();
-    if (this.currency === 'Stellar') {
+    if (this.currency === 'stellar') {
       const str = new Str(transport);
       result = str.signTransaction(path, transaction);
       result = result.signature;
@@ -85,7 +86,7 @@ class Ledger {
   async signMessage(path, message) {
     let result;
     const transport = await TransportNodeHid.create();
-    if (this.currency === 'Stellar') {
+    if (this.currency === 'stellar') {
       const str = new Str(transport);
       result = str.signHash(path, message);
       result = result.signature;
