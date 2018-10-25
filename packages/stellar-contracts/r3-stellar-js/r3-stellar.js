@@ -3,7 +3,7 @@
 import Stellar from 'stellar-sdk';
 
 import AssetContracts from './contracts/AssetContracts.js';
-import HashedTimelockContracts from './contracts/AssetContracts.js';
+import HashedTimelockContracts from './contracts/HashedTimelockContracts.js';
 
 async function R3Stellar(serverURI) {
 
@@ -14,13 +14,13 @@ async function R3Stellar(serverURI) {
     const stellar = new Stellar.Server(serverURI);
 
     const assetContracts = AssetContracts(stellar, Stellar);
-    const hashedTimeLockContracts = HashedTimelockContracts(stellar, Stellar);    
+    const hashedTimelockContracts = HashedTimelockContracts(stellar, Stellar);    
 
     return {
         stellar,
         Stellar,
         assetContracts,
-        hashedTimeLockContracts,
+        hashedTimelockContracts,
     };
 }
 

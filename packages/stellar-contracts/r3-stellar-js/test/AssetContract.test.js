@@ -7,12 +7,12 @@ require('chai')
 .use(require('chai-as-promised'))
 .should();
 
-describe("AssetContract integration tests", function () {
+describe("AssetContracts integration tests", function () {
     // Actual Stellar horizon testnet address.
     const HORIZON_TESTNET_URL = 'https://horizon-testnet.stellar.org';
 
     // Let's rate limit ourselves before Stellar bans us.
-    const TIMEOUT = 20*1000;
+    const TIMEOUT = 30*1000;
     this.timeout(TIMEOUT);
     this.slow(TIMEOUT/2);
 
@@ -33,13 +33,13 @@ describe("AssetContract integration tests", function () {
         before(async function () {
             // Create asset
             this.asset = new this.r3.Stellar.Asset('TestAsset', this.issuerKeypair.publicKey());
-        })
+        });
 
         it("able to create trustline between issuer and distributor", async function () {
             // Create a trustline with issuing account with distributor account
             const { tx } = await this.r3.assetContracts.trustIssuingAccount({
                 asset: this.asset,
-                distributionAccountPublicKey: this.distributorKeypair.publicKey()
+                distributionAccountPublicKey: this.distributorKeypair.publicKey(),
             });
 
             // Sign transaction with distributor
@@ -56,7 +56,7 @@ describe("AssetContract integration tests", function () {
                 asset: this.asset,
                 amount: 1000,
                 issuingAccountPublicKey: this.issuerKeypair.publicKey(),
-                distributionAccountPublicKey: this.distributorKeypair.publicKey()
+                distributionAccountPublicKey: this.distributorKeypair.publicKey(),
             });
 
             // Sign transaction with issuer
@@ -72,7 +72,7 @@ describe("AssetContract integration tests", function () {
            const { tx } = await this.r3.assetContracts.setAssetAuthorization({
                asset: this.asset,
                issuingAccountPublicKey: this.issuerKeypair.publicKey(),
-               authorization: 'revocable'
+               authorization: 'revocable',
            });
 
            // Sign transaction with issuer

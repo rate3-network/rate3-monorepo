@@ -43,6 +43,24 @@ function AssetContracts(stellar, Stellar) {
         return { tx };
     }
 
+    const distributeAsset = async ({
+        asset,
+        amount,
+        distributionAccountPublicKey,
+        destinationAccountPublicKey,
+    }) => {      
+        const distributor = await stellar.loadAccount(distributionAccountPublicKey);
+        const tx = new Stellar.TransactionBuilder(distributor)
+            .addOperation(Stellar.Operation.payment({
+                asset: asset,
+                destination: destinationAccountPublicKey,
+                amount: String(amount),
+            }))
+            .build();
+
+        return { tx };
+    }
+
     const setAssetAuthorization = async ({
         asset,
         issuingAccountPublicKey,
@@ -69,6 +87,7 @@ function AssetContracts(stellar, Stellar) {
     return {
         trustIssuingAccount,
         mintAsset,
+        distributeAsset,
         setAssetAuthorization,
     };
 }
