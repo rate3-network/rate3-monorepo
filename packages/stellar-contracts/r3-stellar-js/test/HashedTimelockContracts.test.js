@@ -157,7 +157,11 @@ describe("HashedTimelockContracts integration tests", function () {
             console.log(refundTx.toEnvelope().toXDR().toString("base64"));
 
             console.log('KEYS');
-            console.log(this.holdingKeypair.secret(), this.aliceKeypair.secret(), this.bobKeypair.secret());
+            console.log('HOLDING: ', this.holdingKeypair.secret());
+            console.log('ALICE (Depositor): ', this.aliceKeypair.secret());
+            console.log('BOB (Claimer): ', this.bobKeypair.secret());
+            console.log('PREIMAGE (hex value): ', this.preimageHashlockPair.preimage.toString('hex'));
+            console.log('HASHLOCK (hex value): ', this.preimageHashlockPair.hashlock.toString('hex'));
 
             //const res = await this.r3.stellar.submitTransaction(holdingTx);
         });

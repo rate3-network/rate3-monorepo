@@ -19,10 +19,10 @@ function HashedTimelockContracts(stellar, Stellar) {
         // Create the holding account.
         const tx = new Stellar.TransactionBuilder(depositor)
             // 7 = 2 + 1 hashlock signer + 1 claimer signer + 1 asset trustline
-            //       + refundTx pre-auth + claimTx pre-auth
+            //       + refundTx pre-auth + claimTx pre-auth + 0.1 spare change
             .addOperation(Stellar.Operation.createAccount({
                 destination: holdingAccountPublicKey,
-                startingBalance: String(7 * baseReserve),
+                startingBalance: String(7.1 * baseReserve),
             }))
 
             // Set trustline for asset for holding account.
