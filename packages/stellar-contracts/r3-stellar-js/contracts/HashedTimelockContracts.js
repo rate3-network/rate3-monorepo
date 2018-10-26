@@ -100,7 +100,7 @@ function HashedTimelockContracts(stellar, Stellar) {
         }
 
         // Prepare the refund transaction.
-        const refundTx = new Stellar.TransactionBuilder(depositor, {
+        const refundTx = new Stellar.TransactionBuilder(holding, {
             timebounds: {
                 minTime: refundTime,
                 maxTime: 0,

@@ -123,11 +123,12 @@ describe("HashedTimelockContracts integration tests", function () {
             });
 
             // Sign transaction with alice and holding account.
-            // tx.sign(this.aliceKeypair, this.holdingKeypair);
+            tx.sign(this.aliceKeypair, this.holdingKeypair);
+
             console.log('holding account XDR');
             console.log(tx.toEnvelope().toXDR().toString("base64"));
 
-            //const res = await this.r3.stellar.submitTransaction(holdingTx);
+            const res = await this.r3.stellar.submitTransaction(tx);
         });
 
         it("able to finalize holding account", async function () {
