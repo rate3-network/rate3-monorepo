@@ -58,6 +58,7 @@ Otherwise, the fields/methods are created and saved in this class.</div>
 
 <div class="description">
     constructor
+Setting balance to -1, to differentiate from accounts with 0 balance
 </div>
 
 
@@ -150,7 +151,7 @@ Otherwise, the fields/methods are created and saved in this class.</div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line15">line 15</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line18">line 18</a>
     </li></ul></dd>
     
 
@@ -351,7 +352,7 @@ Otherwise, the fields/methods are created and saved in this class.</div>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line42">line 42</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -514,7 +515,7 @@ Use the getter to get the signed transaction
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line225">line 225</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line347">line 347</a>
     </li></ul></dd>
     
 
@@ -623,7 +624,7 @@ The address of an ethereum account is a part of the hash of the public key
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line364">line 364</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line529">line 529</a>
     </li></ul></dd>
     
 
@@ -781,7 +782,7 @@ Request a challenge to verify this account from the end point
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line256">line 256</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line404">line 404</a>
     </li></ul></dd>
     
 
@@ -894,7 +895,7 @@ i.e. there is no other types of currency.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line337">line 337</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line502">line 502</a>
     </li></ul></dd>
     
 
@@ -950,7 +951,7 @@ i.e. there is no other types of currency.
     
 
     
-    <h4 class="name" id="getDeposit"><span class="type-signature">(async) </span>getDeposit<span class="signature">(url, asset_code, account, memo_type, memo, email_address, type)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getHardware"><span class="type-signature"></span>getHardware<span class="signature">()</span><span class="type-signature"> &rarr; {object}</span></h4>
     
 
     
@@ -958,9 +959,7 @@ i.e. there is no other types of currency.
 
 
 <div class="description">
-    Deposit external assets with an anchor.
-Parameter descriptions are from SEP-0006.
-The parameter naming follows SEP-0006, and does not use camel case
+    Getter
 </div>
 
 
@@ -969,237 +968,6 @@ The parameter naming follows SEP-0006, and does not use camel case
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>url</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the url of this get request, without slash at the end</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>asset_code</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">The code of the asset the user is wanting to deposit with
-the anchor. Ex BTC,ETH,USD,INR,etc</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>account</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">The stellar account ID of the user that wants to deposit.
-This is where the asset token will be sent.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>memo_type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-
-            <td class="description last">(optional) type of memo that anchor should attach to the Stellar
- payment transaction, one of text, id or hash</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>memo</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-
-            <td class="description last">(optional) value of memo to attach to transaction,
-for hash this should be base64-encoded.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>email_address</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-
-            <td class="description last">(optional) Email address of depositor.
-If desired, an anchor can use this to send email updates to the user about the deposit.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    null
-                
-                </td>
-            
-
-            <td class="description last">(optional) Type of deposit. If the anchor supports
- multiple deposit methods (e.g. SEPA or SWIFT), the wallet should specify type.</td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -1235,7 +1003,7 @@ If desired, an anchor can use this to send email updates to the user about the d
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line413">line 413</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line116">line 116</a>
     </li></ul></dd>
     
 
@@ -1258,6 +1026,28 @@ If desired, an anchor can use this to send email updates to the user about the d
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    - the hardware, or null
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -1323,7 +1113,7 @@ different between eth and stellar.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line347">line 347</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line512">line 512</a>
     </li></ul></dd>
     
 
@@ -1368,178 +1158,6 @@ different between eth and stellar.
 </dl>
 
     
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getInfo"><span class="type-signature">(async) </span>getInfo<span class="signature">(url, lang)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Allows an anchor to communicate basic info about what
-their TRANSFER_SERVER supports to wallets and clients.
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-        <th>Default</th>
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>url</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                </td>
-            
-
-            <td class="description last">the url of this get request, without slash at the end</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>lang</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-                <td class="default">
-                
-                    en
-                
-                </td>
-            
-
-            <td class="description last">(optional) Defaults to en. Language code specified using ISO 639-1.
-description fields in the response should be in this language</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line503">line 503</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1603,7 +1221,7 @@ description fields in the response should be in this language</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line327">line 327</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line492">line 492</a>
     </li></ul></dd>
     
 
@@ -1699,7 +1317,7 @@ description fields in the response should be in this language</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line355">line 355</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line520">line 520</a>
     </li></ul></dd>
     
 
@@ -1807,7 +1425,7 @@ description fields in the response should be in this language</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line380">line 380</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line552">line 552</a>
     </li></ul></dd>
     
 
@@ -1852,562 +1470,6 @@ description fields in the response should be in this language</td>
 </dl>
 
     
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getTransactionHistory"><span class="type-signature">(async) </span>getTransactionHistory<span class="signature">(url, asset_code, account, no_older_than, limit, paging_id)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    View history of deposits and withdrawals involving the user
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>url</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the url of this get request, without slash at the end</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>asset_code</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The code of the asset of interest. E.g. BTC,ETH,USD,INR,etc</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>account</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The stellar account ID involved in the transactions</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>no_older_than</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(optional) The response should contain transactions
- starting on or after this date & time</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>limit</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(optional) the response should contain at most limit transactions</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>paging_id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(optional) the response should contain transactions
- starting prior to this ID (exclusive)</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line534">line 534</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="getWithdraw"><span class="type-signature">(async) </span>getWithdraw<span class="signature">(url, type, asset_code, dest, dest_extra, account, memo, memo_type)</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Withdraw assets from an anchor
-</div>
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>url</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">the url of this get request, without slash at the end</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Type of withdrawal. Can be: crypto, bank_account, cash, mobile,
- bill_payment or other custom values</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>asset_code</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Code of the asset the user wants to withdraw</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>dest</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">The account that the user wants to withdraw their funds to.
- This can be a crypto account, a bank account number, IBAN, mobile number, or email address.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>dest_extra</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(optional) Extra information to specify withdrawal location.
- For crypto it may be a memo in addition to the dest address. It can also be a routing number
- for a bank, a BIC, or the name of a partner handling the withdrawal.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>account</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(optional) The stellar account ID of the user that wants to do
- the withdrawal. This is only needed if the anchor requires KYC information for withdrawal.
- The anchor can use account to look up the user's KYC information.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>memo</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(optional) A wallet will send this to uniquely identify a user
- if the wallet has multiple users sharing one Stellar account. The anchor can use this
- along with account to look up the user's KYC info.</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>memo_type</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">(optional) type of memo. One of text, id or hash</td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line463">line 463</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2520,7 +1582,7 @@ description fields in the response should be in this language</td>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line69">line 69</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line83">line 83</a>
     </li></ul></dd>
     
 
@@ -2609,7 +1671,7 @@ The format for Stellar and Ethereum are different.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line192">line 192</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line314">line 314</a>
     </li></ul></dd>
     
 
@@ -2654,6 +1716,92 @@ The format for Stellar and Ethereum are different.
 </dl>
 
     
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="removeHardware"><span class="type-signature"></span>removeHardware<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Remove the hardware, and set the account using native account objects
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line123">line 123</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2789,7 +1937,7 @@ The format for Stellar and Ethereum are different.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line145">line 145</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line227">line 227</a>
     </li></ul></dd>
     
 
@@ -2946,7 +2094,7 @@ The format for Stellar and Ethereum are different.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line305">line 305</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line470">line 470</a>
     </li></ul></dd>
     
 
@@ -3059,6 +2207,9 @@ For Ethereum, update its balance read on the Rinbeky testnet.
             
                 
 <span class="param-type">object</span>
+|
+
+<span class="param-type">string</span>
 
 
             
@@ -3068,7 +2219,12 @@ For Ethereum, update its balance read on the Rinbeky testnet.
 
             
 
-            <td class="description last">A stellar or ethereum account</td>
+            <td class="description last">A stellar or ethereum account
+or the derivation path of the account in the hardware wallet
+If using a hardware wallet, the nativeAccount field will be the derivation path
+This is for the convenience of using Ledger/Trezor APIs.
+The public key will be available in getAccount method,
+and the private key of the account is not released by the wallet.</td>
         </tr>
 
     
@@ -3109,7 +2265,7 @@ For Ethereum, update its balance read on the Rinbeky testnet.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line84">line 84</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line138">line 138</a>
     </li></ul></dd>
     
 
@@ -3143,7 +2299,143 @@ For Ethereum, update its balance read on the Rinbeky testnet.
     
 
     
-    <h4 class="name" id="sign"><span class="type-signature"></span>sign<span class="signature">(data)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="setHardware"><span class="type-signature"></span>setHardware<span class="signature">(hardware)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Set the hardware of this account to be the hardware wallet object
+If using a hardware, this method must be called right after initialization.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>hardware</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Ledger of Trezor</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line97">line 97</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="sign"><span class="type-signature"></span>sign<span class="signature">(data)</span><span class="type-signature"> &rarr; {object|boolean}</span></h4>
     
 
     
@@ -3244,7 +2536,7 @@ For Ethereum, update its balance read on the Rinbeky testnet.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line123">line 123</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line192">line 192</a>
     </li></ul></dd>
     
 
@@ -3271,7 +2563,7 @@ For Ethereum, update its balance read on the Rinbeky testnet.
 
         
 <div class="param-desc">
-    the signed object
+    the signed object, or false if failed
 </div>
 
 
@@ -3283,6 +2575,9 @@ For Ethereum, update its balance read on the Rinbeky testnet.
     <dd>
         
 <span class="param-type">object</span>
+|
+
+<span class="param-type">boolean</span>
 
 
     </dd>
@@ -3300,7 +2595,7 @@ For Ethereum, update its balance read on the Rinbeky testnet.
     
 
     
-    <h4 class="name" id="signAuthenticationChallenge"><span class="type-signature"></span>signAuthenticationChallenge<span class="signature">(transaction)</span><span class="type-signature"> &rarr; {string|null}</span></h4>
+    <h4 class="name" id="signAuthenticationChallenge"><span class="type-signature"></span>signAuthenticationChallenge<span class="signature">(transactionJSON)</span><span class="type-signature"> &rarr; {string|null}</span></h4>
     
 
     
@@ -3344,7 +2639,7 @@ For Ethereum, update its balance read on the Rinbeky testnet.
 
         <tr>
             
-                <td class="name"><code>transaction</code></td>
+                <td class="name"><code>transactionJSON</code></td>
             
 
             <td class="type">
@@ -3401,7 +2696,7 @@ For Ethereum, update its balance read on the Rinbeky testnet.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line290">line 290</a>
+        <a href="Account.js.html">Account.js</a>, <a href="Account.js.html#line438">line 438</a>
     </li></ul></dd>
     
 
@@ -3470,13 +2765,13 @@ For Ethereum, update its balance read on the Rinbeky testnet.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Account.html">Account</a></li><li><a href="Ledger.html">Ledger</a></li><li><a href="Trezor.html">Trezor</a></li><li><a href="WalletManager.html">WalletManager</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Account.html">Account</a></li><li><a href="Anchor.html">Anchor</a></li><li><a href="Ledger.html">Ledger</a></li><li><a href="Trezor.html">Trezor</a></li><li><a href="WalletManager.html">WalletManager</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 11 2018 14:58:31 GMT+0800 (+08)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 26 2018 17:32:18 GMT+0800 (+08)
 </footer>
 
 <script> prettyPrint(); </script>

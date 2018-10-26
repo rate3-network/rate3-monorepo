@@ -10,7 +10,7 @@ These instructions will get you a copy of the project up and running on your loc
 2. Run `npm install` in this directory in the command line.
 ### Code example
 This section shows an example flow of using this package.
-```
+```js
 // import the WalletManaget package
 const WalletManager = require('./WalletManager');
 // create an instance of the wallet
@@ -35,6 +35,7 @@ You can copy the *XDR encoded transaction* in the output of the code above, and 
 ## Commandline Demo
 * Run `node StellarDemo.js` or `node EthereumDemo.js` to demostrate some functions in phase 1 and 2. Enter numbers 1,2,3... sequentially to excute step by step. Please wait for the previous step to finish before enterning new commands.
 ## Documentation
+* The package is still under development, checkout [this issue](https://github.com/rate-engineering/rate3-monorepo/issues/9) and its comments.
 * Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.
 * Run the following command to create the documentation for a certain `.js` file. For example `jsdoc Account.js`.
 * Run `jsdoc Ledger.js WalletManager.js Trezor.js Account.js Anchor.js -d Docs` to generate documentation for all in the Docs folder. this will overwrite the current one.

@@ -29,9 +29,12 @@
             <pre class="prettyprint source linenums"><code>const rp = require('request-promise');
 const StellarSdk = require('stellar-sdk');
 const Web3 = require('web3');
+const setting = require('./setting');
+const Trezor = require('./Trezor');
+const Ledger = require('./Ledger');
 
-const server = new StellarSdk.Server('https://horizon-testnet.stellar.org');
-const web3 = new Web3('https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff630a7');
+const server = new StellarSdk.Server(setting.horizonEndpoint);
+const web3 = new Web3(setting.infuraUrl);
 
 /**
  * @class Account
@@ -43,20 +46,25 @@ const web3 = new Web3('https://rinkeby.infura.io/v3/54add33f289d4856968099c7dff6
 class Account {
   /**
   * constructor
+  * Setting balance to -1, to differentiate from accounts with 0 balance
   * @param {string} network
   */
   constructor(network) {
+    this.balance = -1;
+    this.hardware = null;
+    this.nativeAccount = null;
+    this.history = null;
     switch (network) {
       case 'stellar':
         this.network = 'stellar';
-        this.testAddress = 'https://horizon-testnet.stellar.org/accounts/';
+        this.testAddress = `${setting.horizonEndpoint}/accounts/`;
         StellarSdk.Network.useTestNetwork();
         break;
       case 'ethereum':
         this.network = 'ethereum';
         break;
       default:
-        console.log('The name of the network must be stellar or ethereum.');
+        console.log(setting.networkError);
     }
   }
 
@@ -68,6 +76,12 @@ class Account {
    * @returns {object|null} xdr.ChangeTrustOp if succeeds or null otherwise
    */
   async changeTrust(assetName, issuerPublickey, limit) {
+    if (this.hardware != null) {
+      // I am not sure whether this method can/should be supported by hardware
+      // for now disable it
+      console.log(setting.notSupportedbyhardware);
+      return false;
+    }
     switch (this.network) {
       case 'stellar': {
         const newAsset = new StellarSdk.Asset(assetName, issuerPublickey);
@@ -75,17 +89,17 @@ class Account {
         const transaction = new StellarSdk.TransactionBuilder(receiver)
           .addOperation(StellarSdk.Operation.changeTrust({
             asset: newAsset,
-            limit,
+            limit
           }))
           .build();
-        transaction.sign(this.account);
+        transaction.sign(this.nativeAccount);
         return server.submitTransaction(transaction);
       }
       case 'ethereum':
         console.log('Change trust is not for ethereum.');
         break;
       default:
-        console.log('The network is not set correctly.');
+        console.log(setting.networkError);
     }
     return null;
   }
@@ -104,22 +118,75 @@ class Account {
   }
 
   /**
+   * Set the hardware of this account to be the hardware wallet object
+   * If using a hardware, this method must be called right after initialization.
+   * @param {string} hardware - Ledger of Trezor
+   */
+  setHardware(hardware) {
+    switch (hardware) {
+      case 'trezor':
+        this.hardware = new Trezor(this.network);
+        break;
+      case 'ledger':
+        this.hardware = new Ledger(this.network);
+        break;
+      default:
+        console.log('The hardware must be ledger or trezor');
+        return false;
+    }
+    return true;
+  }
+
+  /**
+   * Getter
+   * @returns {object} - the hardware, or null
+   */
+  getHardware() {
+    return this.hardware;
+  }
+
+  /**
+   * Remove the hardware, and set the account using native account objects
+   */
+  removeHardware() {
+    this.hardware = null;
+  }
+
+  /**
    * Set the account field of this account to be the argument;
    * For Stellar, upload it to the testnet and update the balance;
    * For Ethereum, update its balance read on the Rinbeky testnet.
-   * @param {object} account - A stellar or ethereum account
+   * @param {object|string} account - A stellar or ethereum account
+   * or the derivation path of the account in the hardware wallet
+   * If using a hardware wallet, the nativeAccount field will be the derivation path
+   * This is for the convenience of using Ledger/Trezor APIs.
+   * The public key will be available in getAccount method,
+   * and the private key of the account is not released by the wallet.
    */
-  async setAccount(originalAccount) {
+  async setAccount(account) {
+    if (this.hardware != null) {
+      switch (this.hardware.hardware) {
+        case 'ledger':
+        case 'trezor':
+          // they are the same initialization
+          this.nativeAccount = account;
+          break;
+        default:
+          console.log(setting.hardwareDebug);
+          return false;
+      }
+      return true;
+    }
     switch (this.network) {
       case 'stellar':
-        this.account = originalAccount;
+        this.nativeAccount = account;
         await this.loadBalance(this.getAddress());
-        if (this.balance === '0.0000000' || this.balance === undefined) {
+        if (this.balance === '0.0000000' || this.balance === undefined || this.balance === -1) {
           try {
             await rp({
-              url: 'https://friendbot.stellar.org',
+              url: setting.stellarFundUrl,
               qs: { addr: this.getAddress() },
-              json: true,
+              json: true
             });
             await this.loadBalance(this.getAddress());
           } catch (err) {
@@ -128,8 +195,8 @@ class Account {
         }
         break;
       case 'ethereum': {
-        this.account = originalAccount;
-        const response = await web3.eth.getBalance(originalAccount.address);
+        this.nativeAccount = account;
+        const response = await web3.eth.getBalance(this.nativeAccount.address);
         if (typeof response === 'string') {
           this.balance = response;
         } else {
@@ -138,29 +205,44 @@ class Account {
         break;
       }
       default:
-        this.account = null;
-        console.log('The account network is not correctly set.');
+        this.nativeAccount = null;
+        console.log(setting.networkError);
+        return false;
     }
+    return true;
   }
 
   /**
    * Sign the data using the private key of the current account
    * @param {string} data - the data (string) to be signed
-   * @returns {object} the signed object
+   * @returns {object|boolean} the signed object, or false if failed
    */
   sign(data) {
+    if (this.hardware != null) {
+      switch (this.hardware.hardware) {
+        case 'ledger':
+          return this.hardware.signMessage(this.nativeAccount, data);
+        case 'trezor':
+          return this.hardware.signMessage(this.nativeAccount, data, false);
+          // output not in hex, set to true if you want to return hex
+        default:
+          console.log(setting.hardwareDebug);
+          return false;
+      }
+    }
     switch (this.network) {
       case 'stellar':
-        if (this.account.canSign()) {
-          return this.account.sign(data);
+        if (this.nativeAccount.canSign()) {
+          console.log('sign without hardware');
+          return this.nativeAccount.sign(data);
         }
         console.log('The Stellar account does not contain a private key and cannot sign');
-        return null;
+        return false;
       case 'ethereum':
         return web3.eth.accounts.sign(data, this.getPrivateKey());
       default:
-        console.log('The network is not correct');
-        return null;
+        console.log(setting.networkError);
+        return false;
     }
   }
 
@@ -171,18 +253,38 @@ class Account {
    * @returns {object} the server response of the transaction
    */
   async send(to, amount) {
+    if (this.hardware != null) {
+      // this sh
+      console.log(setting.notSupportedbyhardware);
+      return false;
+    }
     try {
       switch (this.network) {
         case 'stellar': {
           await server.loadAccount(to);
           const accontOnTestnet = await server.loadAccount(this.getAddress());
-          const transaction = new StellarSdk.TransactionBuilder(accontOnTestnet)
+          let transaction = new StellarSdk.TransactionBuilder(accontOnTestnet)
             .addOperation(StellarSdk.Operation.payment({
               destination: to,
               asset: StellarSdk.Asset.native(),
-              amount,
+              amount
             })).build();
-          transaction.sign(this.account);
+          if (this.hardware != null) {
+            switch (this.hardware.hardware) {
+              case 'ledger':
+                transaction = this.hardware.signTransaction(this.nativeAccount, transaction);
+                break;
+              case 'trezor':
+                transaction = this.hardware.signTransaction(this.nativeAccount,
+                  setting.stellarTestNetPassPhrase, transaction);
+                break;
+              default:
+                console.log(setting.hardwareDebug);
+                return false;
+            }
+          } else {
+            transaction.sign(this.nativeAccount);
+          }
           return await server.submitTransaction(transaction);
         }
 
@@ -192,22 +294,42 @@ class Account {
             to,
             value: web3.utils.toHex(web3.utils.toWei(amount, 'ether')), // e.g. '0.001'
             gas: 30000,
-            chainId: 4, // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
+            chainId: 4
+            // reference link
+            // https://ethereum.stackexchange.com/questions/17051/how-to-select-a-network-id-or-is-there-a-list-of-network-ids
           };
 
-          const signedTx = await this.account.signTransaction(rawTransaction);
-          const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+          let signedTx;
+          let receipt;
+          if (this.hardware != null) {
+            switch (this.hardware.hardware) {
+              case 'ledger':
+                signedTx = this.hardware.signTransaction(this.nativeAccount, rawTransaction.serialize().toString('hex'));
+                break;
+              case 'trezor':
+                signedTx = this.hardware.signTransaction(this.nativeAccount,
+                  setting.stellarTestNetPassPhrase, rawTransaction.serialize().toString('hex'));
+                break;
+              default:
+                console.log(setting.hardwareDebug);
+                return false;
+            }
+            receipt = await web3.eth.sendSignedTransaction(signedTx);
+          } else {
+            signedTx = await this.nativeAccount.signTransaction(rawTransaction);
+            receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+          }
           return receipt;
         }
         // infura accepts only raw transactions, because it does not handle private keys
         default:
-          console.log('The network is not correct');
+          console.log(setting.networkError);
+          return false;
       }
     } catch (err) {
-      console.log('ethereum send transaction error', err);
-      return null;
+      console.log('ethereum send transaction error ', err);
+      return false;
     }
-    return null;
   }
 
   /**
@@ -221,19 +343,19 @@ class Account {
     try {
       switch (this.network) {
         case 'stellar': {
-          const url = `https://horizon-testnet.stellar.org/accounts/${this.getAddress()}/payments`;
+          const url = `${setting.horizonEndpoint}/accounts/${this.getAddress()}/payments`;
           const response = await rp(url);
           this.history = JSON.parse(response)._embedded.records;
           return this.history;
         }
         case 'ethereum': {
-          const url = `http://api-rinkeby.etherscan.io/api?module=account&amp;action=txlist&amp;address=${this.getAddress()}&amp;startblock=0&amp;endblock=99999999&amp;sort=asc&amp;apikey=YourApiKeyToken`;
+          const url = `${setting.rinkebyEtherscanUrl}module=account&amp;action=txlist&amp;address=${this.getAddress()}&amp;startblock=0&amp;endblock=99999999&amp;sort=asc&amp;apikey=YourApiKeyToken`;
           const response = await rp(url);
           this.history = JSON.parse(response).result;
           return this.history;
         }
         default:
-          console.log('The network is not correct');
+          console.log(setting.networkError);
           return null;
       }
     } catch (err) {
@@ -257,20 +379,46 @@ class Account {
           const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(uri.slice(19), 'base64');
           // web+stellar:tx?xdr=... the xdr starts from position 19 of the string
           const tx1 = new StellarSdk.Transaction(txEnvelope);
-          tx1.sign(this.account);
-          return tx1;
+          if (this.hardware != null) {
+            switch (this.hardware.hardware) {
+              case 'ledger':
+                return this.hardware.signTransaction(this.nativeAccount, tx1);
+              case 'trezor':
+                return this.hardware.signTransaction(this.nativeAccount,
+                  setting.stellarTestNetPassPhrase, tx1);
+              default:
+                console.log(setting.hardwareDebug);
+                return false;
+            }
+          } else {
+            tx1.sign(this.nativeAccount);
+            return tx1;
+          }
         }
         case 'ethereum': {
           // tx '0x793aa73737a2545cd925f5c0e64529e0f422192e6bbdd53b964989943e6dedda'
           const tx = await web3.eth.getTransaction(uri); // uri here is the transaction hash
-          return web3.eth.accounts.signTransaction(tx, this.getPrivateKey());
+          if (this.hardware != null) {
+            switch (this.hardware.hardware) {
+              case 'ledger':
+                return this.hardware.signTransaction(this.nativeAccount, tx);
+              case 'trezor':
+                return this.hardware.signTransaction(this.nativeAccount,
+                  setting.stellarTestNetPassPhrase, tx);
+              default:
+                console.log(setting.hardwareDebug);
+                return false;
+            }
+          } else {
+            return web3.eth.accounts.signTransaction(tx, this.getPrivateKey());
+          }
         }
         default:
-          console.log('The network is not correct');
+          console.log(setting.networkError);
           return null;
       }
     } catch (err) {
-      console.log('Error in delegated signing', err);
+      console.log('Error in delegated signing ', err);
     }
     return null;
   }
@@ -289,9 +437,9 @@ class Account {
           const options = {
             uri: webAuthEndpoint,
             qs: {
-              account: this.getAddress(),
+              account: this.getAddress()
             },
-            json: true, // Automatically parses the JSON string in the response
+            json: true // Automatically parses the JSON string in the response
           };
           const response = await rp(options);
           return response.transaction;
@@ -301,7 +449,7 @@ class Account {
           return null;
         }
         default:
-          console.log('The network is not correct');
+          console.log(setting.networkError);
           return null;
       }
     } catch (error) {
@@ -312,15 +460,32 @@ class Account {
 
   /**
    * Takes an XDR encoded transaction, build a transaction and sign it.
-   * @param {JSON} transaction
+   * @param {JSON} transactionJSON
    * @returns {string|null}the signed transaction XDR encoded, or null if failed
    */
-  signAuthenticationChallenge(transaction) {
+  signAuthenticationChallenge(transactionJSON) {
     // build the transaction
-    const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(transaction, 'base64');
+    const txEnvelope = StellarSdk.xdr.TransactionEnvelope.fromXDR(transactionJSON, 'base64');
     const tx1 = new StellarSdk.Transaction(txEnvelope);
     // sign it
-    tx1.sign(this.account);
+    if (this.hardware != null) {
+      if (this.hardware.currency === 'stellar') {
+        switch (this.hardware.hardware) {
+          case 'ledger':
+            return this.hardware.signTransaction(this.nativeAccount, tx1).toEnvelope().toXDR('base64');
+          case 'trezor':
+            return this.hardware.signTransaction(this.nativeAccount,
+              setting.stellarTestNetPassPhrase, tx1).toEnvelope().toXDR('base64');
+          default:
+            console.log(setting.hardwareDebug);
+            return false;
+        }
+      } else {
+        console.log('Authentication challenge is for stellar only');
+        return false;
+      }
+    }
+    tx1.sign(this.nativeAccount);
     return tx1.toEnvelope().toXDR('base64');
   }
 
@@ -336,9 +501,9 @@ class Account {
         method: 'POST',
         uri: this.webAuthEndpoint,
         body: {
-          transaction: signedTransaction,
+          transaction: signedTransaction
         },
-        json: true, // Automatically stringifies the body to JSON
+        json: true // Automatically stringifies the body to JSON
       };
       const response = await rp(options);
       return response;
@@ -381,7 +546,7 @@ class Account {
    * @returns {object} the account that is passed into this wrapper class
    */
   getOriginalAccount() {
-    return this.account;
+    return this.nativeAccount;
   }
 
   /**
@@ -390,13 +555,20 @@ class Account {
    * @returns {string} the address
    */
   getAddress() {
+    if (this.hardware != null) {
+      if (this.nativeAccount == null) {
+        console.log('The native account is not set yet');
+        return null;
+      }
+      return this.nativeAccount;
+    }
     switch (this.network) {
       case 'stellar':
-        return this.account.publicKey();
+        return this.nativeAccount.publicKey();
       case 'ethereum':
-        return this.account.address;
+        return this.nativeAccount.address;
       default:
-        console.log('The network is not set correctly.');
+        console.log(setting.networkError);
         return null;
     }
   }
@@ -406,181 +578,18 @@ class Account {
    * @returns {string} the private key
    */
   getPrivateKey() {
+    if (this.hardware != null) {
+      console.log('The private key is not available from the hardware');
+      return false;
+    }
     switch (this.network) {
       case 'stellar':
-        return this.account.secret();
+        return this.nativeAccount.secret();
       case 'ethereum':
-        return this.account.privateKey;
+        return this.nativeAccount.privateKey;
       default:
-        console.log('The network is not set correctly.');
+        console.log(setting.networkError);
         return null;
-    }
-  }
-
-  // Phase 3 Anchor Bridge, client side implementation of SEP-0006
-  // They should be static functions, having no relation with this account
-
-  /**
-   * Deposit external assets with an anchor.
-   * Parameter descriptions are from SEP-0006.
-   * The parameter naming follows SEP-0006, and does not use camel case
-   * @param {string} url - the url of this get request, without slash at the end
-   * @param {string} asset_code - The code of the asset the user is wanting to deposit with
-   * the anchor. Ex BTC,ETH,USD,INR,etc
-   * @param {string} account - The stellar account ID of the user that wants to deposit.
-   * This is where the asset token will be sent.
-   * @param {string} memo_type - (optional) type of memo that anchor should attach to the Stellar
-   *  payment transaction, one of text, id or hash
-   * @param {string} memo - (optional) value of memo to attach to transaction,
-   * for hash this should be base64-encoded.
-   * @param {string} email_address - (optional) Email address of depositor.
-   * If desired, an anchor can use this to send email updates to the user about the deposit.
-   * @param {string} type - (optional) Type of deposit. If the anchor supports
-   *  multiple deposit methods (e.g. SEPA or SWIFT), the wallet should specify type.
-   */
-  async getDeposit(url, asset_code, account, memo_type = null, memo = null,
-    email_address = null, type = null) {
-    this.anchorUrl = url;
-    try {
-      const qsConstruct = {
-        asset_code, account, memo_type, memo, email_address, type,
-      };
-      // eslint-disable-next-line no-restricted-syntax
-      for (const property in qsConstruct) {
-        if (!qsConstruct[property]) {
-          delete qsConstruct[property];
-        }
-      }
-      // verifies that the parameters are valid
-      if (account.charAt(0) !== 'G') {
-        console.log('The account must start with letter G.');
-        return null;
-      }
-      const options = {
-        uri: `${this.anchorUrl}/deposit`,
-        qs: qsConstruct, // query params
-        json: true, // Automatically stringifies the body to JSON
-      };
-      const response = await rp(options);
-      return response;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  }
-
-  /**
-   * Withdraw assets from an anchor
-   * @param {string} url - the url of this get request, without slash at the end
-   * @param {string} type - Type of withdrawal. Can be: crypto, bank_account, cash, mobile,
-   *  bill_payment or other custom values
-   * @param {string} asset_code - Code of the asset the user wants to withdraw
-   * @param {string} dest - The account that the user wants to withdraw their funds to.
-   *  This can be a crypto account, a bank account number, IBAN, mobile number, or email address.
-   * @param {string} dest_extra - (optional) Extra information to specify withdrawal location.
-   *  For crypto it may be a memo in addition to the dest address. It can also be a routing number
-   *  for a bank, a BIC, or the name of a partner handling the withdrawal.
-   * @param {string} account - (optional) The stellar account ID of the user that wants to do
-   *  the withdrawal. This is only needed if the anchor requires KYC information for withdrawal.
-   *  The anchor can use account to look up the user's KYC information.
-   * @param {string} memo - (optional) A wallet will send this to uniquely identify a user
-   *  if the wallet has multiple users sharing one Stellar account. The anchor can use this
-   *  along with account to look up the user's KYC info.
-   * @param {string} memo_type - (optional) type of memo. One of text, id or hash
-   */
-  async getWithdraw(url, type, asset_code, dest, dest_extra = '', account = '', memo = '', memo_type = '') {
-    this.anchorUrl = url;
-    try {
-      const qsConstruct = {
-        asset_code, dest, dest_extra, account, memo_type, memo, type,
-      };
-      // eslint-disable-next-line no-restricted-syntax
-      for (const property in qsConstruct) {
-        if (!qsConstruct[property]) {
-          delete qsConstruct[property];
-        }
-      }
-      // verifies that the parameters are valid
-      if (account &amp;&amp; account.charAt(0) !== 'G') {
-        console.log('The account must start with letter G.');
-        return null;
-      }
-      const options = {
-        uri: `${this.anchorUrl}/withdraw`,
-        qs: qsConstruct,
-        json: true, // Automatically stringifies the body to JSON
-      };
-      const response = await rp(options);
-      return response;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  }
-
-  // have not handled interactive/non-interactive customer information needed response
-  // and not accepted, error
-
-  /**
-   * Allows an anchor to communicate basic info about what
-   * their TRANSFER_SERVER supports to wallets and clients.
-   * @param {string} url - the url of this get request, without slash at the end
-   * @param {string} lang - (optional) Defaults to en. Language code specified using ISO 639-1.
-   * description fields in the response should be in this language
-   */
-  async getInfo(url, lang = 'en') {
-    this.anchorUrl = url;
-    try {
-      const qsConstruct = {};
-      if (lang !== 'en') {
-        qsConstruct.lang = lang;
-      }
-      const options = {
-        uri: `${this.anchorUrl}/info`,
-        qs: qsConstruct,
-        json: true, // Automatically stringifies the body to JSON
-      };
-      const response = await rp(options);
-      return response;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  }
-
-  /**
-   * View history of deposits and withdrawals involving the user
-   * @param {string} url - the url of this get request, without slash at the end
-   * @param {string} asset_code - The code of the asset of interest. E.g. BTC,ETH,USD,INR,etc
-   * @param {string} account - The stellar account ID involved in the transactions
-   * @param {string} no_older_than - (optional) The response should contain transactions
-   *  starting on or after this date &amp; time
-   * @param {int} limit - (optional) the response should contain at most limit transactions
-   * @param {string} paging_id - (optional) the response should contain transactions
-   *  starting prior to this ID (exclusive)
-   */
-  async getTransactionHistory(url, asset_code, account, no_older_than = '', limit = '', paging_id = '') {
-    this.anchorUrl = url;
-    try {
-      const qsConstruct = {
-        asset_code, account, no_older_than, limit, paging_id,
-      };
-      // eslint-disable-next-line no-restricted-syntax
-      for (const property in qsConstruct) {
-        if (!qsConstruct[property]) {
-          delete qsConstruct[property];
-        }
-      }
-      const options = {
-        uri: `${this.anchorUrl}/transactions`,
-        qs: qsConstruct,
-        json: true, // Automatically stringifies the body to JSON
-      };
-      const response = await rp(options);
-      return response;
-    } catch (error) {
-      console.log(error);
-      return null;
     }
   }
 }
@@ -596,13 +605,13 @@ module.exports = Account;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Account.html">Account</a></li><li><a href="Ledger.html">Ledger</a></li><li><a href="Trezor.html">Trezor</a></li><li><a href="WalletManager.html">WalletManager</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Account.html">Account</a></li><li><a href="Anchor.html">Anchor</a></li><li><a href="Ledger.html">Ledger</a></li><li><a href="Trezor.html">Trezor</a></li><li><a href="WalletManager.html">WalletManager</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Oct 11 2018 14:58:31 GMT+0800 (+08)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 26 2018 17:32:18 GMT+0800 (+08)
 </footer>
 
 <script> prettyPrint(); </script>
