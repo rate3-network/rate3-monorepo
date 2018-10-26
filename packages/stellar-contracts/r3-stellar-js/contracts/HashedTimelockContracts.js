@@ -9,21 +9,97 @@ function HashedTimelockContracts(stellar, Stellar) {
 
     const createHoldingAccount = async ({
         asset,
-        hashlock,
         swapAmount,
-        refundTime,
         baseReserve,
         depositorAccountPublicKey,
-        claimerAccountPublicKey,
         holdingAccountPublicKey,
     }) => {
         let depositor = await stellar.loadAccount(depositorAccountPublicKey);
 
-        // Increment sequence number, this should be 3
-        depositor.incrementSequenceNumber();
-        depositor.incrementSequenceNumber();
+        // Create the holding account.
+        const tx = new Stellar.TransactionBuilder(depositor)
+            // 7 = 2 + 1 hashlock signer + 1 claimer signer + 1 asset trustline
+            //       + refundTx pre-auth + claimTx pre-auth
+            .addOperation(Stellar.Operation.createAccount({
+                destination: holdingAccountPublicKey,
+                startingBalance: String(7 * baseReserve),
+            }))
 
-        // Prepare the refund transaction first.
+            // Set trustline for asset for holding account.
+            .addOperation(Stellar.Operation.changeTrust({
+                asset: asset,
+                limit: String(swapAmount),
+                source: holdingAccountPublicKey,
+            }))
+
+            // Deposit asset into holding account.
+            .addOperation(Stellar.Operation.payment({
+                asset: asset,
+                amount: String(swapAmount),
+                destination: holdingAccountPublicKey,
+                source: depositorAccountPublicKey,
+            }))
+
+            .build();
+            
+        return { tx };
+    }
+
+    const finalizeHoldingAccount = async ({
+        asset,
+        hashlock,
+        swapAmount,
+        refundTime,
+        depositorAccountPublicKey,
+        claimerAccountPublicKey,
+        holdingAccountPublicKey,
+    }) => {
+        let holding = await stellar.loadAccount(holdingAccountPublicKey);
+
+        const initialSequenceNumber = holding.sequenceNumber();
+
+        // Increment sequence number, this should be +1
+        holding.incrementSequenceNumber();
+
+        const nextStepSequenceNumber = holding.sequenceNumber();
+
+        // Prepare the claim transaction.
+        const claimTx = new Stellar.TransactionBuilder(holding)
+
+        // Pay the claimer assets promised.
+        .addOperation(Stellar.Operation.payment({
+            asset: asset,
+            amount: String(swapAmount),
+            destination: claimerAccountPublicKey,
+            source: holdingAccountPublicKey,
+        }))
+
+        // Destroy trustline for asset for holding account.
+        .addOperation(Stellar.Operation.changeTrust({
+            asset: asset,
+            limit: String(0),
+            source: holdingAccountPublicKey,
+        }))
+
+        // Merge accounts of original depositor and holding account.
+        .addOperation(Stellar.Operation.accountMerge({
+            destination: depositorAccountPublicKey,
+            source: holdingAccountPublicKey,
+        }))
+
+        .build();
+
+        // Reset sequence number.
+        holding = await stellar.loadAccount(holdingAccountPublicKey);
+
+        // Increment sequence number, this should be +1
+        holding.incrementSequenceNumber();
+
+        if (holding.sequenceNumber() !== nextStepSequenceNumber) {
+            throw("Next step sequence number should match");
+        }
+
+        // Prepare the refund transaction.
         const refundTx = new Stellar.TransactionBuilder(depositor, {
             timebounds: {
                 minTime: refundTime,
@@ -31,6 +107,7 @@ function HashedTimelockContracts(stellar, Stellar) {
             },
         })
 
+        // Refund the depositor assets.
         .addOperation(Stellar.Operation.payment({
             asset: asset,
             amount: String(swapAmount),
@@ -52,24 +129,16 @@ function HashedTimelockContracts(stellar, Stellar) {
         }))
         .build();
 
-        depositor = await stellar.loadAccount(depositorAccountPublicKey);
+        // Reset sequence number again.
+        holding = await stellar.loadAccount(holdingAccountPublicKey);
 
-        // Create the actual holding transaction.
-        const holdingTx = new Stellar.TransactionBuilder(depositor)
-            // Create holding account.
-            // 6 = 2 + 1 hashlock signer + 1 claimer signer + 1 asset trustline
-            .addOperation(Stellar.Operation.createAccount({
-                destination: holdingAccountPublicKey,
-                startingBalance: String(6 * baseReserve),
-            }))
+        if (holding.sequenceNumber() !== initialSequenceNumber) {
+            throw("Initial sequence number should match");
+        }
 
-            // Set trustline for asset for holding account.
-            .addOperation(Stellar.Operation.changeTrust({
-                asset: asset,
-                limit: String(swapAmount),
-                source: holdingAccountPublicKey,
-            }))
-
+        // Finalize the holding account.
+        //Account balance should have min balance covered beforehand.
+        const holdingTx = new Stellar.TransactionBuilder(holding)
             // Add claimer as signer.
             .addOperation(Stellar.Operation.setOptions({
                 signer: {
@@ -88,11 +157,20 @@ function HashedTimelockContracts(stellar, Stellar) {
                 source: holdingAccountPublicKey,
             }))
 
-            // Preauthorize refund transaction
+            // Preauthorize claim transaction.
+            .addOperation(Stellar.Operation.setOptions({
+                signer: {
+                    preAuthTx: claimTx.hash(),
+                    weight: 2,
+                },
+                source: holdingAccountPublicKey,
+            }))
+
+            // Preauthorize refund transaction.
             .addOperation(Stellar.Operation.setOptions({
                 signer: {
                     preAuthTx: refundTx.hash(),
-                    weight: 2,
+                    weight: 4,
                 },
                 source: holdingAccountPublicKey,
             }))
@@ -102,54 +180,19 @@ function HashedTimelockContracts(stellar, Stellar) {
             // Set thresholds for all signing levels to 2 so 2 signatures are required.
             .addOperation(Stellar.Operation.setOptions({
                 masterWeight: 0,
-                lowThreshold: 2,
-                medThreshold: 2,
-                highThreshold: 2,
+                lowThreshold: 4,
+                medThreshold: 4,
+                highThreshold: 4,
                 source: holdingAccountPublicKey,
             }))
             .build();
 
-        return { refundTx, holdingTx };
-    }
-
-    const depositToHoldingAccount = async ({
-        asset,
-        swapAmount,
-        depositorAccountPublicKey,
-        holdingAccountPublicKey,
-    }) => {
-        const depositor = await stellar.loadAccount(depositorAccountPublicKey);
-        const tx = new Stellar.TransactionBuilder(depositor)
-            .addOperation(Stellar.Operation.payment({
-                asset: asset,
-                amount: String(swapAmount),
-                destination: holdingAccountPublicKey,
-                source: depositorAccountPublicKey,
-            }))
-            .build();
-
-        return { tx };
-    }
-
-    const claimFromHoldingAccount = async ({
-        claimerAccountPublicKey,
-        holdingAccountPublicKey
-    }) => {
-        const holding = await stellar.loadAccount(holdingAccountPublicKey);
-        const claimTx = new Stellar.TransactionBuilder(holding)
-            .addOperation(Stellar.Operation.accountMerge({
-                destination: claimerAccountPublicKey,
-                source: holdingAccountPublicKey,
-            }))
-            .build();
-
-        return { tx };
+        return { holdingTx, claimTx, refundTx };
     }
 
     return {
         createHoldingAccount,
-        depositToHoldingAccount,
-        claimFromHoldingAccount,
+        finalizeHoldingAccount,
     };
 }
 
