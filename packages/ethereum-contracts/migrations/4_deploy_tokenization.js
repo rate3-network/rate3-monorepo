@@ -41,7 +41,7 @@ module.exports = function deployment(deployer, network, accounts) {
         await token.setAllowanceModule(allowance.address, { from: owner });
 
         console.log('\nSetting token\'s RegistryModule');
-        await token.setBalanceModule(registry.address, { from: owner });
+        await token.setRegistryModule(registry.address, { from: owner });
 
         console.log('\nDeploying BaseInteractor');
         const interactor = await BaseInteractor.new(token.address, proxy.address, { from: owner });

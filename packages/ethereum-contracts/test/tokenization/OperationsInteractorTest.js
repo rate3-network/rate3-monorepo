@@ -134,39 +134,41 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            
+            // Request mint for rest[0].
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
         });
 
         it('owner cannot approve mint request', async function() {
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.approveMint(rest[0], 0, { from: owner }).should.be.rejected;
         });
 
         it('admin1 can approve mint request', async function() {
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.fulfilled;
         });
 
         it('non-owner/admin2 cannot approve mint request', async function() {
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.approveMint(rest[0], 0, { from: admin2 }).should.be.rejected;
             await this.interactor.approveMint(rest[0], 0, { from: rest[0] }).should.be.rejected;
             await this.interactor.approveMint(rest[0], 0, { from: rest[1] }).should.be.rejected;
         });
 
+        it('cannot approve non-existing mint operations', async function() {
+            await this.interactor.approveMint(rest[0], 1, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveMint(rest[0], 1, { from: admin2 }).should.be.rejected;
+        });
+
         it('mint approval blocked if not whitelisted', async function() {
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.whitelistForMint(rest[0], false, { from: admin2 });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('mint approval blocked if blacklisted', async function() {
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('mint approval blocked if paused', async function() {
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.pauseOperations({ from: owner });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
 
@@ -174,8 +176,26 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.fulfilled;
         });
 
+        it('cannot approve approved Operation index', async function() {
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 });
+    
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
+        it('cannot approve finalized Operation index', async function() {
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 });
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
+        it('cannot approve revoked Operation index', async function() {
+            await this.interactor.revokeMint(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
         it('mint approval event emitted', async function() {
-            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             const { logs } = await this.interactor.approveMint(rest[0], 0, { from: admin1 });
 
             const event1 = expectEvent.inLogs(logs, 'MintOperationApproved', {
@@ -232,6 +252,11 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.finalizeMint(rest[0], 0, { from: rest[1] }).should.be.rejected;
         });
 
+        it('cannot finalize non-existing mint operations', async function() {
+            await this.interactor.finalizeMint(rest[0], 1, { from: admin1 }).should.be.rejected;
+            await this.interactor.finalizeMint(rest[0], 1, { from: admin2 }).should.be.rejected;
+        });
+
         it('mint finalize blocked if not whitelisted', async function() {
             await this.interactor.whitelistForMint(rest[0], false, { from: admin2 });
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
@@ -248,6 +273,24 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             await this.interactor.unpauseOperations({ from: owner });
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.fulfilled;
+        });
+
+        it('cannot finalize requested Operation index', async function() {
+            await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
+
+            await this.interactor.finalizeMint(rest[0], 1, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot finalize finalized Operation index', async function() {
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot finalize revoked Operation index', async function() {
+            await this.interactor.revokeMint(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('mint finalize event emitted', async function() {
@@ -320,6 +363,18 @@ contract('OperationsInteractor Tests', function(accounts) {
         it('revoked mint cannot be finalized', async function() {
             await this.interactor.revokeMint(rest[0], 0, { from: admin1 });
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot revoke finalized Operation index', async function() {
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.revokeMint(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
+        it('cannot revoke revoked Operation index', async function() {
+            await this.interactor.revokeMint(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.revokeMint(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('mint revoked event emitted', async function() {
@@ -480,6 +535,11 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.approveBurn(rest[0], 0, { from: rest[1] }).should.be.rejected;
         });
 
+        it('cannot approve non-existing burn operations', async function() {
+            await this.interactor.approveBurn(rest[0], 1, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[0], 1, { from: admin2 }).should.be.rejected;
+        });
+
         it('burn approval blocked if not whitelisted', async function() {
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
@@ -499,6 +559,25 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             await this.interactor.unpauseOperations({ from: owner });
             await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('cannot approve approved Operation index', async function() {
+            await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+    
+            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
+        it('cannot approve finalized Operation index', async function() {
+            await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
+        it('cannot approve revoked Operation index', async function() {
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('burn approval event emitted', async function() {
@@ -569,6 +648,11 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.finalizeBurn(rest[0], 0, { from: rest[1] }).should.be.rejected;
         });
 
+        it('cannot finalize non-existing burn operations', async function() {
+            await this.interactor.finalizeBurn(rest[0], 1, { from: admin1 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[0], 1, { from: admin2 }).should.be.rejected;
+        });
+
         it('burn finalize blocked if not whitelisted', async function() {
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
             await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
@@ -586,6 +670,25 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.unpauseOperations({ from: owner });
             await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.fulfilled;
         });
+
+        it('cannot finalize requested Operation index', async function() {
+            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
+
+            await this.interactor.finalizeBurn(rest[0], 1, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot finalize finalized Operation index', async function() {
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot finalize revoked Operation index', async function() {
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+        });
+
 
         it('burn finalize event emitted', async function() {
             const { logs } = await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
@@ -667,6 +770,18 @@ contract('OperationsInteractor Tests', function(accounts) {
         it('revoked burns cannot be finalized', async function() {
             await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
             await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot revoke finalized Operation index', async function() {
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
+        it('cannot revoke revoked Operation index', async function() {
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin2 });
+        
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('burn revoked event emitted', async function() {
