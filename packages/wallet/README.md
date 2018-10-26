@@ -23,7 +23,7 @@ const response = await account0.send(account1.getAddress(), '100');
 // view the response to the transaction
 console.log(response)
 ```
-You can copy the *xdr encoded transaction* in the output of the code above, and view it at [Stellar laboratory](https://www.stellar.org/laboratory/#?network=test)
+You can copy the *XDR encoded transaction* in the output of the code above, and view it at [Stellar laboratory](https://www.stellar.org/laboratory/#?network=test)
 ## Running The Tests
 * Tests are wirtten using [Jest](https://jestjs.io/) library.
 * Run `npm test` to run all the tests.
@@ -37,8 +37,9 @@ You can copy the *xdr encoded transaction* in the output of the code above, and 
 ## Documentation
 * Comments in this project follow the [JSDoc](http://usejsdoc.org/index.html) format.
 * Run the following command to create the documentation for a certain `.js` file. For example `jsdoc Account.js`.
-* Run `jsdoc Ledger.js WalletManager.js Trezor.js Account.js -d Docs` to generate documentation for all in the Docs folder.
+* Run `jsdoc Ledger.js WalletManager.js Trezor.js Account.js Anchor.js -d Docs` to generate documentation for all in the Docs folder. this will overwrite the current one.
 * The [documentation](Docs/index.html) is in the `out` or `Docs` folder. You can view it in the browser.
+* Check out the [Medium blog post](https://medium.com/rate-engineering) about this package. (The link will be updated after it is released.)
 ## Built With
 * [bip39](https://www.npmjs.com/package/bip39) - Mnemonic code for generating deterministic keys
 * [ethereumjs-wallet](https://www.npmjs.com/package/ethereumjs-wallet) - A lightweight Ethereum wallet implementation

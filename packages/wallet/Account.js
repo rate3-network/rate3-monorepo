@@ -48,6 +48,12 @@ class Account {
    * @returns {object|null} xdr.ChangeTrustOp if succeeds or null otherwise
    */
   async changeTrust(assetName, issuerPublickey, limit) {
+    if (this.hardware != null) {
+      // I am not sure whether this method can/should be supported by hardware
+      // for now disable it
+      console.log(setting.notSupportedbyhardware);
+      return false;
+    }
     switch (this.network) {
       case 'stellar': {
         const newAsset = new StellarSdk.Asset(assetName, issuerPublickey);
@@ -101,6 +107,14 @@ class Account {
         return false;
     }
     return true;
+  }
+
+  /**
+   * Getter
+   * @returns {object} - the hardware, or null
+   */
+  getHardware() {
+    return this.hardware;
   }
 
   /**
@@ -182,7 +196,7 @@ class Account {
           return this.hardware.signMessage(this.nativeAccount, data);
         case 'trezor':
           return this.hardware.signMessage(this.nativeAccount, data, false);
-          // output not in hex
+          // output not in hex, set to true if you want to return hex
         default:
           console.log(setting.hardwareDebug);
           return false;
@@ -191,7 +205,7 @@ class Account {
     switch (this.network) {
       case 'stellar':
         if (this.nativeAccount.canSign()) {
-          console.log('sign without hardware')
+          console.log('sign without hardware');
           return this.nativeAccount.sign(data);
         }
         console.log('The Stellar account does not contain a private key and cannot sign');
@@ -211,6 +225,11 @@ class Account {
    * @returns {object} the server response of the transaction
    */
   async send(to, amount) {
+    if (this.hardware != null) {
+      // this sh
+      console.log(setting.notSupportedbyhardware);
+      return false;
+    }
     try {
       switch (this.network) {
         case 'stellar': {
