@@ -9,9 +9,11 @@ import (
 
 // Tables
 const (
-	tableStellarAccounts  = "stellar_accounts"
-	tableReceivedPayments = "stellar_received_payments"
-	tableLinkRequests     = "link_requests"
+	tableStellarAccounts               = "stellar_accounts"
+	tableReceivedPayments              = "stellar_received_payments"
+	tableLinkRequests                  = "link_requests"
+	tableContracts                     = "contracts"
+	tableStellarIdentityAccountsEvents = "stellar_identity_accounts_events"
 )
 
 // Columns
@@ -37,6 +39,15 @@ const (
 	columnEthereumAddress   = "ethereum_address"
 	columnSenderAddress     = "sender_address"
 	columnNonce             = "nonce"
+
+	columnEventName       = "event_name"
+	columnContractID      = "contract_id"
+	columnContractAddress = "contract_address"
+	columnIdentityAddress = "identity_address"
+	columnAccountAddress  = "account_address"
+	columnBlockNumber     = "block_number"
+	columnTxIndex         = "tx_index"
+	columnBlockTimestamp  = "block_timestamp"
 )
 
 // pgTimeFormat is RFC3339 which has timezone information and accepted by pg

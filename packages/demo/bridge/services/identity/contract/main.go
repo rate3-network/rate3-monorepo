@@ -5,15 +5,22 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/services/identity/contract/identityregistry"
 	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/services/identity/contract/stellaridentityaccounts"
+	"github.com/rate-engineering/rate3-monorepo/packages/demo/bridge/services/identity/db"
 	"go.uber.org/zap"
 )
 
 type Contracts struct {
-	IdentityRegistry        *identityregistry.Identityregistry
-	IdentityRegistryAddress common.Address
+	IdentityRegistry struct {
+		Instance *identityregistry.Identityregistry
+		Address  common.Address
+		DB       db.Contract
+	}
 
-	StellarIdentityAccounts        *stellaridentityaccounts.Stellaridentityaccounts
-	StellarIdentityAccountsAddress common.Address
+	StellarIdentityAccounts struct {
+		Instance *stellaridentityaccounts.Stellaridentityaccounts
+		Address  common.Address
+		DB       db.Contract
+	}
 }
 
 func NewContracts(
@@ -24,7 +31,7 @@ func NewContracts(
 ) (*Contracts, error) {
 
 	identityRegistryAddr := common.HexToAddress(identityRegistryAddrStr)
-	identityRegistryContract, err := identityregistry.NewIdentityregistry(identityRegistryAddr, ethereumClient)
+	identityRegistryInstance, err := identityregistry.NewIdentityregistry(identityRegistryAddr, ethereumClient)
 	if err != nil {
 		logger.Error("Unable to instantiate stellar identity contract",
 			zap.Error(err),
@@ -34,7 +41,7 @@ func NewContracts(
 	}
 
 	stellarIdentityAccountsAddr := common.HexToAddress(stellarIdentityAccountsAddrStr)
-	stellarIdentityAccountsContract, err := stellaridentityaccounts.NewStellaridentityaccounts(stellarIdentityAccountsAddr, ethereumClient)
+	stellarIdentityAccountsInstance, err := stellaridentityaccounts.NewStellaridentityaccounts(stellarIdentityAccountsAddr, ethereumClient)
 	if err != nil {
 		logger.Fatal("Unable to instantiate stellar identity contract",
 			zap.Error(err),
@@ -43,10 +50,11 @@ func NewContracts(
 		return nil, ErrInitializeContracts
 	}
 
-	return &Contracts{
-		IdentityRegistry:               identityRegistryContract,
-		IdentityRegistryAddress:        identityRegistryAddr,
-		StellarIdentityAccounts:        stellarIdentityAccountsContract,
-		StellarIdentityAccountsAddress: stellarIdentityAccountsAddr,
-	}, nil
+	contract := Contracts{}
+	contract.IdentityRegistry.Instance = identityRegistryInstance
+	contract.IdentityRegistry.Address = identityRegistryAddr
+	contract.StellarIdentityAccounts.Instance = stellarIdentityAccountsInstance
+	contract.StellarIdentityAccounts.Address = stellarIdentityAccountsAddr
+
+	return &contract, nil
 }

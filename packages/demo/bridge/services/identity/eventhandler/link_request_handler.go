@@ -54,7 +54,7 @@ func (h *LinkRequestHandler) Process(request db.LinkRequest) {
 
 	identity := common.HexToAddress(request.EthereumAddress)
 	account, _ := h.getStellarAccountBytes(request.StellarAccount)
-	tx, err := h.Contracts.StellarIdentityAccounts.AddAccount(auth, identity, account)
+	tx, err := h.Contracts.StellarIdentityAccounts.Instance.AddAccount(auth, identity, account)
 	if err != nil {
 		h.Logger.Error("Unable to submit transaction",
 			zap.Error(err),
@@ -110,7 +110,7 @@ func (h *LinkRequestHandler) validateZeroAddress(request db.LinkRequest) bool {
 func (h *LinkRequestHandler) validateIdentityAddress(request db.LinkRequest) bool {
 	address := common.HexToAddress(request.EthereumAddress)
 
-	isIdentity, err := h.Contracts.IdentityRegistry.Identities(nil, address)
+	isIdentity, err := h.Contracts.IdentityRegistry.Instance.Identities(nil, address)
 	if err != nil {
 		h.Logger.Error("Unable to check contract for identity",
 			zap.Error(err),
@@ -149,7 +149,7 @@ func (h *LinkRequestHandler) validateNotLinked(request db.LinkRequest) bool {
 		return false
 	}
 
-	identityAddress, err := h.Contracts.StellarIdentityAccounts.GetIdentity(nil, account)
+	identityAddress, err := h.Contracts.StellarIdentityAccounts.Instance.GetIdentity(nil, account)
 	if err != nil {
 		h.Logger.Error("Unable to check contract for existing identity",
 			zap.Error(err),

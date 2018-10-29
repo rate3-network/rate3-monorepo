@@ -273,3 +273,110 @@ func (d *PostgresDB) UpdateLinkRequest(request LinkRequest) (int64, error) {
 
 	return res.RowsAffected()
 }
+
+func (d *PostgresDB) LoadContract(address string) (*Contract, error) {
+	sess := d.Connection.NewSession(nil)
+
+	res := &Contract{}
+
+	err := sess.
+		Select("*").
+		From(tableContracts).
+		Where(dbr.And(
+			dbr.Eq(columnContractAddress, address),
+		)).
+		LoadOne(res)
+
+	if err == nil {
+		return res, nil
+	}
+
+	if err != nil && err != dbr.ErrNotFound {
+		return nil, err
+	}
+
+	tx, err := sess.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.RollbackUnlessCommitted()
+
+	var id int64
+	err = tx.
+		InsertInto(tableContracts).
+		Columns(columnContractAddress).
+		Values(address).
+		Returning(columnID).
+		Load(&id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = tx.
+		Select("*").
+		From(tableContracts).
+		Where(dbr.And(
+			dbr.Eq(columnID, id),
+		)).
+		LoadOne(res)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, tx.Commit()
+}
+
+func (d *PostgresDB) AddStellarIdentityAccountsEventsUntilBlockNumber(contractID int64, blockNumber uint64, events []StellarIdentityAccountsEvent) error {
+	sess := d.Connection.NewSession(nil)
+	tx, err := sess.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.RollbackUnlessCommitted()
+
+	for _, ev := range events {
+		var count int64
+		_, err = tx.
+			Select("COUNT(*)").
+			From(tableStellarIdentityAccountsEvents).
+			Where(dbr.And(
+				dbr.Eq(columnTxHash, ev.TxHash),
+			)).
+			Load(&count)
+		if err != nil {
+			return err
+		} else if count > 0 {
+			continue // event exists
+		}
+
+		_, err = tx.
+			InsertInto(tableStellarIdentityAccountsEvents).
+			Columns(
+				columnContractID,
+				columnEventName,
+				columnIdentityAddress,
+				columnAccountAddress,
+				columnTxHash,
+				columnBlockNumber,
+				columnTxIndex,
+				columnBlockTimestamp,
+			).
+			Record(ev).
+			Exec()
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = tx.
+		Update(tableContracts).
+		Set(columnBlockNumber, blockNumber).
+		Where(dbr.Eq(columnID, contractID)).
+		Exec()
+
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}

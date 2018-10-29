@@ -33,7 +33,7 @@ func initLogger() *zap.Logger {
 		return lvl >= zapcore.ErrorLevel
 	})
 	lowPriority := zap.LevelEnablerFunc(func(lvl zapcore.Level) bool {
-		return lvl < zapcore.ErrorLevel // && lvl > zapcore.DebugLevel
+		return lvl < zapcore.ErrorLevel && lvl > zapcore.DebugLevel
 	})
 
 	// High-priority output should go to standard error,
@@ -94,7 +94,7 @@ func initHorizonClient(logger *zap.Logger, cfg *config.Config) *horizon.Client {
 	}
 }
 
-func initContracts(logger *zap.Logger, cfg *config.Config, ethereumClient *ethclient.Client) *contract.Contracts {
+func initContracts(logger *zap.Logger, cfg *config.Config, dbClient db.Database, ethereumClient *ethclient.Client) *contract.Contracts {
 	contracts, err := contract.NewContracts(
 		logger,
 		ethereumClient,
@@ -104,6 +104,26 @@ func initContracts(logger *zap.Logger, cfg *config.Config, ethereumClient *ethcl
 	if err != nil {
 		logger.Fatal("Failed to initialize contracts", zap.Error(err))
 	}
+
+	identityRegistryContract, err := dbClient.LoadContract(
+		hex.EncodeToString(contracts.IdentityRegistry.Address.Bytes()),
+	)
+	if err != nil {
+		logger.Fatal("Failed to load identity registry contract from db",
+			zap.String("Address", cfg.Networks.Ethereum.IdentityRegistryAddr),
+		)
+	}
+	stellarIdentityAccountsContract, err := dbClient.LoadContract(
+		hex.EncodeToString(contracts.StellarIdentityAccounts.Address.Bytes()),
+	)
+	if err != nil {
+		logger.Fatal("Failed to load stellar identity accounts contract from db",
+			zap.String("Address", cfg.Networks.Ethereum.StellarIdentityAccountsAddr),
+		)
+	}
+	contracts.IdentityRegistry.DB = *identityRegistryContract
+	contracts.StellarIdentityAccounts.DB = *stellarIdentityAccountsContract
+
 	return contracts
 }
 
@@ -142,10 +162,10 @@ func validateContractOwner(logger *zap.Logger, cfg *config.Config, privateKey *e
 	ethereumAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 
 	logger.Info("Checking owner of stellar identity contract",
-		zap.String("Address", contracts.StellarIdentityAccountsAddress.String()),
+		zap.String("Address", contracts.StellarIdentityAccounts.Address.String()),
 	)
 
-	ownerAddress, err := contracts.StellarIdentityAccounts.Owner(nil)
+	ownerAddress, err := contracts.StellarIdentityAccounts.Instance.Owner(nil)
 	if err != nil {
 		logger.Fatal("Unable to call smart contract",
 			zap.Error(err),
@@ -171,6 +191,7 @@ func main() {
 	fatalities := make(chan error)
 	ethereumLinkRequests := make(chan db.LinkRequest)
 	stellarIncomingPayments := make(chan horizon.Payment)
+	stellarIdentityAccountsEvents := make(chan listener.StellarIdentityAccountsEvents)
 	interrupt := make(chan os.Signal, 1)
 	ethereumTransactionMutex := &sync.Mutex{}
 
@@ -180,7 +201,7 @@ func main() {
 	horizonClient := initHorizonClient(logger, cfg)
 
 	privateKey := initPrivateKey(logger, cfg)
-	contracts := initContracts(logger, cfg, ethereumClient)
+	contracts := initContracts(logger, cfg, dbClient, ethereumClient)
 	ownerAddress := validateContractOwner(logger, cfg, privateKey, contracts)
 
 	stellarPaymentsListener := &listener.StellarPayments{
@@ -201,6 +222,16 @@ func main() {
 
 	go pendingLinkRequestListener.Start(hex.EncodeToString(ownerAddress.Bytes()))
 
+	ethereumEventsListener := &listener.EthereumEventsListener{
+		Logger:     logger.Named("EthereumEventsListener"),
+		Fatalities: fatalities,
+		DB:         dbClient,
+		Client:     ethereumClient,
+		Contracts:  contracts,
+	}
+
+	go ethereumEventsListener.StartListenStellarIdentityAccounts(stellarIdentityAccountsEvents)
+
 	stellarPaymentHandler := &eventhandler.StellarPaymentHandler{
 		Logger:        logger.Named("StellarPaymentsHandler"),
 		DB:            dbClient,
@@ -219,6 +250,12 @@ func main() {
 		Mutex:          ethereumTransactionMutex,
 	}
 
+	stellaridentityaccountsEventsHandler := &eventhandler.StellaridentityaccountsEventsHandler{
+		Logger:     logger.Named("StellaridentityaccountsEventsHandler"),
+		DB:         dbClient,
+		Fatalities: fatalities,
+	}
+
 	for {
 		select {
 		case err := <-fatalities:
@@ -229,7 +266,14 @@ func main() {
 			go stellarPaymentHandler.Receive(stellarAccount, &payment)
 		case linkRequest := <-ethereumLinkRequests:
 			logger.Info("Link request received", zap.Any("Request", linkRequest))
-			linkRequestHandler.Process(linkRequest)
+			go linkRequestHandler.Process(linkRequest)
+		case events := <-stellarIdentityAccountsEvents:
+			logger.Info("Events received",
+				zap.Any("Events", events.StellarIdentityAccountsEvents()),
+				zap.Uint64("Start block", events.StartBlock()),
+				zap.Uint64("End block", events.EndBlock()),
+			)
+			go stellaridentityaccountsEventsHandler.Receive(events)
 		case killSignal := <-interrupt:
 			logger.Debug("Got signal", zap.Any("signal", killSignal))
 			logger.Debug("Killing service")

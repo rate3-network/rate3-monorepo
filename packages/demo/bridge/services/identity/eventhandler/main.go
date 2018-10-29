@@ -29,3 +29,9 @@ type LinkRequestHandler struct {
 	FromAddress    common.Address
 	Mutex          *sync.Mutex
 }
+
+type StellaridentityaccountsEventsHandler struct {
+	Logger     *zap.Logger
+	Fatalities chan error
+	DB         db.Database
+}
