@@ -25,8 +25,8 @@ contract IdentityRegistry is Ownable {
         keyEnums = _keyEnums;
     }
 
-    // Mapping from ethereum wallet to ERC725 + ERC735 identity
-    mapping (address => address) public identities;
+    // All identity contracts
+    mapping (address => bool) public identities;
 
     // Mapping of networks to identity accounts, i.e. Ethereum = 1, Stellar = 2
     mapping (uint256 => IdentityAccounts) public networkAccounts;
@@ -42,27 +42,15 @@ contract IdentityRegistry is Ownable {
             ethIdentityAccounts != address(0),
             "Ethereum identity accounts is not set"
         );
-        require(identities[msg.sender] == address(0), "Identity exists");
         Identity newIdentity = new Identity(msg.sender, keyEnums);
-        identities[msg.sender] = newIdentity;
+        require(identities[newIdentity] == false, "Identity exists");
+        identities[newIdentity] = true;
 
         ethIdentityAccounts.newIdentity(newIdentity, msg.sender);
 
         emit NewIdentity(msg.sender, newIdentity);
 
         return newIdentity;
-    }
-
-    /**
-     * @dev Checks whether an identity exists in the registry
-     * @param addr The identity contract address to check for
-     */
-    function hasIdentity(address addr)
-        public
-        view
-        returns (bool)
-    {
-        return identities[addr] != address(0);
     }
 
     function setEthereumIdentityAccounts(EthereumIdentityAccounts acc)
