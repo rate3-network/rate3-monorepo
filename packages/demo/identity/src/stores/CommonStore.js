@@ -214,15 +214,15 @@ class CommonStore {
       this.changeCommonNetwork('Kovan');
     }
 
-    const verifierBalance = await window.web3.eth.getBalance(managementAccountAddress);   
-   
+    const verifierBalance = await window.web3.eth.getBalance(managementAccountAddress);
+
     runInAction(() => {
       const balance = window.web3.utils.fromWei(verifierBalance);
       this.rootStore.verifierStore.balanceToShow = balance;
     });
 
 
-    const fixedAccountBalance = await window.web3.eth.getBalance(this.rootStore.userStore.fixedUserAddr);    
+    const fixedAccountBalance = await window.web3.eth.getBalance(this.rootStore.userStore.fixedUserAddr);
 
     try {
       runInAction(() => {
@@ -317,6 +317,7 @@ class CommonStore {
     try {
       const account = this.metamaskAccount;
       const balance = await window.web3.eth.getBalance(account);
+
       runInAction(() => {
         this.metamaskBalance = balance;
         this.metamaskBalance = window.web3.utils.fromWei(this.metamaskBalance);
