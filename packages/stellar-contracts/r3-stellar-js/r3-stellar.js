@@ -5,11 +5,10 @@ import Stellar from 'stellar-sdk';
 import AssetContracts from './contracts/AssetContracts.js';
 import HashedTimelockContracts from './contracts/HashedTimelockContracts.js';
 
-async function R3Stellar(serverURI) {
+async function R3Stellar(network, serverURI) {
 
-    //const passPhrase = Stellar.Networks[network];
-    //Stellar.Network.use(new Stellar.Network(passPhrase));
-    Stellar.Network.useTestNetwork();
+    const passPhrase = Stellar.Networks[network];
+    Stellar.Network.use(new Stellar.Network(passPhrase));
     
     const stellar = new Stellar.Server(serverURI);
 

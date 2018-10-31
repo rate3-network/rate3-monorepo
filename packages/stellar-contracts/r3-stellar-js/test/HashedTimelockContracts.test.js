@@ -18,7 +18,7 @@ describe("HashedTimelockContracts integration tests", function () {
     this.slow(TIMEOUT/2);
 
     before(async function () {
-        this.r3 = await R3Stellar(HORIZON_TESTNET_URL);
+        this.r3 = await R3Stellar('TESTNET', HORIZON_TESTNET_URL);
         this.r3.Stellar.Config.setDefault();
 
         // Create Keypairs for issuer and distributor

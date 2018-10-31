@@ -137,7 +137,7 @@ function HashedTimelockContracts(stellar, Stellar) {
         }
 
         // Finalize the holding account.
-        //Account balance should have min balance covered beforehand.
+        // Account balance should have min balance covered beforehand.
         const holdingTx = new Stellar.TransactionBuilder(holding)
             // Add claimer as signer.
             .addOperation(Stellar.Operation.setOptions({
