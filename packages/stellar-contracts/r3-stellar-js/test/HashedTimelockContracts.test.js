@@ -72,8 +72,6 @@ describe("HashedTimelockContracts integration tests", function () {
 
             const res2 = await this.r3.stellar.submitTransaction(tx2);
 
-            //console.log(res2);
-
             // Create a trustline with issuing account with alice account
             let { tx: tx3 } = await this.r3.assetContracts.trustIssuingAccount({
                 asset: this.asset,
@@ -96,7 +94,7 @@ describe("HashedTimelockContracts integration tests", function () {
 
             const res4 = await this.r3.stellar.submitTransaction(tx4);
 
-            // Distribute assets to Alice
+            // Distribute assets to Alice, 2000 for 2 test accounts, 1000 each.
             const { tx: tx5 } = await this.r3.assetContracts.distributeAsset({
                 asset: this.asset,
                 amount: 2000,
@@ -108,8 +106,6 @@ describe("HashedTimelockContracts integration tests", function () {
             tx5.sign(this.distributorKeypair);
 
             const res5 = await this.r3.stellar.submitTransaction(tx5);
-
-            //console.log(res5);
         });
 
         it("able to create holding account", async function () {
@@ -124,9 +120,6 @@ describe("HashedTimelockContracts integration tests", function () {
 
             // Sign transaction with alice and holding account.
             tx.sign(this.aliceKeypair, this.holdingKeypair);
-
-            console.log('holding account XDR');
-            console.log(tx.toEnvelope().toXDR().toString("base64"));
 
             const res = await this.r3.stellar.submitTransaction(tx);
         });
@@ -144,26 +137,59 @@ describe("HashedTimelockContracts integration tests", function () {
                 holdingAccountPublicKey: this.holdingKeypair.publicKey(),
             });
 
+            this.claimTx = claimTx;
+            this.refundTx = refundTx;
+
+            // Sign transaction with holding account.
+            holdingTx.sign(this.holdingKeypair);
+
+            const res = await this.r3.stellar.submitTransaction(holdingTx);
+        });
+
+        it("able to claim from account", async function () {
+            // Sign transaction with claim account (bob) and preimage
+            this.claimTx.sign(this.bobKeypair);
+            this.claimTx.signHashX(this.preimageHashlockPair.preimage);
+
+            const res = await this.r3.stellar.submitTransaction(this.claimTx);
+        });
+
+        it("unable to refund after claim", async function () {
+            const res = await this.r3.stellar.submitTransaction(this.refundTx).should.be.rejected;
+        });
+
+        it("able to refund", async function () {
+            // Alice creates a holding account.
+            const { tx } = await this.r3.hashedTimelockContracts.createHoldingAccount({
+                asset: this.asset,
+                swapAmount: 1000,
+                baseReserve: 0.5,
+                depositorAccountPublicKey: this.aliceKeypair.publicKey(),
+                holdingAccountPublicKey: this.holdingKeypair.publicKey(),
+            });
+
             // Sign transaction with alice and holding account.
-            // holdingTx.sign(this.aliceKeypair, this.holdingKeypair);
+            tx.sign(this.aliceKeypair, this.holdingKeypair);
 
-            console.log('holding finalize XDR');
-            console.log(holdingTx.toEnvelope().toXDR().toString("base64"));
+            const res1 = await this.r3.stellar.submitTransaction(tx);
 
-            console.log('claim XDR');
-            console.log(claimTx.toEnvelope().toXDR().toString("base64"));
+            const { holdingTx, claimTx, refundTx } = await this.r3.hashedTimelockContracts.finalizeHoldingAccount({
+                asset: this.asset,
+                hashlock: this.preimageHashlockPair.hashlock,
+                swapAmount: 1000,
+                refundTime: makeTimestamp(0),
+                depositorAccountPublicKey: this.aliceKeypair.publicKey(),
+                claimerAccountPublicKey: this.bobKeypair.publicKey(),
+                holdingAccountPublicKey: this.holdingKeypair.publicKey(),
+            });
 
-            console.log('refund XDR');
-            console.log(refundTx.toEnvelope().toXDR().toString("base64"));
+            // Sign transaction with holding account.
+            holdingTx.sign(this.holdingKeypair);
 
-            console.log('KEYS');
-            console.log('HOLDING: ', this.holdingKeypair.secret());
-            console.log('ALICE (Depositor): ', this.aliceKeypair.secret());
-            console.log('BOB (Claimer): ', this.bobKeypair.secret());
-            console.log('PREIMAGE (hex value): ', this.preimageHashlockPair.preimage.toString('hex'));
-            console.log('HASHLOCK (hex value): ', this.preimageHashlockPair.hashlock.toString('hex'));
+            const res2 = await this.r3.stellar.submitTransaction(holdingTx);
 
-            //const res = await this.r3.stellar.submitTransaction(holdingTx);
+            // Submit refund tx, no need for additional signature
+            const res3 = await this.r3.stellar.submitTransaction(refundTx);
         });
     });
 });
