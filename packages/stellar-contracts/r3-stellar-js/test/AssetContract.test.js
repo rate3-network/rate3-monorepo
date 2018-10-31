@@ -46,8 +46,6 @@ describe("AssetContracts integration tests", function () {
             tx.sign(this.distributorKeypair);
 
             const res = await this.r3.stellar.submitTransaction(tx);
-
-            console.log(res);
         });
 
         it("able to issue asset to distributor", async function () {
@@ -63,8 +61,6 @@ describe("AssetContracts integration tests", function () {
             tx.sign(this.issuerKeypair);
 
             const res = await this.r3.stellar.submitTransaction(tx);
-
-            console.log(res);
         });
 
         it("able to set asset authorization", async function () {
@@ -79,8 +75,6 @@ describe("AssetContracts integration tests", function () {
            tx.sign(this.issuerKeypair);
 
            const res = await this.r3.stellar.submitTransaction(tx);
-
-           console.log(res);
        });
     });
 
