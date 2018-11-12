@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "../interfaces/TokenInterface.sol";
+import "../interfaces/ERC20.sol";
 import "./AdminInteractor.sol";
 
 /**
@@ -98,16 +99,45 @@ contract OperationsInteractor is AdminInteractor {
 
     /// Events
     event MintOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
-    event BurnOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
+    event BurnOperationRequested(
+        address indexed by,
+        uint256 value,
+        uint256 requestTimestamp,
+        uint256 index,
+        uint256 beforeTotalSupply,
+        uint256 afterTotalSupply,
+        uint256 beforeUserBalance,
+        uint256 afterUserBalance
+    );
 
     event MintOperationApproved(address indexed by, uint256 value, address indexed approvedBy, uint256 approvedTimestamp, uint256 index);
     event BurnOperationApproved(address indexed by, uint256 value, address indexed approvedBy, uint256 approvedTimestamp, uint256 index);
 
-    event MintOperationFinalized(address indexed by, uint256 value, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
+    event MintOperationFinalized(
+        address indexed by,
+        uint256 value,
+        address indexed finalizedBy,
+        uint256 finalizedTimestamp,
+        uint256 index,
+        uint256 beforeTotalSupply,
+        uint256 afterTotalSupply,
+        uint256 beforeUserBalance,
+        uint256 afterUserBalance
+    );
     event BurnOperationFinalized(address indexed by, uint256 value, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
 
     event MintOperationRevoked(address indexed by, uint256 value, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
-    event BurnOperationRevoked(address indexed by, uint256 value, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
+    event BurnOperationRevoked(
+        address indexed by,
+        uint256 value,
+        address indexed revokedBy,
+        uint256 revokedTimestamp,
+        uint256 index,
+        uint256 beforeTotalSupply,
+        uint256 afterTotalSupply,
+        uint256 beforeUserBalance,
+        uint256 afterUserBalance
+    );
 
     /**
      * @notice Request mint, fires off a MintOperationRequested event.
@@ -198,9 +228,25 @@ contract OperationsInteractor is AdminInteractor {
         mintRequestOperation.finalizedBy = msg.sender;
         mintRequestOperation.finalizedTimestamp = block.timestamp;
 
+        uint256 beforeTotalSupply = ERC20(token).totalSupply();
+        uint256 beforeUserBalance = ERC20(token).balanceOf(mintAddress);
+
         TokenInterface(token).mint(mintAddress, value);
 
-        emit MintOperationFinalized(_requestor, mintRequestOperation.value, msg.sender, block.timestamp, _index);
+        uint256 afterTotalSupply = ERC20(token).totalSupply();
+        uint256 afterUserBalance = ERC20(token).balanceOf(mintAddress);
+
+        emit MintOperationFinalized(
+            _requestor,
+            mintRequestOperation.value,
+            msg.sender,
+            block.timestamp,
+            _index,
+            beforeTotalSupply,
+            afterTotalSupply,
+            beforeUserBalance,
+            afterUserBalance
+        );
     }
 
     /**
@@ -271,11 +317,27 @@ contract OperationsInteractor is AdminInteractor {
             0
         );
 
+        uint256 beforeTotalSupply = ERC20(token).totalSupply();
+        uint256 beforeUserBalance = ERC20(token).balanceOf(msg.sender);
+        require(beforeUserBalance >= _value, "Insufficient balance to request burn");
+
         // Burn tokens. Can be reversed later if request is revoked.
         TokenInterface(token).burn(msg.sender, _value);
 
+        uint256 afterTotalSupply = ERC20(token).totalSupply();
+        uint256 afterUserBalance = ERC20(token).balanceOf(msg.sender);
+
         // Record and emit index of operation before pushing to array.
-        emit BurnOperationRequested(msg.sender, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
+        emit BurnOperationRequested(
+            msg.sender,
+            _value,
+            requestTimestamp,
+            burnRequestOperations[msg.sender].length,
+            beforeTotalSupply,
+            afterTotalSupply,
+            beforeUserBalance,
+            afterUserBalance
+        );
 
         burnRequestOperations[msg.sender].push(burnRequestOperation);
     }
@@ -356,11 +418,27 @@ contract OperationsInteractor is AdminInteractor {
         burnRequestOperation.status = OperationStates.REVOKED;
         burnRequestOperation.revokedBy = msg.sender;
         burnRequestOperation.revokedTimestamp = block.timestamp;
+        
+        uint256 beforeTotalSupply = ERC20(token).totalSupply();
+        uint256 beforeUserBalance = ERC20(token).balanceOf(burnRequestOperation.by);
 
         // Return back the tokens. Note that this will fail if user is not whitelisted for mint, or blacklisted.
         TokenInterface(token).mint(burnRequestOperation.by, burnRequestOperation.value);
 
-        emit BurnOperationRevoked(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
+        uint256 afterTotalSupply = ERC20(token).totalSupply();
+        uint256 afterUserBalance = ERC20(token).balanceOf(burnRequestOperation.by);
+
+        emit BurnOperationRevoked(
+            _requestor,
+            burnRequestOperation.value,
+            msg.sender,
+            block.timestamp,
+            _index,
+            beforeTotalSupply,
+            afterTotalSupply,
+            beforeUserBalance,
+            afterUserBalance
+        );
     }
 
     /**
@@ -384,10 +462,26 @@ contract OperationsInteractor is AdminInteractor {
         burnRequestOperation.revokedBy = msg.sender;
         burnRequestOperation.revokedTimestamp = block.timestamp;
 
+        uint256 beforeTotalSupply = ERC20(token).totalSupply();
+        uint256 beforeUserBalance = ERC20(token).balanceOf(burnRequestOperation.by);
+
         // Return back the tokens. Note that this will fail if user is not whitelisted for mint, or blacklisted.
         TokenInterface(token).mint(burnRequestOperation.by, burnRequestOperation.value);
 
-        emit BurnOperationRevoked(msg.sender, burnRequestOperation.value, msg.sender, block.timestamp, _index);
+        uint256 afterTotalSupply = ERC20(token).totalSupply();
+        uint256 afterUserBalance = ERC20(token).balanceOf(burnRequestOperation.by);
+
+        emit BurnOperationRevoked(
+            msg.sender,
+            burnRequestOperation.value,
+            msg.sender,
+            block.timestamp,
+            _index,
+            beforeTotalSupply,
+            afterTotalSupply,
+            beforeUserBalance,
+            afterUserBalance
+        );
     }
 
     /**
