@@ -61,13 +61,13 @@ module.exports = function deployment(deployer, network, accounts) {
 
         console.log('\nSet proxy on token');
         await interactor.setProxyOnToken(proxy.address, { from: owner });
-        
-        //console.log('\nSetting admin 1 (approval) of BaseInteractor');
-        //await interactor.setFirstAdmin(admin1, { from: owner });
 
-        //console.log('\nSetting admin 2 (finalize) of BaseInteractor');
-        //await interactor.setSecondAdmin(admin2, { from: owner });
-      
+        console.log('\nSetting admin 1 (approval) of BaseInteractor');
+        await interactor.setFirstAdmin(admin1, { from: owner });
+
+        console.log('\nSetting admin 2 (finalize) of BaseInteractor');
+        await interactor.setSecondAdmin(admin2, { from: owner });
+          
         console.log('\n===== Addresses ======');
         console.log('AllowanceModule:', allowance.address);
         console.log('BalanceModule:  ', balance.address);
@@ -83,6 +83,6 @@ module.exports = function deployment(deployer, network, accounts) {
         console.log('Admin2:         ', admin2);
         console.log('======================\n');
     };
-  
+
     return deployer.then(() => deployFn()).catch(console.error);
-  };
+};
