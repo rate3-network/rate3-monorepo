@@ -14,6 +14,10 @@ contract RegistryInteractor is AdminInteractor {
     string public constant WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
     string public constant BLACKLISTED = "BLACKLISTED";
 
+    event WhitelistedForMint(address indexed whitelistedAddress, bool status, address indexed whitelistedBy, uint256 whitelistTimestamp);
+    event WhitelistedForBurn(address indexed whitelistedAddress, bool status, address indexed whitelistedBy, uint256 whitelistTimestamp);
+    event Blacklisted(address indexed blacklistedAddress, bool status, address indexed blacklistedBy, uint256 blacklistTimestamp);
+
     /**
      * @notice Set the minting whitelist status for address provided.
      *
@@ -31,6 +35,12 @@ contract RegistryInteractor is AdminInteractor {
             address(0),
             _bool,
             msg.sender
+        );
+        emit WhitelistedForMint(
+            _address,
+            _bool,
+            msg.sender,
+            block.timestamp
         );
     }
 
@@ -52,6 +62,12 @@ contract RegistryInteractor is AdminInteractor {
             _bool,
             msg.sender
         );
+        emit WhitelistedForBurn(
+            _address,
+            _bool,
+            msg.sender,
+            block.timestamp
+        );
     }
 
     /**
@@ -71,6 +87,12 @@ contract RegistryInteractor is AdminInteractor {
             address(0),
             _bool,
             msg.sender
+        );
+        emit Blacklisted(
+            _address,
+            _bool,
+            msg.sender,
+            block.timestamp
         );
     }
 }
