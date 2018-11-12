@@ -257,7 +257,14 @@ contract OperationsInteractor is AdminInteractor {
      * @param _requestor Requestor of MintRequestOperation.
      * @param _index Index of MintRequestOperation by _requestor.
      */
-    function revokeMint(address _requestor, uint256 _index) public onlyAdmin {
+    function revokeMint(
+        address _requestor,
+        uint256 _index
+    )
+        public
+        onlyAdmin
+        operationsNotPaused
+    {
         MintRequestOperation storage mintRequestOperation = mintRequestOperations[_requestor][_index];
 
         require(mintRequestOperation.status != OperationStates.FINALIZED, "MintRequestOperation is already FINALIZED");
@@ -278,7 +285,12 @@ contract OperationsInteractor is AdminInteractor {
      *
      * @param _index Index of MintRequestOperation by requestor.
      */
-    function userRevokeMint(uint256 _index) public {
+    function userRevokeMint(
+        uint256 _index
+    )
+        public
+        operationsNotPaused
+    {
         MintRequestOperation storage mintRequestOperation = mintRequestOperations[msg.sender][_index];
 
         require(mintRequestOperation.by == msg.sender, "MintRequestOperation can only be userRevoked by original requestor");
@@ -319,7 +331,7 @@ contract OperationsInteractor is AdminInteractor {
 
         uint256 beforeTotalSupply = ERC20(token).totalSupply();
         uint256 beforeUserBalance = ERC20(token).balanceOf(msg.sender);
-        require(beforeUserBalance >= _value, "Insufficient balance to request burn");
+        require(beforeUserBalance >= _value, "Insufficient balance to request");
 
         // Burn tokens. Can be reversed later if request is revoked.
         TokenInterface(token).burn(msg.sender, _value);
@@ -409,7 +421,16 @@ contract OperationsInteractor is AdminInteractor {
      * @param _requestor Requestor of BurnRequestOperation.
      * @param _index Index of BurnRequestOperation by _requestor.
      */
-    function revokeBurn(address _requestor, uint256 _index) public onlyAdmin {
+    function revokeBurn(
+        address _requestor,
+        uint256 _index
+    )
+        public
+        onlyAdmin
+        operationsNotPaused
+        whitelistedForMint(_requestor)
+        notBlacklistedForRequest(_requestor)
+    {
         BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
 
         require(burnRequestOperation.status != OperationStates.FINALIZED, "BurnRequestOperation is already FINALIZED");
@@ -449,7 +470,14 @@ contract OperationsInteractor is AdminInteractor {
      *
      * @param _index Index of BurnRequestOperation by requestor.
      */
-    function userRevokeBurn(uint256 _index) public {
+    function userRevokeBurn(
+        uint256 _index
+    ) 
+        public
+        operationsNotPaused
+        whitelistedForMint(msg.sender)
+        notBlacklistedForRequest(msg.sender)
+    {
         BurnRequestOperation storage burnRequestOperation = burnRequestOperations[msg.sender][_index];
 
         require(burnRequestOperation.by == msg.sender, "BurnRequestOperation can only be userRevoked by original requestor");

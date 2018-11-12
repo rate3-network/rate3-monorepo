@@ -387,6 +387,14 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.revokeMint(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
+        it('cannot revoke if operations paused', async function() {
+            await this.interactor.pauseOperations({ from: owner });
+            await this.interactor.revokeMint(rest[0], 0, { from: admin1 }).should.be.rejected;
+
+            await this.interactor.unpauseOperations({ from: owner });
+            await this.interactor.revokeMint(rest[0], 0, { from: admin1 }).should.be.fulfilled;
+        });
+
         it('mint revoked event emitted', async function() {
             const { logs } = await this.interactor.revokeMint(rest[0], 0, { from: admin1 });
 
@@ -477,6 +485,14 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.userRevokeMint(0, { from: rest[1] });
 
             await this.interactor.userRevokeMint(0, { from: rest[1] }).should.be.rejected;
+        });
+
+        it('cannot revoke if operations paused', async function() {
+            await this.interactor.pauseOperations({ from: owner });
+            await this.interactor.userRevokeMint(0, { from: rest[1] }).should.be.rejected;
+
+            await this.interactor.unpauseOperations({ from: owner });
+            await this.interactor.userRevokeMint(0, { from: rest[1] }).should.be.fulfilled;
         });
 
         it('mint revoked event emitted', async function() {
@@ -895,6 +911,22 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
+        it('cannot revoke if user is not whitelisted for mint', async function() {
+            await this.interactor.whitelistForMint(rest[0], false, { from: admin2 });
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('cannot revoke if operations paused', async function() {
+            await this.interactor.pauseOperations({ from: owner });
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+
+            await this.interactor.unpauseOperations({ from: owner });
+            await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
+        });
+
         it('check revoke actually refunds tokens', async function() {
             (await this.token.balanceOf(rest[1])).should.be.bignumber.equal(new web3.BigNumber('5000e+18'));
             await this.interactor.revokeBurn(rest[1], 0, { from: admin2 });
@@ -1007,6 +1039,23 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.userRevokeBurn(0, { from: rest[1] });
         
             await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.rejected;
+        });
+
+        it('cannot revoke if user is not whitelisted for mint', async function() {
+            await this.interactor.whitelistForMint(rest[1], false, { from: admin2 });
+            await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.rejected;
+
+            await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.fulfilled;
+        });
+
+
+        it('cannot user revoke if operations paused', async function() {
+            await this.interactor.pauseOperations({ from: owner });
+            await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.rejected;
+
+            await this.interactor.unpauseOperations({ from: owner });
+            await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.fulfilled;
         });
 
         it('check user revoke actually refunds tokens', async function() {
