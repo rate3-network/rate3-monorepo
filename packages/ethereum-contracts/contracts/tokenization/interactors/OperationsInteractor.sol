@@ -111,6 +111,7 @@ contract OperationsInteractor is AdminInteractor {
 
     /**
      * @notice Request mint, fires off a MintOperationRequested event.
+
      *
      * @param _value Amount of tokens to mint.
      */
@@ -247,6 +248,9 @@ contract OperationsInteractor is AdminInteractor {
         emit MintOperationRevoked(msg.sender, mintRequestOperation.value, msg.sender, block.timestamp, _index);
     }
 
+    /**
+     * @notice Request burn, fires off a BurnOperationRequested event. Tokens
+     * will be burned at this point.
      *
      * @param _value Number of tokens to burn.
      */
@@ -266,6 +270,9 @@ contract OperationsInteractor is AdminInteractor {
             address(0),
             0
         );
+
+        // Burn tokens. Can be reversed later if request is revoked.
+        TokenInterface(token).burn(msg.sender, _value);
 
         // Record and emit index of operation before pushing to array.
         emit BurnOperationRequested(msg.sender, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
@@ -303,8 +310,7 @@ contract OperationsInteractor is AdminInteractor {
     }
 
     /**
-     * @notice Finalize burn, fires off a BurnOperationFinalized event. Tokens
-     * will be burned.
+     * @notice Finalize burn, fires off a BurnOperationFinalized event.
      *
      * @dev Can only be approved by Admin 2. BurnRequestOperation should be
      * already approved beforehand.
@@ -326,14 +332,9 @@ contract OperationsInteractor is AdminInteractor {
 
         require(burnRequestOperation.status == OperationStates.APPROVED, "BurnRequestOperation is not at APPROVED state");
 
-        address burnAddress = burnRequestOperation.by;
-        uint256 value = burnRequestOperation.value;
-
         burnRequestOperation.status = OperationStates.FINALIZED;
         burnRequestOperation.finalizedBy = msg.sender;
         burnRequestOperation.finalizedTimestamp = block.timestamp;
-
-        TokenInterface(token).burn(burnAddress, value);
 
         emit BurnOperationFinalized(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
     }
@@ -355,6 +356,9 @@ contract OperationsInteractor is AdminInteractor {
         burnRequestOperation.status = OperationStates.REVOKED;
         burnRequestOperation.revokedBy = msg.sender;
         burnRequestOperation.revokedTimestamp = block.timestamp;
+
+        // Return back the tokens. Note that this will fail if user is not whitelisted for mint, or blacklisted.
+        TokenInterface(token).mint(burnRequestOperation.by, burnRequestOperation.value);
 
         emit BurnOperationRevoked(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
     }
