@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "../interfaces/TokenInterface.sol";
+import "../interfaces/ERC20.sol";
 import "./AdminInteractor.sol";
 
 /**
@@ -98,19 +99,49 @@ contract OperationsInteractor is AdminInteractor {
 
     /// Events
     event MintOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
-    event BurnOperationRequested(address indexed by, uint256 value, uint256 requestTimestamp, uint256 index);
+    event BurnOperationRequested(
+        address indexed by,
+        uint256 value,
+        uint256 requestTimestamp,
+        uint256 index,
+        uint256 beforeTotalSupply,
+        uint256 afterTotalSupply,
+        uint256 beforeUserBalance,
+        uint256 afterUserBalance
+    );
 
     event MintOperationApproved(address indexed by, uint256 value, address indexed approvedBy, uint256 approvedTimestamp, uint256 index);
     event BurnOperationApproved(address indexed by, uint256 value, address indexed approvedBy, uint256 approvedTimestamp, uint256 index);
 
-    event MintOperationFinalized(address indexed by, uint256 value, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
+    event MintOperationFinalized(
+        address indexed by,
+        uint256 value,
+        address indexed finalizedBy,
+        uint256 finalizedTimestamp,
+        uint256 index,
+        uint256 beforeTotalSupply,
+        uint256 afterTotalSupply,
+        uint256 beforeUserBalance,
+        uint256 afterUserBalance
+    );
     event BurnOperationFinalized(address indexed by, uint256 value, address indexed finalizedBy, uint256 finalizedTimestamp, uint256 index);
 
     event MintOperationRevoked(address indexed by, uint256 value, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
-    event BurnOperationRevoked(address indexed by, uint256 value, address indexed revokedBy, uint256 revokedTimestamp, uint256 index);
+    event BurnOperationRevoked(
+        address indexed by,
+        uint256 value,
+        address indexed revokedBy,
+        uint256 revokedTimestamp,
+        uint256 index,
+        uint256 beforeTotalSupply,
+        uint256 afterTotalSupply,
+        uint256 beforeUserBalance,
+        uint256 afterUserBalance
+    );
 
     /**
      * @notice Request mint, fires off a MintOperationRequested event.
+
      *
      * @param _value Amount of tokens to mint.
      */
@@ -197,9 +228,25 @@ contract OperationsInteractor is AdminInteractor {
         mintRequestOperation.finalizedBy = msg.sender;
         mintRequestOperation.finalizedTimestamp = block.timestamp;
 
+        uint256 beforeTotalSupply = ERC20(token).totalSupply();
+        uint256 beforeUserBalance = ERC20(token).balanceOf(mintAddress);
+
         TokenInterface(token).mint(mintAddress, value);
 
-        emit MintOperationFinalized(_requestor, mintRequestOperation.value, msg.sender, block.timestamp, _index);
+        uint256 afterTotalSupply = ERC20(token).totalSupply();
+        uint256 afterUserBalance = ERC20(token).balanceOf(mintAddress);
+
+        emit MintOperationFinalized(
+            _requestor,
+            mintRequestOperation.value,
+            msg.sender,
+            block.timestamp,
+            _index,
+            beforeTotalSupply,
+            afterTotalSupply,
+            beforeUserBalance,
+            afterUserBalance
+        );
     }
 
     /**
@@ -210,7 +257,14 @@ contract OperationsInteractor is AdminInteractor {
      * @param _requestor Requestor of MintRequestOperation.
      * @param _index Index of MintRequestOperation by _requestor.
      */
-    function revokeMint(address _requestor, uint256 _index) public onlyAdmin {
+    function revokeMint(
+        address _requestor,
+        uint256 _index
+    )
+        public
+        onlyAdmin
+        operationsNotPaused
+    {
         MintRequestOperation storage mintRequestOperation = mintRequestOperations[_requestor][_index];
 
         require(mintRequestOperation.status != OperationStates.FINALIZED, "MintRequestOperation is already FINALIZED");
@@ -224,7 +278,37 @@ contract OperationsInteractor is AdminInteractor {
     }
 
     /**
-     * @notice Request burn, fires off a BurnOperationRequested event.
+     * @notice Revoke a specific MintRequest from the original requestor.
+     *
+     * @dev Can only be revoked by original MintRequest requestor. Can only be
+     * done if MintRequest is not already APPROVED.
+     *
+     * @param _index Index of MintRequestOperation by requestor.
+     */
+    function userRevokeMint(
+        uint256 _index
+    )
+        public
+        operationsNotPaused
+    {
+        MintRequestOperation storage mintRequestOperation = mintRequestOperations[msg.sender][_index];
+
+        require(mintRequestOperation.by == msg.sender, "MintRequestOperation can only be userRevoked by original requestor");
+
+        require(mintRequestOperation.status != OperationStates.APPROVED, "MintRequestOperation is already APPROVED");
+        require(mintRequestOperation.status != OperationStates.FINALIZED, "MintRequestOperation is already FINALIZED");
+        require(mintRequestOperation.status != OperationStates.REVOKED, "MintRequestOperation is already REVOKED");
+
+        mintRequestOperation.status = OperationStates.REVOKED;
+        mintRequestOperation.revokedBy = msg.sender;
+        mintRequestOperation.revokedTimestamp = block.timestamp;
+
+        emit MintOperationRevoked(msg.sender, mintRequestOperation.value, msg.sender, block.timestamp, _index);
+    }
+
+    /**
+     * @notice Request burn, fires off a BurnOperationRequested event. Tokens
+     * will be burned at this point.
      *
      * @param _value Number of tokens to burn.
      */
@@ -245,8 +329,27 @@ contract OperationsInteractor is AdminInteractor {
             0
         );
 
+        uint256 beforeTotalSupply = ERC20(token).totalSupply();
+        uint256 beforeUserBalance = ERC20(token).balanceOf(msg.sender);
+        require(beforeUserBalance >= _value, "Insufficient balance to request");
+
+        // Burn tokens. Can be reversed later if request is revoked.
+        TokenInterface(token).burn(msg.sender, _value);
+
+        uint256 afterTotalSupply = ERC20(token).totalSupply();
+        uint256 afterUserBalance = ERC20(token).balanceOf(msg.sender);
+
         // Record and emit index of operation before pushing to array.
-        emit BurnOperationRequested(msg.sender, _value, requestTimestamp, burnRequestOperations[msg.sender].length);
+        emit BurnOperationRequested(
+            msg.sender,
+            _value,
+            requestTimestamp,
+            burnRequestOperations[msg.sender].length,
+            beforeTotalSupply,
+            afterTotalSupply,
+            beforeUserBalance,
+            afterUserBalance
+        );
 
         burnRequestOperations[msg.sender].push(burnRequestOperation);
     }
@@ -281,8 +384,7 @@ contract OperationsInteractor is AdminInteractor {
     }
 
     /**
-     * @notice Finalize burn, fires off a BurnOperationFinalized event. Tokens
-     * will be burned.
+     * @notice Finalize burn, fires off a BurnOperationFinalized event.
      *
      * @dev Can only be approved by Admin 2. BurnRequestOperation should be
      * already approved beforehand.
@@ -304,14 +406,9 @@ contract OperationsInteractor is AdminInteractor {
 
         require(burnRequestOperation.status == OperationStates.APPROVED, "BurnRequestOperation is not at APPROVED state");
 
-        address burnAddress = burnRequestOperation.by;
-        uint256 value = burnRequestOperation.value;
-
         burnRequestOperation.status = OperationStates.FINALIZED;
         burnRequestOperation.finalizedBy = msg.sender;
         burnRequestOperation.finalizedTimestamp = block.timestamp;
-
-        TokenInterface(token).burn(burnAddress, value);
 
         emit BurnOperationFinalized(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
     }
@@ -324,7 +421,16 @@ contract OperationsInteractor is AdminInteractor {
      * @param _requestor Requestor of BurnRequestOperation.
      * @param _index Index of BurnRequestOperation by _requestor.
      */
-    function revokeBurn(address _requestor, uint256 _index) public onlyAdmin {
+    function revokeBurn(
+        address _requestor,
+        uint256 _index
+    )
+        public
+        onlyAdmin
+        operationsNotPaused
+        whitelistedForMint(_requestor)
+        notBlacklistedForRequest(_requestor)
+    {
         BurnRequestOperation storage burnRequestOperation = burnRequestOperations[_requestor][_index];
 
         require(burnRequestOperation.status != OperationStates.FINALIZED, "BurnRequestOperation is already FINALIZED");
@@ -333,8 +439,77 @@ contract OperationsInteractor is AdminInteractor {
         burnRequestOperation.status = OperationStates.REVOKED;
         burnRequestOperation.revokedBy = msg.sender;
         burnRequestOperation.revokedTimestamp = block.timestamp;
+        
+        uint256 beforeTotalSupply = ERC20(token).totalSupply();
+        uint256 beforeUserBalance = ERC20(token).balanceOf(burnRequestOperation.by);
 
-        emit BurnOperationRevoked(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
+        // Return back the tokens. Note that this will fail if user is not whitelisted for mint, or blacklisted.
+        TokenInterface(token).mint(burnRequestOperation.by, burnRequestOperation.value);
+
+        uint256 afterTotalSupply = ERC20(token).totalSupply();
+        uint256 afterUserBalance = ERC20(token).balanceOf(burnRequestOperation.by);
+
+        emit BurnOperationRevoked(
+            _requestor,
+            burnRequestOperation.value,
+            msg.sender,
+            block.timestamp,
+            _index,
+            beforeTotalSupply,
+            afterTotalSupply,
+            beforeUserBalance,
+            afterUserBalance
+        );
+    }
+
+    /**
+     * @notice Revoke a specific BurnRequest from the original requestor.
+     *
+     * @dev Can only be revoked by original BurnRequest requestor. Can only be
+     * done if BurnRequest is not already APPROVED.
+     *
+     * @param _index Index of BurnRequestOperation by requestor.
+     */
+    function userRevokeBurn(
+        uint256 _index
+    ) 
+        public
+        operationsNotPaused
+        whitelistedForMint(msg.sender)
+        notBlacklistedForRequest(msg.sender)
+    {
+        BurnRequestOperation storage burnRequestOperation = burnRequestOperations[msg.sender][_index];
+
+        require(burnRequestOperation.by == msg.sender, "BurnRequestOperation can only be userRevoked by original requestor");
+
+        require(burnRequestOperation.status != OperationStates.APPROVED, "BurnRequestOperation is already APPROVED");
+        require(burnRequestOperation.status != OperationStates.FINALIZED, "BurnRequestOperation is already FINALIZED");
+        require(burnRequestOperation.status != OperationStates.REVOKED, "BurnRequestOperation is already REVOKED");
+
+        burnRequestOperation.status = OperationStates.REVOKED;
+        burnRequestOperation.revokedBy = msg.sender;
+        burnRequestOperation.revokedTimestamp = block.timestamp;
+
+        uint256 beforeTotalSupply = ERC20(token).totalSupply();
+        uint256 beforeUserBalance = ERC20(token).balanceOf(burnRequestOperation.by);
+
+        // Return back the tokens. Note that this will fail if user is not whitelisted for mint, or blacklisted.
+        TokenInterface(token).mint(burnRequestOperation.by, burnRequestOperation.value);
+
+        uint256 afterTotalSupply = ERC20(token).totalSupply();
+        uint256 afterUserBalance = ERC20(token).balanceOf(burnRequestOperation.by);
+
+        emit BurnOperationRevoked(
+            msg.sender,
+            burnRequestOperation.value,
+            msg.sender,
+            block.timestamp,
+            _index,
+            beforeTotalSupply,
+            afterTotalSupply,
+            beforeUserBalance,
+            afterUserBalance
+        );
     }
 
     /**
