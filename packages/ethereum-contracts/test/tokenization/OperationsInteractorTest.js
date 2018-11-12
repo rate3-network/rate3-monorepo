@@ -236,6 +236,10 @@ contract('OperationsInteractor Tests', function(accounts) {
             // Requested and approved mint for rest[0].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 });
+
+            // Requested and approved mint for rest[1].
+            await this.interactor.requestMint(new web3.BigNumber('5000e+18'), { from: rest[1] });
+            await this.interactor.approveMint(rest[1], 0, { from: admin1 });
         });
 
         it('owner cannot finalize mint request', async function() {
@@ -291,6 +295,13 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.revokeMint(rest[0], 0, { from: admin2 });
         
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
+        });
+
+        it('check finalize actually mints tokens', async function() {
+            await this.interactor.finalizeMint(rest[0], 0, { from: admin2 });
+            (await this.token.balanceOf(rest[0])).should.be.bignumber.equal(new web3.BigNumber('10000e+18'));
+            await this.interactor.finalizeMint(rest[1], 0, { from: admin2 });
+            (await this.token.balanceOf(rest[1])).should.be.bignumber.equal(new web3.BigNumber('5000e+18'));
         });
 
         it('mint finalize event emitted', async function() {
@@ -426,17 +437,19 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.finalizeMint(rest[1], 0, { from: admin2 });
         });
 
-        it('anyone can submit as many burn requests', async function() {
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.fulfilled;
+        it('anyone can submit as many burn requests if they have the balance', async function() {
+            await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[0] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[0] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('1000e+18'), { from: rest[0] }).should.be.rejected;
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.rejected;
         });
 
         it('burn requests are indexed', async function() {
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] });
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] });
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] });
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] });
 
             await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
             await this.interactor.approveBurn(rest[0], 1, { from: admin1 }).should.be.fulfilled;
@@ -446,28 +459,35 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('burn requests blocked if not whitelisted', async function() {
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] }).should.be.rejected;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
         });
 
         it('burn requests blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] }).should.be.rejected;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
         }); 
 
         it('burn requests blocked if paused', async function() {
             await this.interactor.pauseOperations({ from: owner });
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.rejected;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.rejected;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] }).should.be.rejected;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.rejected;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.rejected;
 
             await this.interactor.unpauseOperations({ from: owner });
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.fulfilled;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
+            await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
+        });
+
+        it('check request actually burns tokens', async function() {
+            await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[0] });
+            (await this.token.balanceOf(rest[0])).should.be.bignumber.equal(new web3.BigNumber('5000e+18'));
+            await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[0] });
+            (await this.token.balanceOf(rest[0])).should.be.bignumber.equal(new web3.BigNumber(0));
         });
 
         it('burn request event emitted', async function() {
@@ -541,19 +561,16 @@ contract('OperationsInteractor Tests', function(accounts) {
         });
 
         it('burn approval blocked if not whitelisted', async function() {
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
             await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('burn approval blocked if blacklisted', async function() {
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
             await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('burn approval blocked if paused', async function() {
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.pauseOperations({ from: owner });
             await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
 
@@ -581,7 +598,6 @@ contract('OperationsInteractor Tests', function(accounts) {
         });
 
         it('burn approval event emitted', async function() {
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             const { logs } = await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
 
             const event1 = expectEvent.inLogs(logs, 'BurnOperationApproved', {
@@ -632,6 +648,9 @@ contract('OperationsInteractor Tests', function(accounts) {
             // Requested and approved burn for rest[0].
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+
+            // Requested burn for rest[1].
+            await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[1] });
         });
 
         it('owner cannot finalize burn request', async function() {
@@ -672,7 +691,7 @@ contract('OperationsInteractor Tests', function(accounts) {
         });
 
         it('cannot finalize requested Operation index', async function() {
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
+            await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[1] });
 
             await this.interactor.finalizeBurn(rest[0], 1, { from: admin2 }).should.be.rejected;
         });
@@ -741,6 +760,9 @@ contract('OperationsInteractor Tests', function(accounts) {
             // Requested and approved burn for rest[0].
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+
+            // Requested burn for rest[1].
+            await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[1] }); 
         });
 
         it('owner cannot revoke burn request', async function() {
@@ -757,14 +779,12 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('cannot revoke non-existing burn operations', async function() {
             await this.interactor.revokeBurn(rest[0], 1, { from: admin2 }).should.be.rejected;
-            await this.interactor.revokeBurn(rest[1], 0, { from: admin2 }).should.be.rejected;
+            await this.interactor.revokeBurn(rest[1], 1, { from: admin2 }).should.be.rejected;
         });
 
         it('revoked burns cannot be approved', async function() {
-            // Requested a new burn request.
-            await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.revokeBurn(rest[0], 1, { from: admin1 }).should.be.fulfilled;
-            await this.interactor.approveBurn(rest[0], 1, { from: admin1 }).should.be.rejected;
+            await this.interactor.revokeBurn(rest[1], 0, { from: admin1 }).should.be.fulfilled;
+            await this.interactor.approveBurn(rest[1], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('revoked burns cannot be finalized', async function() {
@@ -782,6 +802,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.revokeBurn(rest[0], 0, { from: admin2 });
         
             await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+        });
+
+        it('check revoke actually refunds tokens', async function() {
+            (await this.token.balanceOf(rest[1])).should.be.bignumber.equal(new web3.BigNumber('5000e+18'));
+            await this.interactor.revokeBurn(rest[1], 0, { from: admin2 });
+            (await this.token.balanceOf(rest[1])).should.be.bignumber.equal(new web3.BigNumber('10000e+18'));
         });
 
         it('burn revoked event emitted', async function() {
