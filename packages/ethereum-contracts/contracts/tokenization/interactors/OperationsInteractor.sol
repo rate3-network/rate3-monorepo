@@ -224,7 +224,29 @@ contract OperationsInteractor is AdminInteractor {
     }
 
     /**
-     * @notice Request burn, fires off a BurnOperationRequested event.
+     * @notice Revoke a specific MintRequest from the original requestor.
+     *
+     * @dev Can only be revoked by original MintRequest requestor. Can only be
+     * done if MintRequest is not already APPROVED.
+     *
+     * @param _index Index of MintRequestOperation by requestor.
+     */
+    function userRevokeMint(uint256 _index) public {
+        MintRequestOperation storage mintRequestOperation = mintRequestOperations[msg.sender][_index];
+
+        require(mintRequestOperation.by == msg.sender, "MintRequestOperation can only be userRevoked by original requestor");
+
+        require(mintRequestOperation.status != OperationStates.APPROVED, "MintRequestOperation is already APPROVED");
+        require(mintRequestOperation.status != OperationStates.FINALIZED, "MintRequestOperation is already FINALIZED");
+        require(mintRequestOperation.status != OperationStates.REVOKED, "MintRequestOperation is already REVOKED");
+
+        mintRequestOperation.status = OperationStates.REVOKED;
+        mintRequestOperation.revokedBy = msg.sender;
+        mintRequestOperation.revokedTimestamp = block.timestamp;
+
+        emit MintOperationRevoked(msg.sender, mintRequestOperation.value, msg.sender, block.timestamp, _index);
+    }
+
      *
      * @param _value Number of tokens to burn.
      */
@@ -335,6 +357,33 @@ contract OperationsInteractor is AdminInteractor {
         burnRequestOperation.revokedTimestamp = block.timestamp;
 
         emit BurnOperationRevoked(_requestor, burnRequestOperation.value, msg.sender, block.timestamp, _index);
+    }
+
+    /**
+     * @notice Revoke a specific BurnRequest from the original requestor.
+     *
+     * @dev Can only be revoked by original BurnRequest requestor. Can only be
+     * done if BurnRequest is not already APPROVED.
+     *
+     * @param _index Index of BurnRequestOperation by requestor.
+     */
+    function userRevokeBurn(uint256 _index) public {
+        BurnRequestOperation storage burnRequestOperation = burnRequestOperations[msg.sender][_index];
+
+        require(burnRequestOperation.by == msg.sender, "BurnRequestOperation can only be userRevoked by original requestor");
+
+        require(burnRequestOperation.status != OperationStates.APPROVED, "BurnRequestOperation is already APPROVED");
+        require(burnRequestOperation.status != OperationStates.FINALIZED, "BurnRequestOperation is already FINALIZED");
+        require(burnRequestOperation.status != OperationStates.REVOKED, "BurnRequestOperation is already REVOKED");
+
+        burnRequestOperation.status = OperationStates.REVOKED;
+        burnRequestOperation.revokedBy = msg.sender;
+        burnRequestOperation.revokedTimestamp = block.timestamp;
+
+        // Return back the tokens. Note that this will fail if user is not whitelisted for mint, or blacklisted.
+        TokenInterface(token).mint(burnRequestOperation.by, burnRequestOperation.value);
+
+        emit BurnOperationRevoked(msg.sender, burnRequestOperation.value, msg.sender, block.timestamp, _index);
     }
 
     /**
