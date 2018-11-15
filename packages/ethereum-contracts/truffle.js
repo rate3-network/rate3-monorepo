@@ -16,19 +16,19 @@ module.exports = {
         },
         ropsten: {
             provider: () => new HDWalletProvider(secrets.MNEMONIC, `https://ropsten.infura.io/${secrets.INFURA_KEY}`),
-            gas: 4700000,
+            gas: 6700000,
             gasPrice: 3000000000,
             network_id: 3,
         },
         rinkeby: {
             provider: () => new HDWalletProvider(secrets.MNEMONIC, `https://rinkeby.infura.io/${secrets.INFURA_KEY}`),
-            gas: 4700000,
+            gas: 6700000,
             gasPrice: 3000000000,
             network_id: 4,
         },
         kovan: {
             provider: () => new HDWalletProvider(secrets.MNEMONIC, `https://kovan.infura.io/${secrets.INFURA_KEY}`),
-            gas: 4700000,
+            gas: 6700000,
             gasPrice: 3000000000,
             network_id: 42,
         },
