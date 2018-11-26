@@ -1,7 +1,7 @@
 const { expectThrow } = require('../helpers/expectThrow');
 const { EVMRevert } = require('../helpers/EVMRevert');
 
-const Ownable = artifacts.require('Ownable');
+const Ownable = artifacts.require('./lib/ownership/Ownable');
 
 contract('Ownable', function (accounts) {
   beforeEach(async function () {

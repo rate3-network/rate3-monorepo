@@ -1,6 +1,6 @@
 const { assertRevert } = require('../helpers/assertRevert');
 
-const Claimable = artifacts.require('Claimable');
+const Claimable = artifacts.require('./lib/ownership/Claimable');
 
 contract('Claimable', function (accounts) {
   let claimable;
