@@ -59,7 +59,7 @@ contract OperationsInteractor is AdminInteractor {
     mapping (address => BurnRequestOperation[]) public burnRequestOperations;
 
     /// @notice Pause all operations except Owner functionalities and revoke.
-    bool operationsPaused;
+    bool public operationsPaused;
 
     /// @notice Only when operations are not paused.
     modifier operationsNotPaused() {

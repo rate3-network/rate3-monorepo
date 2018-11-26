@@ -16,7 +16,7 @@ import "./ModularToken.sol";
  */
 contract ProxySupportedERC20Token is ModularToken, ProxySupportedERC20Interface {
 
-    ERC20 proxy;
+    ERC20 public proxy;
 
     modifier onlyProxy() {
         require(msg.sender == address(proxy), "Only proxy is allowed.");

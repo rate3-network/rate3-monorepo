@@ -25,10 +25,10 @@ contract ModularToken is ERC20, Claimable, Pausable {
     AllowanceModule public allowanceModule;
     RegistryModule public registryModule;
 
-    string name_;
-    string symbol_;
-    uint8 decimals_;
-    uint256 totalSupply_;
+    string public name_;
+    string public symbol_;
+    uint8 public decimals_;
+    uint256 public totalSupply_;
 
     event BalanceModuleSet(address indexed moduleAddress);
     event AllowanceModuleSet(address indexed moduleAddress);
