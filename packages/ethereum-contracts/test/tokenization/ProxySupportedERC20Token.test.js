@@ -4,7 +4,7 @@ import { advanceBlock } from '../helpers/advanceToBlock';
 import expectEvent from '../helpers/expectEvent';
 import { assertRevert } from '../helpers/assertRevert';
 
-const ProxySupportedERC20Token = artifacts.require("./tokenization/tokens/ProxySupportedERC20Token.sol");
+const BaseToken = artifacts.require("./tokenization/tokens/BaseToken.sol");
 const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
 const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
@@ -25,11 +25,12 @@ contract('ProxySupported ERC20 Token Tests', function(accounts) {
 
     const [_, owner, actualSender, ...rest] = accounts;
     const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+    const WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
 
     beforeEach(async function () {
-        // Initialize BaseProxy, ProxySupportedERC20Token contracts.
-        this.token = await ProxySupportedERC20Token.new({ from: owner });
-        this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+        // Initialize BaseProxy, BaseToken contracts.
+        this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+        this.proxy = await BaseProxy.new(this.token.address, { from: owner });
 
         this.balanceModule = await BalanceModule.new({ from: owner });
         this.allowanceModule = await AllowanceModule.new({ from: owner });
@@ -40,6 +41,27 @@ contract('ProxySupported ERC20 Token Tests', function(accounts) {
         await this.token.setAllowanceModule(this.allowanceModule.address, { from: owner });
         await this.token.setBalanceModule(this.balanceModule.address, { from: owner });
         await this.token.setRegistryModule(this.registryModule.address, { from: owner });
+
+        await this.token.setKeyDataRecord(
+            actualSender,
+            WHITELISTED_FOR_MINT,
+            0,
+            "",
+            ZERO_ADDRESS,
+            true,
+            owner,
+            { from: owner }
+        );
+        await this.token.setKeyDataRecord(
+            rest[0],
+            WHITELISTED_FOR_MINT,
+            0,
+            "",
+            ZERO_ADDRESS,
+            true,
+            owner,
+            { from: owner }
+        );
 
         // Mint some tokens for actualSender and rest[0]
         await this.token.mint(actualSender, 100, { from: owner });

@@ -29,7 +29,7 @@ contract('ERC20 Token Tests', function(accounts) {
 
     beforeEach(async function () {
         // Initialize BaseProxy, BaseToken contracts.
-        this.token = await ModularToken.new({ from: owner });
+        this.token = await ModularToken.new('BaseToken', 'BT', 18, { from: owner });
 
         this.balanceModule = await BalanceModule.new({ from: owner });
         this.allowanceModule = await AllowanceModule.new({ from: owner });

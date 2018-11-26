@@ -9,44 +9,49 @@ import "./AdminProxy.sol";
  * token contract implementation.
  */
 contract ERC20Proxy is ERC20, AdminProxy {
-
-    /// @notice  Returns the name of the token.
-    string public name;
-
-    /// @notice  Returns the symbol of the token.
-    string public symbol;
-
-    /// @notice  Returns the number of decimals the token uses.
-    uint8 public decimals;
-
-    constructor(
-        string _name,
-        string _symbol,
-        uint8 _decimals
-    )
-        public
-    {
-        name = _name;
-        symbol = _symbol;
-        decimals = _decimals;
+    /**
+     * @notice Returns the name of the token.
+     *
+     * @return Name of the token.
+     */
+    function name() public view returns (string) {
+        return ERC20(token).name();
     }
 
-     /**
-      * @notice Gets the total amount of tokens in existence.
-      *
-      * @return Total amount of tokens in existence.
-      */
+    /**
+     * @notice Returns the symbol of the token.
+     *
+     * @return Symbol of the token.
+     */
+    function symbol() public view returns (string) {
+        return ERC20(token).symbol();
+    }
+
+    /**
+     * @notice Returns the number of decimals the token uses.
+     *
+     * @return Number of decimals.
+     */
+    function decimals() public view returns (uint8) {
+        return ERC20(token).decimals();
+    }
+
+    /**
+     * @notice Gets the total amount of tokens in existence.
+     *
+     * @return Total amount of tokens in existence.
+     */
     function totalSupply() public view returns (uint256) {
         return ERC20(token).totalSupply();
     }
 
-     /**
-      * @notice Gets the balance of the specified address.
-      *
-      * @param _owner The address to query the the balance of.
-      *
-      * @return The amount owned by the passed address.
-      */
+    /**
+     * @notice Gets the balance of the specified address.
+     *
+     * @param _owner The address to query the the balance of.
+     *
+     * @return The amount owned by the passed address.
+     */
     function balanceOf(address _owner) public view returns (uint256) {
         return ERC20(token).balanceOf(_owner);
     }

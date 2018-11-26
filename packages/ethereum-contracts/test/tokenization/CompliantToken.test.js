@@ -4,7 +4,7 @@ import { advanceBlock } from '../helpers/advanceToBlock';
 import expectEvent from '../helpers/expectEvent';
 import { assertRevert } from '../helpers/assertRevert';
 
-const CompliantToken = artifacts.require("./tokenization/tokens/CompliantToken.sol");
+const BaseToken = artifacts.require("./tokenization/tokens/BaseToken.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
 const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
 const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.sol");
@@ -29,7 +29,7 @@ contract('CompliantToken Tests', function(accounts) {
 
     describe('Test - compliance functions', function() {
         beforeEach(async function() {
-            this.token = await CompliantToken.new({ from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
@@ -442,7 +442,7 @@ contract('CompliantToken Tests', function(accounts) {
 
     describe('Test - getters', function() {
         beforeEach(async function() {
-            this.token = await CompliantToken.new({ from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });

@@ -5,7 +5,7 @@ import expectEvent from '../helpers/expectEvent';
 import { assertRevert } from '../helpers/assertRevert';
 
 const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
-const ProxySupportedERC20Token = artifacts.require("./tokenization/tokens/ProxySupportedERC20Token.sol");
+const BaseToken = artifacts.require("./tokenization/tokens/BaseToken.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
 const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
 const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.sol");
@@ -27,11 +27,12 @@ contract('ERC20 Proxy Tests', function(accounts) {
 
     const [_, owner, recipient, anotherAccount, ...rest] = accounts;
     const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+    const WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
 
     beforeEach(async function () {
         // Initialize BaseProxy, BaseToken contracts.
-        this.token = await ProxySupportedERC20Token.new({ from: owner });
-        this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+        this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+        this.proxy = await BaseProxy.new(this.token.address, { from: owner });
 
         this.balanceModule = await BalanceModule.new({ from: owner });
         this.allowanceModule = await AllowanceModule.new({ from: owner });
@@ -45,6 +46,17 @@ contract('ERC20 Proxy Tests', function(accounts) {
 
         // Enable proxy on BaseToken side
         await this.token.setProxy(this.proxy.address, { from: owner });
+
+        await this.token.setKeyDataRecord(
+            owner,
+            WHITELISTED_FOR_MINT,
+            0,
+            "",
+            ZERO_ADDRESS,
+            true,
+            owner,
+            { from: owner }
+        );
 
         // Mint some tokens for owner
         await this.token.mint(owner, 100, { from: owner });

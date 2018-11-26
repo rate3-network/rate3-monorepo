@@ -32,8 +32,8 @@ contract('Compliant Proxy Tests', function(accounts) {
 
     describe('Test - compliance functions', function() {
         beforeEach(async function() {
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });

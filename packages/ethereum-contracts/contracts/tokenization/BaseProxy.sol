@@ -5,14 +5,10 @@ import "./proxies/AdminProxy.sol";
 
 contract BaseProxy is ERC20Proxy {
     constructor(
-        address _token,
-        string _name,
-        string _symbol,
-        uint8 _decimals
+        address _token
     )
         public
         AdminProxy(_token)
-        ERC20Proxy(_name, _symbol, _decimals)
     {
 
     }

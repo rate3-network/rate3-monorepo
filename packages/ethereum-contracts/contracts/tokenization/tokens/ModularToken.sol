@@ -25,6 +25,9 @@ contract ModularToken is ERC20, Claimable, Pausable {
     AllowanceModule public allowanceModule;
     RegistryModule public registryModule;
 
+    string name_;
+    string symbol_;
+    uint8 decimals_;
     uint256 totalSupply_;
 
     event BalanceModuleSet(address indexed moduleAddress);
@@ -35,6 +38,38 @@ contract ModularToken is ERC20, Claimable, Pausable {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Sweep(address indexed authorizer, address indexed from, address indexed to, uint256 value);
 
+    constructor(string _name, string _symbol, uint8 _decimals) public {
+        name_ = _name;
+        symbol_ = _symbol;
+        decimals_ = _decimals;
+    }
+
+    /**
+     * @notice Returns the name of the token.
+     *
+     * @return Name of the token.
+     */
+    function name() public view returns (string) {
+        return name_;
+    }
+
+    /**
+     * @notice Returns the symbol of the token.
+     *
+     * @return Symbol of the token.
+     */
+    function symbol() public view returns (string) {
+        return symbol_;
+    }
+
+    /**
+     * @notice Returns the number of decimals the token uses.
+     *
+     * @return Number of decimals.
+     */
+    function decimals() public view returns (uint8) {
+        return decimals_;
+    }
 
     /**
      * @notice Set the BalanceModule.

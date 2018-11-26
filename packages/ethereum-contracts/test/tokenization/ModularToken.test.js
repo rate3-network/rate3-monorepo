@@ -27,7 +27,7 @@ contract('Modular Token Tests', function(accounts) {
     describe('Test - setup modules', function() {
         beforeEach(async function () {
             // Initialize ModularToken contract.
-            this.token = await ModularToken.new({ from: owner });
+            this.token = await ModularToken.new('BaseToken', 'BT', 18, { from: owner });
         });
         
         describe('balanceModule', function() {
@@ -135,7 +135,7 @@ contract('Modular Token Tests', function(accounts) {
 
     describe('Test - token supply functions', function() {
         beforeEach(async function() {
-            this.token = await ModularToken.new({ from: owner });
+            this.token = await ModularToken.new('BaseToken', 'BT', 18, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
@@ -217,7 +217,7 @@ contract('Modular Token Tests', function(accounts) {
     
     describe('Test - registry functions', function() {
         beforeEach(async function() {
-            this.token = await ModularToken.new({ from: owner });
+            this.token = await ModularToken.new('BaseToken', 'BT', 18, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });
@@ -255,7 +255,7 @@ contract('Modular Token Tests', function(accounts) {
 
     describe('Test - sweep function',  function() {
         beforeEach(async function() {
-            this.token = await ModularToken.new({ from: owner });
+            this.token = await ModularToken.new('BaseToken', 'BT', 18, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
             await this.balanceModule.transferOwnership(this.token.address, { from: owner });

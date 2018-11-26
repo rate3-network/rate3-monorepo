@@ -28,8 +28,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - mint request operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -110,8 +110,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - mint approve operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -208,8 +208,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - mint finalize operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -317,8 +317,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - mint revoke operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -408,8 +408,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - mint user revoke operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -508,8 +508,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - burn request operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -558,10 +558,10 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] });
             await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] });
 
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
-            await this.interactor.approveBurn(rest[0], 1, { from: admin1 }).should.be.fulfilled;
-            await this.interactor.approveBurn(rest[0], 2, { from: admin1 }).should.be.fulfilled;
-            await this.interactor.approveBurn(rest[0], new web3.BigNumber('3'), { from: admin1 }).should.be.fulfilled;
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.fulfilled;
+            await this.interactor.approveBurn(rest[0], 1, { from: admin2 }).should.be.fulfilled;
+            await this.interactor.approveBurn(rest[0], 2, { from: admin2 }).should.be.fulfilled;
+            await this.interactor.approveBurn(rest[0], new web3.BigNumber('3'), { from: admin2 }).should.be.fulfilled;
         });
 
         it('burn requests blocked if not whitelisted', async function() {
@@ -609,8 +609,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - burn approve operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -652,12 +652,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.approveBurn(rest[0], 0, { from: owner }).should.be.rejected;
         });
 
-        it('admin1 can approve burn request', async function() {
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
+        it('admin2 can approve burn request', async function() {
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.fulfilled;
         });
 
-        it('non-owner/admin2 cannot approve burn request', async function() {
-            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+        it('non-owner/admin1 cannot approve burn request', async function() {
+            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
             await this.interactor.approveBurn(rest[0], 0, { from: rest[0] }).should.be.rejected;
             await this.interactor.approveBurn(rest[0], 0, { from: rest[1] }).should.be.rejected;
         });
@@ -669,47 +669,47 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('burn approval blocked if not whitelisted', async function() {
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('burn approval blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('burn approval blocked if paused', async function() {
             await this.interactor.pauseOperations({ from: owner });
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
 
             await this.interactor.unpauseOperations({ from: owner });
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.fulfilled;
         });
 
         it('cannot approve approved Operation index', async function() {
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 });
     
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('cannot approve finalized Operation index', async function() {
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 });
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 });
         
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('cannot approve revoked Operation index', async function() {
             await this.interactor.revokeBurn(rest[0], 0, { from: admin2 });
         
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('burn approval event emitted', async function() {
-            const { logs } = await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+            const { logs } = await this.interactor.approveBurn(rest[0], 0, { from: admin2 });
 
             const event1 = expectEvent.inLogs(logs, 'BurnOperationApproved', {
                 by: rest[0],
-                approvedBy: admin1,
+                approvedBy: admin2,
             });
         })
     });
@@ -717,8 +717,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - burn finalize operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -754,7 +754,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             // Requested and approved burn for rest[0].
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 });
 
             // Requested burn for rest[1].
             await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[1] });
@@ -764,12 +764,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             await this.interactor.finalizeBurn(rest[0], 0, { from: owner }).should.be.rejected;
         });
 
-        it('admin2 can finalize burn request', async function() {
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.fulfilled;
+        it('admin1 can finalize burn request', async function() {
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
         });
 
-        it('non-owner/admin1 cannot finalize mint request', async function() {
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
+        it('non-owner/admin2 cannot finalize mint request', async function() {
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
             await this.interactor.finalizeBurn(rest[0], 0, { from: rest[0] }).should.be.rejected;
             await this.interactor.finalizeBurn(rest[0], 0, { from: rest[1] }).should.be.rejected;
         });
@@ -781,47 +781,47 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('burn finalize blocked if not whitelisted', async function() {
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('burn finalize blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('burn finalize blocked if paused', async function() {
             await this.interactor.pauseOperations({ from: owner });
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
 
             await this.interactor.unpauseOperations({ from: owner });
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.fulfilled;
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
         });
 
         it('cannot finalize requested Operation index', async function() {
             await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[1] });
 
-            await this.interactor.finalizeBurn(rest[0], 1, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[0], 1, { from: admin1 }).should.be.rejected;
         });
 
         it('cannot finalize finalized Operation index', async function() {
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 });
         
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('cannot finalize revoked Operation index', async function() {
             await this.interactor.revokeBurn(rest[0], 0, { from: admin2 });
         
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
 
         it('burn finalize event emitted', async function() {
-            const { logs } = await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
+            const { logs } = await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 });
 
             const event1 = expectEvent.inLogs(logs, 'BurnOperationFinalized', {
                 by: rest[0],
-                finalizedBy: admin2,
+                finalizedBy: admin1,
             });
         })
     });
@@ -829,8 +829,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - burn revoke operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -866,7 +866,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             // Requested and approved burn for rest[0].
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 });
 
             // Requested burn for rest[1].
             await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[1] }); 
@@ -891,16 +891,16 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('revoked burns cannot be approved', async function() {
             await this.interactor.revokeBurn(rest[1], 0, { from: admin1 }).should.be.fulfilled;
-            await this.interactor.approveBurn(rest[1], 0, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[1], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('revoked burns cannot be finalized', async function() {
             await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('cannot revoke finalized Operation index', async function() {
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 });
         
             await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
@@ -946,8 +946,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - burn user revoke operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -983,7 +983,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             // Requested and approved burn for rest[0].
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
-            await this.interactor.approveBurn(rest[0], 0, { from: admin1 });
+            await this.interactor.approveBurn(rest[0], 0, { from: admin2 });
 
             // Requested burn for rest[1].
             await this.interactor.requestBurn(new web3.BigNumber('5000e+18'), { from: rest[1] }); 
@@ -1013,12 +1013,12 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('user revoked burns cannot be approved', async function() {
             await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.fulfilled;
-            await this.interactor.approveBurn(rest[1], 0, { from: admin1 }).should.be.rejected;
+            await this.interactor.approveBurn(rest[1], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('user revoked burns cannot be finalized', async function() {
             await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.fulfilled;
-            await this.interactor.finalizeBurn(rest[1], 0, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBurn(rest[1], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('cannot user revoke approved Operation index', async function() {
@@ -1026,7 +1026,7 @@ contract('OperationsInteractor Tests', function(accounts) {
         });
 
         it('cannot user revoke finalized Operation index', async function() {
-            await this.interactor.finalizeBurn(rest[0], 0, { from: admin2 });
+            await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 });
         
             await this.interactor.userRevokeBurn(0, { from: rest[0] }).should.be.rejected;
         });
@@ -1077,8 +1077,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - pause/unpause operations', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -1113,8 +1113,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - pause/unpause token', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
@@ -1165,8 +1165,8 @@ contract('OperationsInteractor Tests', function(accounts) {
     describe('Test - sweep tokens', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and BaseInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await BaseInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             this.balanceModule = await BalanceModule.new({ from: owner });
