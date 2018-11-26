@@ -367,7 +367,7 @@ contract OperationsInteractor is AdminInteractor {
         uint256 _index
     )
         public
-        onlyAdmin1
+        onlyAdmin2
         operationsNotPaused
         whitelistedForBurn(_requestor)
         notBlacklistedForRequest(_requestor)
@@ -397,7 +397,7 @@ contract OperationsInteractor is AdminInteractor {
         uint256 _index
     )
         public
-        onlyAdmin2
+        onlyAdmin1
         operationsNotPaused
         whitelistedForBurn(_requestor)
         notBlacklistedForRequest(_requestor)
