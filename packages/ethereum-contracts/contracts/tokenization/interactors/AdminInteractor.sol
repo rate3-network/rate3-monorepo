@@ -57,12 +57,18 @@ contract AdminInteractor is Claimable {
         proxy = _proxy;
     }
 
+    event TokenSet(address from, address to);
+    event ProxySet(address from, address to);
+    event FirstAdminSet(address from, address to);
+    event SecondAdminSet(address from, address to);
+
     /**
      * @notice Set token contract attached to interactor.
      *
      * @param _newTokenContract Token contract address.
      */
     function setToken(address _newTokenContract) public onlyOwner {
+        emit TokenSet(token, _newTokenContract);
         token = _newTokenContract;
     }
 
@@ -80,6 +86,7 @@ contract AdminInteractor is Claimable {
      * @param _newProxyContract Proxy contract address.
      */
     function setProxy(address _newProxyContract) public onlyOwner {
+        emit ProxySet(proxy, _newProxyContract);
         proxy = _newProxyContract;
     }
 
@@ -98,6 +105,7 @@ contract AdminInteractor is Claimable {
      */
     function setFirstAdmin(address _newAdminAddress) public onlyOwner {
         require(_newAdminAddress != address(0), "Admin cannot be 0x0 address");
+        emit FirstAdminSet(admin1, _newAdminAddress);
         admin1 = _newAdminAddress;
     }
 
@@ -108,6 +116,7 @@ contract AdminInteractor is Claimable {
      */
     function setSecondAdmin(address _newAdminAddress) public onlyOwner {
         require(_newAdminAddress != address(0), "Admin cannot be 0x0 address");
+        emit SecondAdminSet(admin2, _newAdminAddress);
         admin2 = _newAdminAddress;
     }
 

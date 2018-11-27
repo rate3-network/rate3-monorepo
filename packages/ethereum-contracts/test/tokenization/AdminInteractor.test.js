@@ -1,6 +1,7 @@
 import { increaseTimeTo, duration } from '../helpers/increaseTime';
 import latestTime from '../helpers/latestTime';
 import { advanceBlock } from '../helpers/advanceToBlock';
+import expectEvent from '../helpers/expectEvent';
 
 const AdminInteractor = artifacts.require("./tokenization/interactors/AdminInteractor.sol");
 const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
@@ -61,6 +62,24 @@ contract('AdminInteractor Tests', function(accounts) {
             admin = await this.interactor.admin2();
             admin.should.be.equal(rest[0]);
         });
+
+        it('set first admin event emitted', async function() {
+            const { logs } = await this.interactor.setFirstAdmin(admin1, { from: owner }).should.be.fulfilled;
+
+            const event1 = expectEvent.inLogs(logs, 'FirstAdminSet', {
+                from: owner,
+                to: admin1,
+            });
+        })
+
+        it('set second admin event emitted', async function() {
+            const { logs } = await this.interactor.setSecondAdmin(admin2, { from: owner });
+
+            const event2 = expectEvent.inLogs(logs, 'SecondAdminSet', {
+                from: owner,
+                to: admin2,
+            });
+        })
     });
 
     describe('Test - set token contract', function() {
@@ -106,6 +125,15 @@ contract('AdminInteractor Tests', function(accounts) {
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.claimTokenOwnership({ from: owner }).should.be.fulfilled;
         });
+
+        it('set token contract event emitted', async function() {
+            const { logs } = await this.interactor.setToken(this.token.address, { from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'TokenSet', {
+                from: this.token.address,
+                to: this.token.address,
+            });
+        })
     });
 
     describe('Test - set proxy contract', function() {
@@ -151,6 +179,15 @@ contract('AdminInteractor Tests', function(accounts) {
             await this.proxy.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.claimProxyOwnership({ from: owner }).should.be.fulfilled;
         });
+
+        it('set proxy contract event emitted', async function() {
+            const { logs } = await this.interactor.setProxy(this.proxy.address, { from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'ProxySet', {
+                from: this.proxy.address,
+                to: this.proxy.address,
+            });
+        })
     });
 
     describe('Test - set token on proxy', function() {
