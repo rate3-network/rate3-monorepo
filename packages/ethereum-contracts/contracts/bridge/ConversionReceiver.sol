@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "../lib/ownership/Claimable.sol";
 import "../tokenization/interfaces/ERC20.sol";

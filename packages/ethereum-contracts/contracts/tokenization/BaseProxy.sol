@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "./proxies/ERC20Proxy.sol";
 import "./proxies/AdminProxy.sol";

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "../interfaces/TokenInterface.sol";
 import "../interfaces/ERC20.sol";
