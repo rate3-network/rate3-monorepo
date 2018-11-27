@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 import "../interfaces/TokenInterface.sol";
 import "../interfaces/ERC20.sol";
@@ -59,7 +59,7 @@ contract OperationsInteractor is AdminInteractor {
     mapping (address => BurnRequestOperation[]) public burnRequestOperations;
 
     /// @notice Pause all operations except Owner functionalities and revoke.
-    bool operationsPaused;
+    bool public operationsPaused;
 
     /// @notice Only when operations are not paused.
     modifier operationsNotPaused() {
@@ -367,7 +367,7 @@ contract OperationsInteractor is AdminInteractor {
         uint256 _index
     )
         public
-        onlyAdmin1
+        onlyAdmin2
         operationsNotPaused
         whitelistedForBurn(_requestor)
         notBlacklistedForRequest(_requestor)
@@ -397,7 +397,7 @@ contract OperationsInteractor is AdminInteractor {
         uint256 _index
     )
         public
-        onlyAdmin2
+        onlyAdmin1
         operationsNotPaused
         whitelistedForBurn(_requestor)
         notBlacklistedForRequest(_requestor)

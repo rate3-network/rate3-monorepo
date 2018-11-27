@@ -25,11 +25,11 @@ contract('Gas Limit Tests', function(accounts) {
 
     describe('Test - check if not out of gas', function() {
         it('check BaseToken', async function() {
-            this.token = await BaseToken.new({ from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
         });
 
         it('check BaseProxy', async function() {
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
         });
 
         it('check BaseInteractor', async function() {

@@ -1,6 +1,7 @@
 import { increaseTimeTo, duration } from '../helpers/increaseTime';
 import latestTime from '../helpers/latestTime';
 import { advanceBlock } from '../helpers/advanceToBlock';
+import expectEvent from '../helpers/expectEvent';
 
 const AdminInteractor = artifacts.require("./tokenization/interactors/AdminInteractor.sol");
 const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
@@ -8,7 +9,6 @@ const BaseToken = artifacts.require("./tokenization/BaseToken.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
 const AllowanceModule = artifacts.require("./tokenization/modules/AllowanceModule.sol");
 const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.sol");
-
 
 require('chai')
   .use(require('chai-as-promised'))
@@ -29,8 +29,8 @@ contract('AdminInteractor Tests', function(accounts) {
     describe('Test - set admin', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and AdminInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await AdminInteractor.new(this.token.address, this.proxy.address, { from: owner });
         });
 
@@ -62,13 +62,31 @@ contract('AdminInteractor Tests', function(accounts) {
             admin = await this.interactor.admin2();
             admin.should.be.equal(rest[0]);
         });
+
+        it('set first admin event emitted', async function() {
+            const { logs } = await this.interactor.setFirstAdmin(admin1, { from: owner }).should.be.fulfilled;
+
+            const event1 = expectEvent.inLogs(logs, 'FirstAdminSet', {
+                from: owner,
+                to: admin1,
+            });
+        })
+
+        it('set second admin event emitted', async function() {
+            const { logs } = await this.interactor.setSecondAdmin(admin2, { from: owner });
+
+            const event2 = expectEvent.inLogs(logs, 'SecondAdminSet', {
+                from: owner,
+                to: admin2,
+            });
+        })
     });
 
     describe('Test - set token contract', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and AdminInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await AdminInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             // Setup admins
@@ -84,7 +102,7 @@ contract('AdminInteractor Tests', function(accounts) {
 
         it('set token contract actually works', async function() {
             // Deploy another BaseToken contract
-            const anotherToken = await BaseToken.new({ from: owner });
+            const anotherToken = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
             const token1 = await this.interactor.token();
             token1.should.be.equal(this.token.address);
             await this.interactor.setToken(anotherToken.address, { from: owner });
@@ -107,13 +125,22 @@ contract('AdminInteractor Tests', function(accounts) {
             await this.token.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.claimTokenOwnership({ from: owner }).should.be.fulfilled;
         });
+
+        it('set token contract event emitted', async function() {
+            const { logs } = await this.interactor.setToken(this.token.address, { from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'TokenSet', {
+                from: this.token.address,
+                to: this.token.address,
+            });
+        })
     });
 
     describe('Test - set proxy contract', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and AdminInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await AdminInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             // Setup admins
@@ -129,7 +156,7 @@ contract('AdminInteractor Tests', function(accounts) {
 
         it('set proxy contract actually works', async function() {
             // Deploy another BaseProxy contract
-            const anotherProxy = await BaseProxy.new(this.token.address, 'BaseToken2', 'BT2', 18, { from: owner });
+            const anotherProxy = await BaseProxy.new(this.token.address, { from: owner });
             const proxy1 = await this.interactor.proxy();
             proxy1.should.be.equal(this.proxy.address);
             await this.interactor.setProxy(anotherProxy.address, { from: owner });
@@ -152,13 +179,22 @@ contract('AdminInteractor Tests', function(accounts) {
             await this.proxy.transferOwnership(this.interactor.address, { from: owner });
             await this.interactor.claimProxyOwnership({ from: owner }).should.be.fulfilled;
         });
+
+        it('set proxy contract event emitted', async function() {
+            const { logs } = await this.interactor.setProxy(this.proxy.address, { from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'ProxySet', {
+                from: this.proxy.address,
+                to: this.proxy.address,
+            });
+        })
     });
 
     describe('Test - set token on proxy', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and AdminInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await AdminInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             // Setup admins
@@ -190,8 +226,8 @@ contract('AdminInteractor Tests', function(accounts) {
     describe('Test - set proxy on token', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and AdminInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await AdminInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             // Setup admins
@@ -223,8 +259,8 @@ contract('AdminInteractor Tests', function(accounts) {
     describe('Test - transfer owned contract', function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and AdminInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await AdminInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             // Setup admins
@@ -253,7 +289,7 @@ contract('AdminInteractor Tests', function(accounts) {
         });
 
         it('can only transfer ownership for interactor owned contracts', async function() {
-            const anotherToken = await BaseToken.new({ from: owner });
+            const anotherToken = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
             await this.interactor.transferOwnedContract(anotherToken.address, rest[0], { from: owner }).should.be.rejected;
         });
     });
@@ -261,8 +297,8 @@ contract('AdminInteractor Tests', function(accounts) {
     describe('Test - set modules', async function() {
         beforeEach(async function() {
             // Initialize BaseProxy, BaseToken and AdminInteractor contracts.
-            this.token = await BaseToken.new({ from: owner });
-            this.proxy = await BaseProxy.new(this.token.address, 'BaseToken', 'BT', 18, { from: owner });
+            this.token = await BaseToken.new('BaseToken', 'BT', 18, { from: owner });
+            this.proxy = await BaseProxy.new(this.token.address, { from: owner });
             this.interactor = await AdminInteractor.new(this.token.address, this.proxy.address, { from: owner });
 
             // Setup admins

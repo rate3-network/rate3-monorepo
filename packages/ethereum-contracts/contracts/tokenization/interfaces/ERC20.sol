@@ -1,10 +1,16 @@
-pragma solidity ^0.4.24;
+pragma solidity 0.4.24;
 
 /**
  * @title ERC20 interface
  * @dev see https://github.com/ethereum/EIPs/issues/20
  */
 interface ERC20 {
+    function name() external view returns (string);
+
+    function symbol() external view returns (string);
+
+    function decimals() external view returns (uint8);
+
     function totalSupply() external view returns (uint256);
 
     function balanceOf(address _who) external view returns (uint256);

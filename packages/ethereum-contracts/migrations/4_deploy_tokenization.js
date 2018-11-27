@@ -20,10 +20,10 @@ module.exports = function deployment(deployer, network, accounts) {
         const registry = await RegistryModule.new({ from: owner });
 
         console.log('\nDeploying BaseToken');
-        const token = await BaseToken.new({ from: owner });
+        const token = await BaseToken.new('Test SGD', 'TESTSGD', 18, { from: owner });
 
         console.log('\nDeploying BaseProxy');
-        const proxy = await BaseProxy.new(token.address, 'Test SGD', 'TESTSGD', 18, { from: owner });
+        const proxy = await BaseProxy.new(token.address, { from: owner });
 
         console.log('\nTransfer ownership of BalanceModule to Token');
         await balance.transferOwnership(token.address, { from: owner });
