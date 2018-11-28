@@ -253,7 +253,7 @@ class UserStore {
     };
     let polling = setInterval(checkNewClaimRemove, 1000);
   }
-  
+
   @action
   async getIdentityContractFromBlockchain() {
     runInAction(() => { this.startedLoadingClaims = true; });
@@ -299,7 +299,7 @@ class UserStore {
   }
   @action
   async getValidClaims() {
-    
+
     this.openLoadingClaimModal();
     const allAliveClaims = await this.getAliveClaims();
     const { nameClaimArr, addressClaimArr, socialIdClaimArr } = allAliveClaims;

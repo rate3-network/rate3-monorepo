@@ -3,7 +3,9 @@ import {
   computed,
   observable,
   action,
+  runInAction,
 } from 'mobx';
+import Web3 from 'web3';
 
 import CommonStore from './CommonStore';
 import UserStore from './UserStore';
@@ -67,33 +69,49 @@ class RootStore {
 
 
   @action
-  initNetwork() {
-    // for user using own account, must detect metamask first
-    if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
-      if (typeof window.web3 === 'undefined') {
-        console.error('no web3 is installed or metamask not enabled');
-        return;
-      }
-    }
-    if (typeof window.web3 !== 'undefined' && this.commonStore.web3HasMetamaskProvider() && window.web3.currentProvider.isMetaMask) {
-      this.browserProvider = window.web3.currentProvider;
-    }
-    
-    if (this.commonStore.getIsUser() && !this.userStore.isOnFixedAccount) {
-      this.startInitMetamaskNetwork = true;
-      // this.userStore.initMetamaskNetwork();
-      // this.userStore.listenToMetaMaskAccountChange();
-      this.commonStore.checkMetamaskNetwork();
-      return;
-    }
-    if (this.commonStore.getIsUser() && this.userStore.isOnFixedAccount) {
-      this.commonStore.initCommonNetwork();
-      window.web3.eth.accounts.wallet.add(fixedUserPrivKey); // user
-      return;
-    }
+  async initNetwork() {
     if (!this.commonStore.getIsUser()) {
       this.commonStore.initCommonNetwork();
       window.web3.eth.accounts.wallet.add(fixedVerifierPrivKey); // verifier
+    } else {
+      // for user using own account, must detect metamask first
+      if (!this.userStore.isOnFixedAccount) {
+        // Modern Metamask Version without Web3 injection, but has ethereum provider
+        let web3;
+        if (window.ethereum) {
+          web3 = new Web3(window.ethereum);
+          window.web3 = web3;
+          try {
+            // Request account access if needed
+            await window.ethereum.enable();
+          } catch (error) {
+            // User denied account access
+            console.error(error);
+          }
+        // Legacy Metamask Version with Web3 injected
+        } else if (typeof window.web3 !== 'undefined' && this.commonStore.web3HasMetamaskProvider()) {
+          this.browserProvider = window.web3.givenProvider;
+          window.web3 = new Web3(this.browserProvider);
+        } else {
+          return;
+        }
+
+      }
+
+      if (!this.userStore.isOnFixedAccount) {
+        runInAction(() => {
+          this.startInitMetamaskNetwork = true;
+        });
+        // this.userStore.initMetamaskNetwork();
+        // this.userStore.listenToMetaMaskAccountChange();
+        this.commonStore.checkMetamaskNetwork();
+        return;
+      }
+      if (this.userStore.isOnFixedAccount) {
+        this.commonStore.initCommonNetwork();
+        window.web3.eth.accounts.wallet.add(fixedUserPrivKey); // user
+        return;
+      }
     }
   }
   @action
