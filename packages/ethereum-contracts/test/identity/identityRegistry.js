@@ -86,7 +86,7 @@ contract('IdentityRegistry Test', async (addrs) => {
             });
 
             it('should have registered identity', async () => {
-                assert.isTrue(await registry.hasIdentity(addrs[0]));
+                assert.isTrue(await registry.identities(identity.address));
             });
 
             it('should have keys', async () => {

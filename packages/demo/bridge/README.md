@@ -12,6 +12,27 @@ To satisfy dependencies and populate the `vendor` directory run:
 $ dep ensure -v
 ```
 
+### Smart Contract ABI generation
+
+We need to install a tool called `abigen` for generating the ABI from a solidity smart contract.
+
+Run the following to install the abigen tool.
+
+```bash
+$ go get -u github.com/ethereum/go-ethereum
+$ cd $GOPATH/src/github.com/ethereum/go-ethereum/
+$ make
+$ make devtools
+```
+
+From the truffle generated build, extract the ABI, the pipe it to `abigen`.
+
+```bash
+$ cat build/contracts/SomeContract.json | jq -r ".abi" | abigen --abi - --pkg contract --out main.go
+```
+
+This will generate a `main.go` file with the package set as `contract`.
+
 ### Issues
 
 There might be an issue with the native golang bindings from go-ethereum and dep, see [here](https://github.com/ethereum/go-ethereum/issues/2738).
