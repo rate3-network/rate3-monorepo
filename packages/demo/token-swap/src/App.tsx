@@ -11,11 +11,12 @@ export interface IProps {
   onIncrement?: () => void;
   onDecrement?: () => void;
   web3: any;
+  contract: any;
 }
 
 class Hello extends React.PureComponent<IProps> {
   public componentDidMount() {
-    console.log(this.props.web3);
+    console.log(this.props);
     // const provider: object = new Web3.providers.WebsocketProvider(
     //   'wss://ropsten.infura.io/ws');
     // const web3Instance: object = new Web3();

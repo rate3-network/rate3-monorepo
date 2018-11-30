@@ -1,19 +1,25 @@
-import { createStore } from 'redux';
-import { enthusiasm } from './reducers/test';
-const Web3 = require('web3'); // tslint:disable-line
-// import * as W3 from 'web3';
+// tslint:disable:no-angle-bracket-type-assertion
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+import createSagaMiddleware from 'redux-saga'; // tslint:disable-line:import-name
 
-// interface IStoreState {
-//   languageName: string;
-//   enthusiasmLevel: number;
-//   web3Obj: W3;
-//   // contract: object;
-// }
+import { counter } from './reducers/counter';
+import { enthusiasm } from './reducers/test';
+
+import rootSaga from './sagas/test'; // tslint:disable-line:import-name
+const rootReducer = combineReducers({
+  counter,
+  test: enthusiasm,
+});
+const sagaMiddleware = createSagaMiddleware();
+
+const composeEnhancers = (<any>window).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+// const web3: W3.default =
+//   new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws'));
+
 export const store = createStore(
-  enthusiasm,
-  {
-    enthusiasmLevel: 1,
-    languageName: 'TypeScript',
-    web3Obj: new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws')),
-  }
+  rootReducer,
+  composeEnhancers(
+    applyMiddleware(sagaMiddleware)
+  )
 );
+sagaMiddleware.run(rootSaga);

@@ -5,8 +5,9 @@ import App from './App';
 import { IStoreState } from './reducers/test';
 // src/containers/Hello.tsx
 
-export function mapStateToProps({ enthusiasmLevel, languageName, web3Obj }: IStoreState) {
+export function mapStateToProps({ contract, enthusiasmLevel, languageName, web3Obj }: IStoreState) {
   return {
+    contract,
     enthusiasmLevel,
     name: languageName,
     web3: web3Obj,

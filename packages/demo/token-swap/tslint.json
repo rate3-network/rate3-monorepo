@@ -4,6 +4,7 @@
     "tslint-react",
     "tslint-config-airbnb"
   ],
+  "rulesDirectory": ["node_modules/tslint-microsoft-contrib"],
   "rules": {
     "no-implicit-dependencies": false,
     "no-submodule-imports": false,
@@ -13,6 +14,10 @@
     "no-var-requires": false,
     "quotemark": [true, "single", "jsx-double"],
     "variable-name": false,
+    "ordered-imports": false,
+    "jsx-boolean-value": false,
+    "jsx-no-lambda": false,
+    "object-literal-sort-keys": false,
     "trailing-comma": [
       true,
       {

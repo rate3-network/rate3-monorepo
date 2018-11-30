@@ -5,11 +5,6 @@ export interface IProps {
 }
 
 class Sub extends React.PureComponent<IProps> {
-  public componentDidMount() {
-    const Web3Context = React.createContext('light');
-    const contextType = Web3Context;
-    console.log(contextType);
-  }
   public render() {
     const { name } = this.props;
     return (
