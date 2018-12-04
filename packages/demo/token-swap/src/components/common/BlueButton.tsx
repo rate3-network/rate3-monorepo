@@ -55,7 +55,7 @@ class BlueButton extends React.PureComponent<IProps> {
     noCap: false,
     outlined: false,
   };
-  public render() {
+  render() {
     const { classes } = this.props;
     return (
       <Fab

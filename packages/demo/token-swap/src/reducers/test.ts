@@ -1,7 +1,7 @@
-import * as W3 from 'web3';
+import * as W3 from '../web3Exported';
 import * as Contract from 'web3/eth/contract';
 import { EnthusiasmAction } from '../actions/test';
-const Web3 = require('web3'); // tslint:disable-line
+const Web3 = require('web3');
 const contractJson = require('../contract.json');
 
 import { DECREMENT_ENTHUSIASM, INCREMENT_ENTHUSIASM } from '../constants/test';
@@ -13,6 +13,7 @@ export interface IStoreState {
   web3Obj: W3.default;
 }
 
+console.log(Web3);
 const web3: W3.default =
   new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws'));
 export const initialState = {

@@ -18,7 +18,7 @@ export interface IProps {
 }
 
 class Counter extends React.PureComponent<IProps> {
-  public render() {
+  render() {
     const { content, error, onIncrementAsync, onIncrement, onDecrement, isFetching,
       requestContent, value, requestContent2 } = this.props;
     return (

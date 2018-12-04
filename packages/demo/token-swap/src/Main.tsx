@@ -6,7 +6,7 @@ import Counter from './components/Counter';
 // const web3Constructor = require('web3');
 
 class Main extends React.PureComponent {
-  public render() {
+  render() {
     return (
       <div className="Main">
         <AppContainer />

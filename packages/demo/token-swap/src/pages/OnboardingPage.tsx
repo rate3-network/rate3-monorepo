@@ -4,7 +4,7 @@ import { Dispatch } from 'redux';
 import * as actions from '../actions/counter';
 import { IStoreState } from '../reducers/counter';
 import { createStyles } from '@material-ui/core/styles';
-import { Button, AppBar, Toolbar, Typography } from '@material-ui/core';
+import { Button, AppBar, Toolbar } from '@material-ui/core';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { withRouter } from 'react-router';
 import { Link, RouteComponentProps } from 'react-router-dom';
@@ -58,11 +58,11 @@ const styles = createStyles({
 // }
 type IProps = WithStyles<typeof styles> & RouteComponentProps<{ pageNumber: string }>;
 class OnboardingPage extends React.PureComponent<IProps> {
-  public componentDidMount() {
+  componentDidMount() {
     console.log(this.props.match.params);
   }
 
-  public render() {
+  render() {
     const { classes, match } = this.props;
     const { pageNumber } = match.params;
     const page = parseInt(pageNumber, 10);

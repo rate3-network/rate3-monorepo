@@ -7,13 +7,14 @@ import Counter from './components/Counter';
 import Sidebar from './components/Sidebar';
 import { Hidden } from '@material-ui/core';
 // import OnboardingPage from './pages/OnboardingPage';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 const OnboardingPage = React.lazy(() => import('./pages/OnboardingPage'));
 import HomePage from './pages/HomePage';
 import DirectSwapPage from './pages/DirectSwapPage';
-// import AppContainer from './AppContainer';
 import { store } from './store';
-// import registerServiceWorker from './registerServiceWorker';
 import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
+import RoleContext from './components/common/RoleContext';
+import RoleSwitch from './components/common/RoleSwitch';
 
 interface IRoute {
   path: string;
@@ -30,6 +31,11 @@ const routes: IRoute[] = [
   { path: '/direct-swap', component: DirectSwapPage },
   // { path: '/:role/home', component: HomePage },
 ];
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+  },
+});
 const OnboardingSuspended = () => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}><OnboardingPage /></React.Suspense>
@@ -47,29 +53,62 @@ const Routes = () => {
     </React.Fragment>
   );
 };
-
+enum ROLES {
+  USER,
+  ISSUER,
+}
+interface IState  {
+  theme: ROLES;
+  setTheme: () => void;
+}
 class RoutesResponsive extends React.Component {
-  public componentDidMount() {
-    (window as any).__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
+  setThemeBound: () => void;
+  state: IState;
+  setTheme;
+  constructor(props) {
+    super(props);
+    this.setTheme = (value: ROLES): void => {
+      console.log(value);
+      this.setState({
+        theme: value,
+      });
+    };
+    this.setThemeBound = this.setTheme.bind(this);
+    this.state = {
+      theme: ROLES.USER,
+      setTheme: this.setThemeBound,
+    };
   }
-  public render() {
+
+  render() {
     return (
-      <Switch><React.Fragment>
-          <Hidden mdUp>
-            <div style={{ width: '100vw', marginLeft: 0 }}>
-              <Routes />
-              <Route exact path="/onboarding/:pageNumber" component={OnboardingSuspended} />
-            </div>
-          </Hidden>
-          <Hidden smDown>
-            <div style={{ width: '80vw', marginLeft: '20vw' }}>
-              <Routes />
-            </div>
-            <div style={{ width: '100vw', marginLeft: 0 }}>
-              <Route exact path="/onboarding/:pageNumber" component={OnboardingSuspended} />
-            </div>
-          </Hidden>
-      </React.Fragment></Switch>
+      <>
+
+          {/* {routes.map(route =>
+            <Route exact key={route.path} path={route.path} component={Sidebar} />)
+          } */}
+          <RoleSwitch />
+          {/* <RoleContext.Provider value={this.state} > */}
+          <Switch><>
+              <Hidden mdUp>
+                <div style={{ width: '100vw', marginLeft: 0 }}>
+                  <Routes />
+                  <Route exact path="/onboarding/:pageNumber" component={OnboardingSuspended} />
+                </div>
+              </Hidden>
+              <Hidden smDown>
+                <div style={{ width: '80vw', marginLeft: '20vw' }}>
+                  <Routes />
+                </div>
+                <div style={{ width: '100vw', marginLeft: 0 }}>
+                  <Route exact path="/onboarding/:pageNumber" component={OnboardingSuspended} />
+                </div>
+              </Hidden>
+
+          </></Switch>
+          {/* </RoleContext.Provider> */}
+      </>
+
     );
   }
 }
@@ -77,12 +116,9 @@ class RoutesResponsive extends React.Component {
 ReactDOM.render(
   <Provider store={store}>
     <HashRouter basename="/" >
-      <React.Fragment>
-        {routes.map(route =>
-          <Route exact key={route.path} path={route.path} component={Sidebar} />)
-        }
+      <MuiThemeProvider theme={theme}>
         <RoutesResponsive />
-      </React.Fragment>
+      </MuiThemeProvider>
     </HashRouter>
   </Provider>,
   document.getElementById('root') as HTMLElement

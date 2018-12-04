@@ -4,7 +4,7 @@ import { Dispatch } from 'redux';
 import * as actions from '../actions/counter';
 import { IStoreState } from '../reducers/counter';
 import { createStyles } from '@material-ui/core/styles';
-import { Button, AppBar, Toolbar, Typography } from '@material-ui/core';
+import { Button, AppBar, Toolbar } from '@material-ui/core';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { withRouter } from 'react-router';
 import Counter from '../components/Counter';
@@ -23,13 +23,13 @@ const routes = [
 ];
 type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
 class DirectSwapPage extends React.PureComponent<IProps> {
-  public componentDidMount() {
+  componentDidMount() {
     console.log(this.props.match);
     console.log(this.props.match.url);
     // console.log(this.props.history.location);
   }
 
-  public render() {
+  render() {
     const { classes, match } = this.props;
     const { role } = match.params;
     return (

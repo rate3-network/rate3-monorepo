@@ -18,6 +18,7 @@
     "jsx-boolean-value": false,
     "jsx-no-lambda": false,
     "object-literal-sort-keys": false,
+    "member-access": [true, "no-public"],
     "trailing-comma": [
       true,
       {

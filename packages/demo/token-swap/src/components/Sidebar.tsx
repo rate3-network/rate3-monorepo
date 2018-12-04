@@ -8,6 +8,7 @@ import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { Hidden, Drawer } from '@material-ui/core';
 import { Link, RouteComponentProps } from 'react-router-dom';
+import RoleSwitch from './common/RoleSwitch';
 
 export interface IProps {
   value: number;
@@ -36,11 +37,11 @@ const styles = createStyles({
   },
 });
 type IFinalProps = IProps & WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
-class Sidebar extends React.Component<IFinalProps> {
-  public componentDidMount() {
+class Sidebar extends React.PureComponent<IFinalProps> {
+  componentDidMount() {
     console.log('rendered', this.props.match);
   }
-  public render() {
+  render() {
     const { classes, match } = this.props;
     const { params } = match;
     const { role } = params;
@@ -58,10 +59,11 @@ class Sidebar extends React.Component<IFinalProps> {
               keepMounted: true, // Better open performance on mobile.
             }}
           >
-              <Link to={`/${role}/home`}>Home</Link>
-              <Link to={`/${role}/direct-swap`}>Direct</Link>
-              <Link to={`/${role}/p2p-swap`}>Peer-to-Peer</Link>
-              {/* <Link to={`/${role}/settings`}></Link> */}
+            <RoleSwitch />
+            <Link to={`/${role}/home`}>Home</Link>
+            <Link to={`/${role}/direct-swap`}>Direct</Link>
+            <Link to={`/${role}/p2p-swap`}>Peer-to-Peer</Link>
+            {/* <Link to={`/${role}/settings`}></Link> */}
           </Drawer>
         </Hidden>
         <Hidden smDown>
@@ -76,10 +78,11 @@ class Sidebar extends React.Component<IFinalProps> {
               keepMounted: true, // Better open performance on mobile.
             }}
           >
-              <Link to={`/${role}/home`}>Home</Link>
-              <Link to={`/${role}/direct-swap`}>Direct</Link>
-              <Link to={`/${role}/p2p-swap`}>Peer-to-Peer</Link>
-              {/* <Link to={`/${role}/settings`}></Link> */}
+            <RoleSwitch />
+            <Link to={`/${role}/home`}>Home</Link>
+            <Link to={`/${role}/direct-swap`}>Direct</Link>
+            <Link to={`/${role}/p2p-swap`}>Peer-to-Peer</Link>
+            {/* <Link to={`/${role}/settings`}></Link> */}
           </Drawer>
         </Hidden>
       </React.Fragment>
@@ -91,7 +94,6 @@ export interface IStates {
 }
 
 export function mapStateToProps({ counter }: IStates) {
-  console.log(counter);
   return {
     content: counter.content,
     error: counter.error,

@@ -5,7 +5,7 @@ export interface IProps {
 }
 
 class Sub extends React.PureComponent<IProps> {
-  public render() {
+  render() {
     const { name } = this.props;
     return (
         <div className="hello">

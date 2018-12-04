@@ -15,18 +15,10 @@ export interface IProps {
 }
 
 class Hello extends React.PureComponent<IProps> {
-  public componentDidMount() {
+  componentDidMount() {
     console.log(this.props);
-    // const provider: object = new Web3.providers.WebsocketProvider(
-    //   'wss://ropsten.infura.io/ws');
-    // const web3Instance: object = new Web3();
-    // const mmContract = new web3Instance.eth.Contract(
-    //   contractJson.abi,
-    //   '0x42EBE1Bba61B06A074277F7Aeb10052B8e47FBF1'
-    // );
-    // console.log(web3);
   }
-  public render() {
+  render() {
     const { name, enthusiasmLevel = 1, onIncrement, onDecrement } = this.props;
     if (enthusiasmLevel <= 0) {
       throw new Error('You could be a little more enthusiastic. :D');
