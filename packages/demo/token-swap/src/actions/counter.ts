@@ -18,5 +18,5 @@ export const increment = createAction<void, void>(counterActions.INCREMENT);
 export const decrement = createAction<void, void>(counterActions.DECREMENT);
 export const incrementAsync = createAction<void, void>(counterActions.INCREMENT_ASYNC);
 export const setContent = createAction<void, void>(counterActions.SET_CONTENT);
-export const requestContent = createAction<{ id: number }, void>(counterActions.REQUEST_CONTENT);
+export const requestContent = createAction<{ id: number }, string>(counterActions.REQUEST_CONTENT);
 export const receiveContent = createAction<void, void>(counterActions.RECEIVE_CONTENT);

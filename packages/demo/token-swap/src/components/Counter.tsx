@@ -58,7 +58,6 @@ class Counter extends React.PureComponent<IProps> {
       >
       set
       </button>
-      {/* <button onClick={requestContent2}>set2</button> */}
       <hr />
       <div>
         Clicked: {value} times
@@ -82,7 +81,6 @@ export interface IStates {
 }
 
 export function mapStateToProps({ counter }: IStates) {
-  console.log(counter);
   return {
     content: counter.content,
     error: counter.error,
@@ -91,14 +89,11 @@ export function mapStateToProps({ counter }: IStates) {
   };
 }
 
-export function mapDispatchToProps(dispatch: Dispatch<IAction>, ownProps) {
-  console.log(ownProps);
+export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   return {
     onDecrement: () => dispatch(actions.decrement()),
     onIncrement: () => dispatch(actions.increment()),
-    // onIncrementAsync: () => dispatch(actions.incrementAsync()),
-    requestContent: (x: number) => dispatch(actions.requestContent({ id: x })),
-    // requestContent2: () => dispatch(actions.requestContent(4)),
+    requestContent: (x: number) => dispatch(actions.requestContent({ id: x }, 'hey')),
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Counter);

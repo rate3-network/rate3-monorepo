@@ -24,6 +24,7 @@ export const initialState = {
 export function counter(
   state: IStoreState = initialState,
   action: IAction): IStoreState {
+  console.log(action);
   switch (action.type) {
     case counterActions.INCREMENT:
       console.log(state.value);

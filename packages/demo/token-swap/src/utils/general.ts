@@ -16,9 +16,9 @@ export const keyMirror = (obj: object, namespace: string): IKeyMirror => {
 };
 export interface IAction<Payload = any, Meta = any> {
   type: string;
-  payload: Payload;
-  meta: Meta;
+  payload?: Payload;
+  meta?: Meta;
 }
 export const createAction = <Payload, Meta>(type: string) =>
-  (payload?: Payload, meta?: Meta): IAction =>
+  (payload?: Payload, meta?: Meta): IAction<Payload, Meta> =>
     ({ type, payload, meta });
