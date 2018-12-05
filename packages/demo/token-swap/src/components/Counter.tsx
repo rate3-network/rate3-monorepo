@@ -4,6 +4,7 @@ import { Dispatch } from 'redux';
 import * as actions from '../actions/counter';
 import { IStoreState } from '../reducers/counter';
 import { Button } from '@material-ui/core';
+import { IAction } from 'src/utils/general';
 
 export interface IProps {
   value: number;
@@ -12,21 +13,26 @@ export interface IProps {
   isFetching: boolean;
   onIncrement?: () => void;
   onDecrement?: () => void;
-  onIncrementAsync?: () => void;
-  requestContent?: () => void;
-  requestContent2?: () => void;
+  requestContent: (x: number | null) => void;
 }
 
 class Counter extends React.PureComponent<IProps> {
+  state = {
+    id: null,
+  };
   render() {
-    const { content, error, onIncrementAsync, onIncrement, onDecrement, isFetching,
-      requestContent, value, requestContent2 } = this.props;
+    const {
+      content,
+      error,
+      onIncrement,
+      onDecrement,
+      isFetching,
+      requestContent,
+      value,
+    } = this.props;
     return (
     <div>
       <Button>test</Button>
-      <button onClick={onIncrementAsync}>
-        Increment after 1 second
-      </button>
       {' '}
       <button onClick={onIncrement}>
         Increment
@@ -36,8 +42,23 @@ class Counter extends React.PureComponent<IProps> {
         Decrement
       </button>
       <hr />
-      <button onClick={requestContent}>set</button>
-      <button onClick={requestContent2}>set2</button>
+      <input
+        type="text"
+        onChange={
+          (e) => {
+            console.log(e.target.value);
+            this.setState({ id: e.target.value });
+          }
+        }
+      />
+      <button
+        onClick={() => {
+          requestContent(this.state.id);
+        }}
+      >
+      set
+      </button>
+      {/* <button onClick={requestContent2}>set2</button> */}
       <hr />
       <div>
         Clicked: {value} times
@@ -70,13 +91,14 @@ export function mapStateToProps({ counter }: IStates) {
   };
 }
 
-export function mapDispatchToProps(dispatch: Dispatch<actions.ClickAction>) {
+export function mapDispatchToProps(dispatch: Dispatch<IAction>, ownProps) {
+  console.log(ownProps);
   return {
     onDecrement: () => dispatch(actions.decrement()),
     onIncrement: () => dispatch(actions.increment()),
-    onIncrementAsync: () => dispatch(actions.incrementAsync()),
-    requestContent: () => dispatch(actions.requestContent(3)),
-    requestContent2: () => dispatch(actions.requestContent(4)),
+    // onIncrementAsync: () => dispatch(actions.incrementAsync()),
+    requestContent: (x: number) => dispatch(actions.requestContent({ id: x })),
+    // requestContent2: () => dispatch(actions.requestContent(4)),
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(Counter);

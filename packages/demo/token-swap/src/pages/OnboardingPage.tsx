@@ -86,24 +86,24 @@ class OnboardingPage extends React.PureComponent<IProps> {
             </Link>
           }
           {(page > 0 && page < 5) &&
-            <React.Fragment>
+            <>
               <Link className={classes.link} to={`/onboarding/${page - 1}`}>
                 <BlueButton noCap outlined>Back</BlueButton>
               </Link>
               <Link className={classes.link} to={`/onboarding/${page + 1}`}>
                 <BlueButton noCap>Next</BlueButton>
               </Link>
-            </React.Fragment>
+            </>
           }
           {(page === 5) &&
-            <React.Fragment>
+            <>
               <Link className={classes.link} to={`/onboarding/${page - 1}`}>
                 <BlueButton noCap outlined>Back</BlueButton>
               </Link>
               <Link className={classes.link} to="/user/home">
                 <BlueButton noCap>Start Demo</BlueButton>
               </Link>
-            </React.Fragment>
+            </>
           }
 
         </div>

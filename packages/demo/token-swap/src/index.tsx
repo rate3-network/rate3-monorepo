@@ -14,7 +14,6 @@ import DirectSwapPage from './pages/DirectSwapPage';
 import { store } from './store';
 import { HashRouter, Switch, Route, Redirect } from 'react-router-dom';
 import RoleContext from './components/common/RoleContext';
-import RoleSwitch from './components/common/RoleSwitch';
 
 interface IRoute {
   path: string;
@@ -43,14 +42,17 @@ const OnboardingSuspended = () => {
 };
 const Routes = () => {
   return (
-    <React.Fragment>
+    <>
       <Route exact path="/" render={() => <Redirect to="/onboarding/1" />} />
       <Route exact path="/home" render={() => <Redirect to="/user/home" />} />
       <Route exact path="/onboarding" render={() => <Redirect to="/onboarding/1" />} />
-      {routes.map(route =>
-        <Route exact key={route.path} path={route.path} component={route.component} />
-      )}
-    </React.Fragment>
+      <div>
+        <Sidebar />
+        {routes.map(route =>
+          <Route exact key={route.path} path={route.path} component={route.component} />
+        )}
+      </div>
+    </>
   );
 };
 enum ROLES {
@@ -83,12 +85,7 @@ class RoutesResponsive extends React.Component {
   render() {
     return (
       <>
-
-          {/* {routes.map(route =>
-            <Route exact key={route.path} path={route.path} component={Sidebar} />)
-          } */}
-          <RoleSwitch />
-          {/* <RoleContext.Provider value={this.state} > */}
+        <RoleContext.Provider value={this.state} >
           <Switch><>
               <Hidden mdUp>
                 <div style={{ width: '100vw', marginLeft: 0 }}>
@@ -106,9 +103,8 @@ class RoutesResponsive extends React.Component {
               </Hidden>
 
           </></Switch>
-          {/* </RoleContext.Provider> */}
+        </RoleContext.Provider>
       </>
-
     );
   }
 }

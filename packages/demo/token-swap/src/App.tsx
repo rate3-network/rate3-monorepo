@@ -25,10 +25,6 @@ class Hello extends React.PureComponent<IProps> {
     }
     return (
       <div className="hello">
-        <div className="greeting">
-          Hello {name + getExclamationMarks(enthusiasmLevel)}
-        </div>
-        <Sub name="sdf" />
         <div>
           <button onClick={onDecrement}>-</button>
           <button onClick={onIncrement}>+</button>
@@ -39,7 +35,3 @@ class Hello extends React.PureComponent<IProps> {
 }
 
 export default Hello;
-
-function getExclamationMarks(numChars: number) {
-  return Array(numChars + 1).join('!');
-}

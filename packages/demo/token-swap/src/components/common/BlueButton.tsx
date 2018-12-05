@@ -59,7 +59,7 @@ class BlueButton extends React.PureComponent<IProps> {
     const { classes } = this.props;
     return (
       <Fab
-        // variant="extended"
+        variant="extended"
         size="large"
         // color="primary"
         disabled={this.props.disabled}

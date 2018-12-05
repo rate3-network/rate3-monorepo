@@ -1,7 +1,8 @@
-import { ClickAction } from '../actions/counter';
+import { counterActions } from '../actions/counter';
 
 import { CONTENT_FAILED, DECREMENT, ITitle, INCREMENT, INCREMENT_ASYNC, RECEIVE_CONTENT,
   REQUEST_CONTENT, SET_CONTENT } from '../constants/counter';
+import { IAction } from 'src/utils/general';
 
 export interface IStoreState {
   value: number;
@@ -20,23 +21,27 @@ export const initialState = {
   value: 1,
 };
 
-export function counter(state: IStoreState = initialState, action: ClickAction): IStoreState {
+export function counter(
+  state: IStoreState = initialState,
+  action: IAction): IStoreState {
   switch (action.type) {
-    case INCREMENT:
+    case counterActions.INCREMENT:
+      console.log(state.value);
       return { ...state, value: state.value + 1 };
-    case INCREMENT_ASYNC:
+    case counterActions.INCREMENT_ASYNC:
       return { ...state };
-    case DECREMENT:
+    case counterActions.DECREMENT:
       return { ...state, value: Math.max(1, state.value - 1) };
-    case SET_CONTENT:
-      return { ...state, content: action.content };
-    case REQUEST_CONTENT:
-      return { ...state, id: action.id, isFetching: true };
-    case RECEIVE_CONTENT:
-      return { ...state, responseBody: action.responseBody,
-        content: action.responseBody.title, isFetching: false };
-    case CONTENT_FAILED:
-      return { ...state, error: action.error };
+    case counterActions.SET_CONTENT:
+      return { ...state, content: action.payload.content };
+    case counterActions.REQUEST_CONTENT:
+      return { ...state, id: action.payload.id, isFetching: true };
+    case counterActions.RECEIVE_CONTENT:
+      console.log(action);
+      return { ...state, responseBody: action.payload.responseBody,
+        content: action.payload.responseBody.title, isFetching: false };
+    case counterActions.CONTENT_FAILED:
+      return { ...state, error: action.payload.error };
   }
   return state;
 }

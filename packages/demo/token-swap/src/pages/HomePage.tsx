@@ -5,20 +5,18 @@ import { withRouter } from 'react-router';
 import Counter from '../components/Counter';
 
 import { RouteComponentProps, HashRouter, Switch, Route } from 'react-router-dom';
-// import RoleContext from '../components/common/RoleContext';
+import RoleContext from '../components/common/RoleContext';
+import { ROLES } from '../constants/general';
 // export interface IProps {
 //   classes: any;
 // }
 
 const styles = createStyles({
 });
-enum ROLES {
-  USER,
-  ISSUER,
-}
+
 type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
 class HomePage extends React.Component<IProps> {
-  // static contextType = RoleContext;
+  static contextType = RoleContext;
   componentDidMount() {
     console.log(this.props.match);
     console.log(this.props.match.url);
@@ -33,12 +31,12 @@ class HomePage extends React.Component<IProps> {
       <div>
         Home!
         <hr/>
-        {/* {this.context.theme === ROLES.ISSUER ? 'issuer' : 'user'}
+        {this.context.theme === ROLES.ISSUER ? 'issuer' : 'user'}
         <button
           onClick={() => { this.context.setTheme(ROLES.ISSUER); }}
         >
           to issuer
-        </button> */}
+        </button>
       </div>
     );
   }
