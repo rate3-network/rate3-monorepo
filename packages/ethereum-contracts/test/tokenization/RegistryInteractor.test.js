@@ -68,26 +68,41 @@ contract('RegistryInteractor Tests', function(accounts) {
 
         it('multi-approval whitelist for mint', async function() {
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
-            await this.interactor.whitelistForMint(rest[0], true, { from: admin1 }).should.be.fulfilled;
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 }).should.be.fulfilled;
         });
 
         it('cannot approve own whitelist for mint', async function() {
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot whitelist for mint if there is already pending', async function() {
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin1 }).should.be.rejected;
+            await this.interactor.whitelistForMint(rest[0], false, { from: admin1 }).should.be.rejected;
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 }).should.be.rejected;
+            await this.interactor.whitelistForMint(rest[0], false, { from: admin2 }).should.be.rejected;
         });
 
         it('matching status value required', async function() {
             await this.interactor.whitelistForMint(rest[0], true, { from: admin1 });
-            await this.interactor.whitelistForMint(rest[0], false, { from: admin2 }).should.be.rejected;
-            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 }).should.be.fulfilled;
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin2 }).should.be.fulfilled;
 
             // Should pass now, since previous whitelist event settled.
             await this.interactor.whitelistForMint(rest[0], false, { from: admin2 }).should.be.fulfilled;
 
-            await this.interactor.whitelistForMint(rest[0], false, { from: admin2 }).should.be.rejected;
-            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 }).should.be.rejected;
-            await this.interactor.whitelistForMint(rest[0], true, { from: admin1 }).should.be.rejected;
-            await this.interactor.whitelistForMint(rest[0], false, { from: admin1 }).should.be.fulfilled;
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('revoke whitelist for mint is idempotent', async function() {
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.revokeWhitelistForMint(rest[0], { from: admin2 }).should.be.fulfilled;
+            await this.interactor.revokeWhitelistForMint(rest[0], { from: admin2 }).should.be.fulfilled;
+            await this.interactor.revokeWhitelistForMint(rest[0], { from: admin1 }).should.be.fulfilled;
         });
     });
 
