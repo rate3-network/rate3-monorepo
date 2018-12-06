@@ -8,7 +8,7 @@ import "./ModularToken.sol";
  * @dev String constants used as key across contracts should be consistent.
  */
 contract CompliantToken is ModularToken {
-
+    /// @notice String constants for compliance
     string public constant WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
     string public constant WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
     string public constant BLACKLISTED = "BLACKLISTED";
