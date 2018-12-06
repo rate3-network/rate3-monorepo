@@ -14,6 +14,29 @@ contract RegistryInteractor is AdminInteractor {
     string public constant WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
     string public constant BLACKLISTED = "BLACKLISTED";
 
+    /**
+     * @notice PendingRegistry keeps track of a registry modification that needs confirmation.
+     */
+    struct PendingRegistry {
+        AdminStates requestState;
+        bool status;
+        uint256 requestTimestamp;
+    }
+
+    enum AdminStates {
+        INVALID,
+        ADMIN1,
+        ADMIN2
+    }
+
+    mapping (address => PendingRegistry) public pendingWhitelistForMint;
+    mapping (address => PendingRegistry) public pendingWhitelistForBurn;
+    mapping (address => PendingRegistry) public pendingBlacklist;
+
+    event PendingWhitelistForMint(address indexed whitelistAddress, bool status, address indexed whitelistedBy, uint256 whitelistTimestamp);
+    event PendingWhitelistForBurn(address indexed whitelistAddress, bool status, address indexed whitelistedBy, uint256 whitelistTimestamp);
+    event PendingBlacklist(address indexed blacklistAddress, bool status, address indexed blacklistedBy, uint256 blacklistTimestamp);
+
     event WhitelistedForMint(address indexed whitelistedAddress, bool status, address indexed whitelistedBy, uint256 whitelistTimestamp);
     event WhitelistedForBurn(address indexed whitelistedAddress, bool status, address indexed whitelistedBy, uint256 whitelistTimestamp);
     event Blacklisted(address indexed blacklistedAddress, bool status, address indexed blacklistedBy, uint256 blacklistTimestamp);
@@ -27,21 +50,49 @@ contract RegistryInteractor is AdminInteractor {
      * @param _bool True if address whitelisted.
      */
     function whitelistForMint(address _address, bool _bool) public onlyAdmin {
-        TokenInterface(token).setKeyDataRecord(
-            _address,
-            WHITELISTED_FOR_MINT,
-            0,
-            "",
-            address(0),
-            _bool,
-            msg.sender
-        );
-        emit WhitelistedForMint(
-            _address,
-            _bool,
-            msg.sender,
-            block.timestamp
-        );
+        PendingRegistry storage pendingRegistry = pendingWhitelistForMint[_address];
+        if (pendingRegistry.requestState == AdminStates.INVALID) {
+            AdminStates adminState;
+            if (msg.sender == admin1) {
+                adminState = AdminStates.ADMIN1;
+            } else if (msg.sender == admin2) {
+                adminState = AdminStates.ADMIN2;
+            }
+            pendingWhitelistForMint[_address] = PendingRegistry(
+                adminState,
+                _bool,
+                block.timestamp
+            );
+            emit PendingWhitelistForMint(
+                _address,
+                _bool,
+                msg.sender,
+                block.timestamp
+            );
+        } else {
+            // If requested by admin1, needs admin2 approval, and vice versa.
+            require((pendingRegistry.requestState == AdminStates.ADMIN1 && msg.sender == admin2) || (pendingRegistry.requestState == AdminStates.ADMIN2 && msg.sender == admin1), "Pending Registry.");
+            // Require matching boolean value.
+            require(pendingRegistry.status == _bool, "Non-matching status value.");
+            
+            TokenInterface(token).setKeyDataRecord(
+                _address,
+                WHITELISTED_FOR_MINT,
+                0,
+                "",
+                address(0),
+                _bool,
+                msg.sender
+            );
+            emit WhitelistedForMint(
+                _address,
+                _bool,
+                msg.sender,
+                block.timestamp
+            );
+            // Clear struct.
+            delete pendingWhitelistForMint[_address];
+        }
     }
 
     /**
