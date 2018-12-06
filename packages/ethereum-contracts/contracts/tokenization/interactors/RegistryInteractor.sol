@@ -128,7 +128,7 @@ contract RegistryInteractor is AdminInteractor {
     }
 
     /**
-     * @notice Set the burning whitelist status for address provided.
+     * @notice Set up a PendingRegistry to update the burning whitelist status for address provided.
      *
      * @dev Only admin can whitelist/blacklist.
      *
@@ -136,6 +136,42 @@ contract RegistryInteractor is AdminInteractor {
      * @param _bool True if address whitelisted.
      */
     function whitelistForBurn(address _address, bool _bool) public onlyAdmin {
+        PendingRegistry storage pendingRegistry = pendingWhitelistForBurn[_address];
+        require(pendingRegistry.requestState == AdminStates.INVALID, "Pending registry already exist.");
+        AdminStates adminState;
+        if (msg.sender == admin1) {
+            adminState = AdminStates.ADMIN1;
+        } else if (msg.sender == admin2) {
+            adminState = AdminStates.ADMIN2;
+        }
+        pendingWhitelistForBurn[_address] = PendingRegistry(
+            adminState,
+            _bool,
+            block.timestamp
+        );
+        emit PendingWhitelistForBurn(
+            _address,
+            _bool,
+            msg.sender,
+            block.timestamp
+        );
+    }
+
+    /**
+     * @notice Finalize the burning whitelist status for address provided.
+     *
+     * @dev Only admin can whitelist/blacklist. Only applicable if there is already a Pending Registry requested.
+     *
+     * @param _address Address to be added or removed from whitelist.
+     * @param _bool True if address whitelisted.
+     */
+    function finalizeWhitelistForBurn(address _address, bool _bool) public onlyAdmin {
+        PendingRegistry memory pendingRegistry = pendingWhitelistForBurn[_address];
+        // If requested by admin1, needs admin2 approval, and vice versa.
+        require((pendingRegistry.requestState == AdminStates.ADMIN1 && msg.sender == admin2) || (pendingRegistry.requestState == AdminStates.ADMIN2 && msg.sender == admin1), "Need seperate admin.");
+        // Require matching boolean value.
+        require(pendingRegistry.status == _bool, "Non-matching status value.");
+
         TokenInterface(token).setKeyDataRecord(
             _address,
             WHITELISTED_FOR_BURN,
@@ -151,10 +187,30 @@ contract RegistryInteractor is AdminInteractor {
             msg.sender,
             block.timestamp
         );
+        // Clear struct.
+        delete pendingWhitelistForBurn[_address];
     }
 
     /**
-     * @notice Set the blacklist status for address provided.
+     * @notice Reject the burning whitelist status for address provided.
+     *
+     * @dev Only admin can whitelist/blacklist. Only applicable if there is already a Pending Registry requested.
+     *
+     * @param _address Address to be added or removed from whitelist.
+     */
+    function revokeWhitelistForBurn(address _address) public onlyAdmin {
+        PendingRegistry memory pendingRegistry = pendingWhitelistForBurn[_address];
+        emit RevokedWhitelistForBurn(
+            _address,
+            pendingRegistry.status,
+            msg.sender,
+            block.timestamp
+        );
+        delete pendingWhitelistForBurn[_address];
+    }
+
+    /**
+     * @notice Set up a PendingRegistry to update the blacklist status for address provided.
      *
      * @dev Only admin can whitelist/blacklist.
      *
@@ -162,6 +218,42 @@ contract RegistryInteractor is AdminInteractor {
      * @param _bool True if address blacklisted.
      */
     function blacklist(address _address, bool _bool) public onlyAdmin {
+        PendingRegistry storage pendingRegistry = pendingBlacklist[_address];
+        require(pendingRegistry.requestState == AdminStates.INVALID, "Pending registry already exist.");
+        AdminStates adminState;
+        if (msg.sender == admin1) {
+            adminState = AdminStates.ADMIN1;
+        } else if (msg.sender == admin2) {
+            adminState = AdminStates.ADMIN2;
+        }
+        pendingBlacklist[_address] = PendingRegistry(
+            adminState,
+            _bool,
+            block.timestamp
+        );
+        emit PendingBlacklist(
+            _address,
+            _bool,
+            msg.sender,
+            block.timestamp
+        );
+    }
+
+    /**
+     * @notice Finalize the blacklist status for address provided.
+     *
+     * @dev Only admin can whitelist/blacklist. Only applicable if there is already a Pending Registry requested.
+     *
+     * @param _address Address to be added or removed from blacklist.
+     * @param _bool True if address blacklisted.
+     */
+    function finalizeBlacklist(address _address, bool _bool) public onlyAdmin {
+        PendingRegistry memory pendingRegistry = pendingBlacklist[_address];
+        // If requested by admin1, needs admin2 approval, and vice versa.
+        require((pendingRegistry.requestState == AdminStates.ADMIN1 && msg.sender == admin2) || (pendingRegistry.requestState == AdminStates.ADMIN2 && msg.sender == admin1), "Need seperate admin.");
+        // Require matching boolean value.
+        require(pendingRegistry.status == _bool, "Non-matching status value.");
+
         TokenInterface(token).setKeyDataRecord(
             _address,
             BLACKLISTED,
@@ -177,5 +269,25 @@ contract RegistryInteractor is AdminInteractor {
             msg.sender,
             block.timestamp
         );
+        // Clear struct.
+        delete pendingBlacklist[_address];
+    }
+
+    /**
+     * @notice Reject the blacklist status for address provided.
+     *
+     * @dev Only admin can whitelist/blacklist. Only applicable if there is already a Pending Registry requested.
+     *
+     * @param _address Address to be added or removed from blacklist.
+     */
+    function revokeBlacklist(address _address) public onlyAdmin {
+        PendingRegistry memory pendingRegistry = pendingBlacklist[_address];
+        emit RevokedBlacklist(
+            _address,
+            pendingRegistry.status,
+            msg.sender,
+            block.timestamp
+        );
+        delete pendingBlacklist[_address];
     }
 }
