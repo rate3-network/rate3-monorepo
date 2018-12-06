@@ -90,6 +90,9 @@ contract RegistryInteractor is AdminInteractor {
         // Require matching boolean value.
         require(pendingRegistry.status == _bool, "Non-matching status value.");
 
+        // Clear struct.
+        delete pendingWhitelistForMint[_address];
+
         TokenInterface(token).setKeyDataRecord(
             _address,
             WHITELISTED_FOR_MINT,
@@ -105,8 +108,6 @@ contract RegistryInteractor is AdminInteractor {
             msg.sender,
             block.timestamp
         );
-        // Clear struct.
-        delete pendingWhitelistForMint[_address];
     }
 
     /**
@@ -172,6 +173,9 @@ contract RegistryInteractor is AdminInteractor {
         // Require matching boolean value.
         require(pendingRegistry.status == _bool, "Non-matching status value.");
 
+        // Clear struct.
+        delete pendingWhitelistForBurn[_address];
+
         TokenInterface(token).setKeyDataRecord(
             _address,
             WHITELISTED_FOR_BURN,
@@ -187,8 +191,6 @@ contract RegistryInteractor is AdminInteractor {
             msg.sender,
             block.timestamp
         );
-        // Clear struct.
-        delete pendingWhitelistForBurn[_address];
     }
 
     /**
@@ -254,6 +256,9 @@ contract RegistryInteractor is AdminInteractor {
         // Require matching boolean value.
         require(pendingRegistry.status == _bool, "Non-matching status value.");
 
+        // Clear struct.
+        delete pendingBlacklist[_address];
+
         TokenInterface(token).setKeyDataRecord(
             _address,
             BLACKLISTED,
@@ -269,8 +274,6 @@ contract RegistryInteractor is AdminInteractor {
             msg.sender,
             block.timestamp
         );
-        // Clear struct.
-        delete pendingBlacklist[_address];
     }
 
     /**
