@@ -52,6 +52,8 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
         });
 
         it('anyone can submit as many mint requests', async function() {
@@ -74,6 +76,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('mint requests blocked if not whitelisted', async function() {
             await this.interactor.whitelistForMint(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin1 });
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
@@ -81,6 +84,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('mint requests blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
@@ -134,6 +138,8 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
             
             // Request mint for rest[0].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -160,11 +166,13 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('mint approval blocked if not whitelisted', async function() {
             await this.interactor.whitelistForMint(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin1 });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('mint approval blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
@@ -232,6 +240,8 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
 
             // Requested and approved mint for rest[0].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -263,11 +273,13 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('mint finalize blocked if not whitelisted', async function() {
             await this.interactor.whitelistForMint(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin1 });
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('mint finalize blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
@@ -341,6 +353,8 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0] and rest[1].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -432,6 +446,8 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0] and rest[1].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -532,8 +548,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint and burn.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
             await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForBurn(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForBurn(rest[1], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0] and rest[1].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -566,6 +586,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('burn requests blocked if not whitelisted', async function() {
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], false, { from: admin1 });
             await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] }).should.be.rejected;
             await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
             await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
@@ -573,6 +594,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('burn requests blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
             await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[0] }).should.be.rejected;
             await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
             await this.interactor.requestBurn(new web3.BigNumber('2000e+18'), { from: rest[1] }).should.be.fulfilled;
@@ -633,8 +655,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint and burn.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
             await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForBurn(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForBurn(rest[1], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0] and rest[1].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -669,11 +695,13 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('burn approval blocked if not whitelisted', async function() {
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], false, { from: admin1 });
             await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
         it('burn approval blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
             await this.interactor.approveBurn(rest[0], 0, { from: admin2 }).should.be.rejected;
         });
 
@@ -741,8 +769,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint and burn.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
             await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForBurn(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForBurn(rest[1], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0] and rest[1].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -781,11 +813,13 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('burn finalize blocked if not whitelisted', async function() {
             await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], false, { from: admin1 });
             await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
         it('burn finalize blocked if blacklisted', async function() {
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
             await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
         });
 
@@ -853,8 +887,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint and burn.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
             await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForBurn(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForBurn(rest[1], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0] and rest[1].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -913,9 +951,11 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('cannot revoke if user is not whitelisted for mint', async function() {
             await this.interactor.whitelistForMint(rest[0], false, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin1 });
             await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.rejected;
 
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
             await this.interactor.revokeBurn(rest[0], 0, { from: admin1 }).should.be.fulfilled;
         });
 
@@ -970,8 +1010,12 @@ contract('OperationsInteractor Tests', function(accounts) {
             // rest[0] and rest[1] addresses are whitelisted for mint and burn.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
             await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForBurn(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForBurn(rest[1], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0] and rest[1].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -1043,9 +1087,11 @@ contract('OperationsInteractor Tests', function(accounts) {
 
         it('cannot revoke if user is not whitelisted for mint', async function() {
             await this.interactor.whitelistForMint(rest[1], false, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], false, { from: admin1 });
             await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.rejected;
 
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
             await this.interactor.userRevokeBurn(0, { from: rest[1] }).should.be.fulfilled;
         });
 
@@ -1136,6 +1182,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             // rest[0] is whitelisted for mint.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
@@ -1188,6 +1235,7 @@ contract('OperationsInteractor Tests', function(accounts) {
 
             // rest[0] is whitelisted for mint.
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
 
             // Mint 10000 tokens for rest[0].
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });

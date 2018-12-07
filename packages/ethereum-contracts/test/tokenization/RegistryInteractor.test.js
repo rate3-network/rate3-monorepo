@@ -65,6 +65,45 @@ contract('RegistryInteractor Tests', function(accounts) {
             await this.interactor.whitelistForMint(rest[0], true, { from: rest[0] }).should.be.rejected;
             await this.interactor.whitelistForMint(rest[0], true, { from: rest[1] }).should.be.rejected;
         });
+
+        it('multi-approval whitelist for mint', async function() {
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('cannot approve own whitelist for mint', async function() {
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot whitelist for mint if there is already pending', async function() {
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin1 }).should.be.rejected;
+            await this.interactor.whitelistForMint(rest[0], false, { from: admin1 }).should.be.rejected;
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 }).should.be.rejected;
+            await this.interactor.whitelistForMint(rest[0], false, { from: admin2 }).should.be.rejected;
+        });
+
+        it('matching status value required', async function() {
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin2 }).should.be.fulfilled;
+
+            // Should pass now, since previous whitelist event settled.
+            await this.interactor.whitelistForMint(rest[0], false, { from: admin2 }).should.be.fulfilled;
+
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForMint(rest[0], false, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('revoke whitelist for mint is idempotent', async function() {
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.revokeWhitelistForMint(rest[0], { from: admin2 }).should.be.fulfilled;
+            await this.interactor.revokeWhitelistForMint(rest[0], { from: admin2 }).should.be.fulfilled;
+            await this.interactor.revokeWhitelistForMint(rest[0], { from: admin1 }).should.be.fulfilled;
+        });
     });
 
     describe('Test - whitelist for burn', function() {
@@ -107,6 +146,45 @@ contract('RegistryInteractor Tests', function(accounts) {
         it('non-owner cannot whitelist for burn', async function() {
             await this.interactor.whitelistForBurn(rest[0], true, { from: rest[0] }).should.be.rejected;
             await this.interactor.whitelistForBurn(rest[0], true, { from: rest[1] }).should.be.rejected;
+        });
+
+        it('multi-approval whitelist for burn', async function() {
+            await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('cannot approve own whitelist for burn', async function() {
+            await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot whitelist for burn if there is already pending', async function() {
+            await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
+            await this.interactor.whitelistForBurn(rest[0], true, { from: admin1 }).should.be.rejected;
+            await this.interactor.whitelistForBurn(rest[0], false, { from: admin1 }).should.be.rejected;
+            await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 }).should.be.rejected;
+            await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 }).should.be.rejected;
+        });
+
+        it('matching status value required', async function() {
+            await this.interactor.whitelistForBurn(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], false, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin2 }).should.be.fulfilled;
+
+            // Should pass now, since previous whitelist event settled.
+            await this.interactor.whitelistForBurn(rest[0], false, { from: admin2 }).should.be.fulfilled;
+
+            await this.interactor.finalizeWhitelistForBurn(rest[0], false, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin1 }).should.be.rejected;
+            await this.interactor.finalizeWhitelistForBurn(rest[0], false, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('revoke whitelist for burn is idempotent', async function() {
+            await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
+            await this.interactor.revokeWhitelistForBurn(rest[0], { from: admin2 }).should.be.fulfilled;
+            await this.interactor.revokeWhitelistForBurn(rest[0], { from: admin2 }).should.be.fulfilled;
+            await this.interactor.revokeWhitelistForBurn(rest[0], { from: admin1 }).should.be.fulfilled;
         });
     });
 
@@ -152,14 +230,55 @@ contract('RegistryInteractor Tests', function(accounts) {
             await this.interactor.blacklist(rest[0], true, { from: rest[1] }).should.be.rejected;
         });
 
+        it('multi-approval blacklist', async function() {
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('cannot approve own whitelist for mint', async function() {
+            await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin2 }).should.be.rejected;
+        });
+
+        it('cannot whitelist for mint if there is already pending', async function() {
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.blacklist(rest[0], true, { from: admin1 }).should.be.rejected;
+            await this.interactor.blacklist(rest[0], false, { from: admin1 }).should.be.rejected;
+            await this.interactor.blacklist(rest[0], true, { from: admin2 }).should.be.rejected;
+            await this.interactor.blacklist(rest[0], false, { from: admin2 }).should.be.rejected;
+        });
+
+        it('matching status value required', async function() {
+            await this.interactor.blacklist(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeBlacklist(rest[0], false, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin2 }).should.be.fulfilled;
+
+            // Should pass now, since previous whitelist event settled.
+            await this.interactor.blacklist(rest[0], false, { from: admin2 }).should.be.fulfilled;
+
+            await this.interactor.finalizeBlacklist(rest[0], false, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin2 }).should.be.rejected;
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 }).should.be.rejected;
+            await this.interactor.finalizeBlacklist(rest[0], false, { from: admin1 }).should.be.fulfilled;
+        });
+
+        it('revoke whitelist for mint is idempotent', async function() {
+            await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.revokeBlacklist(rest[0], { from: admin2 }).should.be.fulfilled;
+            await this.interactor.revokeBlacklist(rest[0], { from: admin2 }).should.be.fulfilled;
+            await this.interactor.revokeBlacklist(rest[0], { from: admin1 }).should.be.fulfilled;
+        });
+
         it('blacklist stops mint process', async function() {
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
 
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 });
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 });
 
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
 
             // Already blocked by OperationsInteractor
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
@@ -169,18 +288,21 @@ contract('RegistryInteractor Tests', function(accounts) {
 
         it('blacklist stops burn process', async function() {
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
 
             await this.interactor.requestMint(new web3.BigNumber('20000e+18'), { from: rest[0] });
             await this.interactor.approveMint(rest[0], 0, { from: admin1 });
             await this.interactor.finalizeMint(rest[0], 0, { from: admin2 });
 
             await this.interactor.whitelistForBurn(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForBurn(rest[0], true, { from: admin1 });
 
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.approveBurn(rest[0], 0, { from: admin2 });
             await this.interactor.finalizeBurn(rest[0], 0, { from: admin1 });
 
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
 
             // Already blocked by OperationsInteractor
             await this.interactor.requestBurn(new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
@@ -191,6 +313,8 @@ contract('RegistryInteractor Tests', function(accounts) {
         it('blacklist stops transfer process', async function() {
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
 
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] });
@@ -211,12 +335,16 @@ contract('RegistryInteractor Tests', function(accounts) {
 
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
             await this.interactor.blacklist(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeBlacklist(rest[1], true, { from: admin1 });
 
             this.token.transfer(rest[1], new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
             this.token.transfer(rest[0], new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.rejected;
 
             await this.interactor.blacklist(rest[0], false, { from: admin2 });
             await this.interactor.blacklist(rest[1], false, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], false, { from: admin1 });
+            await this.interactor.finalizeBlacklist(rest[1], false, { from: admin1 });
 
             this.token.transfer(rest[1], new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.fulfilled;
             this.token.transfer(rest[0], new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
@@ -225,6 +353,8 @@ contract('RegistryInteractor Tests', function(accounts) {
         it('blacklist stop transferFrom process', async function() {
             await this.interactor.whitelistForMint(rest[0], true, { from: admin2 });
             await this.interactor.whitelistForMint(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeWhitelistForMint(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeWhitelistForMint(rest[1], true, { from: admin1 });
 
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[0] });
             await this.interactor.requestMint(new web3.BigNumber('10000e+18'), { from: rest[1] });
@@ -251,12 +381,16 @@ contract('RegistryInteractor Tests', function(accounts) {
 
             await this.interactor.blacklist(rest[0], true, { from: admin2 });
             await this.interactor.blacklist(rest[1], true, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], true, { from: admin1 });
+            await this.interactor.finalizeBlacklist(rest[1], true, { from: admin1 });
 
             this.token.transferFrom(rest[0], rest[1], new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.rejected;
             this.token.transferFrom(rest[1], rest[0], new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.rejected;
 
             await this.interactor.blacklist(rest[0], false, { from: admin2 });
             await this.interactor.blacklist(rest[1], false, { from: admin2 });
+            await this.interactor.finalizeBlacklist(rest[0], false, { from: admin1 });
+            await this.interactor.finalizeBlacklist(rest[1], false, { from: admin1 });
 
             this.token.transferFrom(rest[0], rest[1], new web3.BigNumber('10000e+18'), { from: rest[0] }).should.be.fulfilled;
             this.token.transferFrom(rest[1], rest[0], new web3.BigNumber('10000e+18'), { from: rest[1] }).should.be.fulfilled;
