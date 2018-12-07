@@ -61,6 +61,24 @@ function AssetContracts(stellar, Stellar) {
         return { tx };
     }
 
+    const burnAsset = async ({
+        asset,
+        amount,
+        issuingAccountPublicKey,
+        burnerAccountPublicKey,
+    }) => {      
+        const burner = await stellar.loadAccount(burnerAccountPublicKey);
+        const tx = new Stellar.TransactionBuilder(burner)
+            .addOperation(Stellar.Operation.payment({
+                asset: asset,
+                destination: issuingAccountPublicKey,
+                amount: String(amount),
+            }))
+            .build();
+
+        return { tx };
+    }
+
     const setAssetAuthorization = async ({
         asset,
         issuingAccountPublicKey,
