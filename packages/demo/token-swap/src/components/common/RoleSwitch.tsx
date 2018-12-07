@@ -1,16 +1,16 @@
 import * as React from 'react';
 import Switch from '@material-ui/core/Switch';
 import RoleContext from './RoleContext';
-import { ROLES } from 'src/constants/general';
+import { ROLES } from '../../constants/general';
 import { connect } from 'react-redux';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { Dispatch } from 'redux';
-import * as actions from 'src/actions/network';
-import { IAction } from 'src/utils/general';
+import * as actions from '../../actions/network';
+import { IAction } from '../../utils/general';
 import { withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
-import { SIDEBAR } from 'src/constants/colors';
+import { SIDEBAR } from '../../constants/colors';
 import classnames from 'classnames';
 
 const styles = createStyles({
@@ -36,6 +36,7 @@ const styles = createStyles({
     fontSize: '1.1rem',
     width: '12rem',
     // minWidth: '12rem',
+    marginTop: '1em',
     height: '1.8rem',
     borderRadius: '0.3rem',
     display: 'flex',

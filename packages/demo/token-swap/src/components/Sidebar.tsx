@@ -8,12 +8,12 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import RoleSwitch from './common/RoleSwitch';
 import RoleContext from './common/RoleContext';
 import classnames from 'classnames';
-import { ROLES } from 'src/constants/general';
-import { SIDEBAR } from 'src/constants/colors';
+import { ROLES } from '../constants/general';
+import { SIDEBAR } from '../constants/colors';
 import IssuerSidebarMenu from './issuer/IssuerSidebarMenu';
 import UserSidebarMenu from './user/UserSidebarMenu';
-import EthBalanceCard from 'src/components/common/EthBalanceCard';
-import StellarBalanceCard from 'src/components/common/StellarBalanceCard';
+import EthBalanceCard from '../components/common/EthBalanceCard';
+import StellarBalanceCard from '../components/common/StellarBalanceCard';
 
 const styles = createStyles({
   root: {

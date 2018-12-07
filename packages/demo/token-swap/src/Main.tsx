@@ -10,9 +10,9 @@ import { Dispatch } from 'redux';
 import Counter from './components/Counter';
 import Sidebar from './components/Sidebar';
 import RoleContext from './components/common/RoleContext';
-import * as actions from 'src/actions/network';
-import { IStoreState } from 'src/reducers/network';
-import { IAction } from 'src/utils/general';
+import * as actions from './actions/network';
+import { IStoreState } from './reducers/network';
+import { IAction } from './utils/general';
 
 import NotFound from './pages/NotFound';
 import HomePage from './pages/HomePage';
@@ -32,8 +32,7 @@ const routes: IRoute[] = [
   { path: '/direct-swap', component: DirectSwapPage },
 ];
 
-type IProps = IStoreState;
-interface IPropsFinal extends IProps {
+interface IProps {
   initUser: () => void;
   initIssuer: () => void;
 }
@@ -42,7 +41,7 @@ const OnboardingSuspended = () => {
     <React.Suspense fallback={<div>Loading...</div>}><OnboardingPage /></React.Suspense>
   );
 };
-class Main extends React.Component<IPropsFinal> {
+class Main extends React.Component<IProps> {
   setThemeBound: () => void;
   state: IState;
   setTheme;

@@ -4,7 +4,7 @@ import * as Contract from 'web3/eth/contract';
 const Web3 = require('web3');
 import contractJson from '../contract.json';
 import { USER_ETH_ADDR, ISSUER_ETH_ADDR } from '../constants/defaults';
-import { IAction } from 'src/utils/general';
+import { IAction } from '../utils/general';
 
 export interface IStoreState {
   contract: Contract.default | null;

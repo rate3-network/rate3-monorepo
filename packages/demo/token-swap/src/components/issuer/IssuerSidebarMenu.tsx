@@ -3,7 +3,7 @@ import { withRouter } from 'react-router';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { SIDEBAR } from 'src/constants/colors';
+import { SIDEBAR } from '../../constants/colors';
 import classnames from 'classnames';
 
 const styles = createStyles({
@@ -50,7 +50,6 @@ class IssuerSidebarMenu extends React.Component<IFinalProps> {
     };
     return (
       <div className={classes.items}>
-        active: {activePath}
         {renderTab('/issuer/home', 'HOME')}
       </div>
     );

@@ -4,21 +4,21 @@ import { Dispatch } from 'redux';
 import * as actions from '../actions/counter';
 import { IStoreState } from '../reducers/counter';
 import { Button } from '@material-ui/core';
-import { IAction } from 'src/utils/general';
+import { IAction } from '../utils/general';
 
 export interface IProps {
   value: number;
   content: string;
-  error: object;
   isFetching: boolean;
-  onIncrement?: () => void;
-  onDecrement?: () => void;
-  requestContent: (x: number | null) => void;
+  error: object | undefined;
+  onIncrement: () => void;
+  onDecrement: () => void;
+  requestContent: (x: number) => void;
 }
 
 class Counter extends React.PureComponent<IProps> {
   state = {
-    id: null,
+    id: 0,
   };
   render() {
     const {

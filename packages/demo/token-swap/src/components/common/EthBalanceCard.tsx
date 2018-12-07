@@ -1,24 +1,24 @@
 import * as React from 'react';
 import RoleContext from './RoleContext';
-import * as W3 from 'src/web3Exported';
-import { ROLES } from 'src/constants/general';
+import * as W3 from '../../web3Exported';
+import { ROLES } from '../../constants/general';
 import { Paper } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import * as actions from 'src/actions/network';
-import { IAction, toEth } from 'src/utils/general';
-import { IStoreState } from 'src/reducers/network';
+import * as actions from '../../actions/network';
+import { IAction, toEth } from '../../utils/general';
+import { IStoreState } from '../../reducers/network';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { SIDEBAR } from 'src/constants/colors';
-import { Ethereum_logoSvg as Ether } from 'src/assets/Ethereum_logo.svg';
+import { SIDEBAR } from '../../constants/colors';
+import Ether from '../../assets/Ethereum_logo.svg'; // tslint:disable-line:import-name
 
 const styles = createStyles({
   root: {
     display: 'grid',
     gridTemplateColumns: '2fr 1fr',
 
-    margin: '1em 2em',
+    margin: '3em 2em 1em 2em',
     padding: '1em',
     backgroundColor: SIDEBAR.ETH_CARD.bg,
     color: SIDEBAR.ETH_CARD.textColor,
@@ -29,9 +29,7 @@ const styles = createStyles({
   },
 });
 interface IProps {
-  web3Obj: W3.default;
-  initUser: () => void;
-  initIssuer: () => void;
+  web3Obj: W3.default | null;
   userEthBalance: string;
   issuerEthBalance: string;
 }
@@ -48,8 +46,7 @@ class EthBalanceCard extends React.PureComponent<IProps & WithStyles<typeof styl
           {format(balance)}
           <span className={classes.unit}> ETH</span>
         </span>
-        {/* <Ether /> */}
-        {/* <img src={Ether} alt="Ether"/> */}
+        <img src={Ether} alt="Ether"/>
       </div>
     );
   }
@@ -64,8 +61,6 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
 }
 export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   return {
-    initUser: () => dispatch(actions.initUser()),
-    initIssuer: () => dispatch(actions.initIssuer()),
   };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(EthBalanceCard));

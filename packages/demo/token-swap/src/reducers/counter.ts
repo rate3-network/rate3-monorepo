@@ -1,6 +1,6 @@
 import { counterActions } from '../actions/counter';
 
-import { IAction } from 'src/utils/general';
+import { IAction } from '../utils/general';
 
 export interface ITitle {
   userId: number;
