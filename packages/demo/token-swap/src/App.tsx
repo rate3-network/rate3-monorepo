@@ -15,9 +15,8 @@ export interface IProps {
 }
 
 class Hello extends React.PureComponent<IProps> {
-  componentDidMount() {
-    console.log(this.props);
-  }
+  // componentDidMount() {
+  // }
   render() {
     const { name, enthusiasmLevel = 1, onIncrement, onDecrement } = this.props;
     if (enthusiasmLevel <= 0) {

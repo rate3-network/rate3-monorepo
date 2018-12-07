@@ -1,8 +1,13 @@
 import { counterActions } from '../actions/counter';
 
-import { CONTENT_FAILED, DECREMENT, ITitle, INCREMENT, INCREMENT_ASYNC, RECEIVE_CONTENT,
-  REQUEST_CONTENT, SET_CONTENT } from '../constants/counter';
 import { IAction } from 'src/utils/general';
+
+export interface ITitle {
+  userId: number;
+  id: number;
+  title: string;
+  compldeted: boolean;
+}
 
 export interface IStoreState {
   value: number;
@@ -24,7 +29,6 @@ export const initialState = {
 export function counter(
   state: IStoreState = initialState,
   action: IAction): IStoreState {
-  console.log(action);
   switch (action.type) {
     case counterActions.INCREMENT:
       console.log(state.value);

@@ -1,0 +1,2 @@
+export const USER_ETH_ADDR = 'a4a55b49cb1235c35ba0c41fe75e0dfcc477bb2f404d7b2751832e6204ccb5d8';
+export const ISSUER_ETH_ADDR = '47c72fc7d93370d616671db27cd48f0277157cc3cc80dbe3cf55ec4b617368c6';

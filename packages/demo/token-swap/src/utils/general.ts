@@ -22,3 +22,13 @@ export interface IAction<Payload = any, Meta = any> {
 export const createAction = <Payload, Meta>(type: string) =>
   (payload?: Payload, meta?: Meta): IAction<Payload, Meta> =>
     ({ type, payload, meta });
+
+export const toEth = (web3Instance, input) => {
+  console.log(input);
+  if (isNaN(parseFloat(input))) {
+    return input;
+  }
+  const converted = web3Instance.utils.fromWei(input);
+  const parsed = parseFloat(converted.toString());
+  return parsed.toPrecision(5);
+};

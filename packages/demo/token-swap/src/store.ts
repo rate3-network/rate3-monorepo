@@ -3,12 +3,12 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga'; // tslint:disable-line:import-name
 
 import { counter } from './reducers/counter';
-import { enthusiasm } from './reducers/test';
+import { network } from './reducers/network';
 
-import rootSaga from './sagas/test'; // tslint:disable-line:import-name
+import rootSaga from './sagas/rootSaga'; // tslint:disable-line:import-name
 const rootReducer = combineReducers({
+  network,
   counter,
-  test: enthusiasm,
 });
 const sagaMiddleware = createSagaMiddleware();
 

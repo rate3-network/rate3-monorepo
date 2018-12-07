@@ -18,13 +18,11 @@ type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
 class HomePage extends React.Component<IProps> {
   static contextType = RoleContext;
   componentDidMount() {
-    console.log(this.props.match);
-    console.log(this.props.match.url);
     // console.log(this.props.history.location);
   }
 
   render() {
-    console.log('context', this.context);
+    console.log('home page rendered');
     const { classes, match } = this.props;
     // const { role } = match.params;
     return (

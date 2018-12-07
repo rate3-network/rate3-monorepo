@@ -58,9 +58,8 @@ const styles = createStyles({
 // }
 type IProps = WithStyles<typeof styles> & RouteComponentProps<{ pageNumber: string }>;
 class OnboardingPage extends React.PureComponent<IProps> {
-  componentDidMount() {
-    console.log(this.props.match.params);
-  }
+  // componentDidMount() {
+  // }
 
   render() {
     const { classes, match } = this.props;

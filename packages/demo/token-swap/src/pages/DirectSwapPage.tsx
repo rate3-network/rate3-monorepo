@@ -15,14 +15,13 @@ const routes = [
   { path: '/counter', component: Counter },
 ];
 type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
-class DirectSwapPage extends React.PureComponent<IProps> {
+class DirectSwapPage extends React.Component<IProps> {
   componentDidMount() {
-    console.log(this.props.match);
-    console.log(this.props.match.url);
     // console.log(this.props.history.location);
   }
 
   render() {
+    console.log('swap page rendered');
     const { classes, match } = this.props;
     const { role } = match.params;
     return (

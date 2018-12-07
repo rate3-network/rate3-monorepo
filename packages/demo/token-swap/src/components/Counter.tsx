@@ -46,7 +46,6 @@ class Counter extends React.PureComponent<IProps> {
         type="text"
         onChange={
           (e) => {
-            console.log(e.target.value);
             this.setState({ id: e.target.value });
           }
         }

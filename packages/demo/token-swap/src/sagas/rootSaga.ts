@@ -1,6 +1,6 @@
-import { delay } from 'redux-saga';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { counterActions } from '../actions/counter';
+import network from './network';
 
 function* fetchApi(action: any) {
   try {
@@ -27,6 +27,7 @@ function* watchRequest() {
 export default function* rootSaga() {
   yield all([
     // fetchApi(),
+    network(),
     watchRequest(),
   ]);
 }

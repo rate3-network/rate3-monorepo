@@ -6,6 +6,14 @@ import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { Hidden, Drawer } from '@material-ui/core';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import RoleSwitch from './common/RoleSwitch';
+import RoleContext from './common/RoleContext';
+import classnames from 'classnames';
+import { ROLES } from 'src/constants/general';
+import { SIDEBAR } from 'src/constants/colors';
+import IssuerSidebarMenu from './issuer/IssuerSidebarMenu';
+import UserSidebarMenu from './user/UserSidebarMenu';
+import EthBalanceCard from 'src/components/common/EthBalanceCard';
+import StellarBalanceCard from 'src/components/common/StellarBalanceCard';
 
 const styles = createStyles({
   root: {
@@ -13,23 +21,38 @@ const styles = createStyles({
   },
   drawerPaper: {
     position: 'fixed',
-    width: '20vw',
+    width: '25vw',
     height: '100vh',
     transition: 'background-color 0.1s ease',
-    // borderRight: '0',
-    // backgroundColor: SIDEBAR.bg,
-    // color: COLORS.white,
-    // paddingTop: '2em',
+  },
+  issuerPaper: {
+    backgroundColor: SIDEBAR.background,
+  },
+  topRow: {
+    display: 'flex',
+    justifyContent: 'space-around',
+    padding: '1em 0',
+    color: SIDEBAR.userTextColor,
+  },
+  topRowIssuer: {
+    color: SIDEBAR.issuerTextColor,
   },
 });
+
 type IFinalProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
 class Sidebar extends React.Component<IFinalProps> {
+  static contextType = RoleContext;
   state = {
     shouldRenderSidebar: true,
+    unlisten: () => {}, // tslint:disable-line:no-empty
+    activePath: this.props.history.location.pathname,
   };
 
   componentDidMount() {
-    this.props.history.listen((location) => {
+    const unlisten = this.props.history.listen((location) => {
+      this.setState({
+        activePath: this.props.history.location.pathname,
+      });
       if (location.pathname.includes('onboarding')) {
         this.setState({
           shouldRenderSidebar: false,
@@ -40,6 +63,15 @@ class Sidebar extends React.Component<IFinalProps> {
         });
       }
     });
+    this.setState({ unlisten });
+    const { pathname } = this.props.history.location;
+    console.log(pathname);
+    if (sessionStorage.getItem('role') === 'issuer' && !pathname.includes('issuer')) {
+      this.props.history.push('/issuer/home');
+    }
+    if (sessionStorage.getItem('role') === 'user' && !pathname.includes('user')) {
+      this.props.history.push('/user/home');
+    }
   }
 
   render() {
@@ -47,26 +79,44 @@ class Sidebar extends React.Component<IFinalProps> {
     const { params } = match;
     const { role } = params;
     const shouldRenderSidebarFromHistory = !history.location.pathname.includes('onboarding');
+    const renderSidebarItems = () => {
+      return (
+        <>
+          <div
+            className={
+              classnames(
+                classes.topRow,
+                { [classes.topRowIssuer]: this.context.theme === ROLES.ISSUER }
+              )
+            }
+          >
+            <span>Rate3</span>
+            <span>Toekn Swap Demo</span>
+          </div>
+          <RoleSwitch />
+          <EthBalanceCard />
+          <StellarBalanceCard />
+          {this.context.theme === ROLES.ISSUER &&
+          <IssuerSidebarMenu activePath={this.state.activePath} />}
+          {this.context.theme === ROLES.USER &&
+             <UserSidebarMenu activePath={this.state.activePath} />}
+        </>
+      );
+    };
     if (this.state.shouldRenderSidebar && shouldRenderSidebarFromHistory) {
       return (
         <>
           <Hidden mdUp>
             <Drawer
               variant="temporary"
-              // open={sidebarStore.getIsMobileSidebarOpen()}
-              // onClose={sidebarStore.toggleIsMobileSidebarOpen.bind(sidebarStore)}
               classes={{
-                paper: classes.drawerPaper,
-              }}
-              ModalProps={{
-                keepMounted: true, // Better open performance on mobile.
-              }}
+                paper: classnames(
+                  classes.drawerPaper,
+                  { [classes.issuerPaper]: this.context.theme === ROLES.ISSUER }
+                  )}}
+              ModalProps={{  keepMounted: true }}
             >
-              <RoleSwitch />
-              <Link to={`/${role}/home`}>Home</Link>
-              <Link to={`/${role}/direct-swap`}>Direct</Link>
-              <Link to={`/${role}/p2p-swap`}>Peer-to-Peer</Link>
-              {/* <Link to={`/${role}/settings`}></Link> */}
+              {renderSidebarItems()}
             </Drawer>
           </Hidden>
           <Hidden smDown>
@@ -75,17 +125,13 @@ class Sidebar extends React.Component<IFinalProps> {
               anchor="left"
               open
               classes={{
-                paper: classes.drawerPaper,
-              }}
-              ModalProps={{
-                keepMounted: true, // Better open performance on mobile.
-              }}
+                paper: classnames(
+                  classes.drawerPaper,
+                  { [classes.issuerPaper]: this.context.theme === ROLES.ISSUER }
+                  )}}
+              ModalProps={{ keepMounted: true }}
             >
-              <RoleSwitch />
-              <Link to={`/${role}/home`}>Home</Link>
-              <Link to={`/${role}/direct-swap`}>Direct</Link>
-              <Link to={`/${role}/p2p-swap`}>Peer-to-Peer</Link>
-              {/* <Link to={`/${role}/settings`}></Link> */}
+              {renderSidebarItems()}
             </Drawer>
           </Hidden>
         </>
@@ -98,4 +144,4 @@ export interface IStates {
   counter: IStoreState;
 }
 
-export default withStyles(styles)(withRouter(Sidebar));
+export default withRouter(withStyles(styles)(Sidebar));
