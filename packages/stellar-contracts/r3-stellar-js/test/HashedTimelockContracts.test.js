@@ -49,7 +49,7 @@ describe("HashedTimelockContracts integration tests", function () {
             // Create a trustline with issuing account with distributor account
             let { tx: tx1 } = await this.r3.assetContracts.trustIssuingAccount({
                 asset: this.asset,
-                distributionAccountPublicKey: this.distributorKeypair.publicKey(),
+                accountPublicKey: this.distributorKeypair.publicKey(),
             });
 
             // Sign transaction with distributor
@@ -75,7 +75,7 @@ describe("HashedTimelockContracts integration tests", function () {
             // Create a trustline with issuing account with alice account
             let { tx: tx3 } = await this.r3.assetContracts.trustIssuingAccount({
                 asset: this.asset,
-                distributionAccountPublicKey: this.aliceKeypair.publicKey(),
+                accountPublicKey: this.aliceKeypair.publicKey(),
             });
 
             // Sign transaction with alice
@@ -86,7 +86,7 @@ describe("HashedTimelockContracts integration tests", function () {
             // Create a trustline with issuing account with bob account
             let { tx: tx4 } = await this.r3.assetContracts.trustIssuingAccount({
                 asset: this.asset,
-                distributionAccountPublicKey: this.bobKeypair.publicKey(),
+                accountPublicKey: this.bobKeypair.publicKey(),
             });
 
             // Sign transaction with distributor
