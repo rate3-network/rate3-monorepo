@@ -5,7 +5,7 @@ function AssetContracts(stellar, Stellar) {
     const trustIssuingAccount = async ({
         asset,
         amount,
-        distributionAccountPublicKey,
+        accountPublicKey,
     }) => {
         const opts = {
             asset: asset,
@@ -15,8 +15,8 @@ function AssetContracts(stellar, Stellar) {
             opts.limit = amount;
         }
 
-        const distributor = await stellar.loadAccount(distributionAccountPublicKey);
-        const tx = new Stellar.TransactionBuilder(distributor)
+        const account = await stellar.loadAccount(accountPublicKey);
+        const tx = new Stellar.TransactionBuilder(account)
             // The `changeTrust` operation creates (or alters) a trustline.
             // The `limit` parameter below is optional.
             .addOperation(Stellar.Operation.changeTrust(opts))
@@ -79,20 +79,45 @@ function AssetContracts(stellar, Stellar) {
         return { tx };
     }
 
-    const convertAsset = async ({
+    const convertAssetToEthereumToken = async ({
         asset,
         amount,
         issuingAccountPublicKey,
-        burnerAccountPublicKey,
+        converterAccountPublicKey,
+        ethereumAccountAddress,
     }) => {      
-        const burner = await stellar.loadAccount(burnerAccountPublicKey);
-        const tx = new Stellar.TransactionBuilder(burner)
+        const converter = await stellar.loadAccount(converterAccountPublicKey);
+        // <eth: + ethereum address>.
+        const rMemoHash = '00000000006500740068003A' + ethereumAccountAddress;
+        const tx = new Stellar.TransactionBuilder(converter)
             .addOperation(Stellar.Operation.payment({
                 asset: asset,
                 destination: issuingAccountPublicKey,
                 amount: String(amount),
             }))
-            .addMemo()
+            .addMemo(Stellar.Memo.hash(rMemoHash))
+            .build();
+
+        return { tx };
+    }
+
+    const convertEthereumTokenToAsset = async ({
+        asset,
+        amount,
+        distributionAccountPublicKey,
+        converterAccountPublicKey,
+        ethereumAccountAddress,
+    }) => {      
+        const distributor = await stellar.loadAccount(distributionAccountPublicKey);
+        // <eth: + ethereum address>.
+        const rMemoHash = '00000000006500740068003A' + ethereumAccountAddress;
+        const tx = new Stellar.TransactionBuilder(distributor)
+            .addOperation(Stellar.Operation.payment({
+                asset: asset,
+                destination: converterAccountPublicKey,
+                amount: String(amount),
+            }))
+            .addMemo(Stellar.Memo.hash(rMemoHash))
             .build();
 
         return { tx };
@@ -125,6 +150,9 @@ function AssetContracts(stellar, Stellar) {
         trustIssuingAccount,
         mintAsset,
         distributeAsset,
+        burnAsset,
+        convertAssetToEthereumToken,
+        convertEthereumTokenToAsset,
         setAssetAuthorization,
     };
 }
