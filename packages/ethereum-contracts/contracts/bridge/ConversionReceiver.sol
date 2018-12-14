@@ -25,14 +25,15 @@ contract ConversionReceiver is Claimable {
     event ConversionRequested(uint256 indexID, address indexed ethAddress, bytes32 stellarAddress, uint256 amount);
     event ConversionRejected(uint256 indexID, address indexed ethAddress, bytes32 stellarAddress, uint256 amount);
     event ConversionAccepted(uint256 indexID, address indexed ethAddress, bytes32 stellarAddress, uint256 amount);
+    event ConversionUnlocked(address indexed ethAddress, bytes32 stellarAddress, uint256 amount);
 
     modifier onlyInvalidConversions(uint256 _index) {
-        require(conversions[_index].state == States.INVALID, "Conversion should be invalid.");
+        require(conversions[_index].state == States.INVALID, "Conversion should be invalid");
         _;
     }
 
     modifier onlyOpenConversions(uint256 _index) {
-        require(conversions[_index].state == States.OPEN, "Conversion should be open.");
+        require(conversions[_index].state == States.OPEN, "Conversion should be open");
         _;
     }
 
@@ -48,8 +49,8 @@ contract ConversionReceiver is Claimable {
     {   
         uint256 index = conversions.length;
 
-        require(_amount <= token.allowance(msg.sender, address(this)), "Allowance should be set.");
-        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed.");
+        require(_amount <= token.allowance(msg.sender, address(this)), "Allowance should be set");
+        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");
 
         conversions.push(Conversion(msg.sender, _stellarAddress, _amount, States.OPEN));
 
@@ -58,7 +59,7 @@ contract ConversionReceiver is Claimable {
 
     function rejectConversion(uint256 _index) public onlyOwner onlyOpenConversions(_index) {
         Conversion storage conversion = conversions[_index];
-        require(token.transfer(conversion.ethAddress, conversion.amount), "Token transfer failed.");
+        require(token.transfer(conversion.ethAddress, conversion.amount), "Token transfer failed");
         conversion.state = States.REJECTED;
 
         emit ConversionRejected(_index, conversion.ethAddress, conversion.stellarAddress, conversion.amount);
@@ -70,4 +71,17 @@ contract ConversionReceiver is Claimable {
         emit ConversionAccepted(_index, conversion.ethAddress, conversion.stellarAddress, conversion.amount);
     }
 
+    function unlockConversion(
+        uint256 _amount,
+        address _ethAddress,
+        bytes32 _stellarAddress
+    )
+        public
+        onlyOwner
+    {
+        require(_amount <= token.balanceOf(address(this)), "Not enough tokens to convert");
+        require(token.transfer(_ethAddress, _amount), "Token transfer failed");
+
+        emit ConversionUnlocked(_ethAddress, _stellarAddress, _amount);
+    }
 }

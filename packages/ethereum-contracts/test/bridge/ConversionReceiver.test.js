@@ -41,7 +41,7 @@ contract('ConversionReceiver Tests', function(accounts) {
 
     beforeEach(async function () {
         // Initialize token.
-        this.token = await ModularToken.new({ from: owner });
+        this.token = await ModularToken.new('BaseToken', 'BT', 18, { from: owner });
 
         this.balanceModule = await BalanceModule.new({ from: owner });
         this.allowanceModule = await AllowanceModule.new({ from: owner });
@@ -77,7 +77,7 @@ contract('ConversionReceiver Tests', function(accounts) {
 
         it('request conversion event emitted', async function() {
             await this.token.approve(this.receiver.address, new web3.BigNumber('1500e+18'), { from: alice });
-            let { logs } = await this.receiver.requestConversion(new web3.BigNumber('400e+18'), STELLAR_ADDRESS, { from: alice });
+            let { logs } = await this.receiver.requestConversion(new web3.BigNumber('400e+18'), addrToBytes32(STELLAR_ADDRESS), { from: alice });
 
             const event1 = expectEvent.inLogs(logs, 'ConversionRequested', {
                 ethAddress: alice,
@@ -203,6 +203,39 @@ contract('ConversionReceiver Tests', function(accounts) {
             });
         })
 
-        // Tokens should be burnt on accept (?)
+        // Tokens should be burnt on accept (?) TODO(waihon): TBD
+    });
+
+    describe('Test - unlock conversion', function() {
+        beforeEach(async function () {
+            await this.token.approve(this.receiver.address, new web3.BigNumber('1500e+18'), { from: alice });
+            await this.receiver.requestConversion(new web3.BigNumber('500e+18'), addrToBytes32(STELLAR_ADDRESS), { from: alice });
+            await this.receiver.requestConversion(new web3.BigNumber('500e+18'), addrToBytes32(STELLAR_ADDRESS), { from: alice });
+            await this.receiver.acceptConversion(0, { from: owner });
+            await this.receiver.acceptConversion(1, { from: owner });
+        });
+
+        it('only owner can unlock conversion', async function() {
+            await assertRevert(this.receiver.unlockConversion(new web3.BigNumber('500e+18'), alice, addrToBytes32(STELLAR_ADDRESS), { from: alice }));
+            await this.receiver.unlockConversion(new web3.BigNumber('500e+18'), alice, addrToBytes32(STELLAR_ADDRESS), { from: owner });
+        });
+
+        it('only can unlock total converted tokens', async function() {
+            // Unlock 1000 tokens that were already converted before
+            await this.receiver.unlockConversion(new web3.BigNumber('700e+18'), alice, addrToBytes32(STELLAR_ADDRESS), { from: owner });
+            await this.receiver.unlockConversion(new web3.BigNumber('300e+18'), alice, addrToBytes32(STELLAR_ADDRESS), { from: owner });
+
+            // Only 1000 converted tokens in total, exceeded
+            await assertRevert(this.receiver.unlockConversion(new web3.BigNumber('500e+18'), alice, addrToBytes32(STELLAR_ADDRESS), { from: owner }));
+        });
+
+        it('unlock conversion event emitted', async function() {
+            let { logs } =  await this.receiver.unlockConversion(new web3.BigNumber('300e+18'), alice, addrToBytes32(STELLAR_ADDRESS), { from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'ConversionUnlocked', {
+                ethAddress: alice,
+                stellarAddress: addrToBytes32(STELLAR_ADDRESS),
+            });
+        })
     });
 });

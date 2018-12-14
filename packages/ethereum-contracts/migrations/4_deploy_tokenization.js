@@ -4,6 +4,7 @@ const BaseToken = artifacts.require('./tokenization/BaseToken.sol');
 const BalanceModule = artifacts.require('./tokenization/modules/BalanceModule.sol');
 const AllowanceModule = artifacts.require('./tokenization/modules/AllowanceModule.sol');
 const RegistryModule = artifacts.require('./tokenization/modules/RegistryModule.sol');
+const ConversionReceiver = artifacts.require('./bridge/ConversionReceiver.sol');
 
 module.exports = function deployment(deployer, network, accounts) {
     // eslint-disable-next-line no-unused-vars
@@ -67,6 +68,9 @@ module.exports = function deployment(deployer, network, accounts) {
 
         console.log('\nSetting admin 2 (finalize) of BaseInteractor');
         await interactor.setSecondAdmin(admin2, { from: owner });
+
+        console.log('\nSetting converter of BaseToken');
+        const converter = await ConversionReceiver.new(token.address, { from: owner });
           
         console.log('\n===== Addresses ======');
         console.log('AllowanceModule:', allowance.address);
@@ -75,6 +79,7 @@ module.exports = function deployment(deployer, network, accounts) {
         console.log('Token:          ', token.address);
         console.log('Proxy:          ', proxy.address);
         console.log('Interactor:     ', interactor.address);
+        console.log('Converter:      ', converter.address);
         console.log('======================\n');
 
         console.log('\n===== Admins ======');
