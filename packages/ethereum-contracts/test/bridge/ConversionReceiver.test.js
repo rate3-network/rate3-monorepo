@@ -231,7 +231,6 @@ contract('ConversionReceiver Tests', function(accounts) {
 
         it('unlock conversion event emitted', async function() {
             let { logs } =  await this.receiver.unlockConversion(new web3.BigNumber('300e+18'), alice, addrToBytes32(STELLAR_ADDRESS), { from: owner });
-            console.log(logs);
 
             const event1 = expectEvent.inLogs(logs, 'ConversionUnlocked', {
                 ethAddress: alice,
