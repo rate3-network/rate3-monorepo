@@ -73,14 +73,14 @@ contract ConversionReceiver is Claimable {
 
     function unlockConversion(
         uint256 _amount,
-        bytes32 _stellarAddress,
-        address _ethAddress
+        address _ethAddress,
+        bytes32 _stellarAddress
     )
         public
         onlyOwner
     {
         require(_amount <= token.balanceOf(address(this)), "Not enough tokens to convert");
-        require(token.transferFrom(address(this), _ethAddress, _amount), "Token transfer failed");
+        require(token.transfer(_ethAddress, _amount), "Token transfer failed");
 
         emit ConversionUnlocked(_ethAddress, _stellarAddress, _amount);
     }
