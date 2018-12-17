@@ -36,7 +36,6 @@ interface IProps {
 class EthBalanceCard extends React.PureComponent<IProps & WithStyles<typeof styles>> {
   static contextType = RoleContext;
   render() {
-    console.log(Ether);
     const { userEthBalance, issuerEthBalance, classes } = this.props;
     const format = input => toEth(this.props.web3Obj, input);
     const balance = this.context.theme === ROLES.USER ? userEthBalance : issuerEthBalance;

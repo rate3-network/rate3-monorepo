@@ -19,6 +19,7 @@
     "jsx-no-lambda": false,
     "object-literal-sort-keys": false,
     "member-access": [true, "no-public"],
+    "prefer-array-literal": [true, { "allow-type-parameters": true }],
     "trailing-comma": [
       true,
       {

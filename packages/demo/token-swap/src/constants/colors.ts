@@ -1,3 +1,12 @@
+export const COLORS = {
+  black: '#203542',
+  grey: '#5E636D',
+};
+export const PAGE = {
+  user: {
+    bg: '#F7FBFF',
+  },
+};
 export const BLUE_BUTTON = {
   color: 'white',
   bg: '#4FB6F6',

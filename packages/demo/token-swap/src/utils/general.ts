@@ -24,7 +24,6 @@ export const createAction = <Payload, Meta>(type: string) =>
     ({ type, payload, meta });
 
 export const toEth = (web3Instance, input) => {
-  console.log(input);
   if (isNaN(parseFloat(input))) {
     return input;
   }

@@ -1,22 +1,24 @@
-
 import * as React from 'react';
-import { withRouter } from 'react-router';
-import { Hidden } from '@material-ui/core';
-import { ROLES } from './constants/general';
-import { HashRouter, Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { HashRouter, Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { Dispatch } from 'redux';
 
+import { Hidden } from '@material-ui/core';
+
+import * as actions from './actions/network';
+import RoleContext from './components/common/RoleContext';
 import Counter from './components/Counter';
 import Sidebar from './components/Sidebar';
-import RoleContext from './components/common/RoleContext';
-import * as actions from './actions/network';
+import { ROLES } from './constants/general';
+import DirectSwapPage from './pages/DirectSwapPage';
+import IssuerHomePage from './pages/IssuerHomePage';
+import NotFound from './pages/NotFound';
+import UserHomePage from './pages/UserHomePage';
 import { IStoreState } from './reducers/network';
 import { IAction } from './utils/general';
 
-import NotFound from './pages/NotFound';
-import HomePage from './pages/HomePage';
-import DirectSwapPage from './pages/DirectSwapPage';
+
 const OnboardingPage = React.lazy(() => import('./pages/OnboardingPage'));
 
 interface IRoute {
@@ -25,10 +27,9 @@ interface IRoute {
 }
 const routes: IRoute[] = [
   { path: '/counter', component: Counter },
-  { path: '/user/home', component: HomePage },
-  { path: '/issuer/home', component: HomePage },
+  { path: '/user/home', component: UserHomePage },
+  { path: '/issuer/home', component: IssuerHomePage },
   { path: '/user/direct-swap', component: DirectSwapPage },
-  { path: '/home', component: HomePage },
   { path: '/direct-swap', component: DirectSwapPage },
 ];
 
@@ -83,6 +84,7 @@ class Main extends React.Component<IProps> {
       <HashRouter basename="/">
         <RoleContext.Provider value={this.state} >
             <Sidebar />
+
             <Hidden mdUp>
               <div style={{ width: '100vw', marginLeft: 0 }}>
                 <Routes />

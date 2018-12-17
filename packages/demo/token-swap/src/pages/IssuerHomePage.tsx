@@ -15,7 +15,7 @@ const styles = createStyles({
 });
 
 type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
-class HomePage extends React.Component<IProps> {
+class IssuerHomePage extends React.Component<IProps> {
   static contextType = RoleContext;
   componentDidMount() {
     // console.log(this.props.history.location);
@@ -40,4 +40,4 @@ class HomePage extends React.Component<IProps> {
   }
 }
 
-export default withRouter(withStyles(styles)(HomePage));
+export default withRouter(withStyles(styles)(IssuerHomePage));
