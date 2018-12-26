@@ -34,7 +34,8 @@ const styles = createStyles({
     color: 'white',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    paddingLeft: '3em',
     justifyContent: 'center',
     width: '50%',
     backgroundColor: SIDEBAR.STELLAR_CARD.bg,
@@ -47,6 +48,7 @@ const styles = createStyles({
   inputRoot: {
     backgroundColor: 'white',
     borderRadius: '1em',
+    paddingLeft: '1em',
     height: '1.5em',
     width: '16em',
   },
@@ -74,7 +76,7 @@ enum Direction {
 interface IState {
   page: number;
   direction: Direction;
-  ethCardValue: number;
+  cardValue: string;
 }
 type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
 class DirectSwapPage extends React.Component<IProps> {
@@ -88,21 +90,29 @@ class DirectSwapPage extends React.Component<IProps> {
     this.state = {
       page: 1,
       direction: Direction.E2S,
-      ethCardValue: 0,
+      cardValue: '',
     };
   }
   componentDidMount() {
     // console.log(this.props.history.location);
   }
-  onEthCardValueChange = (e) => {
-    const parsed = parseFloat(e.target.value);
+  validateAmount = () => {
+    const parsed = parseFloat(this.state.cardValue);
     console.log(parsed);
-    if (isNaN(parsed)) {
+    if (isNaN(parsed) || parsed < 0) {
       console.log('skipped');
-      return;
+      this.setState({
+        cardValue: '',
+      });
+    } else {
+      this.setState({
+        cardValue: parsed,
+      });
     }
+  }
+  onCardValueChange = (e) => {
     this.setState({
-      ethCardValue: parsed,
+      cardValue: e.target.value,
     });
   }
   toggleDirection = () => {
@@ -131,16 +141,17 @@ class DirectSwapPage extends React.Component<IProps> {
         <span className={classes.input}>Enter Amount</span>
         <Input
           id="uncontrolled"
-          value={this.state.ethCardValue}
-          onChange={this.onEthCardValueChange}
+          value={this.state.cardValue}
+          onChange={this.onCardValueChange}
+          onBlur={this.validateAmount}
           // onKeyPress={(e) => { if (e.key === 'Enter') props.onKeyPress(); }}
-          placeholder="Email Amount"
+          placeholder="Enter Amount"
           className={classes.input}
           classes={{ input: classes.inputRoot }}
           disableUnderline
           fullWidth
         />
-        <span className={classes.amount}>{this.state.ethCardValue}</span>
+        <span className={classes.amount}>{this.state.cardValue}</span>
         <img src={ethSGDRSvg} alt="eth sgdr"/>
         <span className={classes.sgdr}> SGDR</span>
         <span className={classes.chainName}>Ethereum Blackchain</span>
@@ -151,10 +162,26 @@ class DirectSwapPage extends React.Component<IProps> {
     const { classes } = this.props;
     return (
       <div className={classes.stellarCard}>
-        <span>You  {this.state.direction === Direction.E2S ? 'Withdraw' : 'Deposit'}</span>
-        <span>Enter Amount</span>
-        <span>0.00000 SGDR</span>
-        <span>Stellar Blackchain</span>
+        <span className={classes.title}>
+          You {this.state.direction === Direction.E2S ? 'Withdraw' : 'Deposit'}
+        </span>
+        <span className={classes.input}>Enter Amount</span>
+        <Input
+          id="uncontrolled"
+          value={this.state.cardValue}
+          onChange={this.onCardValueChange}
+          onBlur={this.validateAmount}
+          // onKeyPress={(e) => { if (e.key === 'Enter') props.onKeyPress(); }}
+          placeholder="Enter Amount"
+          className={classes.input}
+          classes={{ input: classes.inputRoot }}
+          disableUnderline
+          fullWidth
+        />
+        <span className={classes.amount}>{this.state.cardValue}</span>
+        <img src={stellarSGDRSvg} alt="stellar sgdr"/>
+        <span className={classes.sgdr}> SGDR</span>
+        <span className={classes.chainName}>Stellar Blackchain</span>
       </div>
     );
   }
@@ -189,10 +216,20 @@ class DirectSwapPage extends React.Component<IProps> {
           </PageBox>
         }
         {this.state.page === 2 &&
-          <SwapRequestPage direction={this.state.direction} goBack={this.goBack} next={this.next} />
+          <SwapRequestPage
+            value={this.state.cardValue}
+            direction={this.state.direction}
+            goBack={this.goBack}
+            next={this.next}
+          />
         }
         {this.state.page === 3 &&
-          <SwapDetailsPage direction={this.state.direction} goBack={this.goBack} next={this.next} />
+          <SwapDetailsPage
+            value={this.state.cardValue}
+            direction={this.state.direction}
+            goBack={this.goBack}
+            next={this.next}
+          />
         }
 
       </React.Fragment>

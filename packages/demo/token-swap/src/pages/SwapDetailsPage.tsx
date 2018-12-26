@@ -28,6 +28,7 @@ enum Direction {
 }
 interface IProps {
   direction: Direction;
+  value: string;
   goBack(): void;
   next(): void;
 }

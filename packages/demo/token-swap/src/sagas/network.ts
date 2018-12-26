@@ -1,6 +1,7 @@
 import { all, call, put, takeLatest, select } from 'redux-saga/effects';
 import { networkActions } from '../actions/network';
 import axios from 'axios';
+import extrapolateFromXdr from '../utils/extrapolateFromXdr';
 
 const HORIZON = 'https://horizon-testnet.stellar.org';
 
@@ -56,6 +57,7 @@ function* setR3(action: any) {
   // await yield.get(`${HORIZON_TESTNET_URL}/friendbot?addr=${this.issuerKeypair.publicKey()}`);
   try {
     const r3 = yield constructR3();
+    (window as any).r3 = r3;
     yield put({ type: networkActions.SET_R3_INSTANCE, payload: { r3 } });
   } catch (e) {
     console.error(e);
@@ -105,35 +107,35 @@ function* getUserStellarBalance(action: any) {
 
 
     // Create a trustline with issuing account with user account.
-    // const temp3 = yield r3.assetContracts.trustIssuingAccount({
-    //   asset,
-    //   accountPublicKey: STELLAR_USER,
-    // });
-    // const trustUserFromIssuerTx = temp3.tx;
-    // // Sign transaction with user.
-    // trustUserFromIssuerTx.sign(userKeypair);
+    const temp3 = yield r3.assetContracts.trustIssuingAccount({
+      asset,
+      accountPublicKey: STELLAR_USER,
+    });
+    const trustUserFromIssuerTx = temp3.tx;
+    // Sign transaction with user.
+    trustUserFromIssuerTx.sign(userKeypair);
 
-    // const trustUserFromIssuerRes = yield r3.stellar.submitTransaction(trustUserFromIssuerTx);
-    // console.log('able to create trustline between issuer and user', trustUserFromIssuerRes);
+    const trustUserFromIssuerRes = yield r3.stellar.submitTransaction(trustUserFromIssuerTx);
+    console.log('able to create trustline between issuer and user', trustUserFromIssuerRes);
 
     // ---------------------------------------------------------------------
     // ---------------------------------------------------------------------
     // ---------------------------------------------------------------------
     // Distribute asset to user.
 
-    // const temp2 = yield r3.assetContracts.distributeAsset({
-    //   asset,
-    //   amount: 1000,
-    //   distributionAccountPublicKey: STELLAR_DISTRIBUTOR,
-    //   destinationAccountPublicKey: STELLAR_USER,
-    // });
-    // const distributeTx = temp2.tx;
+    const temp2 = yield r3.assetContracts.distributeAsset({
+      asset,
+      amount: 1000,
+      distributionAccountPublicKey: STELLAR_DISTRIBUTOR,
+      destinationAccountPublicKey: STELLAR_USER,
+    });
+    const distributeTx = temp2.tx;
 
-    // // Sign transaction with distributor.
-    // distributeTx.sign(distributorKeyPair);
+    // Sign transaction with distributor.
+    distributeTx.sign(distributorKeyPair);
 
-    // const distributeRes = yield r3.stellar.submitTransaction(distributeTx);
-    // console.log('able to distribute asset to user', distributeRes);
+    const distributeRes = yield r3.stellar.submitTransaction(distributeTx);
+    console.log('able to distribute asset to user', distributeRes);
 
     // ---------------------------------------------------------------------
     // ---------------------------------------------------------------------
@@ -144,14 +146,17 @@ function* getUserStellarBalance(action: any) {
       amount: 500,
       issuingAccountPublicKey: STELLAR_ISSUER,
       converterAccountPublicKey: STELLAR_USER,
-      ethereumAccountAddress: 'C66914bEFCC3f09687311A701cfdD70D2BF495A5',
+      ethereumAccountAddress: 'C819277Bd0198753949c0b946da5d8a0cAfd1cB8',
     });
     const convertToEthTx = temp4.tx;
     // Sign transaction with user.
     convertToEthTx.sign(userKeypair);
-
+    console.log('line 152');
     const convertToEthRes = yield r3.stellar.submitTransaction(convertToEthTx);
     console.log('able to convert asset to ethereum token from user', convertToEthRes);
+    const rawTree = extrapolateFromXdr(convertToEthRes.envelope_xdr, 'TransactionEnvelope');
+    const memoContent = rawTree[0].nodes[0].nodes[4].nodes[0].value.value;
+    console.log('memo', memoContent);
   } catch (e) {
     console.error(e);
   }

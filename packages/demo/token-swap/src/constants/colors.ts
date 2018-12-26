@@ -1,6 +1,7 @@
 export const COLORS = {
   black: '#203542',
   grey: '#5E636D',
+  lighGrey: '#ABABAB',
 };
 export const PAGE = {
   user: {

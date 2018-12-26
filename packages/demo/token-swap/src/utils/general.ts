@@ -29,5 +29,5 @@ export const toEth = (web3Instance, input) => {
   }
   const converted = web3Instance.utils.fromWei(input);
   const parsed = parseFloat(converted.toString());
-  return parsed.toPrecision(5);
+  return parsed.toFixed(2);
 };

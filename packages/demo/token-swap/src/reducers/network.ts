@@ -3,7 +3,7 @@ import * as W3 from '../web3Exported';
 import * as Contract from 'web3/eth/contract';
 const Web3 = require('web3');
 import contractJson from '../contract.json';
-import { USER_ETH_ADDR, ISSUER_ETH_ADDR } from '../constants/defaults';
+import { USER_ETH_PRIV, ISSUER_ETH_PRIV } from '../constants/defaults';
 import { IAction } from '../utils/general';
 import { ROLES } from '../constants/general';
 // import * as Stellar from 'stellar-sdk';
@@ -18,6 +18,8 @@ export interface IStoreState {
   userEthBalance: string;
   issuerEthBalance: string;
   userStellarBalance: string;
+  userStellarSgdrBalance: string;
+  issuerStellarBalance: string;
 }
 
 export const initialState = {
@@ -29,22 +31,25 @@ export const initialState = {
   userEthBalance: 'loading...',
   issuerEthBalance: 'loading...',
   userStellarBalance: 'loading...',
+  userStellarSgdrBalance: 'loading...',
+  issuerStellarBalance: 'loading...',
 };
-const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
+// const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
+const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
 
 export function network(state: IStoreState = initialState, action: IAction):
 IStoreState {
   switch (action.type) {
     case networkActions.INIT_USER:
       const web3User = new Web3(wsProvider);
-      web3User.eth.accounts.wallet.add(USER_ETH_ADDR);
+      web3User.eth.accounts.wallet.add(USER_ETH_PRIV);
       (window as any).web3 = web3User;
       console.log(state.r3Stellar);
       return { ...state, role: ROLES.USER, web3Obj: web3User };
 
     case networkActions.INIT_ISSUER:
       const web3Issuer = new Web3(wsProvider);
-      web3Issuer.eth.accounts.wallet.add(ISSUER_ETH_ADDR);
+      web3Issuer.eth.accounts.wallet.add(ISSUER_ETH_PRIV);
       (window as any).web3 = web3Issuer;
       return { ...state, role: ROLES.ISSUER, web3Obj: web3Issuer };
 
@@ -58,7 +63,11 @@ IStoreState {
       return { ...state, r3: action.payload.r3 };
 
     case networkActions.SET_USER_STELLAR_BALANCE:
-      return { ...state, userStellarBalance: action.payload.balance };
+      return {
+        ...state,
+        userStellarSgdrBalance: action.payload.balance[0].balance,
+        userStellarBalance: action.payload.balance[1].balance,
+      };
   }
   return state;
 }

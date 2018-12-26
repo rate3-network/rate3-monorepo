@@ -30,22 +30,22 @@ const styles = createStyles({
 });
 interface IProps {
   web3Obj: W3.default | null;
-  userEthBalance: string;
-  issuerEthBalance: string;
+  userStellarBalance: string;
+  issuerStellarBalance: string;
 }
 class StellarBalanceCard extends React.PureComponent<IProps & WithStyles<typeof styles>> {
   static contextType = RoleContext;
   render() {
-    const { userEthBalance, issuerEthBalance, classes } = this.props;
-    const format = input => toEth(this.props.web3Obj, input);
-    const balance = this.context.theme === ROLES.USER ? userEthBalance : issuerEthBalance;
+    const { userStellarBalance, issuerStellarBalance, classes } = this.props;
+    const format = input => parseFloat(input).toFixed(2);
+    const balance = this.context.theme === ROLES.USER ? userStellarBalance : issuerStellarBalance;
     return (
       <div className={classes.root}>
         <span>
           {format(balance)}
-          <span className={classes.unit}> ETH</span>
+          <span className={classes.unit}> XLM</span>
         </span>
-        <img src={Stellar} alt="Ether"/>
+        <img src={Stellar} alt="Stellar"/>
       </div>
     );
   }
@@ -54,8 +54,8 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
   return {
     contract: network.contract,
     web3Obj: network.web3Obj,
-    userEthBalance: network.userEthBalance,
-    issuerEthBalance: network.issuerEthBalance,
+    userStellarBalance: network.userStellarBalance,
+    issuerStellarBalance: network.issuerStellarBalance,
   };
 }
 export function mapDispatchToProps(dispatch: Dispatch<IAction>) {

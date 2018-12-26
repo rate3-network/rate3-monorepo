@@ -17,7 +17,7 @@ import NotFound from './pages/NotFound';
 import UserHomePage from './pages/UserHomePage';
 import { IStoreState } from './reducers/network';
 import { IAction } from './utils/general';
-
+import extrapolateFromXdr from './utils/extrapolateFromXdr';
 
 const OnboardingPage = React.lazy(() => import('./pages/OnboardingPage'));
 
@@ -60,6 +60,7 @@ class Main extends React.Component<IProps> {
     };
   }
   componentDidMount() {
+    (window as any).extrapolateFromXdr = extrapolateFromXdr;
     if (sessionStorage.getItem('role') === 'issuer') {
       this.props.initIssuer();
     } else {

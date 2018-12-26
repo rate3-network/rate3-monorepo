@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import Divider from '@material-ui/core/Divider';
 import { withRouter } from 'react-router';
 import PageBox from '../components/layout/PageBox';
 import PageTitle from '../components/layout/PageTitle';
@@ -8,9 +9,11 @@ import PageContainer from '../components/layout/PageContainer';
 import Box from '../components/layout/Box';
 import { RouteComponentProps } from 'react-router-dom';
 import BlueButton from '../components/common/BlueButton';
+import { COLORS } from '../constants/colors';
 
 const styles = createStyles({
   row: {
+    marginTop: '2em',
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
@@ -19,6 +22,15 @@ const styles = createStyles({
     textAlign: 'start',
     fontSize: '1rem',
   },
+  greyTitle: {
+    color: COLORS.lighGrey,
+  },
+  summaryBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 enum Direction {
   E2S, // eth to stellar
@@ -26,6 +38,7 @@ enum Direction {
 }
 interface IProps {
   direction: Direction;
+  value: string;
   goBack(): void;
   next(): void;
 }
@@ -63,6 +76,12 @@ class DirectSwapPage extends React.Component<IPropsFinal> {
       </div>
     );
   }
+  ethSummaryCard = () => {
+    return <div>{this.props.value}</div>;
+  }
+  stellarSummaryCard = () => {
+    return <div>{this.props.value}</div>;
+  }
   render() {
     console.log('swap page rendered');
     const { classes } = this.props;
@@ -72,20 +91,35 @@ class DirectSwapPage extends React.Component<IPropsFinal> {
           Swap Request
         </PageTitle>
         <PageContainer>
-          <span>choose a token: SGDR RTE</span>
+          <Box>
+            <span className={classes.greyTitle}>Your Deposit</span>
+            <span className={classes.greyTitle}>You Withdraw</span>
+            <Divider />
+            {this.ethSummaryCard()}
+            {this.stellarSummaryCard()}
+          </Box>
           <div className={classes.row}>
-            {/* {this.state.direction === Direction.E2S ?
-              <React.Fragment>
-                {this.renderEthCard()}
-                {this.renderStellarCard()}
-              </React.Fragment> :
-              <React.Fragment>
-                {this.renderStellarCard()}
-                {this.renderEthCard()}
-            </React.Fragment>
-            } */}
+            <Box>
+              <div className={classes.summaryBox}>
+                <span>Issuer Identity</span>
+                <span>Rate3</span>
+                <span>----</span>
+                <span>Smart Contract Address</span>
+                <span>0x1234...123d</span>
+              </div>
+            </Box>
+            <Box>
+              <div className={classes.summaryBox}>
+                <span>Ethereum Transaction Fee</span>
+                <span>0.0051 ETH</span>
+                <span>----</span>
+                <span>Stellar Transaction Fee</span>
+                <span>0.001 XLM</span>
+              </div>
+            </Box>
           </div>
-          <BlueButton handleClick={this.props.next}>Next</BlueButton>
+          <BlueButton handleClick={this.props.goBack}>Back</BlueButton>
+          <BlueButton handleClick={this.props.next}>Send Request</BlueButton>
         </PageContainer>
       </PageBox>
     );
