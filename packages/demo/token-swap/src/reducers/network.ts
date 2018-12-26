@@ -1,8 +1,10 @@
+// tslint:disable:import-name
 import { networkActions } from '../actions/network';
 import * as W3 from '../web3Exported';
 import * as Contract from 'web3/eth/contract';
 const Web3 = require('web3');
-import contractJson from '../contract.json';
+const ConversionReceiverAbi = require('../constants/ConversionReceiverJson.json').abi;
+const Erc20Abi = require('../constants/ERC20.json').abi;
 import { USER_ETH_PRIV, ISSUER_ETH_PRIV } from '../constants/defaults';
 import { IAction } from '../utils/general';
 import { ROLES } from '../constants/general';
@@ -14,6 +16,7 @@ export interface IStoreState {
   r3: typeof r3Stellar | null;
   role: ROLES | null;
   contract: Contract.default | null;
+  tokenContract: Contract.default | null;
   web3Obj: W3.default | null;
   userEthBalance: string;
   issuerEthBalance: string;
@@ -27,6 +30,7 @@ export const initialState = {
   r3: null,
   role: null,
   contract: null,
+  tokenContract: null,
   web3Obj: null,
   userEthBalance: 'loading...',
   issuerEthBalance: 'loading...',
@@ -44,14 +48,40 @@ IStoreState {
       const web3User = new Web3(wsProvider);
       web3User.eth.accounts.wallet.add(USER_ETH_PRIV);
       (window as any).web3 = web3User;
-      console.log(state.r3Stellar);
-      return { ...state, role: ROLES.USER, web3Obj: web3User };
+      const contractUser  = new web3User.eth.Contract(
+        ConversionReceiverAbi,
+        '0x2b180f99b1f78fab7f796bcabbadca24ea25435b'
+      );
+      const tokenContractUser  = new web3User.eth.Contract(
+        Erc20Abi,
+        '0x80d1c9153b037e7a68406d75cbc40f40f7bf7aa2'
+      );
+      (window as any).ConversionReceiver = contractUser;
+      (window as any).tokenContract = tokenContractUser;
+      return { ...state, role: ROLES.USER, contract: contractUser,
+        tokenContract: tokenContractUser, web3Obj: web3User };
 
     case networkActions.INIT_ISSUER:
       const web3Issuer = new Web3(wsProvider);
       web3Issuer.eth.accounts.wallet.add(ISSUER_ETH_PRIV);
       (window as any).web3 = web3Issuer;
-      return { ...state, role: ROLES.ISSUER, web3Obj: web3Issuer };
+      const contract  = new web3Issuer.eth.Contract(
+        ConversionReceiverAbi,
+        '0x2b180f99b1f78fab7f796bcabbadca24ea25435b'
+      );
+      const tokenContract  = new web3Issuer.eth.Contract(
+        Erc20Abi,
+        '0x80d1c9153b037e7a68406d75cbc40f40f7bf7aa2'
+      );
+      (window as any).ConversionReceiver = contract;
+      (window as any).tokenContract = tokenContract;
+      return {
+        ...state,
+        contract,
+        tokenContract,
+        role: ROLES.ISSUER,
+        web3Obj: web3Issuer,
+      };
 
     case networkActions.SET_USER_ETH_BALANCE:
       return { ...state, userEthBalance: action.payload.balance };

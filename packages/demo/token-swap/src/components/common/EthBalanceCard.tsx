@@ -45,7 +45,7 @@ class EthBalanceCard extends React.PureComponent<IProps & WithStyles<typeof styl
           {format(balance)}
           <span className={classes.unit}> ETH</span>
         </span>
-        <img src={Ether} alt="Ether"/>
+        <img draggable={false} src={Ether} alt="Ether"/>
       </div>
     );
   }

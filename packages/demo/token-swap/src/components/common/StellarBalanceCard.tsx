@@ -45,7 +45,7 @@ class StellarBalanceCard extends React.PureComponent<IProps & WithStyles<typeof 
           {format(balance)}
           <span className={classes.unit}> XLM</span>
         </span>
-        <img src={Stellar} alt="Stellar"/>
+        <img draggable={false} src={Stellar} alt="Stellar"/>
       </div>
     );
   }

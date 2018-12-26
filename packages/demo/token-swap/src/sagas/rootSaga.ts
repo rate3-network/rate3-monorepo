@@ -1,6 +1,7 @@
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { counterActions } from '../actions/counter';
 import network from './network';
+import user from './user';
 
 function* fetchApi(action: any) {
   try {
@@ -29,5 +30,6 @@ export default function* rootSaga() {
     // fetchApi(),
     network(),
     watchRequest(),
+    user(),
   ]);
 }

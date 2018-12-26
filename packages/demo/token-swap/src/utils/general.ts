@@ -31,3 +31,16 @@ export const toEth = (web3Instance, input) => {
   const parsed = parseFloat(converted.toString());
   return parsed.toFixed(2);
 };
+export const base64toHEX = (base64) => {
+
+  const raw = atob(base64);
+
+  let HEX = '';
+
+  for (let i = 0; i < raw.length; i += 1) {
+    const _hex = raw.charCodeAt(i).toString(16);
+    HEX += (_hex.length === 2 ? _hex : `0${_hex}`);
+  }
+  return HEX.toUpperCase();
+};
+

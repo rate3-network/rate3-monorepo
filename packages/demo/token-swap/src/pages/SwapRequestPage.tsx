@@ -41,6 +41,8 @@ interface IProps {
   value: string;
   goBack(): void;
   next(): void;
+  requestS2E(): void;
+  requestE2S(): void;
 }
 type IPropsFinal = WithStyles<typeof styles> & RouteComponentProps<{ role: string }> & IProps;
 class DirectSwapPage extends React.Component<IPropsFinal> {
@@ -84,7 +86,7 @@ class DirectSwapPage extends React.Component<IPropsFinal> {
   }
   render() {
     console.log('swap page rendered');
-    const { classes } = this.props;
+    const { classes, value, direction, requestE2S, requestS2E } = this.props;
     return (
       <PageBox>
         <PageTitle withBackButton={true} backName="Direct" backAction={this.props.goBack}>
@@ -103,7 +105,6 @@ class DirectSwapPage extends React.Component<IPropsFinal> {
               <div className={classes.summaryBox}>
                 <span>Issuer Identity</span>
                 <span>Rate3</span>
-                <span>----</span>
                 <span>Smart Contract Address</span>
                 <span>0x1234...123d</span>
               </div>
@@ -111,7 +112,7 @@ class DirectSwapPage extends React.Component<IPropsFinal> {
             <Box>
               <div className={classes.summaryBox}>
                 <span>Ethereum Transaction Fee</span>
-                <span>0.0051 ETH</span>
+                <span>0.001 ETH</span>
                 <span>----</span>
                 <span>Stellar Transaction Fee</span>
                 <span>0.001 XLM</span>
@@ -119,7 +120,11 @@ class DirectSwapPage extends React.Component<IPropsFinal> {
             </Box>
           </div>
           <BlueButton handleClick={this.props.goBack}>Back</BlueButton>
-          <BlueButton handleClick={this.props.next}>Send Request</BlueButton>
+          <BlueButton
+            handleClick={direction === Direction.E2S ? requestE2S : requestS2E}
+          >
+            Send Request
+          </BlueButton>
         </PageContainer>
       </PageBox>
     );

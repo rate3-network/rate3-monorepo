@@ -1,8 +1,12 @@
 import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import { connect } from 'react-redux';
 import Input from '@material-ui/core/Input';
+import { IAction } from '../utils/general';
+import { Dispatch } from 'redux';
 import { withRouter } from 'react-router';
+import * as actions from '../actions/user';
 import PageBox from '../components/layout/PageBox';
 import PageTitle from '../components/layout/PageTitle';
 import PageContainer from '../components/layout/PageContainer';
@@ -78,7 +82,11 @@ interface IState {
   direction: Direction;
   cardValue: string;
 }
-type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
+interface IReduxProps {
+  requestE2S: (value: string) => void;
+  requestS2E: (value: string) => void;
+}
+type IProps = IReduxProps & WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
 class DirectSwapPage extends React.Component<IProps> {
   state: IState;
   constructor(props: any) {
@@ -152,7 +160,7 @@ class DirectSwapPage extends React.Component<IProps> {
           fullWidth
         />
         <span className={classes.amount}>{this.state.cardValue}</span>
-        <img src={ethSGDRSvg} alt="eth sgdr"/>
+        <img draggable={false} src={ethSGDRSvg} alt="eth sgdr"/>
         <span className={classes.sgdr}> SGDR</span>
         <span className={classes.chainName}>Ethereum Blackchain</span>
       </div>
@@ -179,7 +187,7 @@ class DirectSwapPage extends React.Component<IProps> {
           fullWidth
         />
         <span className={classes.amount}>{this.state.cardValue}</span>
-        <img src={stellarSGDRSvg} alt="stellar sgdr"/>
+        <img draggable={false} src={stellarSGDRSvg} alt="stellar sgdr"/>
         <span className={classes.sgdr}> SGDR</span>
         <span className={classes.chainName}>Stellar Blackchain</span>
       </div>
@@ -221,6 +229,12 @@ class DirectSwapPage extends React.Component<IProps> {
             direction={this.state.direction}
             goBack={this.goBack}
             next={this.next}
+            requestE2S={() => {
+              this.props.requestE2S(this.state.cardValue);
+            }}
+            requestS2E={() => {
+              this.props.requestS2E(this.state.cardValue);
+            }}
           />
         }
         {this.state.page === 3 &&
@@ -236,5 +250,10 @@ class DirectSwapPage extends React.Component<IProps> {
     );
   }
 }
-
-export default withStyles(styles)(withRouter(DirectSwapPage));
+export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
+  return {
+    requestE2S: (x: string) => dispatch(actions.requestEthToStellar(x)),
+    requestS2E: (x: string) => dispatch(actions.requestStellarToEth(x)),
+  };
+}
+export default connect(null, mapDispatchToProps)(withStyles(styles)(withRouter(DirectSwapPage)));
