@@ -2,6 +2,7 @@ import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { counterActions } from '../actions/counter';
 import network from './network';
 import user from './user';
+import issuer from './issuer';
 
 function* fetchApi(action: any) {
   try {
@@ -27,9 +28,9 @@ function* watchRequest() {
 // single entry point to start all Sagas at once
 export default function* rootSaga() {
   yield all([
-    // fetchApi(),
     network(),
     watchRequest(),
     user(),
+    issuer(),
   ]);
 }

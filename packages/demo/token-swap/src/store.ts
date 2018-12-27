@@ -5,12 +5,14 @@ import createSagaMiddleware from 'redux-saga'; // tslint:disable-line:import-nam
 import { counter } from './reducers/counter';
 import { network } from './reducers/network';
 import { user } from './reducers/user';
+import { issuer } from './reducers/issuer';
 
 import rootSaga from './sagas/rootSaga'; // tslint:disable-line:import-name
 const rootReducer = combineReducers({
   network,
   counter,
   user,
+  issuer,
 });
 const sagaMiddleware = createSagaMiddleware();
 
