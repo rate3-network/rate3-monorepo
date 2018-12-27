@@ -1,0 +1,62 @@
+{
+    "lang": "javascript",
+    "version": "1.0.0",
+    "abi": [
+        {},
+        {
+            "name": "name",
+            "args": []
+        },
+        {
+            "name": "symbol",
+            "args": []
+        },
+        {
+            "name": "issuer",
+            "args": []
+        },
+        {
+            "name": "deployed",
+            "args": []
+        },
+        {
+            "name": "balanceOf",
+            "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "totalSupply",
+            "args": []
+        },
+        {
+            "name": "issue",
+            "args": [
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "transfer",
+            "args": [
+                "string",
+                "string",
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "burn",
+            "args": [
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "can_update",
+            "args": [
+                "string"
+            ]
+        }
+    ]
+}
