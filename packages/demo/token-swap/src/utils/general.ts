@@ -44,3 +44,26 @@ export const base64toHEX = (base64) => {
   return HEX.toUpperCase();
 };
 
+export const hexToArrayBuffer = (input) => {
+  return new Uint8Array(input.match(/[\da-f]{2}/gi).map((h) => {
+    return parseInt(h, 16);
+  }));
+};
+
+// import { call } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
+
+export function* retryCall(action, delayTime, maxRetry) {
+  for (let i = 0; i < maxRetry; i += 1) {
+    try {
+      const order = yield action();
+      // console.log(order);
+      return order;
+    } catch (err) {
+      if (i < maxRetry - 1) {
+        yield delay(delayTime);
+      }
+    }
+  }
+  throw new Error('Max retries reached');
+}
