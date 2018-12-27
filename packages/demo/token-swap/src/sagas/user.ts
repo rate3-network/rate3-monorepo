@@ -105,8 +105,8 @@ function* requestS2E(action: IAction) {
     const distributorKeyPair = r3.Stellar.Keypair.fromSecret(STELLAR_DISTRIBUTOR_SECRET);
     const userKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_USER_SECRET);
 
-    yield mintAssetToDistributor(r3, asset, value, issuerKeypair);
-    yield distributeToUser(r3, asset, value, distributorKeyPair);
+    // yield mintAssetToDistributor(r3, asset, value, issuerKeypair);
+    // yield distributeToUser(r3, asset, value, distributorKeyPair);
     yield convertToEthereum(r3, asset, value, userKeypair);
 
   } catch (e) {

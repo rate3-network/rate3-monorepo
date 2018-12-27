@@ -8,7 +8,7 @@ import { IAction, truncateAddress } from '../../utils/general';
 import { IStoreState, IE2SRequest, IS2ERequest } from '../../reducers/issuer';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { SIDEBAR } from '../../constants/colors';
+import { SIDEBAR, COLORS } from '../../constants/colors';
 
 const styles = createStyles({
   root: {
@@ -24,18 +24,26 @@ const styles = createStyles({
   unit: {
     color: SIDEBAR.ETH_CARD.unitColor,
   },
+  approveText: {
+    color: COLORS.blue,
+  },
 });
+
 interface IProps {
   e2sApprovalList: null | IE2SRequest[];
   s2eApprovalList: null | IS2ERequest[];
-  fetchE2S: () => void;
-  fetchS2E: () => void;
+  fetchE2S(): void;
+  fetchS2E(): void;
+  next(): void;
+  goBack(): void;
+  setCurrentApproval(value: any): void;
 }
-class AwaitingApprovalList extends React.PureComponent<IProps & WithStyles<typeof styles>> {
+class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof styles>> {
   componentDidMount() {
     this.props.fetchE2S();
     this.props.fetchS2E();
   }
+
   render() {
     const { e2sApprovalList, s2eApprovalList, fetchE2S, fetchS2E, classes } = this.props;
     return (
@@ -47,6 +55,15 @@ class AwaitingApprovalList extends React.PureComponent<IProps & WithStyles<typeo
             <span>{request.type}</span>
             ----
             <span>{request.amount}</span>
+            <span
+              className={classes.approveText}
+              onClick={() => {
+                this.props.setCurrentApproval(request);
+                this.props.next();
+              }}
+            >
+              Approve >
+            </span>
           </div>
         ))}
         {s2eApprovalList && s2eApprovalList.map(request => (
@@ -56,6 +73,15 @@ class AwaitingApprovalList extends React.PureComponent<IProps & WithStyles<typeo
             <span>{request.type}</span>
             ----
             <span>{request.amount}</span>
+            <span
+              className={classes.approveText}
+              onClick={() => {
+                this.props.setCurrentApproval(request);
+                this.props.next();
+              }}
+            >
+            Approve >
+            </span>
           </div>
         ))}
       </>

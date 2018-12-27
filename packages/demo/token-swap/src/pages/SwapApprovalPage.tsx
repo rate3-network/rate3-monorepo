@@ -3,13 +3,18 @@ import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import Divider from '@material-ui/core/Divider';
 import { withRouter } from 'react-router';
+import { IStoreState, IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import PageBox from '../components/layout/PageBox';
+import * as actions from '../actions/issuer';
+import { Dispatch } from 'redux';
+import { IAction, truncateAddress } from '../utils/general';
 import PageTitle from '../components/layout/PageTitle';
 import PageContainer from '../components/layout/PageContainer';
 import Box from '../components/layout/Box';
 import { RouteComponentProps } from 'react-router-dom';
 import BlueButton from '../components/common/BlueButton';
 import { COLORS } from '../constants/colors';
+import { connect } from 'react-redux';
 
 const styles = createStyles({
   row: {
@@ -32,20 +37,15 @@ const styles = createStyles({
     justifyContent: 'center',
   },
 });
-enum Direction {
-  E2S, // eth to stellar
-  S2E, // stellar to eth
-}
+
 interface IProps {
-  direction: Direction;
-  value: string;
+  currentApproval: null | IE2SRequest | IS2ERequest;
   goBack(): void;
   next(): void;
-  requestS2E(): void;
-  requestE2S(): void;
+  approve(tx: IE2SRequest | IS2ERequest): void;
 }
 type IPropsFinal = WithStyles<typeof styles> & RouteComponentProps<{ role: string }> & IProps;
-class SwapRequestPage extends React.Component<IPropsFinal> {
+class SwapApprovalPage extends React.Component<IPropsFinal> {
   // state: IState;
   constructor(props: any) {
     super(props);
@@ -53,7 +53,7 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
     };
   }
   componentDidMount() {
-    // console.log(this.props.history.location);
+    console.log(this.props.currentApproval);
   }
 
   renderEthCard = () => {
@@ -79,27 +79,59 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
     );
   }
   ethSummaryCard = () => {
-    return <div>{this.props.value}</div>;
+    return (
+      <div>
+        ETH
+        {this.props.currentApproval && this.props.currentApproval.amount}
+      </div>
+    );
   }
   stellarSummaryCard = () => {
-    return <div>{this.props.value}</div>;
+    return(
+      <div>
+        Stellar
+        {this.props.currentApproval && this.props.currentApproval.amount}
+      </div>
+    );
   }
   render() {
     console.log('swap page rendered');
-    const { classes, value, direction, requestE2S, requestS2E } = this.props;
+    const { classes, currentApproval } = this.props;
     return (
       <PageBox>
-        <PageTitle withBackButton={true} backName="Direct" backAction={this.props.goBack}>
-          Swap Request
+        <PageTitle withBackButton={true} backName="HOME" backAction={this.props.goBack}>
+          SWAP APPROVAL
         </PageTitle>
         <PageContainer>
           <Box>
-            <span className={classes.greyTitle}>Your Deposit</span>
-            <span className={classes.greyTitle}>You Withdraw</span>
+            <span className={classes.greyTitle}>User Deposit</span>
+            <span className={classes.greyTitle}>User Withdraw</span>
             <Divider />
-            {this.ethSummaryCard()}
-            {this.stellarSummaryCard()}
+            {currentApproval &&
+              currentApproval.type === 'E2S' ?
+                <>
+                  {this.ethSummaryCard()}
+                  ->
+                  {this.stellarSummaryCard()}
+                </>
+              :
+                <>
+                  {this.stellarSummaryCard()}
+                  ->
+                  {this.ethSummaryCard()}
+                </>
+            }
           </Box>
+          <div className={classes.row}>
+            <Box>
+              <div className={classes.summaryBox}>
+                <span>Transaction Hash</span>
+                <span>{currentApproval && currentApproval.hash}</span>
+                <span>Date/Time of Request</span>
+                <span>placeholder</span>
+              </div>
+            </Box>
+          </div>
           <div className={classes.row}>
             <Box>
               <div className={classes.summaryBox}>
@@ -121,14 +153,27 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
           </div>
           <BlueButton handleClick={this.props.goBack}>Back</BlueButton>
           <BlueButton
-            handleClick={direction === Direction.E2S ? requestE2S : requestS2E}
+            handleClick={() => {
+              if (!currentApproval) {
+                console.error('cannot approve empty tx');
+              } else {
+                this.props.approve(currentApproval);
+              }
+            }}
           >
-            Send Request
+            Approve
           </BlueButton>
         </PageContainer>
       </PageBox>
     );
   }
 }
-
-export default withStyles(styles)(withRouter(SwapRequestPage));
+export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
+  return {
+    approve: (currentApproval: IE2SRequest | IS2ERequest) =>
+      dispatch(actions.approve(currentApproval)),
+  };
+}
+// export default withStyles(styles)(withRouter(SwapApprovalPage));
+export default connect(
+  null, mapDispatchToProps)(withStyles(styles)(SwapApprovalPage));
