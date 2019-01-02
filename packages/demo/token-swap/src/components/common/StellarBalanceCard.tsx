@@ -27,24 +27,43 @@ const styles = createStyles({
   unit: {
     color: SIDEBAR.STELLAR_CARD.unitColor,
   },
+  col: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 });
 interface IProps {
   web3Obj: W3.default | null;
   userStellarBalance: string;
   issuerStellarBalance: string;
+
+  userStellarSgdrBalance: string;
 }
 class StellarBalanceCard extends React.PureComponent<IProps & WithStyles<typeof styles>> {
   static contextType = RoleContext;
   render() {
-    const { userStellarBalance, issuerStellarBalance, classes } = this.props;
-    const format = input => parseFloat(input).toFixed(2);
+    const
+      { userStellarBalance,
+        userStellarSgdrBalance,
+        issuerStellarBalance,
+        classes,
+      } = this.props;
+    const format = input => parseFloat(input).toFixed(4);
     const balance = this.context.theme === ROLES.USER ? userStellarBalance : issuerStellarBalance;
     return (
       <div className={classes.root}>
-        <span>
-          {format(balance)}
-          <span className={classes.unit}> XLM</span>
-        </span>
+        <div className={classes.col}>
+          <span>
+            {format(balance)}
+            <span className={classes.unit}> XLM</span>
+          </span>
+          {this.context.theme === ROLES.USER &&
+            <span>
+              {format(userStellarSgdrBalance)}
+              <span className={classes.unit}> SGDR</span>
+            </span>
+          }
+        </div>
         <img draggable={false} src={Stellar} alt="Stellar"/>
       </div>
     );
@@ -55,6 +74,7 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
     contract: network.contract,
     web3Obj: network.web3Obj,
     userStellarBalance: network.userStellarBalance,
+    userStellarSgdrBalance: network.userStellarSgdrBalance,
     issuerStellarBalance: network.issuerStellarBalance,
   };
 }

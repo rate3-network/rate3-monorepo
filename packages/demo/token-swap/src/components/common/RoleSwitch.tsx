@@ -100,7 +100,7 @@ class RoleSwitch extends React.Component<IProps & WithStyles<typeof styles> & Ro
     } else {
       this.props.initIssuer();
     }
-    this.context.setTheme(
+    this.context.setRole(
       this.context.theme === ROLES.ISSUER ? ROLES.USER : ROLES.ISSUER);
     this.props.history.push(this.context.theme === ROLES.ISSUER
       ? '/user/home' : '/issuer/home');

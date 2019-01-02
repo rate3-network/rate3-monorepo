@@ -5,7 +5,7 @@ enum ROLES {
 }
 const RoleContext = React.createContext({
   theme: ROLES.USER,
-  setTheme: () => { console.log(); },
+  setRole: () => { console.log(); },
 });
 
 export default RoleContext;

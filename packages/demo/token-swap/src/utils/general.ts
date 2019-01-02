@@ -102,9 +102,12 @@ export const toTokenAmount = amount => (
     .toFixed()
 );
 
-export const fromTokenAmount = (amount, dp) => (
-  (new Decimal(amount))
-    .dividedBy((new Decimal(10)).toPower(18))
-    .toFixed(dp, Decimal.ROUND_DOWN)
-    .toString()
-);
+export const fromTokenAmount = (amount, dp) => {
+  if (amount === 'loading...') return amount;
+  return (
+    (new Decimal(amount))
+      .dividedBy((new Decimal(10)).toPower(18))
+      .toFixed(dp, Decimal.ROUND_DOWN)
+      .toString()
+  );
+};

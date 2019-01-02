@@ -43,20 +43,20 @@ const OnboardingSuspended = () => {
   );
 };
 class Main extends React.Component<IProps> {
-  setThemeBound: () => void;
+  setRoleBound: () => void;
   state: IState;
-  setTheme;
+  setRole;
   constructor(props) {
     super(props);
-    this.setTheme = (value: ROLES): void => {
+    this.setRole = (value: ROLES): void => {
       this.setState({
         theme: value,
       });
     };
-    this.setThemeBound = this.setTheme.bind(this);
+    this.setRoleBound = this.setRole.bind(this);
     this.state = {
       theme: sessionStorage.getItem('role') === 'issuer' ? ROLES.ISSUER : ROLES.USER,
-      setTheme: this.setThemeBound,
+      setRole: this.setRoleBound,
     };
   }
   componentDidMount() {
@@ -108,7 +108,7 @@ class Main extends React.Component<IProps> {
 }
 interface IState  {
   theme: ROLES;
-  setTheme: () => void;
+  setRole: () => void;
 }
 
 export function mapStateToProps({ network }: { network: IStoreState; }) {

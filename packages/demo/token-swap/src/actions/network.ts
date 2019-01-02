@@ -6,6 +6,7 @@ export const networkActions = keyMirror(
     INIT_ISSUER: null,
     SET_USER_ETH_BALANCE: null,
     SET_ISSUER_ETH_BALANCE: null,
+    SET_ISSUER_STELLAR_BALANCE: null,
     SET_R3_INSTANCE: null,
     SET_USER_STELLAR_BALANCE: null,
   },
@@ -19,6 +20,8 @@ export const setUserEthBalance =
   createAction<void, void>(networkActions.SET_USER_ETH_BALANCE);
 export const setIssuerEthBalance =
   createAction<void, void>(networkActions.SET_ISSUER_ETH_BALANCE);
+export const setIssuerStellarBalance =
+  createAction<void, void>(networkActions.SET_ISSUER_STELLAR_BALANCE);
 export const setR3Instance =
   createAction<void, void>(networkActions.SET_R3_INSTANCE);
 export const setUserStellarBalance =

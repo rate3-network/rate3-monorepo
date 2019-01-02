@@ -5,6 +5,7 @@ import axios from 'axios';
 import extrapolateFromXdr from '../utils/extrapolateFromXdr';
 import { base64toHEX } from '../utils/general';
 import localforage from 'localforage'; // tslint:disable-line:import-name
+import { ETH_USER } from '../constants/defaults';
 
 const HORIZON = 'https://horizon-testnet.stellar.org';
 
@@ -35,6 +36,22 @@ function* getBalance() {
     throw e;
   }
 }
+function* getTokenBalance() {
+  try {
+    const getWeb3 = state => state.network.web3Obj;
+    const web3 = yield select(getWeb3);
+
+    const getTokenContract = state => state.network.tokenContract;
+    const tokenContract = yield select(getTokenContract);
+
+    const address = ETH_USER;
+    const balance = yield tokenContract.methods.balanceOf(address).call();
+    console.log('sgdr balance', balance);
+    return balance;
+  } catch (e) {
+    throw e;
+  }
+}
 function* constructR3() {
   try {
     const getR3Stellar = state => state.network.r3Stellar;
@@ -50,7 +67,8 @@ function* constructR3() {
 function* getUserEthBalance(action: any) {
   try {
     const balance = yield getBalance();
-    yield put({ type: networkActions.SET_USER_ETH_BALANCE, payload: { balance } });
+    const sgdrBalance = yield getTokenBalance();
+    yield put({ type: networkActions.SET_USER_ETH_BALANCE, payload: { balance, sgdrBalance } });
   } catch (e) {
     console.error(e);
   }
@@ -74,69 +92,36 @@ function* setR3(action: any) {
     console.error(e);
   }
 }
+
 function* getUserStellarBalance(action: any) {
   try {
     const res = yield axios.get(`${HORIZON}/accounts/${STELLAR_USER}`);
     console.log(res.data.balances);
     const balance = res.data.balances;
     yield put({ type: networkActions.SET_USER_STELLAR_BALANCE, payload: { balance } });
-
-    // // test asset send flow
-    // const getR3 = state => state.network.r3;
-    // const r3 = yield select(getR3);
-    // const asset = new r3.Stellar.Asset('TestAsset', STELLAR_ISSUER);
-    // console.log('asset', asset);
-
-    // const { tx } = yield r3.assetContracts.trustIssuingAccount({
-    //   asset,
-    //   accountPublicKey: STELLAR_DISTRIBUTOR,
-    // });
-
-    // const distributorKeyPair = r3.Stellar.Keypair.fromSecret(STELLAR_DISTRIBUTOR_SECRET);
-    // tx.sign(distributorKeyPair);
-    // const txRes = yield r3.stellar.submitTransaction(tx);
-    // console.log('able to create trustline between issuer and distributor', txRes);
-
-    // // ---------------------------------------------------------------------
-    // const temp1 = yield r3.assetContracts.mintAsset({
-    //   asset,
-    //   amount: 1000,
-    //   issuingAccountPublicKey: STELLAR_ISSUER,
-    //   distributionAccountPublicKey: STELLAR_DISTRIBUTOR,
-    // });
-    // const txSend = temp1.tx;
-    // const issuerKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_ISSUER_SECRET);
-    // // Sign transaction with issuer.
-    // txSend.sign(issuerKeypair);
-
-    // const userKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_USER_SECRET);
-
-    // // ---------------------------------------------------------------------
-
-    // const resSend = yield r3.stellar.submitTransaction(txSend);
-    // console.log('able to issue asset to distributor', resSend);
-
-
-    // // Create a trustline with issuing account with user account.
-    // const temp3 = yield r3.assetContracts.trustIssuingAccount({
-    //   asset,
-    //   accountPublicKey: STELLAR_USER,
-    // });
-    // const trustUserFromIssuerTx = temp3.tx;
-    // // Sign transaction with user.
-    // trustUserFromIssuerTx.sign(userKeypair);
-
-    // const trustUserFromIssuerRes = yield r3.stellar.submitTransaction(trustUserFromIssuerTx);
-    // console.log('able to create trustline between issuer and user', trustUserFromIssuerRes);
   } catch (e) {
     console.error(e);
   }
 }
+
+function* getIssuerStellarBalance(action: any) {
+  try {
+    const res = yield axios.get(`${HORIZON}/accounts/${STELLAR_ISSUER}`);
+    console.log(res.data.balances);
+    const balance = res.data.balances;
+    yield put({ type: networkActions.SET_ISSUER_STELLAR_BALANCE, payload: { balance } });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 export default function* network() {
   yield takeLatest(networkActions.INIT_USER, getUserEthBalance);
   yield takeLatest(networkActions.INIT_USER, setR3);
   yield takeLatest(networkActions.SET_R3_INSTANCE, getUserStellarBalance);
+  yield takeLatest(networkActions.SET_R3_INSTANCE, getIssuerStellarBalance);
 
   yield takeLatest(networkActions.INIT_ISSUER, getIssuerEthBalance);
+  yield takeLatest(networkActions.INIT_ISSUER, setR3);
   // yield takeLatest(networkActions.INIT_ISSUER, setUp);
 }

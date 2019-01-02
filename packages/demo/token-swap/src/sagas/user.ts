@@ -101,8 +101,8 @@ function* requestS2E(action: IAction) {
     const r3 = yield select(getR3);
     const asset = new r3.Stellar.Asset('TestAsset', STELLAR_ISSUER);
     console.log('asset', asset);
-    const issuerKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_ISSUER_SECRET);
-    const distributorKeyPair = r3.Stellar.Keypair.fromSecret(STELLAR_DISTRIBUTOR_SECRET);
+    // const issuerKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_ISSUER_SECRET);
+    // const distributorKeyPair = r3.Stellar.Keypair.fromSecret(STELLAR_DISTRIBUTOR_SECRET);
     const userKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_USER_SECRET);
 
     // yield mintAssetToDistributor(r3, asset, value, issuerKeypair);

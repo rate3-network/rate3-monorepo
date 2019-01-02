@@ -19,10 +19,13 @@ export interface IStoreState {
   tokenContract: Contract.default | null;
   web3Obj: W3.default | null;
   userEthBalance: string;
+  userEthSgdrBalance: string;
   issuerEthBalance: string;
+  issuerEthSgdrBalance: string;
   userStellarBalance: string;
   userStellarSgdrBalance: string;
   issuerStellarBalance: string;
+  issuerStellarSgdrBalance: string;
 }
 
 export const initialState = {
@@ -37,6 +40,10 @@ export const initialState = {
   userStellarBalance: 'loading...',
   userStellarSgdrBalance: 'loading...',
   issuerStellarBalance: 'loading...',
+  issuerStellarSgdrBalance: 'loading...',
+  userEthSgdrBalance: 'loading...',
+  issuerEthSgdrBalance: 'loading...',
+
 };
 // const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
 const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
@@ -50,11 +57,11 @@ IStoreState {
       (window as any).web3 = web3User;
       const contractUser  = new web3User.eth.Contract(
         ConversionReceiverAbi,
-        '0x2b180f99b1f78fab7f796bcabbadca24ea25435b'
+        '0x121159a9a1731fec0690ac92a448795ac3f5d97d'
       );
       const tokenContractUser  = new web3User.eth.Contract(
         Erc20Abi,
-        '0x80d1c9153b037e7a68406d75cbc40f40f7bf7aa2'
+        '0x24c443b8d7da931c14f2f84e1b1d218187f11255'
       );
       (window as any).ConversionReceiver = contractUser;
       (window as any).tokenContract = tokenContractUser;
@@ -67,11 +74,11 @@ IStoreState {
       (window as any).web3 = web3Issuer;
       const contract  = new web3Issuer.eth.Contract(
         ConversionReceiverAbi,
-        '0x2b180f99b1f78fab7f796bcabbadca24ea25435b'
+        '0x121159a9a1731fec0690ac92a448795ac3f5d97d'
       );
       const tokenContract  = new web3Issuer.eth.Contract(
         Erc20Abi,
-        '0x80d1c9153b037e7a68406d75cbc40f40f7bf7aa2'
+        '0x24c443b8d7da931c14f2f84e1b1d218187f11255'
       );
       (window as any).ConversionReceiver = contract;
       (window as any).tokenContract = tokenContract;
@@ -84,7 +91,11 @@ IStoreState {
       };
 
     case networkActions.SET_USER_ETH_BALANCE:
-      return { ...state, userEthBalance: action.payload.balance };
+      return {
+        ...state,
+        userEthSgdrBalance: action.payload.sgdrBalance,
+        userEthBalance: action.payload.balance,
+      };
 
     case networkActions.SET_ISSUER_ETH_BALANCE:
       return { ...state, issuerEthBalance: action.payload.balance };
@@ -97,6 +108,11 @@ IStoreState {
         ...state,
         userStellarSgdrBalance: action.payload.balance[0].balance,
         userStellarBalance: action.payload.balance[1].balance,
+      };
+    case networkActions.SET_ISSUER_STELLAR_BALANCE:
+      return {
+        ...state,
+        issuerStellarBalance: action.payload.balance[0].balance,
       };
   }
   return state;

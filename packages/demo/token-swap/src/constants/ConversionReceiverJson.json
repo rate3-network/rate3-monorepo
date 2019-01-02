@@ -130,6 +130,11 @@
           "indexed": false,
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "requestTimestamp",
+          "type": "uint256"
         }
       ],
       "name": "ConversionRequested",
@@ -156,6 +161,11 @@
         {
           "indexed": false,
           "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "rejectTimestamp",
           "type": "uint256"
         }
       ],
@@ -184,6 +194,11 @@
           "indexed": false,
           "name": "amount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "acceptTimestamp",
+          "type": "uint256"
         }
       ],
       "name": "ConversionAccepted",
@@ -205,6 +220,11 @@
         {
           "indexed": false,
           "name": "amount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "name": "unlockTimestamp",
           "type": "uint256"
         }
       ],
