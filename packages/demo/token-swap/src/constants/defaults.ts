@@ -1,5 +1,5 @@
-export const USER_ETH_PRIV = '0xa4a55b49cb1235c35ba0c41fe75e0dfcc477bb2f404d7b2751832e6204ccb5d8';
-export const ISSUER_ETH_PRIV = '0x1e572c9b74cdc1669d079823e0725c9599329c7e2f344c4fe3b45de1a1f4e989';
+export const USER_ETH_PRIV = '0x1e572c9b74cdc1669d079823e0725c9599329c7e2f344c4fe3b45de1a1f4e989';
+export const ISSUER_ETH_PRIV = '0xa4a55b49cb1235c35ba0c41fe75e0dfcc477bb2f404d7b2751832e6204ccb5d8';
 
 export const HORIZON = 'https://horizon-testnet.stellar.org';
 

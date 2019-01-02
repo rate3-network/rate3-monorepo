@@ -33,13 +33,13 @@ export const truncateAddress = (addr: string, maxLength: number = 12) => {
   const half = maxLength / 2;
   return `${addr.substring(0, half)}...${addr.substring(length - half - 1, length)}`;
 };
-export const toEth = (web3Instance, input) => {
+export const toEth = (web3Instance, input, dp = 2) => {
   if (isNaN(parseFloat(input))) {
     return input;
   }
   const converted = web3Instance.utils.fromWei(input);
   const parsed = parseFloat(converted.toString());
-  return parsed.toFixed(2);
+  return parsed.toFixed(dp);
 };
 
 // ================================================================================================

@@ -43,7 +43,7 @@ class EthBalanceCard extends React.PureComponent<IProps & WithStyles<typeof styl
   static contextType = RoleContext;
   render() {
     const { userEthBalance, userEthSgdrBalance, issuerEthBalance, classes } = this.props;
-    const format = input => toEth(this.props.web3Obj, input);
+    const format = input => toEth(this.props.web3Obj, input, 4);
     const balance = this.context.theme === ROLES.USER ? userEthBalance : issuerEthBalance;
     const sgdrBalance = userEthSgdrBalance;
     return (
@@ -55,7 +55,7 @@ class EthBalanceCard extends React.PureComponent<IProps & WithStyles<typeof styl
           </span>
           {this.context.theme === ROLES.USER &&
             <span>
-              {fromTokenAmount(sgdrBalance, 2)}
+              {fromTokenAmount(sgdrBalance, 4)}
               <span className={classes.unit}> SGDR</span>
             </span>
           }
