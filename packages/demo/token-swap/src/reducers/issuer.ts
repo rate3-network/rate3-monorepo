@@ -16,6 +16,9 @@ export interface IE2SRequest {
   type: 'E2S';
   approved: boolean;
   indexID: string;
+  aceeptHash: string;
+  acceptedBy: string;
+  acceptTimestamp: string;
 }
 export interface IS2ERequest {
   hash: string;

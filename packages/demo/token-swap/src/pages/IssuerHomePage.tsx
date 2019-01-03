@@ -2,14 +2,15 @@ import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { withRouter } from 'react-router';
-import Counter from '../components/Counter';
+import { connect } from 'react-redux';
+import { IStoreState, initialState } from '../reducers/network';
+import { Direction } from '../utils/general';
 
-import { IStoreState, IE2SRequest, IS2ERequest } from '../reducers/issuer';
-import { RouteComponentProps, HashRouter, Switch, Route } from 'react-router-dom';
-import RoleContext from '../components/common/RoleContext';
-import { ROLES } from '../constants/general';
+import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
+import { RouteComponentProps } from 'react-router-dom';
 import PageBox from '../components/layout/PageBox';
 import PageTitle from '../components/layout/PageTitle';
+import SwapDetailsPage from './SwapDetailsPage';
 import PageContainer from '../components/layout/PageContainer';
 import Box from '../components/layout/Box';
 import AwaitingApprovalList from '../components/issuer/AwaitingApprovalList';
@@ -49,12 +50,16 @@ const styles = createStyles({
     alignSelf: 'flex-start',
   },
 });
+interface IProps {
+  pendingTxMap: typeof initialState.pendingTxMap;
+  selectedTx: string;
+}
 interface IState {
   page: number;
   currentApproval: null | IE2SRequest | IS2ERequest;
 }
-type IProps = WithStyles<typeof styles> & RouteComponentProps;
-class IssuerHomePage extends React.Component<IProps> {
+type IPropsFinal = IProps & WithStyles<typeof styles> & RouteComponentProps;
+class IssuerHomePage extends React.Component<IPropsFinal> {
   state: IState;
   constructor(props: any) {
     super(props);
@@ -85,16 +90,17 @@ class IssuerHomePage extends React.Component<IProps> {
   }
   render() {
     console.log('home page rendered');
-    const { classes, match } = this.props;
-    // const { role } = match.params;
+    const { classes } = this.props;
+    let amount = '';
+    let direction = Direction.S2E;
+    if (this.state.currentApproval) {
+      amount = this.state.currentApproval.amount;
+      if ('indexID' in this.state.currentApproval) {
+        direction = Direction.E2S;
+      }
+    }
     return (
       <>
-        {this.state.page === 2 &&
-        <SwapApprovalPage
-          currentApproval={this.state.currentApproval}
-          next={this.next}
-          goBack={this.goBack}
-        />}
         {this.state.page === 1 &&
           <PageBox>
             <PageTitle>
@@ -143,9 +149,33 @@ class IssuerHomePage extends React.Component<IProps> {
             </PageContainer>
           </PageBox>
         }
+        {this.state.page === 2 &&
+        <SwapApprovalPage
+          currentApproval={this.state.currentApproval}
+          next={this.next}
+          goBack={this.goBack}
+        />}
+        {this.state.page === 3 &&
+        <SwapDetailsPage
+          value={amount}
+          direction={direction}
+          goBack={this.goBack}
+          next={this.next}
+          pendingTxMap={this.props.pendingTxMap}
+          selectedTx={this.props.selectedTx}
+        />}
       </>
     );
   }
 }
+export function mapStateToProps({ network }: { network: IStoreState; }) {
+  return {
+    pendingTxMap: network.pendingTxMap,
+    selectedTx: network.selectedTx,
+  };
+}
 
-export default withStyles(styles)(withRouter(IssuerHomePage));
+export default connect(
+  mapStateToProps, null)(withStyles(styles)(withRouter(IssuerHomePage)));
+
+// export default withStyles(styles)(withRouter(IssuerHomePage));

@@ -1,6 +1,7 @@
-import { all, call, put, takeLatest, select } from 'redux-saga/effects';
+import { take, call, put, takeLatest, select } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { userActions } from '../actions/user';
+import { networkActions } from '../actions/network';
 import axios from 'axios';
 import {
   remove0x,
@@ -11,6 +12,7 @@ import {
   retryCall,
   toTokenAmount,
   fromTokenAmount,
+  handleContractCall,
 } from '../utils/general';
 import localforage from 'localforage'; // tslint:disable-line:import-name
 import {
@@ -85,14 +87,24 @@ function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
   const stellarAddress = STELLAR_USER;
   console.log('eth address', ethAddress);
   console.log('amount', opDetail.data._embedded.records[0].amount);
+  const updatedRequest = {
+    ethAddress,
+    stellarAddress,
+    amount,
+    hash: transaction_hash,
+    type: 'S2E',
+    approved: false,
+  };
   try {
     yield localforage.setItem(
       transaction_hash,
-      { ethAddress, stellarAddress, amount, hash: transaction_hash, type: 'S2E', approved: false }
+      updatedRequest
     );
   } catch (err) {
     console.log(err);
   }
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
+
 }
 function* requestS2E(action: IAction) {
   const value = action.payload;
@@ -127,49 +139,84 @@ function* requestE2S(action: IAction) {
       from: ETH_USER,
       gasLimit: '200000',
     };
-    tx.send(options)
-      .once('transactionHash', (hash) => {
-        console.log('hash', hash);
-      })
-      .once('receipt', async (receipt) => {
-        console.log(receipt);
-        const ev = receipt.events.ConversionRequested;
-        const { transactionHash } = receipt.events.ConversionRequested;
-        const { ethAddress, indexID } = ev.returnValues;
-        const stellarAddressConverted = hexToEd25519PublicKey(STELLAR_ADDRESS);
-        const conversionAmount = fromTokenAmount(ev.returnValues.amount, 2);
-        try {
-          await localforage.setItem(
-            transactionHash,
-            { ethAddress,
-              indexID,
-              hash: transactionHash,
-              stellarAddress: stellarAddressConverted,
-              amount: conversionAmount,
-              type: 'E2S',
-              approved: false,
-            }
-          );
-        } catch (err) {
-          console.log(err);
-        }
-      })
-      .on('confirmation', (confirmationNo, receipt) => {
-        if (confirmationNo >= 5) {
-          console.log(confirmationNo, receipt);
-          tx.off('confirmation');
-        }
-      })
-      .on('error', (err) => {
-        throw err;
-      });
+    const txSent = tx.send(options);
+    const chan = yield call(
+      handleContractCall,
+      txSent,
+      'REQUEST_E2S',
+      {}
+    );
+    try {
+      while (true) {
+        const nextAction = yield take(chan);
+        yield put(nextAction);
+      }
+    } finally {
+      chan.close();
+    }
   } catch (e) {
     throw e;
   }
 }
 
+function* onE2sReceipt(action: IAction) {
+  console.log('on receipt');
+  const STELLAR_ADDRESS = Ed25519PublicKeyToHex(STELLAR_USER);
+  const { receipt } = action.payload;
+
+  const ev = receipt.events.ConversionRequested;
+  const { transactionHash } = receipt.events.ConversionRequested;
+  const { ethAddress, indexID } = ev.returnValues;
+  const stellarAddressConverted = hexToEd25519PublicKey(STELLAR_ADDRESS);
+  const conversionAmount = fromTokenAmount(ev.returnValues.amount, 2);
+  const updatedRequest = {
+    ethAddress,
+    indexID,
+    hash: transactionHash,
+    stellarAddress: stellarAddressConverted,
+    amount: conversionAmount,
+    type: 'E2S',
+    approved: false,
+  };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
+  try {
+    yield localforage.setItem(
+      transactionHash,
+      updatedRequest
+    );
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function* onE2sHash(action: IAction) {
+  console.log('on hjash');
+  const { hash } = action.payload;
+  const updatedRequest = {
+    hash,
+  };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
+  yield put({ type: networkActions.SELECT_TX, payload: hash });
+  try {
+    yield localforage.setItem(
+      hash,
+      updatedRequest
+    );
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function* onE2sError(action: IAction) {
+  console.log(action);
+}
+
 export default function* user() {
   yield takeLatest(userActions.REQUEST_ETH_TO_STELLAR, requestE2S);
   yield takeLatest(userActions.REQUEST_STELLAR_TO_ETH, requestS2E);
+
+  yield takeLatest('REQUEST_E2S_HASH', onE2sHash);
+  yield takeLatest('REQUEST_E2S_RECEIPT', onE2sReceipt);
+  yield takeLatest('REQUEST_E2S_ERROR', onE2sError);
   // yield takeLatest(networkActions.INIT_ISSUER, setUp);
 }

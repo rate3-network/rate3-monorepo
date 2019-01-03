@@ -10,6 +10,8 @@ import { IAction } from '../utils/general';
 import { ROLES } from '../constants/general';
 // import * as Stellar from 'stellar-sdk';
 import r3Stellar from '../r3-stellar-js/r3-stellar';
+import { IE2SRequest, IS2ERequest } from './issuer';
+import { clone } from 'lodash';
 
 export interface IStoreState {
   r3Stellar: typeof r3Stellar;
@@ -20,12 +22,12 @@ export interface IStoreState {
   web3Obj: W3.default | null;
   userEthBalance: string;
   userEthSgdrBalance: string;
-  issuerEthBalance: string;
-  issuerEthSgdrBalance: string;
   userStellarBalance: string;
   userStellarSgdrBalance: string;
+  issuerEthBalance: string;
   issuerStellarBalance: string;
-  issuerStellarSgdrBalance: string;
+  selectedTx: string;
+  pendingTxMap: {} | Map<string, IS2ERequest | IE2SRequest>;
 }
 
 export const initialState = {
@@ -36,14 +38,13 @@ export const initialState = {
   tokenContract: null,
   web3Obj: null,
   userEthBalance: 'loading...',
-  issuerEthBalance: 'loading...',
   userStellarBalance: 'loading...',
   userStellarSgdrBalance: 'loading...',
-  issuerStellarBalance: 'loading...',
-  issuerStellarSgdrBalance: 'loading...',
   userEthSgdrBalance: 'loading...',
-  issuerEthSgdrBalance: 'loading...',
-
+  issuerEthBalance: 'loading...',
+  issuerStellarBalance: 'loading...',
+  selectedTx: '',
+  pendingTxMap: {},
 };
 // const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
 const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
@@ -113,6 +114,21 @@ IStoreState {
       return {
         ...state,
         issuerStellarBalance: action.payload.balance[0].balance,
+      };
+    case networkActions.SELECT_TX:
+      const hash = action.payload;
+      return {
+        ...state,
+        selectedTx: hash,
+      };
+    case networkActions.ADD_TO_MAP:
+      const newRequest = action.payload;
+      const newMap = clone(state.pendingTxMap);
+      const key = newRequest.hash;
+      newMap[key] = newRequest;
+      return {
+        ...state,
+        pendingTxMap: newMap,
       };
   }
   return state;

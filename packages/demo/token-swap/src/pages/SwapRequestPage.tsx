@@ -11,6 +11,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import BlueButton from '../components/common/BlueButton';
 import { COLORS } from '../constants/colors';
 import SummaryCard from '../components/common/SummaryCard';
+import { Direction } from '../utils/general';
 
 const styles = createStyles({
   row: {
@@ -33,10 +34,7 @@ const styles = createStyles({
     justifyContent: 'center',
   },
 });
-enum Direction {
-  E2S, // eth to stellar
-  S2E, // stellar to eth
-}
+
 interface IProps {
   direction: Direction;
   value: string;

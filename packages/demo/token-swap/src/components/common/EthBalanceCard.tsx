@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/network';
 import { IAction, toEth, fromTokenAmount } from '../../utils/general';
-import { IStoreState } from '../../reducers/network';
+import { IStoreState, initialState } from '../../reducers/network';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { SIDEBAR } from '../../constants/colors';
@@ -32,14 +32,14 @@ const styles = createStyles({
     flexDirection: 'column',
   },
 });
+
 interface IProps {
   web3Obj: W3.default | null;
   userEthBalance: string;
   issuerEthBalance: string;
   userEthSgdrBalance: string;
-
 }
-class EthBalanceCard extends React.PureComponent<IProps & WithStyles<typeof styles>> {
+class EthBalanceCard extends React.Component<IProps & WithStyles<typeof styles>> {
   static contextType = RoleContext;
   render() {
     const { userEthBalance, userEthSgdrBalance, issuerEthBalance, classes } = this.props;
@@ -74,6 +74,8 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
     userEthSgdrBalance: network.userEthSgdrBalance,
 
     issuerEthBalance: network.issuerEthBalance,
+
+    pendingTxMap: network.pendingTxMap,
   };
 }
 export function mapDispatchToProps(dispatch: Dispatch<IAction>) {

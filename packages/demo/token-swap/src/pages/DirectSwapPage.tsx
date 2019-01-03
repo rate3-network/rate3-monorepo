@@ -3,7 +3,8 @@ import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { connect } from 'react-redux';
 import Input from '@material-ui/core/Input';
-import { IAction } from '../utils/general';
+import { IAction, Direction } from '../utils/general';
+import { IStoreState, initialState } from '../reducers/network';
 import { Dispatch } from 'redux';
 import { withRouter } from 'react-router';
 import * as actions from '../actions/user';
@@ -73,10 +74,7 @@ const styles = createStyles({
 
   },
 });
-enum Direction {
-  E2S, // eth to stellar
-  S2E, // stellar to eth
-}
+
 interface IState {
   page: number;
   direction: Direction;
@@ -85,6 +83,8 @@ interface IState {
 interface IReduxProps {
   requestE2S: (value: string) => void;
   requestS2E: (value: string) => void;
+  pendingTxMap: typeof initialState.pendingTxMap;
+  selectedTx: string;
 }
 type IProps = IReduxProps & WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
 class DirectSwapPage extends React.Component<IProps> {
@@ -243,12 +243,19 @@ class DirectSwapPage extends React.Component<IProps> {
             direction={this.state.direction}
             goBack={this.goBack}
             next={this.next}
+            pendingTxMap={this.props.pendingTxMap}
+            selectedTx={this.props.selectedTx}
           />
         }
-
       </React.Fragment>
     );
   }
+}
+export function mapStateToProps({ network }: { network: IStoreState; }) {
+  return {
+    pendingTxMap: network.pendingTxMap,
+    selectedTx: network.selectedTx,
+  };
 }
 export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   return {
@@ -256,4 +263,5 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
     requestS2E: (x: string) => dispatch(actions.requestStellarToEth(x)),
   };
 }
-export default connect(null, mapDispatchToProps)(withStyles(styles)(withRouter(DirectSwapPage)));
+export default connect(
+  mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(DirectSwapPage)));

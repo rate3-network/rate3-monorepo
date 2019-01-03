@@ -1,4 +1,5 @@
 import { createAction, keyMirror } from '../utils/general';
+import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 
 export const networkActions = keyMirror(
   {
@@ -9,6 +10,8 @@ export const networkActions = keyMirror(
     SET_ISSUER_STELLAR_BALANCE: null,
     SET_R3_INSTANCE: null,
     SET_USER_STELLAR_BALANCE: null,
+    ADD_TO_MAP: null,
+    SELECT_TX: null,
   },
   'NETWORK'
 );
@@ -26,3 +29,7 @@ export const setR3Instance =
   createAction<void, void>(networkActions.SET_R3_INSTANCE);
 export const setUserStellarBalance =
   createAction<void, void>(networkActions.SET_USER_STELLAR_BALANCE);
+export const addToMap =
+  createAction<IE2SRequest | IS2ERequest, void>(networkActions.ADD_TO_MAP);
+export const selectTx =
+  createAction<string, void>(networkActions.SELECT_TX);

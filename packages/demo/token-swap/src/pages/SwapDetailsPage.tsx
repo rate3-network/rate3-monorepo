@@ -4,12 +4,14 @@ import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import Divider from '@material-ui/core/Divider';
 import { withRouter } from 'react-router';
 import PageBox from '../components/layout/PageBox';
+import { initialState } from '../reducers/network';
 import PageTitle from '../components/layout/PageTitle';
 import PageContainer from '../components/layout/PageContainer';
 import Box from '../components/layout/Box';
 import { RouteComponentProps } from 'react-router-dom';
 import { COLORS } from '../constants/colors';
 import SummaryCard from '../components/common/SummaryCard';
+import { Direction } from '../utils/general';
 
 const styles = createStyles({
   row: {
@@ -17,6 +19,10 @@ const styles = createStyles({
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
+  },
+  col: {
+    display: 'flex',
+    flexDirection: 'column',
   },
   backButton: {
     textAlign: 'start',
@@ -32,11 +38,10 @@ const styles = createStyles({
     justifyContent: 'center',
   },
 });
-enum Direction {
-  E2S, // eth to stellar
-  S2E, // stellar to eth
-}
+
 interface IProps {
+  pendingTxMap: typeof initialState.pendingTxMap;
+  selectedTx: string;
   direction: Direction;
   value: string;
   goBack(): void;
@@ -44,6 +49,15 @@ interface IProps {
   // requestS2E(): void;
   // requestE2S(): void;
 }
+const evaluate = (stuff: any, field: string) => {
+  if (!stuff) return '❌';
+
+  try {
+    return !!stuff[field] ? '✔️' : '❌';
+  } catch (err) {
+    return '❌';
+  }
+};
 type IPropsFinal = WithStyles<typeof styles> & RouteComponentProps<{ role: string }> & IProps;
 class SwapDetailsPage extends React.Component<IPropsFinal> {
   // state: IState;
@@ -53,14 +67,14 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     };
   }
   componentDidMount() {
-    // console.log(this.props.history.location);
+    console.log(this.props.pendingTxMap);
+    console.log(this.props.selectedTx);
   }
 
   renderEthCard = () => {
     const { classes } = this.props;
     return (
       <div>
-        {/* <span>You {this.state.direction === Direction.E2S ? 'Deposit' : 'Withdraw'}</span> */}
         <span>Enter Amount</span>
         <span>0.00000 SGDR</span>
         <span>Ethereum Blackchain</span>
@@ -71,7 +85,6 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     const { classes } = this.props;
     return (
       <div>
-        {/* <span>You  {this.state.direction === Direction.E2S ? 'Withdraw' : 'Deposit'}</span> */}
         <span>Enter Amount</span>
         <span>0.00000 SGDR</span>
         <span>Stellar Blackchain</span>
@@ -80,8 +93,9 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
   }
 
   render() {
-    console.log('swap page rendered');
-    const { classes, value, direction } = this.props;
+    const { classes, selectedTx, direction, pendingTxMap } = this.props;
+    const selectedRequest = pendingTxMap[selectedTx];
+    console.log(selectedRequest);
     return (
       <PageBox>
         <PageTitle withBackButton={true} backName="Direct" backAction={this.props.goBack}>
@@ -105,7 +119,6 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                 <SummaryCard type="eth" value={this.props.value} />
               </>
             }
-
           </Box>
           <div className={classes.row}>
             <Box>
@@ -126,6 +139,30 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
               </div>
             </Box>
           </div>
+          <Box>
+            <div className={classes.col}>
+              {
+                direction === Direction.E2S ?
+                <>
+                  <span>In Progress</span>
+                  <span>1. Submitted {evaluate(selectedRequest, 'hash')}</span>
+                  <span>2. Network Confirmed {evaluate(selectedRequest, 'indexID')}</span>
+                  <span>3. Appoval Submitted {evaluate(selectedRequest, 'aceeptHash')}</span>
+                  <span>4 Appoval Confirmed {evaluate(selectedRequest, 'acceptedBy')}</span>
+                  <span>5. Converting to Stellar SGDR {evaluate(selectedRequest, 'approved')}</span>
+                </>
+                :
+                <>
+                  <span>In Progress</span>
+                  <span>1. Submitted</span>
+                  <span>2. Network Confirmed</span>
+                  <span>3. Awaiting Approval</span>
+                  <span>4. Appoval Submitted</span>
+                  <span>4. Appoval Confirmed</span>
+                </>
+              }
+            </div>
+          </Box>
           {/* <BlueButton handleClick={this.props.goBack}>Back</BlueButton>
           <BlueButton
             handleClick={direction === Direction.E2S ? requestE2S : requestS2E}

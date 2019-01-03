@@ -4,6 +4,7 @@ import { Paper, Divider } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/issuer';
+import * as networkActions from '../../actions/network';
 import { IAction, truncateAddress } from '../../utils/general';
 import { IStoreState, IE2SRequest, IS2ERequest } from '../../reducers/issuer';
 import { createStyles } from '@material-ui/core/styles';
@@ -37,6 +38,7 @@ interface IProps {
   next(): void;
   goBack(): void;
   setCurrentApproval(value: any): void;
+  selectTx(hash: string): void;
 }
 class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof styles>> {
   componentDidMount() {
@@ -65,6 +67,7 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
               className={classes.approveText}
               onClick={() => {
                 this.props.setCurrentApproval(request);
+                this.props.selectTx(request.hash);
                 this.props.next();
               }}
             >
@@ -83,6 +86,7 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
               className={classes.approveText}
               onClick={() => {
                 this.props.setCurrentApproval(request);
+                this.props.selectTx(request.hash);
                 this.props.next();
               }}
             >
@@ -104,6 +108,7 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   return {
     fetchE2S: () => dispatch(actions.fetchEthToStellar()),
     fetchS2E: () => dispatch(actions.fetchStellarToEth()),
+    selectTx: (hash: string) => dispatch(networkActions.selectTx(hash)),
   };
 }
 export default connect(

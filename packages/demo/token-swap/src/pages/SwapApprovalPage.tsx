@@ -158,6 +158,7 @@ class SwapApprovalPage extends React.Component<IPropsFinal> {
                 console.error('cannot approve empty tx');
               } else {
                 this.props.approve(currentApproval);
+                this.props.next();
               }
             }}
           >

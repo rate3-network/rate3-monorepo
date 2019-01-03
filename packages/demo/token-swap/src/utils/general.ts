@@ -1,4 +1,6 @@
 // tslint:disable:import-name
+// tslint:disable:no-empty
+
 interface IKeyMirror {
   [key: string]: string;
 }
@@ -72,7 +74,7 @@ export const Ed25519PublicKeyToHex = (input) => {
   return `0x${StrKey.decodeEd25519PublicKey(input).toString('hex')}`;
 };
 // ================================================================================================
-import { delay } from 'redux-saga';
+import { delay, eventChannel, END } from 'redux-saga';
 
 export function* retryCall(action, delayTime, maxRetry) {
   for (let i = 0; i < maxRetry; i += 1) {
@@ -86,6 +88,70 @@ export function* retryCall(action, delayTime, maxRetry) {
     }
   }
   throw new Error('Max retries reached');
+}
+export const fromTokenAmount = (amount, dp) => {
+  if (amount === 'loading...') return amount;
+  return (
+    (new Decimal(amount))
+      .dividedBy((new Decimal(10)).toPower(18))
+      .toFixed(dp, Decimal.ROUND_DOWN)
+      .toString()
+  );
+};
+
+// import { eventChannel, END } from 'redux-saga';
+export function handleContractCall(transaction, type, data) {
+  return eventChannel((emitter) => {
+    transaction
+      .once('error', (error) => {
+        emitter({
+          type: `${type}_ERROR`,
+          payload: {
+            message: error.message,
+            ...data,
+          },
+        });
+        emitter(END);
+      })
+      .once('transactionHash', (hash) => {
+        emitter({ type: `${type}_HASH`, payload: { hash, ...data } });
+      })
+      .once('receipt', (receipt) => {
+        emitter({ type: `${type}_RECEIPT`, payload: { receipt, ...data } });
+      })
+      .on('confirmation', (num, receipt) => {
+        if (num >= 2) {
+          emitter({
+            type: `${type}_CONFIRMATION`,
+            payload: {
+              receipt,
+              num,
+              ...data,
+            },
+          });
+          emitter({
+            type: 'networkActions.NEW_BLOCK',
+            toBlock: receipt.blockNumber,
+          });
+          emitter(END);
+        }
+      })
+      .then((receipt) => {
+        emitter({ type: `${type}_SUCCESS`, payload: { receipt, ...data }, });
+      })
+      .catch((err) => {
+        emitter({
+          type: `${type}_ERROR`,
+          payload: {
+            message: err.message,
+            ...data,
+          },
+        });
+        emitter(END);
+      });
+
+    return () => {};
+  });
 }
 
 export const remove0x = (addr) => {
@@ -102,12 +168,7 @@ export const toTokenAmount = amount => (
     .toFixed()
 );
 
-export const fromTokenAmount = (amount, dp) => {
-  if (amount === 'loading...') return amount;
-  return (
-    (new Decimal(amount))
-      .dividedBy((new Decimal(10)).toPower(18))
-      .toFixed(dp, Decimal.ROUND_DOWN)
-      .toString()
-  );
-};
+export enum Direction {
+  E2S, // eth to stellar
+  S2E, // stellar to eth
+}

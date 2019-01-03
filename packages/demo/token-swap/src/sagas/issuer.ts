@@ -5,15 +5,12 @@ import { all, take, call, put, takeLatest, select } from 'redux-saga/effects';
 import { issuerActions } from '../actions/issuer';
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import localforage from 'localforage'; // tslint:disable-line:import-name
+import { networkActions } from '../actions/network';
 import {
-  remove0x,
-  base64toHEX,
   IAction,
   Ed25519PublicKeyToHex,
-  hexToEd25519PublicKey,
-  retryCall,
   toTokenAmount,
-  fromTokenAmount,
+  handleContractCall,
 } from '../utils/general';
 import {
   ETH_ISSUER,
@@ -27,61 +24,7 @@ import {
   STELLAR_USER_SECRET,
   STELLAR_USER,
 } from '../constants/defaults';
-import { eventChannel, END } from 'redux-saga';
 
-function handleContractCall(transaction, type, data) {
-  return eventChannel((emitter) => {
-    transaction
-      .once('error', (error) => {
-        emitter({
-          type: `${type}_ERROR`,
-          payload: {
-            message: error.message,
-            ...data,
-          },
-        });
-        emitter(END);
-      })
-      .once('transactionHash', (hash) => {
-        emitter({ type: `${type}_HASH`, payload: { hash, ...data } });
-      })
-      .once('receipt', (receipt) => {
-        emitter({ type: `${type}_RECEIPT`, payload: { receipt, ...data } });
-      })
-      .on('confirmation', (num, receipt) => {
-        if (num >= 2) {
-          emitter({
-            type: `${type}_CONFIRMATION`,
-            payload: {
-              receipt,
-              num,
-              ...data,
-            },
-          });
-          emitter({
-            type: 'networkActions.NEW_BLOCK',
-            toBlock: receipt.blockNumber,
-          });
-          emitter(END);
-        }
-      })
-      .then((receipt) => {
-        emitter({ type: `${type}_SUCCESS`, payload: { receipt, ...data }, });
-      })
-      .catch((err) => {
-        emitter({
-          type: `${type}_ERROR`,
-          payload: {
-            message: err.message,
-            ...data,
-          },
-        });
-        emitter(END);
-      });
-
-    return () => {};
-  });
-}
 type TransactionType = IE2SRequest | IS2ERequest;
 localforage.config(localForageConfig);
 function* fetchE2S() {
@@ -222,8 +165,40 @@ function* approve(action: IAction) {
     yield approveS2E(tx);
   }
 }
-function* print(action: IAction) {
+function* onE2sHash(action: IAction) {
+  const { hash, tx } = action.payload;
   console.log(action);
+  const updatedRequest = {
+    ...tx,
+    aceeptHash: hash,
+  };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
+  try {
+    yield localforage.setItem(
+      tx.hash,
+      updatedRequest
+    );
+  } catch (err) {
+    console.log(err);
+  }
+}
+function* onS2eHash(action: IAction) {
+  const { hash, tx } = action.payload;
+  console.log(action);
+  const updatedRequest = {
+    ...tx,
+    aceeptHash: hash,
+  };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
+
+  try {
+    yield localforage.setItem(
+      tx.hash,
+      updatedRequest
+    );
+  } catch (err) {
+    console.log(err);
+  }
 }
 function* onE2sReceipt(action: IAction) {
   const getR3 = state => state.network.r3;
@@ -236,15 +211,18 @@ function* onE2sReceipt(action: IAction) {
 
   console.log(receipt);
   const ev = receipt.events.ConversionAccepted;
-  const { transactionHash } = receipt.events.ConversionAccepted;
+  const { transactionHash } = ev;
+  const { acceptTimestamp } = ev.returnValues;
+  const updatedRequest = { ...tx,
+    acceptTimestamp,
+    aceeptHash: transactionHash,
+    acceptedBy: ETH_ISSUER,
+  };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
   try {
     yield localforage.setItem(
       tx.hash,
-      { ...tx,
-        aceeptHash: transactionHash,
-        acceptedBy: ETH_ISSUER,
-        acceptTimestamp: 'todo',
-      }
+      updatedRequest
     );
   } catch (err) {
     console.log(err);
@@ -252,13 +230,16 @@ function* onE2sReceipt(action: IAction) {
 
   yield mintAssetToDistributor(r3, asset, amount);
   yield distributeToUser(r3, asset, amount);
+  const finishedRequest = {
+    ...updatedRequest,
+    approved: true,
+    stellarTokenMintTimestamp: 'todo',
+  };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: finishedRequest });
   try {
     yield localforage.setItem(
       tx.hash,
-      { ...tx,
-        approved: true,
-        stellarTokenMintTimestamp: 'todo',
-      }
+      finishedRequest
     );
   } catch (err) {
     console.log(err);
@@ -280,17 +261,21 @@ function* onS2eReceipt(action: IAction) {
 
   console.log(receipt);
   const ev = receipt.events.ConversionUnlocked;
-  const { transactionHash } = receipt.events.ConversionUnlocked;
+  const { transactionHash } = ev;
+  const { unlockTimestamp } = ev.returnValues;
+  const updatedRequest = {
+    ...tx,
+    approvalHash: transactionHash,
+    approvedBy: ETH_ISSUER,
+    approveTimestamp: unlockTimestamp,
+    approved: true,
+  };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
 
   try {
     yield localforage.setItem(
       tx.hash,
-      { ...tx,
-        approvalHash: transactionHash,
-        approvedBy: ETH_ISSUER,
-        approveTimestamp: 'todo',
-        approved: true,
-      }
+      updatedRequest
     );
   } catch (err) {
     console.log(err);
@@ -304,11 +289,11 @@ export default function* network() {
   yield takeLatest(issuerActions.FETCH_STELLAR_TO_ETH, fetchS2E);
   yield takeLatest(issuerActions.APPROVE, approve);
 
-  yield takeLatest('APPROVE_E2S_HASH', print);
+  yield takeLatest('APPROVE_E2S_HASH', onE2sHash);
   yield takeLatest('APPROVE_E2S_RECEIPT', onE2sReceipt);
   yield takeLatest('APPROVE_E2S_ERROR', onE2sError);
 
-  yield takeLatest('APPROVE_S2E_HASH', print);
+  yield takeLatest('APPROVE_S2E_HASH', onS2eHash);
   yield takeLatest('APPROVE_S2E_RECEIPT', onS2eReceipt);
   yield takeLatest('APPROVE_S2E_ERROR', onS2eError);
   // yield takeLatest(networkActions.INIT_ISSUER, setUp);

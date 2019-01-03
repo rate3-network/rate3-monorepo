@@ -5,14 +5,17 @@ import { COLORS, SIDEBAR } from '../../constants/colors';
 import classnames from 'classnames';
 const styles = createStyles({
   root: {
+    padding: '0.1em',
     display: 'grid',
+    width: '11em',
+    height: '2.8em',
     gridTemplateAreas: `
       'logo value'
       'logo blockchain'`,
-    gridGap: 0,
-    gridTemplateColumns: '1fr 3fr',
+    gridGap: '0.1em',
+    gridTemplateColumns: '1fr 4fr',
     color: 'white',
-    borderRadius: '10px',
+    borderRadius: '0.2rem',
   },
   eth: {
     backgroundColor: SIDEBAR.ETH_CARD.bg,
@@ -28,6 +31,7 @@ const styles = createStyles({
   },
   blockchain: {
     gridArea: 'blockchain',
+    fontSize: '0.9em',
   },
 });
 
