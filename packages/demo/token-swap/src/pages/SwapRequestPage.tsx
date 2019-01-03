@@ -10,6 +10,7 @@ import Box from '../components/layout/Box';
 import { RouteComponentProps } from 'react-router-dom';
 import BlueButton from '../components/common/BlueButton';
 import { COLORS } from '../constants/colors';
+import SummaryCard from '../components/common/SummaryCard';
 
 const styles = createStyles({
   row: {
@@ -78,12 +79,7 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
       </div>
     );
   }
-  ethSummaryCard = () => {
-    return <div>{this.props.value}</div>;
-  }
-  stellarSummaryCard = () => {
-    return <div>{this.props.value}</div>;
-  }
+
   render() {
     console.log('swap page rendered');
     const { classes, value, direction, requestE2S, requestS2E } = this.props;
@@ -97,8 +93,19 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
             <span className={classes.greyTitle}>Your Deposit</span>
             <span className={classes.greyTitle}>You Withdraw</span>
             <Divider />
-            {this.ethSummaryCard()}
-            {this.stellarSummaryCard()}
+            {direction === Direction.E2S ?
+              <>
+                <SummaryCard type="eth" value={this.props.value} />
+                -->
+                <SummaryCard type="stellar" value={this.props.value} />
+              </>
+              :
+              <>
+                <SummaryCard type="stellar" value={this.props.value} />
+                -->
+                <SummaryCard type="eth" value={this.props.value} />
+              </>
+            }
           </Box>
           <div className={classes.row}>
             <Box>
@@ -121,7 +128,10 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
           </div>
           <BlueButton handleClick={this.props.goBack}>Back</BlueButton>
           <BlueButton
-            handleClick={direction === Direction.E2S ? requestE2S : requestS2E}
+            handleClick={() => {
+              direction === Direction.E2S ? requestE2S() : requestS2E();
+              this.props.next();
+            }}
           >
             Send Request
           </BlueButton>

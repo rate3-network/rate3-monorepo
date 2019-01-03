@@ -13,6 +13,7 @@ import PageTitle from '../components/layout/PageTitle';
 import PageContainer from '../components/layout/PageContainer';
 import Box from '../components/layout/Box';
 import AwaitingApprovalList from '../components/issuer/AwaitingApprovalList';
+import HistoryList from '../components/issuer/HistoryList';
 import { COLORS } from '../constants/colors';
 import SwapApprovalPage from './SwapApprovalPage';
 // export interface IProps {
@@ -131,6 +132,13 @@ class IssuerHomePage extends React.Component<IProps> {
               <span className={classes.boxLabel}>In Progress</span>
               <Box>
                 table
+              </Box>
+              <span className={classes.boxLabel}>History</span>
+              <Box>
+                <HistoryList
+                  next={this.next}
+                  goBack={this.goBack}
+                />
               </Box>
             </PageContainer>
           </PageBox>

@@ -36,9 +36,9 @@ interface IProps {
   fetchS2E(): void;
   next(): void;
   goBack(): void;
-  setCurrentApproval(value: any): void;
+  // setCurrentApproval(value: any): void;
 }
-class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof styles>> {
+class HistoryList extends React.Component<IProps & WithStyles<typeof styles>> {
   componentDidMount() {
     this.props.fetchE2S();
     this.props.fetchS2E();
@@ -47,10 +47,10 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
   render() {
     const { e2sApprovalList, s2eApprovalList, fetchE2S, fetchS2E, classes } = this.props;
     const filteredE2sList = e2sApprovalList && e2sApprovalList.filter((item) => {
-      return !item.approved;
+      return item.approved;
     });
     const filteredS2eList = s2eApprovalList && s2eApprovalList.filter((item) => {
-      return !item.approved;
+      return item.approved;
     });
     return (
       <>
@@ -64,7 +64,7 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
             <span
               className={classes.approveText}
               onClick={() => {
-                this.props.setCurrentApproval(request);
+                // this.props.setCurrentApproval(request);
                 this.props.next();
               }}
             >
@@ -82,7 +82,7 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
             <span
               className={classes.approveText}
               onClick={() => {
-                this.props.setCurrentApproval(request);
+                // this.props.setCurrentApproval(request);
                 this.props.next();
               }}
             >
@@ -107,4 +107,4 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   };
 }
 export default connect(
-  mapStateToProps, mapDispatchToProps)(withStyles(styles)(AwaitingApprovalList));
+  mapStateToProps, mapDispatchToProps)(withStyles(styles)(HistoryList));
