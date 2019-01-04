@@ -3,6 +3,8 @@ export const COLORS = {
   grey: '#5E636D',
   lighGrey: '#ABABAB',
   blue: '#4392F1',
+  lightBlue: '#F5F9FF',
+  veryLightBlue: '#FAFDFF',
 };
 export const PAGE = {
   user: {

@@ -20,7 +20,6 @@ import { initialState, IStoreState } from '../reducers/network';
 import { Direction, IAction } from '../utils/general';
 import SwapDetailsPage from './SwapDetailsPage';
 import SwapRequestPage from './SwapRequestPage';
-
 const styles = createStyles({
   toggleBtn: {
     position: 'relative',
@@ -188,7 +187,6 @@ class DirectSwapPage extends React.Component<IProps> {
           value={this.state.cardValue}
           onChange={this.onCardValueChange}
           onBlur={this.validateAmount}
-          // onKeyPress={(e) => { if (e.key === 'Enter') props.onKeyPress(); }}
           placeholder="Enter Amount"
           className={classes.input}
           classes={{ input: classes.inputRoot }}

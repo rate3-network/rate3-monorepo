@@ -10,15 +10,17 @@ import { Direction, truncateAddress } from '../../utils/general';
 import SwapInfoBox from '../../components/common/SwapInfoBox';
 import lineSvg from '../../assets/line.svg';
 import day from 'dayjs';
+import ProgressBar from './ProgressBar';
 
 const styles = createStyles({
   row: {
-    marginTop: '2em',
+    margin: '2em 0',
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
   },
   col: {
+    width: '85%',
     display: 'flex',
     flexDirection: 'column',
   },
@@ -53,6 +55,30 @@ const styles = createStyles({
   gap: {
     padding: '0 1em',
   },
+  inProgress: {
+    margin: '1em 0',
+    fontSize: '1.1em',
+    fontWeight: 700,
+    color: COLORS.grey,
+  },
+  listContainer: {
+    color: COLORS.black,
+    fontWeight: 200,
+    fontSize: '1em',
+    letterSpacing: '0.02em',
+    margin: '2em 0',
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: COLORS.veryLightBlue,
+  },
+  even: {
+    padding: '0.2em 1.5em',
+    backgroundColor: COLORS.veryLightBlue,
+  },
+  odd: {
+    padding: '0.2em 1.5em',
+    backgroundColor: COLORS.lightBlue,
+  },
 });
 
 const FORMAT = 'DD-MM-YYYY H:mm';
@@ -61,6 +87,14 @@ interface IProps {
   userSetValue: string;
   direction: Direction;
 }
+const evaluateToBool = (stuff: any, field: string) => {
+  if (!stuff) return false;
+  try {
+    return !!stuff[field];
+  } catch (err) {
+    return false;
+  }
+};
 const evaluate = (stuff: any, field: string) => {
   if (!stuff) return '❌';
 
@@ -76,6 +110,7 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
   constructor(props: any) {
     super(props);
     this.state = {
+      progress: 0,
     };
   }
 
@@ -108,6 +143,28 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     const ethTime = transaction.requestTimestamp
       && day.unix(transaction.requestTimestamp).format(FORMAT);
 
+    const calProgress = (tran, ...fields) => {
+      const total = fields.length;
+      let prog = 0;
+      fields.forEach((field) => {
+        if (evaluateToBool(tran, field)) {
+          prog += 1;
+        }
+      });
+      console.log(prog / total * 100);
+      return Math.round(prog / total * 100);
+    };
+
+    const getCurrentAction = (tran, ...fields) => {
+      let currentAction = '';
+      fields.forEach((field) => {
+        if (!evaluateToBool(tran, field)) {
+          return field;
+          currentAction = field;
+        }
+      });
+      return currentAction;
+    };
     console.log(transaction);
     return (
       <PageContainer>
@@ -142,16 +199,62 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
             {
               direction === Direction.E2S ?
               <>
-                <span>In Progress</span>
-                <span>1. Submitted {evaluate(transaction, 'hash')}</span>
-                <span>2. Network Confirmed {evaluate(transaction, 'indexID')}</span>
-                <span>3. Appoval Submitted {evaluate(transaction, 'aceeptHash')}</span>
-                <span>4 Appoval Confirmed {evaluate(transaction, 'acceptedBy')}</span>
-                <span>5. Converting to Stellar SGDR {evaluate(transaction, 'approved')}</span>
+                <span className={classes.inProgress}>In Progress</span>
+                <ProgressBar
+                  progress={
+                    calProgress(
+                      transaction,
+                      'hash',
+                      'indexID',
+                      'aceeptHash',
+                      'acceptedBy',
+                      'approved'
+                    )}
+                />
+                {/* <span>{getCurrentAction(
+                      transaction,
+                      'hash',
+                      'indexID',
+                      'aceeptHash',
+                      'acceptedBy',
+                      'approved'
+                    )}</span> */}
+                <div className={classes.listContainer}>
+                  <span className={classes.odd}>
+                    1. Submitted {evaluate(transaction, 'hash')}
+                  </span>
+                  <span className={classes.even}>
+                    2. Network Confirmed {evaluate(transaction, 'indexID')}
+                  </span>
+                  <span className={classes.odd}>
+                    3. Appoval Submitted {evaluate(transaction, 'aceeptHash')}
+                  </span>
+                  <span className={classes.even}>
+                    4 Appoval Confirmed {evaluate(transaction, 'acceptedBy')}
+                  </span>
+                  <span className={classes.odd}>
+                    5. Converting to Stellar SGDR {evaluate(transaction, 'approved')}
+                  </span>
+                </div>
               </>
               :
               <>
                 <span>In Progress</span>
+                <ProgressBar
+                  progress={
+                    calProgress(
+                      transaction,
+                      'hash',
+                      'unlockHash',
+                      'approved'
+                    )}
+                />
+                {/* <span>{getCurrentAction(
+                      transaction,
+                      'hash',
+                      'unlockHash',
+                      'approved'
+                    )}</span> */}
                 <span>1. Submitted on Stellar Network {evaluate(transaction, 'hash')}</span>
                 <span>2. Appoval Submitted {evaluate(transaction, 'unlockHash')}</span>
                 <span>3. Appoval Confirmed {evaluate(transaction, 'approved')}</span>
