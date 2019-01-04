@@ -11,6 +11,8 @@ import SwapInfoBox from '../../components/common/SwapInfoBox';
 import lineSvg from '../../assets/line.svg';
 import day from 'dayjs';
 import ProgressBar from './ProgressBar';
+import tickSvg from '../../assets/tick.svg';
+import greyTickSvg from '../../assets/greyTick.svg';
 
 const styles = createStyles({
   row: {
@@ -95,13 +97,19 @@ const evaluateToBool = (stuff: any, field: string) => {
     return false;
   }
 };
+const tick = () => {
+  return <img src={tickSvg} alt="tick"/>;
+};
+const greyTick = () => {
+  return <img src={greyTickSvg} alt="tick"/>;
+};
 const evaluate = (stuff: any, field: string) => {
-  if (!stuff) return '❌';
+  if (!stuff) return greyTick();
 
   try {
-    return !!stuff[field] ? '✔️' : '❌';
+    return !!stuff[field] ? tick() : greyTick();
   } catch (err) {
-    return '❌';
+    return greyTick();
   }
 };
 type IPropsFinal = WithStyles<typeof styles> & RouteComponentProps<{ role: string }> & IProps;
