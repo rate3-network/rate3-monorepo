@@ -187,7 +187,7 @@ function* onS2eHash(action: IAction) {
   console.log(action);
   const updatedRequest = {
     ...tx,
-    aceeptHash: hash,
+    unlockHash: hash,
   };
   yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
 
@@ -257,14 +257,19 @@ function* onS2eReceipt(action: IAction) {
   const asset = new r3.Stellar.Asset('TestAsset', STELLAR_ISSUER);
   const { receipt } = action.payload;
   const { tx } = action.payload;
-  const { amount } = tx;
+  let updatedTx;
+  try {
+    updatedTx = yield localforage.getItem(tx.hash);
+  } catch (err) {
+    console.log(err);
+  }
 
   console.log(receipt);
   const ev = receipt.events.ConversionUnlocked;
   const { transactionHash } = ev;
   const { unlockTimestamp } = ev.returnValues;
   const updatedRequest = {
-    ...tx,
+    ...updatedTx,
     approvalHash: transactionHash,
     approvedBy: ETH_ISSUER,
     approveTimestamp: unlockTimestamp,

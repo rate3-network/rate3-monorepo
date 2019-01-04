@@ -68,7 +68,7 @@ function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
   convertToEthTxDetail.sign(userKeypair);
   const convertToEthRes = yield r3.stellar.submitTransaction(convertToEthTxDetail);
   console.log('able to convert asset to ethereum token from user', convertToEthRes);
-
+  yield put({ type: networkActions.SELECT_TX, payload: convertToEthRes.hash });
   let txDetail;
   function* getTxDetail() {
     txDetail = yield axios.get(convertToEthRes._links.transaction.href);
@@ -95,6 +95,7 @@ function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
     type: 'S2E',
     approved: false,
   };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
   try {
     yield localforage.setItem(
       transaction_hash,
@@ -103,8 +104,6 @@ function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
   } catch (err) {
     console.log(err);
   }
-  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
-
 }
 function* requestS2E(action: IAction) {
   const value = action.payload;
@@ -195,8 +194,8 @@ function* onE2sHash(action: IAction) {
   const updatedRequest = {
     hash,
   };
-  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
   yield put({ type: networkActions.SELECT_TX, payload: hash });
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
   try {
     yield localforage.setItem(
       hash,

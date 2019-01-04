@@ -14,6 +14,7 @@ import { COLORS } from '../constants/colors';
 import SummaryCard from '../components/common/SummaryCard';
 import { Direction } from '../utils/general';
 import TxProgress from '../components/common/TxProgress';
+
 const styles = createStyles({
   row: {
     marginTop: '2em',
@@ -41,25 +42,28 @@ const styles = createStyles({
 });
 
 interface IProps {
-  pendingTxMap: typeof initialState.pendingTxMap;
-  selectedTx: string;
-  direction: Direction;
-  value: string;
+  currentSelectedHistory: any;
   goBack(): void;
   next(): void;
+  // requestS2E(): void;
+  // requestE2S(): void;
 }
+const evaluate = (stuff: any, field: string) => {
+  if (!stuff) return '❌';
 
+  try {
+    return !!stuff[field] ? '✔️' : '❌';
+  } catch (err) {
+    return '❌';
+  }
+};
 type IPropsFinal = WithStyles<typeof styles> & RouteComponentProps<{ role: string }> & IProps;
-class SwapDetailsPage extends React.Component<IPropsFinal> {
+class HistorySwapDetailsPage extends React.Component<IPropsFinal> {
   // state: IState;
   constructor(props: any) {
     super(props);
     this.state = {
     };
-  }
-  componentDidMount() {
-    console.log(this.props.pendingTxMap);
-    console.log(this.props.selectedTx);
   }
 
   renderEthCard = () => {
@@ -84,19 +88,26 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
   }
 
   render() {
-    const { classes, selectedTx, direction, pendingTxMap } = this.props;
-    const selectedRequest = pendingTxMap[selectedTx];
-    console.log(selectedRequest);
+    const { classes, currentSelectedHistory } = this.props;
+    let amount = '';
+    let direction = Direction.S2E;
+    if (currentSelectedHistory) {
+      amount = currentSelectedHistory.amount;
+      if ('indexID' in currentSelectedHistory) {
+        direction = Direction.E2S;
+      }
+    }
+    console.log(currentSelectedHistory);
     return (
       <PageBox>
         <PageTitle withBackButton={true} backName="Direct" backAction={this.props.goBack}>
           SWAP DETAILS
         </PageTitle>
-        {
+        {currentSelectedHistory &&
           <TxProgress
-            tx={selectedRequest}
+            userSetValue={currentSelectedHistory.amount}
+            tx={currentSelectedHistory}
             direction={direction}
-            userSetValue={this.props.value}
           />
         }
       </PageBox>
@@ -104,4 +115,4 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
   }
 }
 
-export default withStyles(styles)(withRouter(SwapDetailsPage));
+export default withStyles(styles)(withRouter(HistorySwapDetailsPage));

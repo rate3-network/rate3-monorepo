@@ -121,6 +121,11 @@ IStoreState {
         ...state,
         selectedTx: hash,
       };
+    case networkActions.RESET_SELECTED_TX:
+      return {
+        ...state,
+        selectedTx: '',
+      };
     case networkActions.ADD_TO_MAP:
       const newRequest = action.payload;
       const newMap = clone(state.pendingTxMap);

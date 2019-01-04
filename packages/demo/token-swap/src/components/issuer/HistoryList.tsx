@@ -36,6 +36,8 @@ interface IProps {
   fetchS2E(): void;
   next(): void;
   goBack(): void;
+  goTo(pg: number): void;
+  setSelectedHistory(value: any): void;
   // setCurrentApproval(value: any): void;
 }
 class HistoryList extends React.Component<IProps & WithStyles<typeof styles>> {
@@ -55,39 +57,33 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>> {
     return (
       <>
         {filteredE2sList && filteredE2sList.map(request => (
-          <div key={request.hash}>
+          <div
+            key={request.hash}
+            onClick={() => {
+              this.props.setSelectedHistory(request);
+              this.props.goTo(4);
+            }}
+          >
             <span>{truncateAddress(request.hash)}</span>
             ----
             <span>{request.type}</span>
             ----
             <span>{request.amount}</span>
-            <span
-              className={classes.approveText}
-              onClick={() => {
-                // this.props.setCurrentApproval(request);
-                this.props.next();
-              }}
-            >
-              Approve >
-            </span>
           </div>
         ))}
         {filteredS2eList && filteredS2eList.map(request => (
-          <div key={request.hash}>
+          <div
+            key={request.hash}
+            onClick={() => {
+              this.props.setSelectedHistory(request);
+              this.props.goTo(4);
+            }}
+          >
             <span>{truncateAddress(request.hash)}</span>
             ----
             <span>{request.type}</span>
             ----
             <span>{request.amount}</span>
-            <span
-              className={classes.approveText}
-              onClick={() => {
-                // this.props.setCurrentApproval(request);
-                this.props.next();
-              }}
-            >
-            Approve >
-            </span>
           </div>
         ))}
       </>

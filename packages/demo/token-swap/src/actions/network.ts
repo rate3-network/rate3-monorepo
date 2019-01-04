@@ -12,6 +12,7 @@ export const networkActions = keyMirror(
     SET_USER_STELLAR_BALANCE: null,
     ADD_TO_MAP: null,
     SELECT_TX: null,
+    RESET_SELECTED_TX: null,
   },
   'NETWORK'
 );
@@ -33,3 +34,5 @@ export const addToMap =
   createAction<IE2SRequest | IS2ERequest, void>(networkActions.ADD_TO_MAP);
 export const selectTx =
   createAction<string, void>(networkActions.SELECT_TX);
+export const resetSelectedTx =
+  createAction<void, void>(networkActions.RESET_SELECTED_TX);

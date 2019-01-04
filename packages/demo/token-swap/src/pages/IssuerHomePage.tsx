@@ -17,6 +17,8 @@ import AwaitingApprovalList from '../components/issuer/AwaitingApprovalList';
 import HistoryList from '../components/issuer/HistoryList';
 import { COLORS } from '../constants/colors';
 import SwapApprovalPage from './SwapApprovalPage';
+import HistorySwapDetailsPage from './HistorySwapDetailsPage';
+
 // export interface IProps {
 //   classes: any;
 // }
@@ -57,6 +59,7 @@ interface IProps {
 interface IState {
   page: number;
   currentApproval: null | IE2SRequest | IS2ERequest;
+  selectedHistory: null | IE2SRequest | IS2ERequest;
 }
 type IPropsFinal = IProps & WithStyles<typeof styles> & RouteComponentProps;
 class IssuerHomePage extends React.Component<IPropsFinal> {
@@ -64,10 +67,12 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
   constructor(props: any) {
     super(props);
     this.goBack = this.goBack.bind(this);
+    // this.goTo = this.goBack.bind(this);
     this.next = this.next.bind(this);
     this.state = {
       page: 1,
       currentApproval: null,
+      selectedHistory: null,
     };
   }
   componentDidMount() {
@@ -78,9 +83,22 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
       currentApproval: value,
     });
   }
+  setSelectedHistory = (value) => {
+    this.setState({
+      selectedHistory: value,
+    });
+  }
   goBack = () => {
     this.setState({
       page: this.state.page - 1 < 0 ? 0 : this.state.page - 1,
+    });
+  }
+  goHome = () => {
+    this.goTo(1);
+  }
+  goTo = (pg: number) => {
+    this.setState({
+      page: pg,
     });
   }
   next = () => {
@@ -144,6 +162,8 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
                 <HistoryList
                   next={this.next}
                   goBack={this.goBack}
+                  goTo={this.goTo}
+                  setSelectedHistory={this.setSelectedHistory}
                 />
               </Box>
             </PageContainer>
@@ -164,6 +184,12 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
           pendingTxMap={this.props.pendingTxMap}
           selectedTx={this.props.selectedTx}
         />}
+        {this.state.page === 4 &&
+        <HistorySwapDetailsPage
+          currentSelectedHistory={this.state.selectedHistory}
+          goBack={this.goHome}
+          next={this.next}
+        />}
       </>
     );
   }
@@ -177,5 +203,3 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
 
 export default connect(
   mapStateToProps, null)(withStyles(styles)(withRouter(IssuerHomePage)));
-
-// export default withStyles(styles)(withRouter(IssuerHomePage));

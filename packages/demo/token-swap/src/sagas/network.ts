@@ -1,9 +1,9 @@
 import { all, call, put, takeLatest, select } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
-import { networkActions } from '../actions/network';
+import { networkActions, resetSelectedTx } from '../actions/network';
 import axios from 'axios';
 import extrapolateFromXdr from '../utils/extrapolateFromXdr';
-import { base64toHEX } from '../utils/general';
+import { base64toHEX, IAction } from '../utils/general';
 import localforage from 'localforage'; // tslint:disable-line:import-name
 import { ETH_USER } from '../constants/defaults';
 

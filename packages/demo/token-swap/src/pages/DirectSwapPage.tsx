@@ -1,31 +1,36 @@
-import * as React from 'react';
+import Input from '@material-ui/core/Input';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import classnames from 'classnames';
+import * as React from 'react';
 import { connect } from 'react-redux';
-import Input from '@material-ui/core/Input';
-import { IAction, Direction } from '../utils/general';
-import { IStoreState, initialState } from '../reducers/network';
-import { Dispatch } from 'redux';
 import { withRouter } from 'react-router';
-import * as actions from '../actions/user';
-import PageBox from '../components/layout/PageBox';
-import PageTitle from '../components/layout/PageTitle';
-import PageContainer from '../components/layout/PageContainer';
 import { RouteComponentProps } from 'react-router-dom';
-import { SIDEBAR } from '../constants/colors';
+import { Dispatch } from 'redux';
+import * as networkActions from '../actions/network';
+import * as actions from '../actions/user';
 import BlueButton from '../components/common/BlueButton';
-import SwapRequestPage from './SwapRequestPage';
+import SummaryCard from '../components/common/SummaryCard';
+import PageBox from '../components/layout/PageBox';
+import PageContainer from '../components/layout/PageContainer';
+import PageTitle from '../components/layout/PageTitle';
+import { SIDEBAR } from '../constants/colors';
+import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
+import { initialState, IStoreState } from '../reducers/network';
+import { Direction, IAction } from '../utils/general';
 import SwapDetailsPage from './SwapDetailsPage';
-import ethSGDRSvg from '../assets/ethSGDR.svg';
-import stellarSGDRSvg from '../assets/stellarSGDR.svg';
-
+import SwapRequestPage from './SwapRequestPage';
 const styles = createStyles({
+  toggleBtn: {
+    position: 'relative',
+    top: 110,
+  },
   row: {
     display: 'flex',
     flexDirection: 'row',
     width: '100%',
   },
-  ethCard: {
+  card: {
     color: 'white',
     display: 'flex',
     flexDirection: 'column',
@@ -33,17 +38,21 @@ const styles = createStyles({
     paddingLeft: '3em',
     justifyContent: 'center',
     width: '50%',
+    paddingBottom: '1.5em',
+  },
+  ethCard: {
     backgroundColor: SIDEBAR.ETH_CARD.bg,
   },
   stellarCard: {
-    color: 'white',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    paddingLeft: '3em',
-    justifyContent: 'center',
-    width: '50%',
     backgroundColor: SIDEBAR.STELLAR_CARD.bg,
+  },
+  leftCard: {
+    borderTopLeftRadius: '0.4em',
+    borderBottomLeftRadius: '0.4em',
+  },
+  rightCard: {
+    borderTopRightRadius: '0.4em',
+    borderBottomRightRadius: '0.4em',
   },
   title: {
     marginTop: '3em',
@@ -58,8 +67,8 @@ const styles = createStyles({
     width: '16em',
   },
   input: {
-    marginTop: '1em',
-    borderRadius: '0.3em',
+    margin: '0.7em 0 1.2em 0',
+    borderRadius: '0.4em',
   },
   amount: {
     marginTop: '1em',
@@ -74,15 +83,20 @@ const styles = createStyles({
 
   },
 });
-
+enum CardType {
+  eth,
+  stellar,
+}
 interface IState {
   page: number;
   direction: Direction;
   cardValue: string;
+  selectedHistory: null | IE2SRequest | IS2ERequest;
 }
 interface IReduxProps {
   requestE2S: (value: string) => void;
   requestS2E: (value: string) => void;
+  resetSelectedTx: () => void;
   pendingTxMap: typeof initialState.pendingTxMap;
   selectedTx: string;
 }
@@ -99,6 +113,7 @@ class DirectSwapPage extends React.Component<IProps> {
       page: 1,
       direction: Direction.E2S,
       cardValue: '',
+      selectedHistory: null,
     };
   }
   componentDidMount() {
@@ -131,7 +146,12 @@ class DirectSwapPage extends React.Component<IProps> {
   }
   goBack = () => {
     this.setState({
-      page: this.state.page - 1 < 0 ? 0 : this.state.page - 1 ,
+      page: this.state.page - 1 < 0 ? 0 : this.state.page - 1,
+    });
+  }
+  goHome = () => {
+    this.setState({
+      page: 1,
     });
   }
   next = () => {
@@ -139,14 +159,24 @@ class DirectSwapPage extends React.Component<IProps> {
       page: this.state.page + 1 > 3 ? 3 : this.state.page + 1,
     });
   }
-  renderEthCard = () => {
+  renderCard = (type: CardType) => {
     const { classes } = this.props;
+    const onLeft =
+      (this.state.direction === Direction.E2S && type === CardType.eth) ||
+      (this.state.direction === Direction.S2E && type === CardType.stellar);
     return (
-      <div className={classes.ethCard}>
+      <div
+        className={classnames(
+          classes.card,
+          { [classes.ethCard]: type === CardType.eth },
+          { [classes.stellarCard]: type === CardType.stellar },
+          { [classes.leftCard]: onLeft },
+          { [classes.rightCard]: !onLeft }
+        )}
+      >
         <span className={classes.title}>
           You {this.state.direction === Direction.E2S ? 'Deposit' : 'Withdraw'}
         </span>
-        <span className={classes.input}>Enter Amount</span>
         <Input
           id="uncontrolled"
           value={this.state.cardValue}
@@ -159,40 +189,15 @@ class DirectSwapPage extends React.Component<IProps> {
           disableUnderline
           fullWidth
         />
-        <span className={classes.amount}>{this.state.cardValue}</span>
-        <img draggable={false} src={ethSGDRSvg} alt="eth sgdr"/>
-        <span className={classes.sgdr}> SGDR</span>
-        <span className={classes.chainName}>Ethereum Blackchain</span>
+        {type === CardType.eth ?
+        <SummaryCard noPadding value={this.state.cardValue} type="eth" />
+        :
+        <SummaryCard noPadding value={this.state.cardValue} type="stellar" />
+        }
       </div>
     );
   }
-  renderStellarCard = () => {
-    const { classes } = this.props;
-    return (
-      <div className={classes.stellarCard}>
-        <span className={classes.title}>
-          You {this.state.direction === Direction.E2S ? 'Withdraw' : 'Deposit'}
-        </span>
-        <span className={classes.input}>Enter Amount</span>
-        <Input
-          id="uncontrolled"
-          value={this.state.cardValue}
-          onChange={this.onCardValueChange}
-          onBlur={this.validateAmount}
-          // onKeyPress={(e) => { if (e.key === 'Enter') props.onKeyPress(); }}
-          placeholder="Enter Amount"
-          className={classes.input}
-          classes={{ input: classes.inputRoot }}
-          disableUnderline
-          fullWidth
-        />
-        <span className={classes.amount}>{this.state.cardValue}</span>
-        <img draggable={false} src={stellarSGDRSvg} alt="stellar sgdr"/>
-        <span className={classes.sgdr}> SGDR</span>
-        <span className={classes.chainName}>Stellar Blackchain</span>
-      </div>
-    );
-  }
+
   render() {
     console.log('swap page rendered');
     const { classes, match } = this.props;
@@ -206,20 +211,25 @@ class DirectSwapPage extends React.Component<IProps> {
             </PageTitle>
             <PageContainer>
               <span>choose a token: SGDR RTE</span>
-              <button onClick={this.toggleDirection}>toggle</button>
+              <button className={classes.toggleBtn} onClick={this.toggleDirection}>toggle</button>
               <div className={classes.row}>
                 {this.state.direction === Direction.E2S ?
                   <React.Fragment>
-                    {this.renderEthCard()}
-                    {this.renderStellarCard()}
+                    {this.renderCard(CardType.eth)}
+                    {this.renderCard(CardType.stellar)}
                   </React.Fragment> :
                   <React.Fragment>
-                    {this.renderStellarCard()}
-                    {this.renderEthCard()}
+                    {this.renderCard(CardType.stellar)}
+                    {this.renderCard(CardType.eth)}
                 </React.Fragment>
                 }
               </div>
-              <BlueButton handleClick={this.next}>Next</BlueButton>
+              <BlueButton
+                disabled={!this.state.cardValue}
+                handleClick={this.next}
+              >
+                Next
+              </BlueButton>
             </PageContainer>
           </PageBox>
         }
@@ -241,12 +251,16 @@ class DirectSwapPage extends React.Component<IProps> {
           <SwapDetailsPage
             value={this.state.cardValue}
             direction={this.state.direction}
-            goBack={this.goBack}
+            goBack={() => {
+              this.goHome();
+              this.props.resetSelectedTx();
+            }}
             next={this.next}
             pendingTxMap={this.props.pendingTxMap}
             selectedTx={this.props.selectedTx}
           />
         }
+
       </React.Fragment>
     );
   }
@@ -261,6 +275,7 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   return {
     requestE2S: (x: string) => dispatch(actions.requestEthToStellar(x)),
     requestS2E: (x: string) => dispatch(actions.requestStellarToEth(x)),
+    resetSelectedTx: () => dispatch(networkActions.resetSelectedTx()),
   };
 }
 export default connect(

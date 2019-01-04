@@ -1,17 +1,19 @@
-import * as React from 'react';
-import { createStyles } from '@material-ui/core/styles';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { withRouter } from 'react-router';
-import Counter from '../components/Counter';
-
-import { RouteComponentProps, HashRouter, Switch, Route } from 'react-router-dom';
-import RoleContext from '../components/common/RoleContext';
-import { ROLES } from '../constants/general';
-import PageBox from '../components/layout/PageBox';
-import PageTitle from '../components/layout/PageTitle';
-import PageContainer from '../components/layout/PageContainer';
-import Box from '../components/layout/Box';
 import { COLORS } from '../constants/colors';
+import { createStyles } from '@material-ui/core/styles';
+import { ROLES } from '../constants/general';
+import { RouteComponentProps, HashRouter, Switch, Route } from 'react-router-dom';
+import { withRouter } from 'react-router';
+import * as React from 'react';
+import Box from '../components/layout/Box';
+import Counter from '../components/Counter';
+import HistoryList from '../components/issuer/HistoryList';
+import PageBox from '../components/layout/PageBox';
+import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
+import PageContainer from '../components/layout/PageContainer';
+import PageTitle from '../components/layout/PageTitle';
+import RoleContext from '../components/common/RoleContext';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import HistorySwapDetailsPage from './HistorySwapDetailsPage';
 // export interface IProps {
 //   classes: any;
 // }
@@ -49,50 +51,88 @@ const styles = createStyles({
 type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
 class UserHomePage extends React.Component<IProps> {
   static contextType = RoleContext;
+  state = {
+    page: 1,
+    selectedHistory: null,
+  };
   componentDidMount() {
     // console.log(this.props.history.location);
   }
-
+  setSelectedHistory = (value) => {
+    this.setState({
+      selectedHistory: value,
+    });
+  }
+  goBack = () => {
+    this.setState({
+      page: this.state.page - 1 < 0 ? 0 : this.state.page - 1,
+    });
+  }
+  goTo = (pg: number) => {
+    this.setState({
+      page: pg,
+    });
+  }
+  next = () => {
+    this.setState({
+      page: this.state.page + 1 > 3 ? 3 : this.state.page + 1,
+    });
+  }
   render() {
     console.log('home page rendered');
     const { classes, match } = this.props;
     // const { role } = match.params;
     return (
-      <PageBox>
-        <PageTitle>
-          HOME
-        </PageTitle>
-        <PageContainer>
-          <span className={classes.boxLabel}>Overview</span>
-          <div className={classes.row}>
-            <div className={classes.boxConstraint}>
-              <Box fullHeight>
-                <div className={classes.swapNumber}>
-                  5
+      <>
+        {this.state.page === 4 ?
+          <HistorySwapDetailsPage
+            currentSelectedHistory={this.state.selectedHistory}
+            goBack={this.goBack}
+            next={this.next}
+          />
+          :
+          <PageBox>
+            <PageTitle>
+              HOME
+            </PageTitle>
+            <PageContainer>
+              <span className={classes.boxLabel}>Overview</span>
+              <div className={classes.row}>
+                <div className={classes.boxConstraint}>
+                  <Box fullHeight>
+                    <div className={classes.swapNumber}>
+                      5
+                    </div>
+                    <div className={classes.thinText}>
+                      Swaps today
+                    </div>
+                  </Box>
                 </div>
-                <div className={classes.thinText}>
-                  Swaps today
+                <div className={classes.boxConstraint}>
+                  <Box fullHeight>
+                    <div className={classes.thinText}>
+                      Demo Exploration
+                    </div>
+                  </Box>
                 </div>
+              </div>
+              <span className={classes.boxLabel}>In Progress</span>
+              <Box>
+                table
               </Box>
-            </div>
-            <div className={classes.boxConstraint}>
-              <Box fullHeight>
-                <div className={classes.thinText}>
-                  Demo Exploration
-                </div>
+              <span className={classes.boxLabel}>History</span>
+              <Box>
+                <HistoryList
+                  next={this.next}
+                  goBack={this.goBack}
+                  goTo={this.goTo}
+                  setSelectedHistory={this.setSelectedHistory}
+                />
               </Box>
-            </div>
-          </div>
-          <span className={classes.boxLabel}>In Progress</span>
-          <Box>
-            table
-          </Box>
-          <span className={classes.boxLabel}>History</span>
-          <Box>
-            table
-          </Box>
-        </PageContainer>
-      </PageBox>
+            </PageContainer>
+          </PageBox>
+        }
+        </>
     );
   }
 }
