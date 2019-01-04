@@ -20,10 +20,13 @@ import { initialState, IStoreState } from '../reducers/network';
 import { Direction, IAction } from '../utils/general';
 import SwapDetailsPage from './SwapDetailsPage';
 import SwapRequestPage from './SwapRequestPage';
+import exchangeSvg from '../assets/exchange.svg';
 const styles = createStyles({
   toggleBtn: {
     position: 'relative',
-    top: 110,
+    top: 120,
+    height: 35,
+    cursor: 'pointer',
   },
   row: {
     display: 'flex',
@@ -34,7 +37,7 @@ const styles = createStyles({
     color: 'white',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     paddingLeft: '3em',
     justifyContent: 'center',
     width: '50%',
@@ -68,9 +71,16 @@ const styles = createStyles({
     fontFamily: 'din-2014',
   },
   input: {
+    width: '16em',
     margin: '0.7em 0 1.2em 0',
     borderRadius: '0.4em',
     fontFamily: 'din-2014',
+  },
+  cardItemsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   amount: {
     marginTop: '1em',
@@ -179,25 +189,27 @@ class DirectSwapPage extends React.Component<IProps> {
           { [classes.rightCard]: !onLeft }
         )}
       >
-        <span className={classes.title}>
-          You {onLeft ? 'Deposit' : 'Withdraw'}
-        </span>
-        <Input
-          id="uncontrolled"
-          value={this.state.cardValue}
-          onChange={this.onCardValueChange}
-          onBlur={this.validateAmount}
-          placeholder="Enter Amount"
-          className={classes.input}
-          classes={{ input: classes.inputRoot }}
-          disableUnderline
-          fullWidth
-        />
-        {type === CardType.eth ?
-        <SummaryCard noPadding value={this.state.cardValue} type="eth" />
-        :
-        <SummaryCard noPadding value={this.state.cardValue} type="stellar" />
-        }
+        <div className={classes.cardItemsContainer}>
+          <span className={classes.title}>
+            You {onLeft ? 'Deposit' : 'Withdraw'}
+          </span>
+          <Input
+            id="uncontrolled"
+            value={this.state.cardValue}
+            onChange={this.onCardValueChange}
+            onBlur={this.validateAmount}
+            placeholder="Enter Amount"
+            className={classes.input}
+            classes={{ input: classes.inputRoot }}
+            disableUnderline
+            fullWidth
+          />
+          {type === CardType.eth ?
+          <SummaryCard noPadding value={this.state.cardValue} type="eth" />
+          :
+          <SummaryCard noPadding value={this.state.cardValue} type="stellar" />
+          }
+        </div>
       </div>
     );
   }
@@ -214,8 +226,14 @@ class DirectSwapPage extends React.Component<IProps> {
               DIRECT
             </PageTitle>
             <PageContainer>
-              <span>choose a token: SGDR RTE</span>
-              <button className={classes.toggleBtn} onClick={this.toggleDirection}>toggle</button>
+              <div onClick={this.toggleDirection}>
+                <img
+                  className={classes.toggleBtn}
+                  src={exchangeSvg}
+                  alt="swap"
+                />
+              </div>
+
               <div className={classes.row}>
                 {this.state.direction === Direction.E2S ?
                   <React.Fragment>
