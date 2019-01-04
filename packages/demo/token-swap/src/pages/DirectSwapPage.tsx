@@ -58,7 +58,7 @@ const styles = createStyles({
     borderBottomRightRadius: '0.4em',
   },
   title: {
-    marginTop: '3em',
+    marginTop: '2em',
     fontSize: '1.1em',
     fontWeight: 300,
   },
