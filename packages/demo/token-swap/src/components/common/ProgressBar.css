@@ -45,6 +45,11 @@
   background-color: #2196F3;
   box-shadow: none;
 }
+.progress-bar-finished {
+  border-radius: 30px;
+  background-color: #6CBE92;
+  box-shadow: none;
+}
 .progress-bar.text-left {
   text-align: left;
 }

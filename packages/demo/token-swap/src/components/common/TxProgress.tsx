@@ -63,24 +63,31 @@ const styles = createStyles({
     fontWeight: 700,
     color: COLORS.grey,
   },
+  finished: {
+    margin: '1em 0',
+    fontSize: '1.1em',
+    fontWeight: 700,
+    color: COLORS.green,
+  },
   listContainer: {
     color: COLORS.black,
     fontWeight: 200,
+    borderRadius: '0.5em',
     fontSize: '1em',
     letterSpacing: '0.02em',
     margin: '2em 0',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: COLORS.veryLightBlue,
+    backgroundColor: COLORS.lightBlue,
   },
   even: {
-    padding: '0.2em 1.5em',
+    padding: '0.5em 1.5em',
     backgroundColor: COLORS.veryLightBlue,
   },
   odd: {
-    padding: '0.2em 1.5em',
-    backgroundColor: COLORS.lightBlue,
+    padding: '0.5em 1.5em',
   },
+
 });
 
 const FORMAT = 'DD-MM-YYYY H:mm';
@@ -101,7 +108,7 @@ const tick = () => {
   return <img src={tickSvg} alt="tick"/>;
 };
 const greyTick = () => {
-  return <img src={greyTickSvg} alt="tick"/>;
+  return <img src={greyTickSvg} alt="disabledTick"/>;
 };
 const evaluate = (stuff: any, field: string) => {
   if (!stuff) return greyTick();
@@ -120,27 +127,6 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     this.state = {
       progress: 0,
     };
-  }
-
-  renderEthCard = () => {
-    const { classes } = this.props;
-    return (
-      <div>
-        <span>Enter Amount</span>
-        <span>0.00000 SGDR</span>
-        <span>Ethereum Blackchain</span>
-      </div>
-    );
-  }
-  renderStellarCard = () => {
-    const { classes } = this.props;
-    return (
-      <div>
-        <span>Enter Amount</span>
-        <span>0.00000 SGDR</span>
-        <span>Stellar Blackchain</span>
-      </div>
-    );
   }
 
   render() {
@@ -162,6 +148,21 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
       console.log(prog / total * 100);
       return Math.round(prog / total * 100);
     };
+
+    const ethProgress = calProgress(
+      transaction,
+      'hash',
+      'indexID',
+      'aceeptHash',
+      'acceptedBy',
+      'approved'
+    );
+    const stellarProgress = calProgress(
+      transaction,
+      'hash',
+      'unlockHash',
+      'approved'
+    );
 
     const getCurrentAction = (tran, ...fields) => {
       let currentAction = '';
@@ -207,26 +208,12 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
             {
               direction === Direction.E2S ?
               <>
+                {ethProgress === 100 ?
+                <span className={classes.finished}>Complete</span>
+                :
                 <span className={classes.inProgress}>In Progress</span>
-                <ProgressBar
-                  progress={
-                    calProgress(
-                      transaction,
-                      'hash',
-                      'indexID',
-                      'aceeptHash',
-                      'acceptedBy',
-                      'approved'
-                    )}
-                />
-                {/* <span>{getCurrentAction(
-                      transaction,
-                      'hash',
-                      'indexID',
-                      'aceeptHash',
-                      'acceptedBy',
-                      'approved'
-                    )}</span> */}
+                }
+                <ProgressBar progress={ethProgress} />
                 <div className={classes.listContainer}>
                   <span className={classes.odd}>
                     1. Submitted {evaluate(transaction, 'hash')}
@@ -247,25 +234,25 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
               </>
               :
               <>
-                <span>In Progress</span>
+                {stellarProgress === 100 ?
+                <span className={classes.finished}>Complete</span>
+                :
+                <span className={classes.inProgress}>In Progress</span>
+              }
                 <ProgressBar
-                  progress={
-                    calProgress(
-                      transaction,
-                      'hash',
-                      'unlockHash',
-                      'approved'
-                    )}
+                  progress={stellarProgress}
                 />
-                {/* <span>{getCurrentAction(
-                      transaction,
-                      'hash',
-                      'unlockHash',
-                      'approved'
-                    )}</span> */}
-                <span>1. Submitted on Stellar Network {evaluate(transaction, 'hash')}</span>
-                <span>2. Appoval Submitted {evaluate(transaction, 'unlockHash')}</span>
-                <span>3. Appoval Confirmed {evaluate(transaction, 'approved')}</span>
+                <div className={classes.listContainer}>
+                  <span className={classes.odd}>
+                    1. Submitted on Stellar Network {evaluate(transaction, 'hash')}
+                  </span>
+                  <span className={classes.even}>
+                    2. Appoval Submitted {evaluate(transaction, 'unlockHash')}
+                  </span>
+                  <span className={classes.odd}>
+                    3. Appoval Confirmed {evaluate(transaction, 'approved')}
+                  </span>
+                </div>
               </>
             }
           </div>

@@ -9,15 +9,29 @@ interface IProps {
 class ProgressBar extends React.Component<IProps> {
   render() {
     return (
-      <div className="progress progress-striped active">
-        <div
-          role="progressbar progress-striped"
-          style={{ width: `${this.props.progress}%` }}
-          className="progress-bar"
-        >
-          <span className="empty">{' '}</span>
+      <>
+      {this.props.progress === 100 ?
+        <div className="progress">
+          <div
+            role="progressbar"
+            style={{ width: `${this.props.progress}%` }}
+            className="progress-bar-finished"
+          >
+            <span className="empty">{' '}</span>
+          </div>
         </div>
-      </div>
+      :
+        <div className="progress progress-striped active">
+          <div
+            role="progressbar progress-striped"
+            style={{ width: `${this.props.progress}%` }}
+            className="progress-bar"
+          >
+            <span className="empty">{' '}</span>
+          </div>
+        </div>
+      }
+      </>
     );
   }
 }
