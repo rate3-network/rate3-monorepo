@@ -18,6 +18,9 @@ export const ETH_USER = '0xC819277Bd0198753949c0b946da5d8a0cAfd1cB8';
 
 export const STELLAR_MEMO_PREPEND = '00000000006500740068003A';
 
+export const CONVERSION_CONTRACT_ADDR = '0x121159a9a1731fec0690ac92a448795ac3f5d97d';
+export const TOKEN_CONTRACT_ADDR = '0x24c443b8d7da931c14f2f84e1b1d218187f11255';
+
 import localforage from 'localforage'; // tslint:disable-line:import-name
 
 export const localForageConfig = {

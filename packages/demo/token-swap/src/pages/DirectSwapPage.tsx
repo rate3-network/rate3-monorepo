@@ -24,7 +24,7 @@ import exchangeSvg from '../assets/exchange.svg';
 const styles = createStyles({
   toggleBtn: {
     position: 'relative',
-    top: 120,
+    top: 124,
     height: 35,
     cursor: 'pointer',
   },
@@ -38,9 +38,9 @@ const styles = createStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    paddingLeft: '3em',
+    paddingLeft: '2em',
     justifyContent: 'center',
-    width: '50%',
+    width: '70%',
     paddingBottom: '1.5em',
   },
   ethCard: {
@@ -226,13 +226,12 @@ class DirectSwapPage extends React.Component<IProps> {
               DIRECT
             </PageTitle>
             <PageContainer>
-              <div onClick={this.toggleDirection}>
-                <img
-                  className={classes.toggleBtn}
-                  src={exchangeSvg}
-                  alt="swap"
-                />
-              </div>
+              <img
+                onClick={this.toggleDirection}
+                className={classes.toggleBtn}
+                src={exchangeSvg}
+                alt="swap"
+              />
 
               <div className={classes.row}>
                 {this.state.direction === Direction.E2S ?

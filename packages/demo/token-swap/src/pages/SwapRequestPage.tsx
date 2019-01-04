@@ -9,9 +9,9 @@ import Box from '../components/layout/Box';
 import { RouteComponentProps } from 'react-router-dom';
 import BlueButton from '../components/common/BlueButton';
 import { COLORS } from '../constants/colors';
-import { Direction } from '../utils/general';
+import { Direction, truncateAddress } from '../utils/general';
 import lineSvg from '../assets/line.svg';
-import { ETH_ISSUER } from '../constants/defaults';
+import { CONVERSION_CONTRACT_ADDR } from '../constants/defaults';
 import SwapInfoBox from '../components/common/SwapInfoBox';
 
 const styles = createStyles({
@@ -93,7 +93,9 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
                 <span className={classes.cardText}>Rate3</span>
                 <img className={classes.img} src={lineSvg} alt="line"/>
                 <span className={classes.cardTitle}>Smart Contract Address</span>
-                <span className={classes.cardText}>{ETH_ISSUER}</span>
+                <span className={classes.cardText}>
+                  {truncateAddress(CONVERSION_CONTRACT_ADDR, 20)}
+                </span>
               </div>
             </Box>
             <div className={classes.gap} />

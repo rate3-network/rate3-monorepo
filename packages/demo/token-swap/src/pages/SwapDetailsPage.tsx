@@ -53,30 +53,10 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     this.state = {
     };
   }
+
   componentDidMount() {
     console.log(this.props.pendingTxMap);
     console.log(this.props.selectedTx);
-  }
-
-  renderEthCard = () => {
-    const { classes } = this.props;
-    return (
-      <div>
-        <span>Enter Amount</span>
-        <span>0.00000 SGDR</span>
-        <span>Ethereum Blackchain</span>
-      </div>
-    );
-  }
-  renderStellarCard = () => {
-    const { classes } = this.props;
-    return (
-      <div>
-        <span>Enter Amount</span>
-        <span>0.00000 SGDR</span>
-        <span>Stellar Blackchain</span>
-      </div>
-    );
   }
 
   render() {

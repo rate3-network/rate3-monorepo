@@ -1,17 +1,21 @@
 // tslint:disable:import-name
-import { networkActions } from '../actions/network';
-import * as W3 from '../web3Exported';
+import { clone } from 'lodash';
 import * as Contract from 'web3/eth/contract';
-const Web3 = require('web3');
-const ConversionReceiverAbi = require('../constants/ConversionReceiverJson.json').abi;
-const Erc20Abi = require('../constants/ERC20.json').abi;
-import { USER_ETH_PRIV, ISSUER_ETH_PRIV } from '../constants/defaults';
-import { IAction } from '../utils/general';
+import { networkActions } from '../actions/network';
+import { CONVERSION_CONTRACT_ADDR,
+  ISSUER_ETH_PRIV,
+  TOKEN_CONTRACT_ADDR,
+  USER_ETH_PRIV
+} from '../constants/defaults';
 import { ROLES } from '../constants/general';
 // import * as Stellar from 'stellar-sdk';
 import r3Stellar from '../r3-stellar-js/r3-stellar';
+import { IAction } from '../utils/general';
+import * as W3 from '../web3Exported';
 import { IE2SRequest, IS2ERequest } from './issuer';
-import { clone } from 'lodash';
+const Web3 = require('web3');
+const ConversionReceiverAbi = require('../constants/ConversionReceiverJson.json').abi;
+const Erc20Abi = require('../constants/ERC20.json').abi;
 
 export interface IStoreState {
   r3Stellar: typeof r3Stellar;
@@ -58,11 +62,11 @@ IStoreState {
       (window as any).web3 = web3User;
       const contractUser  = new web3User.eth.Contract(
         ConversionReceiverAbi,
-        '0x121159a9a1731fec0690ac92a448795ac3f5d97d'
+        CONVERSION_CONTRACT_ADDR
       );
       const tokenContractUser  = new web3User.eth.Contract(
         Erc20Abi,
-        '0x24c443b8d7da931c14f2f84e1b1d218187f11255'
+        TOKEN_CONTRACT_ADDR
       );
       (window as any).ConversionReceiver = contractUser;
       (window as any).tokenContract = tokenContractUser;
@@ -75,11 +79,11 @@ IStoreState {
       (window as any).web3 = web3Issuer;
       const contract  = new web3Issuer.eth.Contract(
         ConversionReceiverAbi,
-        '0x121159a9a1731fec0690ac92a448795ac3f5d97d'
+        CONVERSION_CONTRACT_ADDR
       );
       const tokenContract  = new web3Issuer.eth.Contract(
         Erc20Abi,
-        '0x24c443b8d7da931c14f2f84e1b1d218187f11255'
+        TOKEN_CONTRACT_ADDR
       );
       (window as any).ConversionReceiver = contract;
       (window as any).tokenContract = tokenContract;
