@@ -81,16 +81,15 @@ function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
   }
   yield retryCall(getTxOperations, 300, 5);
 
-  const { amount, transaction_hash } = opDetail.data._embedded.records[0];
+  const { amount, transaction_hash, created_at } = opDetail.data._embedded.records[0];
   const ethAddress = base64toHEX(txDetail.data.memo).toUpperCase()
     .replace(STELLAR_MEMO_PREPEND, '0x');
   const stellarAddress = STELLAR_USER;
-  console.log('eth address', ethAddress);
-  console.log('amount', opDetail.data._embedded.records[0].amount);
   const updatedRequest = {
     ethAddress,
     stellarAddress,
     amount,
+    created_at,
     hash: transaction_hash,
     type: 'S2E',
     approved: false,
@@ -165,12 +164,13 @@ function* onE2sReceipt(action: IAction) {
 
   const ev = receipt.events.ConversionRequested;
   const { transactionHash } = receipt.events.ConversionRequested;
-  const { ethAddress, indexID } = ev.returnValues;
+  const { ethAddress, indexID, requestTimestamp } = ev.returnValues;
   const stellarAddressConverted = hexToEd25519PublicKey(STELLAR_ADDRESS);
   const conversionAmount = fromTokenAmount(ev.returnValues.amount, 2);
   const updatedRequest = {
     ethAddress,
     indexID,
+    requestTimestamp,
     hash: transactionHash,
     stellarAddress: stellarAddressConverted,
     amount: conversionAmount,

@@ -1,19 +1,15 @@
 import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import Divider from '@material-ui/core/Divider';
-import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import { withRouter } from 'react-router';
 import PageBox from '../components/layout/PageBox';
 import { initialState } from '../reducers/network';
 import PageTitle from '../components/layout/PageTitle';
-import PageContainer from '../components/layout/PageContainer';
-import Box from '../components/layout/Box';
 import { RouteComponentProps } from 'react-router-dom';
 import { COLORS } from '../constants/colors';
-import SummaryCard from '../components/common/SummaryCard';
 import { Direction } from '../utils/general';
 import TxProgress from '../components/common/TxProgress';
+
 const styles = createStyles({
   row: {
     marginTop: '2em',

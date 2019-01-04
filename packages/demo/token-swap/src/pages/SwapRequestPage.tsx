@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import Divider from '@material-ui/core/Divider';
 import { withRouter } from 'react-router';
 import PageBox from '../components/layout/PageBox';
 import PageTitle from '../components/layout/PageTitle';
@@ -10,8 +9,10 @@ import Box from '../components/layout/Box';
 import { RouteComponentProps } from 'react-router-dom';
 import BlueButton from '../components/common/BlueButton';
 import { COLORS } from '../constants/colors';
-import SummaryCard from '../components/common/SummaryCard';
 import { Direction } from '../utils/general';
+import lineSvg from '../assets/line.svg';
+import { ETH_ISSUER } from '../constants/defaults';
+import SwapInfoBox from '../components/common/SwapInfoBox';
 
 const styles = createStyles({
   row: {
@@ -24,14 +25,35 @@ const styles = createStyles({
     textAlign: 'start',
     fontSize: '1rem',
   },
-  greyTitle: {
-    color: COLORS.lighGrey,
-  },
   summaryBox: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  cardTitle: {
+    color: COLORS.black,
+    padding: '1.5em 0 0 0',
+    fontWeight: 300,
+    fontSize: '1em',
+  },
+  cardText: {
+    color: COLORS.black,
+    padding: '1em 0',
+    fontWeight: 500,
+    fontSize: '1.2em',
+  },
+  img: {
+    padding: '1em 0',
+  },
+  gap: {
+    padding: '0 1em',
+  },
+  btnRow: {
+    padding: '4em 0',
+    display: 'flex',
+    width: '40%',
+    justifyContent: 'space-around',
   },
 });
 
@@ -43,39 +65,15 @@ interface IProps {
   requestS2E(): void;
   requestE2S(): void;
 }
+
 type IPropsFinal = WithStyles<typeof styles> & RouteComponentProps<{ role: string }> & IProps;
+
 class SwapRequestPage extends React.Component<IPropsFinal> {
   // state: IState;
   constructor(props: any) {
     super(props);
     this.state = {
     };
-  }
-  componentDidMount() {
-    // console.log(this.props.history.location);
-  }
-
-  renderEthCard = () => {
-    const { classes } = this.props;
-    return (
-      <div>
-        {/* <span>You {this.state.direction === Direction.E2S ? 'Deposit' : 'Withdraw'}</span> */}
-        <span>Enter Amount</span>
-        <span>0.00000 SGDR</span>
-        <span>Ethereum Blackchain</span>
-      </div>
-    );
-  }
-  renderStellarCard = () => {
-    const { classes } = this.props;
-    return (
-      <div>
-        {/* <span>You  {this.state.direction === Direction.E2S ? 'Withdraw' : 'Deposit'}</span> */}
-        <span>Enter Amount</span>
-        <span>0.00000 SGDR</span>
-        <span>Stellar Blackchain</span>
-      </div>
-    );
   }
 
   render() {
@@ -87,52 +85,54 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
           Swap Request
         </PageTitle>
         <PageContainer>
-          <Box>
-            <span className={classes.greyTitle}>Your Deposit</span>
-            <span className={classes.greyTitle}>You Withdraw</span>
-            <Divider />
-            {direction === Direction.E2S ?
-              <>
-                <SummaryCard type="eth" value={this.props.value} />
-                -->
-                <SummaryCard type="stellar" value={this.props.value} />
-              </>
-              :
-              <>
-                <SummaryCard type="stellar" value={this.props.value} />
-                -->
-                <SummaryCard type="eth" value={this.props.value} />
-              </>
-            }
-          </Box>
+          <SwapInfoBox value={value} direction={direction} />
           <div className={classes.row}>
             <Box>
               <div className={classes.summaryBox}>
-                <span>Issuer Identity</span>
-                <span>Rate3</span>
-                <span>Smart Contract Address</span>
-                <span>0x1234...123d</span>
+                <span className={classes.cardTitle}>Issuer Identity</span>
+                <span className={classes.cardText}>Rate3</span>
+                <img className={classes.img} src={lineSvg} alt="line"/>
+                <span className={classes.cardTitle}>Smart Contract Address</span>
+                <span className={classes.cardText}>{ETH_ISSUER}</span>
               </div>
             </Box>
+            <div className={classes.gap} />
             <Box>
               <div className={classes.summaryBox}>
-                <span>Ethereum Transaction Fee</span>
-                <span>0.001 ETH</span>
-                <span>----</span>
-                <span>Stellar Transaction Fee</span>
-                <span>0.001 XLM</span>
+                <span className={classes.cardTitle}>Ethereum Transaction Fee</span>
+                <span className={classes.cardText}>0.0051 ETH</span>
+                <img className={classes.img} src={lineSvg} alt="line"/>
+                <span className={classes.cardTitle}>Stellar Transaction Fee</span>
+                <span className={classes.cardText}>0.00001 XLM</span>
               </div>
             </Box>
           </div>
-          <BlueButton handleClick={this.props.goBack}>Back</BlueButton>
-          <BlueButton
-            handleClick={() => {
-              direction === Direction.E2S ? requestE2S() : requestS2E();
-              this.props.next();
-            }}
-          >
-            Send Request
-          </BlueButton>
+          <div className={classes.btnRow}>
+            <BlueButton
+              outlinedDarkBlue
+              noCap
+              width="10em"
+              fontSize="1.1em"
+              height="2.2em"
+              handleClick={this.props.goBack}
+            >
+              Back
+            </BlueButton>
+            <div className={classes.gap} />
+            <BlueButton
+              darkBlue
+              noCap
+              width="10em"
+              fontSize="1.1em"
+              height="2.2em"
+              handleClick={() => {
+                direction === Direction.E2S ? requestE2S() : requestS2E();
+                this.props.next();
+              }}
+            >
+              Send Request
+            </BlueButton>
+          </div>
         </PageContainer>
       </PageBox>
     );

@@ -20,6 +20,7 @@
     "object-literal-sort-keys": false,
     "member-access": [true, "no-public"],
     "prefer-array-literal": [true, { "allow-type-parameters": true }],
+    "import-name": false,
     "trailing-comma": [
       true,
       {

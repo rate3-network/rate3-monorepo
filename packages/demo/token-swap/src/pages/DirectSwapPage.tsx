@@ -20,6 +20,7 @@ import { initialState, IStoreState } from '../reducers/network';
 import { Direction, IAction } from '../utils/general';
 import SwapDetailsPage from './SwapDetailsPage';
 import SwapRequestPage from './SwapRequestPage';
+
 const styles = createStyles({
   toggleBtn: {
     position: 'relative',
@@ -57,7 +58,7 @@ const styles = createStyles({
   title: {
     marginTop: '3em',
     fontSize: '1.1em',
-    fontWeight: 700,
+    fontWeight: 300,
   },
   inputRoot: {
     backgroundColor: 'white',
@@ -65,10 +66,12 @@ const styles = createStyles({
     paddingLeft: '1em',
     height: '1.5em',
     width: '16em',
+    fontFamily: 'din-2014',
   },
   input: {
     margin: '0.7em 0 1.2em 0',
     borderRadius: '0.4em',
+    fontFamily: 'din-2014',
   },
   amount: {
     marginTop: '1em',
@@ -81,6 +84,9 @@ const styles = createStyles({
   chainName: {
     marginTop: '1em',
 
+  },
+  verticalGap: {
+    paddingTop: '3em',
   },
 });
 enum CardType {
@@ -175,7 +181,7 @@ class DirectSwapPage extends React.Component<IProps> {
         )}
       >
         <span className={classes.title}>
-          You {this.state.direction === Direction.E2S ? 'Deposit' : 'Withdraw'}
+          You {onLeft ? 'Deposit' : 'Withdraw'}
         </span>
         <Input
           id="uncontrolled"
@@ -224,7 +230,13 @@ class DirectSwapPage extends React.Component<IProps> {
                 </React.Fragment>
                 }
               </div>
+              <div className={classes.verticalGap} />
               <BlueButton
+                darkBlue
+                noCap
+                width="10em"
+                fontSize="1.1em"
+                height="2.2em"
                 disabled={!this.state.cardValue}
                 handleClick={this.next}
               >

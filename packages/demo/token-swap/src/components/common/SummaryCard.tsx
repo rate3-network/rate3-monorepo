@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { COLORS, SIDEBAR } from '../../constants/colors';
+import { SUMMARY_CARD, SIDEBAR } from '../../constants/colors';
 import classnames from 'classnames';
 import ethSGDRSvg from '../../assets/ethSGDR.svg';
 import stellarSGDRSvg from '../../assets/stellarSGDR.svg';
@@ -15,10 +15,10 @@ const styles = createStyles({
     gridTemplateAreas: `
       'logo value'
       'logo blockchain'`,
-    gridGap: '0.1em',
+    gridColumnGap: '0.3em',
     gridTemplateColumns: '1fr 4fr',
     color: 'white',
-    borderRadius: '0.2rem',
+    borderRadius: '0.35rem',
   },
   noPadding: {
     padding: 0,
@@ -29,6 +29,16 @@ const styles = createStyles({
   stellar: {
     backgroundColor: SIDEBAR.STELLAR_CARD.bg,
   },
+  ethSGDRText: {
+    fontSize: '1em',
+    fontWeight: 300,
+    color: SUMMARY_CARD.eth.textColor,
+  },
+  stellarSGDRText: {
+    fontSize: '1em',
+    fontWeight: 300,
+    color: SUMMARY_CARD.stellar.textColor,
+  },
   logo: {
     gridArea: 'logo',
     display: 'flex',
@@ -38,9 +48,17 @@ const styles = createStyles({
   value: {
     gridArea: 'value',
   },
-  blockchain: {
+  ethBlockchain: {
     gridArea: 'blockchain',
     fontSize: '0.9em',
+    fontWeight: 300,
+    color: SUMMARY_CARD.eth.textColor,
+  },
+  stellarBlockchain: {
+    gridArea: 'blockchain',
+    fontSize: '0.9em',
+    fontWeight: 300,
+    color: SUMMARY_CARD.stellar.textColor,
   },
 });
 
@@ -74,9 +92,21 @@ class SwapDetailsPage extends React.PureComponent<IPropsFinal> {
           }
         </div>
         <div className={classes.value}>
-          {value} SGDR
+          {value ? value : '0.00'}
+          <span
+            className={classnames(
+              { [classes.ethSGDRText]: type === 'eth' },
+              { [classes.stellarSGDRText]: type === 'stellar' }
+            )}
+          > SGDR
+          </span>
         </div>
-        <div className={classes.blockchain}>
+        <div
+          className={classnames(
+            { [classes.ethBlockchain]: type === 'eth' },
+            { [classes.stellarBlockchain]: type === 'stellar' }
+          )}
+        >
           {type === 'eth' ? 'Ethereum Blockchain' : 'Stellar Blockchain'}
         </div>
       </div>

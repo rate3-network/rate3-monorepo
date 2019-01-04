@@ -1,18 +1,15 @@
 import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import Divider from '@material-ui/core/Divider';
-import { IE2SRequest, IS2ERequest } from '../../reducers/issuer';
 import { withRouter } from 'react-router';
-import PageBox from '../../components/layout/PageBox';
-import { initialState } from '../../reducers/network';
-import PageTitle from '../../components/layout/PageTitle';
 import PageContainer from '../../components/layout/PageContainer';
 import Box from '../../components/layout/Box';
 import { RouteComponentProps } from 'react-router-dom';
 import { COLORS } from '../../constants/colors';
-import SummaryCard from '../../components/common/SummaryCard';
-import { Direction } from '../../utils/general';
+import { Direction, truncateAddress } from '../../utils/general';
+import SwapInfoBox from '../../components/common/SwapInfoBox';
+import lineSvg from '../../assets/line.svg';
+import day from 'dayjs';
 
 const styles = createStyles({
   row: {
@@ -38,8 +35,27 @@ const styles = createStyles({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  cardTitle: {
+    color: COLORS.black,
+    padding: '1.5em 0 0 0',
+    fontWeight: 300,
+    fontSize: '1em',
+  },
+  cardText: {
+    color: COLORS.black,
+    padding: '1em 0',
+    fontWeight: 500,
+    fontSize: '1.2em',
+  },
+  img: {
+    padding: '1em 0',
+  },
+  gap: {
+    padding: '0 1em',
+  },
 });
 
+const FORMAT = 'DD-MM-YYYY H:mm';
 interface IProps {
   tx: any;
   userSetValue: string;
@@ -87,53 +103,40 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
   render() {
     const { classes, tx, direction, userSetValue } = this.props;
     const amount = userSetValue;
-    let transaction = {};
-    if (!tx) {
-      // amount = userSetValue;
-      transaction = {};
-    } else {
-      // amount = tx.amount;
-      transaction = tx;
-    }
+    const transaction = tx ? tx : {};
+    const stellarTime = transaction.created_at && day(transaction.created_at).format(FORMAT);
+    const ethTime = transaction.requestTimestamp
+      && day.unix(transaction.requestTimestamp).format(FORMAT);
+
+    console.log(transaction);
     return (
       <PageContainer>
-        <Box>
-          <span className={classes.greyTitle}>You Deposit</span>
-          <span className={classes.greyTitle}>You Withdraw</span>
-          <Divider />
-          {direction === Direction.E2S ?
-            <>
-              <SummaryCard type="eth" value={amount} />
-              -->
-              <SummaryCard type="stellar" value={amount} />
-            </>
-            :
-            <>
-              <SummaryCard type="stellar" value={amount} />
-              -->
-              <SummaryCard type="eth" value={amount} />
-            </>
-          }
-        </Box>
+        <SwapInfoBox value={amount} direction={direction} />
         <div className={classes.row}>
-          <Box>
-            <div className={classes.summaryBox}>
-              <span>Issuer Identity</span>
-              <span>Rate3</span>
-              <span>Smart Contract Address</span>
-              <span>0x1234...123d</span>
-            </div>
-          </Box>
-          <Box>
-            <div className={classes.summaryBox}>
-              <span>Ethereum Transaction Fee</span>
-              <span>0.001 ETH</span>
-              <span>----</span>
-              <span>Stellar Transaction Fee</span>
-              <span>0.001 XLM</span>
-            </div>
-          </Box>
-        </div>
+            <Box>
+              <div className={classes.summaryBox}>
+                <span className={classes.cardTitle}>Transaction Hash</span>
+                <span className={classes.cardText}>
+                  {transaction.hash && truncateAddress(transaction.hash, 20)}
+                </span>
+                <img className={classes.img} src={lineSvg} alt="line"/>
+                <span className={classes.cardTitle}>Date/Time of Request</span>
+                <span className={classes.cardText}>
+                  {stellarTime || ethTime}
+                </span>
+              </div>
+            </Box>
+            <div className={classes.gap} />
+            <Box>
+              <div className={classes.summaryBox}>
+                <span className={classes.cardTitle}>User Ethereum Address</span>
+                <span className={classes.cardText}>0.0051 ETH</span>
+                <img className={classes.img} src={lineSvg} alt="line"/>
+                <span className={classes.cardTitle}>User Stellar Address</span>
+                <span className={classes.cardText}>0.00001 XLM</span>
+              </div>
+            </Box>
+          </div>
         <Box>
           <div className={classes.col}>
             {

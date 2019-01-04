@@ -13,6 +13,7 @@ export const BLUE_BUTTON = {
   color: 'white',
   bg: '#4FB6F6',
   shadow: '4px 4px 10px rgba(0,0,0,0.1)',
+  disabled: '#C3C3C3',
 };
 
 export const ONBOARDING = {
@@ -53,5 +54,14 @@ export const SIDEBAR = {
     bg: '#64AEE3',
     textColor: '#FCFCFC',
     unitColor: '#DAF7FF',
+  },
+};
+
+export const SUMMARY_CARD = {
+  eth: {
+    textColor: '#D4E8FF',
+  },
+  stellar: {
+    textColor: '#DAF7FF',
   },
 };
