@@ -12,7 +12,8 @@ import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { SIDEBAR } from '../../constants/colors';
 import Ether from '../../assets/Ethereum_logo.svg'; // tslint:disable-line:import-name
-
+import ethSvg from '../../assets/eth.svg';
+import ethSgdrSvg from '../../assets/ethSGDR.svg';
 const styles = createStyles({
   root: {
     display: 'grid',
@@ -26,10 +27,19 @@ const styles = createStyles({
   },
   unit: {
     color: SIDEBAR.ETH_CARD.unitColor,
+    whiteSpace: 'pre',
   },
   col: {
     display: 'flex',
     flexDirection: 'column',
+  },
+  row: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '1.2em',
+  },
+  img: {
+    marginRight: '1em',
   },
 });
 
@@ -49,15 +59,23 @@ class EthBalanceCard extends React.Component<IProps & WithStyles<typeof styles>>
     return (
       <div className={classes.root}>
         <div className={classes.col}>
-          <span>
+          <div className={classes.row}>
+            <img className={classes.img} draggable={false} height="25" src={ethSvg} alt="Ether"/>
             {format(balance)}
             <span className={classes.unit}> ETH</span>
-          </span>
+          </div>
           {this.context.theme === ROLES.USER &&
-            <span>
+            <div className={classes.row}>
+              <img
+                className={classes.img}
+                draggable={false}
+                height="25"
+                src={ethSgdrSvg}
+                alt="sgdr"
+              />
               {fromTokenAmount(sgdrBalance, 4)}
               <span className={classes.unit}> SGDR</span>
-            </span>
+            </div>
           }
         </div>
         <img draggable={false} src={Ether} alt="Ether"/>

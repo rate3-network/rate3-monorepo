@@ -1,35 +1,17 @@
+import { createStyles } from '@material-ui/core/styles';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import { isEmpty } from 'lodash';
 import * as React from 'react';
-
-import { Paper, Divider } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/issuer';
-import { IAction, truncateAddress } from '../../utils/general';
-import { IStoreState, IE2SRequest, IS2ERequest } from '../../reducers/issuer';
-import { createStyles } from '@material-ui/core/styles';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { SIDEBAR, COLORS } from '../../constants/colors';
-import SummaryCard from '../common/SummaryCard';
 import arrowSvg from '../../assets/arrow.svg';
+import { COLORS } from '../../constants/colors';
+import { IE2SRequest, IS2ERequest, IStoreState } from '../../reducers/issuer';
+import { IAction } from '../../utils/general';
+import SummaryCard from '../common/SummaryCard';
 
 const styles = createStyles({
-  root: {
-    width: '100%',
-    display: 'grid',
-    gridTemplateColumns: '2fr 1fr',
-
-    margin: '3em 2em 1em 2em',
-    padding: '1em',
-    backgroundColor: SIDEBAR.ETH_CARD.bg,
-    color: SIDEBAR.ETH_CARD.textColor,
-    borderRadius: '8px',
-  },
-  unit: {
-    color: SIDEBAR.ETH_CARD.unitColor,
-  },
-  approveText: {
-    color: COLORS.blue,
-  },
   row: {
     width: 'calc(95% - 4rem)',
     padding: '0.8rem 2rem',
@@ -38,7 +20,7 @@ const styles = createStyles({
   },
   titleRow: {
     width: '100%',
-    borderBottom: `1px solid ${COLORS.lighGrey}`,
+    borderBottom: `1px solid ${COLORS.veryLightGrey}`,
   },
   centered: {
     color: COLORS.grey,
@@ -50,7 +32,7 @@ const styles = createStyles({
   },
   divider: {
     width: '100%',
-    borderBottom: `1px solid ${COLORS.veryightGrey}`,
+    borderBottom: `1px solid ${COLORS.veryLightGrey}`,
   },
   greyTitle: {
     fontSize: '1.1rem',
@@ -63,6 +45,14 @@ const styles = createStyles({
     alignSelf: 'center',
     justifySelf: 'center',
     cursor: 'pointer',
+  },
+  noEntry: {
+    backgroundColor: COLORS.superLightGrey,
+    width: 'calc(95% - 4rem)',
+    padding: '2rem 2rem',
+    textAlign: 'center',
+    color: COLORS.grey,
+    // width: '100%',
   },
 });
 
@@ -96,7 +86,24 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>> {
     const filteredS2eList = s2eApprovalList && s2eApprovalList.filter((item) => {
       return item.approved !== inProgress;
     });
-
+    if (isEmpty(filteredE2sList) && isEmpty(filteredS2eList)) {
+      return (
+        <>
+          <div className={classes.titleRow}>
+            <div className={classes.row}>
+              <span className={classes.greyTitle}>Type</span>
+              <span className={classes.greyTitle}>Deposit</span>
+              <span className={classes.greyTitle} />
+              <span className={classes.greyTitle}>Withdraw</span>
+              <span className={classes.greyTitle} />
+            </div>
+          </div>
+          <div className={classes.noEntry}>
+            You don't any swaps in this section.
+          </div>
+        </>
+      );
+    }
     return (
       <>
         <div className={classes.titleRow}>

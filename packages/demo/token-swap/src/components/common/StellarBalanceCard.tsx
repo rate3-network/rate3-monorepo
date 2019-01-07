@@ -12,7 +12,8 @@ import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { SIDEBAR } from '../../constants/colors';
 import Stellar from '../../assets/Stellar_logo.svg'; // tslint:disable-line:import-name
-
+import stellarSvg from '../../assets/stellar.svg';
+import stellarSgdrSvg from '../../assets/stellarSGDR.svg';
 const styles = createStyles({
   root: {
     display: 'grid',
@@ -26,10 +27,19 @@ const styles = createStyles({
   },
   unit: {
     color: SIDEBAR.STELLAR_CARD.unitColor,
+    whiteSpace: 'pre',
   },
   col: {
     display: 'flex',
     flexDirection: 'column',
+  },
+  row: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '1.2em',
+  },
+  img: {
+    marginRight: '1em',
   },
 });
 interface IProps {
@@ -53,15 +63,29 @@ class StellarBalanceCard extends React.PureComponent<IProps & WithStyles<typeof 
     return (
       <div className={classes.root}>
         <div className={classes.col}>
-          <span>
+          <div className={classes.row}>
+            <img
+              className={classes.img}
+              draggable={false}
+              height="25"
+              src={stellarSvg}
+              alt="Ether"
+            />
             {format(balance)}
             <span className={classes.unit}> XLM</span>
-          </span>
+          </div>
           {this.context.theme === ROLES.USER &&
-            <span>
+            <div className={classes.row}>
+              <img
+                className={classes.img}
+                draggable={false}
+                height="25"
+                src={stellarSgdrSvg}
+                alt="stellarSgdrSvg"
+              />
               {format(userStellarSgdrBalance)}
               <span className={classes.unit}> SGDR</span>
-            </span>
+            </div>
           }
         </div>
         <img draggable={false} src={Stellar} alt="Stellar"/>

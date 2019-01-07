@@ -19,6 +19,7 @@ export interface IE2SRequest {
   aceeptHash: string;
   acceptedBy: string;
   acceptTimestamp: string;
+  requestTimestamp: string;
 }
 export interface IS2ERequest {
   hash: string;
@@ -27,6 +28,7 @@ export interface IS2ERequest {
   stellarAddress: string;
   type: 'S2E';
   approved: boolean;
+  created_at: string;
 }
 export interface IStoreState {
   e2sApproveTx: null | TransactionReceipt;

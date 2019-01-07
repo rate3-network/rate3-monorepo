@@ -1,17 +1,16 @@
+import { createStyles } from '@material-ui/core/styles';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import { isEmpty } from 'lodash';
 import * as React from 'react';
-
-import { Paper, Divider } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/issuer';
 import * as networkActions from '../../actions/network';
-import { IAction, truncateAddress } from '../../utils/general';
-import { IStoreState, IE2SRequest, IS2ERequest } from '../../reducers/issuer';
-import { createStyles } from '@material-ui/core/styles';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { SIDEBAR, COLORS } from '../../constants/colors';
-import SummaryCard from '../common/SummaryCard';
 import arrowSvg from '../../assets/arrow.svg';
+import { COLORS } from '../../constants/colors';
+import { IE2SRequest, IS2ERequest, IStoreState } from '../../reducers/issuer';
+import { IAction } from '../../utils/general';
+import SummaryCard from '../common/SummaryCard';
 
 const styles = createStyles({
   row: {
@@ -22,7 +21,7 @@ const styles = createStyles({
   },
   titleRow: {
     width: '100%',
-    borderBottom: `1px solid ${COLORS.lighGrey}`,
+    borderBottom: `1px solid ${COLORS.veryLightGrey}`,
   },
   centered: {
     color: COLORS.grey,
@@ -34,7 +33,7 @@ const styles = createStyles({
   },
   divider: {
     width: '100%',
-    borderBottom: `1px solid ${COLORS.veryightGrey}`,
+    borderBottom: `1px solid ${COLORS.veryLightGrey}`,
   },
   greyTitle: {
     fontSize: '1.1rem',
@@ -42,11 +41,18 @@ const styles = createStyles({
     justifySelf: 'center',
     color: COLORS.lighGrey,
   },
-  details: {
+  approve: {
     color: COLORS.blue,
     alignSelf: 'center',
     justifySelf: 'center',
     cursor: 'pointer',
+  },
+  noEntry: {
+    backgroundColor: COLORS.superLightGrey,
+    width: 'calc(95% - 4rem)',
+    padding: '2rem 2rem',
+    textAlign: 'center',
+    color: COLORS.grey,
   },
 });
 
@@ -74,6 +80,24 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
     const filteredS2eList = s2eApprovalList && s2eApprovalList.filter((item) => {
       return !item.approved;
     });
+    if (isEmpty(filteredE2sList) && isEmpty(filteredS2eList)) {
+      return (
+        <>
+          <div className={classes.titleRow}>
+            <div className={classes.row}>
+              <span className={classes.greyTitle}>Type</span>
+              <span className={classes.greyTitle}>Deposit</span>
+              <span className={classes.greyTitle} />
+              <span className={classes.greyTitle}>Withdraw</span>
+              <span className={classes.greyTitle} />
+            </div>
+          </div>
+          <div className={classes.noEntry}>
+            You don't any swaps to approve.
+          </div>
+        </>
+      );
+    }
     return (
       <>
         <div className={classes.titleRow}>
@@ -100,14 +124,14 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
                 <SummaryCard type="stellar" value={request.amount} />
               </span>
               <span
-                className={classes.details}
+                className={classes.approve}
                 onClick={() => {
                   this.props.setCurrentApproval(request);
                   this.props.selectTx(request.hash);
                   this.props.next();
                 }}
               >
-                Details <b>></b>
+                Approve <b>></b>
               </span>
             </div>
           </div>
@@ -127,14 +151,14 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
                 <SummaryCard type="eth" value={request.amount} />
               </span>
               <span
-                className={classes.details}
+                className={classes.approve}
                 onClick={() => {
                   this.props.setCurrentApproval(request);
                   this.props.selectTx(request.hash);
                   this.props.next();
                 }}
               >
-                Details <b>></b>
+                Approve <b>></b>
               </span>
               {/* <span>{truncateAddress(request.hash)}</span> */}
             </div>

@@ -5,7 +5,8 @@ export const COLORS = {
   blue: '#4392F1',
   lightBlue: '#F5F9FF',
   veryLightBlue: '#FAFDFF',
-  veryightGrey: '#DEDEDE',
+  veryLightGrey: '#DEDEDE',
+  superLightGrey: '#FCFCFC',
   green: '#6CBE92',
 };
 export const PAGE = {

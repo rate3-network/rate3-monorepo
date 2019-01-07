@@ -12,6 +12,7 @@ import {
   Ed25519PublicKeyToHex,
   toTokenAmount,
   handleContractCall,
+  retryCall,
 } from '../utils/general';
 import {
   ETH_ISSUER,
@@ -88,7 +89,11 @@ function* distributeToUser(r3, asset, value: string | number) {
 
   const distributeRes = yield r3.stellar.submitTransaction(distributeTxDetail);
   const link = distributeRes._links.transaction.href;
-  const txDetail = yield axios.get(link);
+  let txDetail;
+  function* getTxDetail() {
+    txDetail = yield axios.get(link);
+  }
+  yield retryCall(getTxDetail, 300, 5);
   console.log('able to distribute asset to user', distributeRes, txDetail.data.created_at);
   return txDetail.data.created_at;
 }

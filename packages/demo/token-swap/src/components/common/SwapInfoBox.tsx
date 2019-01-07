@@ -29,26 +29,29 @@ const styles = createStyles({
 });
 
 interface IProps {
-  direction: Direction;
+  direction: Direction | null;
   value: string;
+  forApproval?: boolean;
 }
 
 type IPropsFinal = WithStyles<typeof styles> & IProps;
 
 class SwapInfoBox extends React.Component<IPropsFinal> {
-  constructor(props: any) {
-    super(props);
-    this.state = {
-    };
-  }
+  static defaultProps = {
+    forApproval: false,
+  };
 
   render() {
-    const { classes, value, direction } = this.props;
+    const { classes, value, direction, forApproval } = this.props;
+    const name = forApproval ? 'User' : 'You';
+    if (direction === null) {
+      return null;
+    }
     return (
       <Box>
         <div className={classes.titleRow}>
-          <span className={classes.greyTitle}>Your Deposit</span>
-          <span className={classes.greyTitle}>You Withdraw</span>
+          <span className={classes.greyTitle}>{name} Deposit</span>
+          <span className={classes.greyTitle}>{name} Withdraw</span>
         </div>
         <div className={classes.cardRow}>
           {direction === Direction.E2S ?

@@ -257,10 +257,21 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
               :
               <>
                 {stellarProgress === 100 ?
-                <span className={classes.finished}>Complete</span>
+                  <span className={classes.finished}>Complete</span>
                 :
-                <span className={classes.inProgress}>In Progress</span>
-              }
+                  <span className={classes.inProgress}>In Progress</span>
+                }
+                {stellarProgress === 0 &&
+                  <span className={classes.inProgress}>
+                    Submitting Your Transaction. Please Do Not Close this Tab.
+                  </span>
+                }
+                {stellarProgress === 33 &&
+                  <span className={classes.inProgress}>
+                    Your Request has been submitted. You can now switch to Issuer and Approve
+                    this Swap.
+                  </span>
+                }
                 <ProgressBar
                   progress={stellarProgress}
                 />
