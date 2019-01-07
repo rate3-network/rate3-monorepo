@@ -45,11 +45,19 @@ const styles = createStyles({
     fontWeight: 500,
     margin: '1rem 0',
   },
+  boxLabelNoMargin: {
+    color: COLORS.grey,
+    fontSize: '1.5rem',
+    fontWeight: 100,
+    alignSelf: 'flex-start',
+    margin: '0rem 0 1rem 0',
+  },
   boxLabel: {
     color: COLORS.grey,
     fontSize: '1.5rem',
     fontWeight: 100,
     alignSelf: 'flex-start',
+    margin: '2.5rem 0 1rem 0',
   },
 });
 interface IProps {
@@ -125,7 +133,7 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
               HOME
             </PageTitle>
             <PageContainer>
-              <span className={classes.boxLabel}>Overview</span>
+              <span className={classes.boxLabelNoMargin}>Overview</span>
               <div className={classes.row}>
                 <div className={classes.boxConstraint}>
                   <Box fullHeight>

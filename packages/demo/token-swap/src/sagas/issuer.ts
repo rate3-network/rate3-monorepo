@@ -5,6 +5,7 @@ import { all, take, call, put, takeLatest, select } from 'redux-saga/effects';
 import { issuerActions } from '../actions/issuer';
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import localforage from 'localforage'; // tslint:disable-line:import-name
+import axios from 'axios';
 import { networkActions } from '../actions/network';
 import {
   IAction,
@@ -74,9 +75,9 @@ async function mintAssetToDistributor(r3, asset, value: string | number) {
   console.log('able to issue asset to distributor', resSend);
 }
 
-async function distributeToUser(r3, asset, value: string | number) {
+function* distributeToUser(r3, asset, value: string | number) {
   const distributorKeyPair = r3.Stellar.Keypair.fromSecret(STELLAR_DISTRIBUTOR_SECRET);
-  const distributeToUserTx = await r3.assetContracts.distributeAsset({
+  const distributeToUserTx = yield r3.assetContracts.distributeAsset({
     asset,
     amount: value,
     distributionAccountPublicKey: STELLAR_DISTRIBUTOR,
@@ -85,8 +86,11 @@ async function distributeToUser(r3, asset, value: string | number) {
   const distributeTxDetail = distributeToUserTx.tx;
   distributeTxDetail.sign(distributorKeyPair);
 
-  const distributeRes = await r3.stellar.submitTransaction(distributeTxDetail);
-  console.log('able to distribute asset to user', distributeRes);
+  const distributeRes = yield r3.stellar.submitTransaction(distributeTxDetail);
+  const link = distributeRes._links.transaction.href;
+  const txDetail = yield axios.get(link);
+  console.log('able to distribute asset to user', distributeRes, txDetail.data.created_at);
+  return txDetail.data.created_at;
 }
 
 function* approveE2S(tx: IE2SRequest) {
@@ -229,11 +233,11 @@ function* onE2sReceipt(action: IAction) {
   }
 
   yield mintAssetToDistributor(r3, asset, amount);
-  yield distributeToUser(r3, asset, amount);
+  const timestamp = yield distributeToUser(r3, asset, amount);
   const finishedRequest = {
     ...updatedRequest,
     approved: true,
-    stellarTokenMintTimestamp: 'todo',
+    stellarTokenMintTimestamp: timestamp,
   };
   yield put({ type: networkActions.ADD_TO_MAP, payload: finishedRequest });
   try {
@@ -270,9 +274,9 @@ function* onS2eReceipt(action: IAction) {
   const { unlockTimestamp } = ev.returnValues;
   const updatedRequest = {
     ...updatedTx,
+    unlockTimestamp,
     approvalHash: transactionHash,
     approvedBy: ETH_ISSUER,
-    approveTimestamp: unlockTimestamp,
     approved: true,
   };
   yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });

@@ -87,7 +87,14 @@ const styles = createStyles({
   odd: {
     padding: '0.5em 1.5em',
   },
-
+  timestampRow: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  timestampCol: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
 });
 
 const FORMAT = 'DD-MM-YYYY H:mm';
@@ -136,6 +143,10 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     const stellarTime = transaction.created_at && day(transaction.created_at).format(FORMAT);
     const ethTime = transaction.requestTimestamp
       && day.unix(transaction.requestTimestamp).format(FORMAT);
+    const stellarApprovalTime = transaction.stellarTokenMintTimestamp &&
+      day(transaction.stellarTokenMintTimestamp).format(FORMAT);
+    const ethApprovalTime = transaction.unlockTimestamp
+      && day.unix(transaction.unlockTimestamp).format(FORMAT);
 
     const calProgress = (tran, ...fields) => {
       const total = fields.length;
@@ -186,10 +197,21 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                   {transaction.hash && truncateAddress(transaction.hash, 20)}
                 </span>
                 <img className={classes.img} src={lineSvg} alt="line"/>
-                <span className={classes.cardTitle}>Date/Time of Request</span>
-                <span className={classes.cardText}>
-                  {stellarTime || ethTime}
-                </span>
+                <div className={classes.timestampRow}>
+                <div className={classes.timestampCol}>
+                  <span className={classes.cardTitle}>Date/Time of Request</span>
+                  <span className={classes.cardText}>
+                    {stellarTime || ethTime}
+                  </span>
+                </div>
+                <div className={classes.gap} />
+                <div className={classes.timestampCol}>
+                  <span className={classes.cardTitle}>Date/Time of Approval</span>
+                  <span className={classes.cardText}>
+                    {stellarApprovalTime || ethApprovalTime}
+                  </span>
+                </div>
+                </div>
               </div>
             </Box>
             <div className={classes.gap} />

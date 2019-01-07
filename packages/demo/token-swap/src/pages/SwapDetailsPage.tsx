@@ -28,12 +28,6 @@ const styles = createStyles({
   greyTitle: {
     color: COLORS.lighGrey,
   },
-  summaryBox: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });
 
 interface IProps {

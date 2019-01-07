@@ -9,9 +9,12 @@ import { IStoreState, IE2SRequest, IS2ERequest } from '../../reducers/issuer';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { SIDEBAR, COLORS } from '../../constants/colors';
+import SummaryCard from '../common/SummaryCard';
+import arrowSvg from '../../assets/arrow.svg';
 
 const styles = createStyles({
   root: {
+    width: '100%',
     display: 'grid',
     gridTemplateColumns: '2fr 1fr',
 
@@ -27,11 +30,46 @@ const styles = createStyles({
   approveText: {
     color: COLORS.blue,
   },
+  row: {
+    width: 'calc(95% - 4rem)',
+    padding: '0.8rem 2rem',
+    display: 'grid',
+    gridTemplateColumns: '1.5fr 2fr 0.5fr 2fr 2fr',
+  },
+  titleRow: {
+    width: '100%',
+    borderBottom: `1px solid ${COLORS.lighGrey}`,
+  },
+  centered: {
+    color: COLORS.grey,
+    alignSelf: 'center',
+    justifySelf: 'center',
+  },
+  fullLength: {
+    width: '100%',
+  },
+  divider: {
+    width: '100%',
+    borderBottom: `1px solid ${COLORS.veryightGrey}`,
+  },
+  greyTitle: {
+    fontSize: '1.1rem',
+    alignSelf: 'center',
+    justifySelf: 'center',
+    color: COLORS.lighGrey,
+  },
+  details: {
+    color: COLORS.blue,
+    alignSelf: 'center',
+    justifySelf: 'center',
+    cursor: 'pointer',
+  },
 });
 
 interface IProps {
   e2sApprovalList: null | IE2SRequest[];
   s2eApprovalList: null | IS2ERequest[];
+  inProgress?: boolean;
   fetchE2S(): void;
   fetchS2E(): void;
   next(): void;
@@ -41,49 +79,86 @@ interface IProps {
   // setCurrentApproval(value: any): void;
 }
 class HistoryList extends React.Component<IProps & WithStyles<typeof styles>> {
+  static defaultProps = {
+    inProgress: false,
+  };
   componentDidMount() {
     this.props.fetchE2S();
     this.props.fetchS2E();
   }
 
   render() {
-    const { e2sApprovalList, s2eApprovalList, fetchE2S, fetchS2E, classes } = this.props;
+    const { e2sApprovalList, s2eApprovalList, inProgress, classes } = this.props;
+
     const filteredE2sList = e2sApprovalList && e2sApprovalList.filter((item) => {
-      return item.approved;
+      return item.approved !== inProgress;
     });
     const filteredS2eList = s2eApprovalList && s2eApprovalList.filter((item) => {
-      return item.approved;
+      return item.approved !== inProgress;
     });
+
     return (
       <>
+        <div className={classes.titleRow}>
+          <div className={classes.row}>
+            <span className={classes.greyTitle}>Type</span>
+            <span className={classes.greyTitle}>Deposit</span>
+            <span className={classes.greyTitle} />
+            <span className={classes.greyTitle}>Withdraw</span>
+            <span className={classes.greyTitle} />
+          </div>
+        </div>
         {filteredE2sList && filteredE2sList.map(request => (
-          <div
-            key={request.hash}
-            onClick={() => {
-              this.props.setSelectedHistory(request);
-              this.props.goTo(4);
-            }}
-          >
-            <span>{truncateAddress(request.hash)}</span>
-            ----
-            <span>{request.type}</span>
-            ----
-            <span>{request.amount}</span>
+          <div className={classes.fullLength} key={request.hash}>
+            <div className={classes.divider} />
+            <div className={classes.row}>
+              <span className={classes.centered}>Direct</span>
+              <span className={classes.centered}>
+                <SummaryCard type="eth" value={request.amount} />
+              </span>
+              <span className={classes.centered}>
+                <img className={classes.centered} src={arrowSvg} alt="arrow"/>
+              </span>
+              <span className={classes.centered}>
+                <SummaryCard type="stellar" value={request.amount} />
+              </span>
+              <span
+                className={classes.details}
+                onClick={() => {
+                  this.props.setSelectedHistory(request);
+                  this.props.goTo(4);
+                }}
+              >
+                Details <b>></b>
+              </span>
+            </div>
           </div>
         ))}
         {filteredS2eList && filteredS2eList.map(request => (
-          <div
-            key={request.hash}
-            onClick={() => {
-              this.props.setSelectedHistory(request);
-              this.props.goTo(4);
-            }}
-          >
-            <span>{truncateAddress(request.hash)}</span>
-            ----
-            <span>{request.type}</span>
-            ----
-            <span>{request.amount}</span>
+          <div className={classes.fullLength} key={request.hash}>
+            <div className={classes.divider} />
+            <div className={classes.row}>
+              <span className={classes.centered}>Direct</span>
+              <span className={classes.centered}>
+                <SummaryCard type="stellar" value={request.amount} />
+              </span>
+              <span className={classes.centered}>
+                <img className={classes.centered} src={arrowSvg} alt="arrow"/>
+              </span>
+              <span className={classes.centered}>
+                <SummaryCard type="eth" value={request.amount} />
+              </span>
+              <span
+                className={classes.details}
+                onClick={() => {
+                  this.props.setSelectedHistory(request);
+                  this.props.goTo(4);
+                }}
+              >
+                Details <b>></b>
+              </span>
+              {/* <span>{truncateAddress(request.hash)}</span> */}
+            </div>
           </div>
         ))}
       </>

@@ -10,23 +10,43 @@ import { IStoreState, IE2SRequest, IS2ERequest } from '../../reducers/issuer';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { SIDEBAR, COLORS } from '../../constants/colors';
+import SummaryCard from '../common/SummaryCard';
+import arrowSvg from '../../assets/arrow.svg';
 
 const styles = createStyles({
-  root: {
+  row: {
+    width: 'calc(95% - 4rem)',
+    padding: '0.8rem 2rem',
     display: 'grid',
-    gridTemplateColumns: '2fr 1fr',
-
-    margin: '3em 2em 1em 2em',
-    padding: '1em',
-    backgroundColor: SIDEBAR.ETH_CARD.bg,
-    color: SIDEBAR.ETH_CARD.textColor,
-    borderRadius: '8px',
+    gridTemplateColumns: '1.5fr 2fr 0.5fr 2fr 2fr',
   },
-  unit: {
-    color: SIDEBAR.ETH_CARD.unitColor,
+  titleRow: {
+    width: '100%',
+    borderBottom: `1px solid ${COLORS.lighGrey}`,
   },
-  approveText: {
+  centered: {
+    color: COLORS.grey,
+    alignSelf: 'center',
+    justifySelf: 'center',
+  },
+  fullLength: {
+    width: '100%',
+  },
+  divider: {
+    width: '100%',
+    borderBottom: `1px solid ${COLORS.veryightGrey}`,
+  },
+  greyTitle: {
+    fontSize: '1.1rem',
+    alignSelf: 'center',
+    justifySelf: 'center',
+    color: COLORS.lighGrey,
+  },
+  details: {
     color: COLORS.blue,
+    alignSelf: 'center',
+    justifySelf: 'center',
+    cursor: 'pointer',
   },
 });
 
@@ -56,42 +76,68 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
     });
     return (
       <>
+        <div className={classes.titleRow}>
+          <div className={classes.row}>
+            <span className={classes.greyTitle}>Type</span>
+            <span className={classes.greyTitle}>Deposit</span>
+            <span className={classes.greyTitle} />
+            <span className={classes.greyTitle}>Withdraw</span>
+            <span className={classes.greyTitle} />
+          </div>
+        </div>
         {filteredE2sList && filteredE2sList.map(request => (
-          <div key={request.hash}>
-            <span>{truncateAddress(request.hash)}</span>
-            ----
-            <span>{request.type}</span>
-            ----
-            <span>{request.amount}</span>
-            <span
-              className={classes.approveText}
-              onClick={() => {
-                this.props.setCurrentApproval(request);
-                this.props.selectTx(request.hash);
-                this.props.next();
-              }}
-            >
-              Approve >
-            </span>
+          <div className={classes.fullLength} key={request.hash}>
+            <div className={classes.divider} />
+            <div className={classes.row}>
+              <span className={classes.centered}>Direct</span>
+              <span className={classes.centered}>
+                <SummaryCard type="eth" value={request.amount} />
+              </span>
+              <span className={classes.centered}>
+                <img className={classes.centered} src={arrowSvg} alt="arrow"/>
+              </span>
+              <span className={classes.centered}>
+                <SummaryCard type="stellar" value={request.amount} />
+              </span>
+              <span
+                className={classes.details}
+                onClick={() => {
+                  this.props.setCurrentApproval(request);
+                  this.props.selectTx(request.hash);
+                  this.props.next();
+                }}
+              >
+                Details <b>></b>
+              </span>
+            </div>
           </div>
         ))}
         {filteredS2eList && filteredS2eList.map(request => (
-          <div key={request.hash}>
-            <span>{truncateAddress(request.hash)}</span>
-            ----
-            <span>{request.type}</span>
-            ----
-            <span>{request.amount}</span>
-            <span
-              className={classes.approveText}
-              onClick={() => {
-                this.props.setCurrentApproval(request);
-                this.props.selectTx(request.hash);
-                this.props.next();
-              }}
-            >
-            Approve >
-            </span>
+          <div className={classes.fullLength} key={request.hash}>
+            <div className={classes.divider} />
+            <div className={classes.row}>
+              <span className={classes.centered}>Direct</span>
+              <span className={classes.centered}>
+                <SummaryCard type="stellar" value={request.amount} />
+              </span>
+              <span className={classes.centered}>
+                <img className={classes.centered} src={arrowSvg} alt="arrow"/>
+              </span>
+              <span className={classes.centered}>
+                <SummaryCard type="eth" value={request.amount} />
+              </span>
+              <span
+                className={classes.details}
+                onClick={() => {
+                  this.props.setCurrentApproval(request);
+                  this.props.selectTx(request.hash);
+                  this.props.next();
+                }}
+              >
+                Details <b>></b>
+              </span>
+              {/* <span>{truncateAddress(request.hash)}</span> */}
+            </div>
           </div>
         ))}
       </>
@@ -113,3 +159,4 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
 }
 export default connect(
   mapStateToProps, mapDispatchToProps)(withStyles(styles)(AwaitingApprovalList));
+
