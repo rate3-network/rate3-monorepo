@@ -76,7 +76,7 @@ export const Ed25519PublicKeyToHex = (input) => {
 // ================================================================================================
 import { delay, eventChannel, END } from 'redux-saga';
 
-export function* retryCall(action, delayTime, maxRetry) {
+export function* retryCall(action, delayTime = 300, maxRetry = 5) {
   for (let i = 0; i < maxRetry; i += 1) {
     try {
       const order = yield action();

@@ -52,7 +52,6 @@ const styles = createStyles({
     padding: '2rem 2rem',
     textAlign: 'center',
     color: COLORS.grey,
-    // width: '100%',
   },
 });
 

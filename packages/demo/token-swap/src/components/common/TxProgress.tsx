@@ -1,18 +1,19 @@
-import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { withRouter } from 'react-router';
-import PageContainer from '../../components/layout/PageContainer';
-import Box from '../../components/layout/Box';
-import { RouteComponentProps } from 'react-router-dom';
-import { COLORS } from '../../constants/colors';
-import { Direction, truncateAddress } from '../../utils/general';
-import SwapInfoBox from '../../components/common/SwapInfoBox';
-import lineSvg from '../../assets/line.svg';
 import day from 'dayjs';
-import ProgressBar from './ProgressBar';
-import tickSvg from '../../assets/tick.svg';
+import * as React from 'react';
+import { withRouter } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import greyTickSvg from '../../assets/greyTick.svg';
+import lineSvg from '../../assets/line.svg';
+import tickSvg from '../../assets/tick.svg';
+import SwapInfoBox from '../../components/common/SwapInfoBox';
+import Box from '../../components/layout/Box';
+import PageContainer from '../../components/layout/PageContainer';
+import { COLORS } from '../../constants/colors';
+import { ETH_USER, STELLAR_USER } from '../../constants/defaults';
+import { Direction, truncateAddress } from '../../utils/general';
+import ProgressBar from './ProgressBar';
 
 const styles = createStyles({
   row: {
@@ -217,79 +218,87 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
             <div className={classes.gap} />
             <Box>
               <div className={classes.summaryBox}>
-                <span className={classes.cardTitle}>User Ethereum Address</span>
-                <span className={classes.cardText}>0.0051 ETH</span>
+              <span className={classes.cardTitle}>User Ethereum Address</span>
+                <span className={classes.cardText}>{truncateAddress(ETH_USER)}</span>
                 <img className={classes.img} src={lineSvg} alt="line"/>
                 <span className={classes.cardTitle}>User Stellar Address</span>
-                <span className={classes.cardText}>0.00001 XLM</span>
+                <span className={classes.cardText}>{truncateAddress(STELLAR_USER)}</span>
               </div>
             </Box>
           </div>
-        <Box>
-          <div className={classes.col}>
-            {
-              direction === Direction.E2S ?
-              <>
-                {ethProgress === 100 ?
-                <span className={classes.finished}>Complete</span>
-                :
-                <span className={classes.inProgress}>In Progress</span>
-                }
-                <ProgressBar progress={ethProgress} />
-                <div className={classes.listContainer}>
-                  <span className={classes.odd}>
-                    1. Submitted {evaluate(transaction, 'hash')}
-                  </span>
-                  <span className={classes.even}>
-                    2. Network Confirmed {evaluate(transaction, 'indexID')}
-                  </span>
-                  <span className={classes.odd}>
-                    3. Appoval Submitted {evaluate(transaction, 'aceeptHash')}
-                  </span>
-                  <span className={classes.even}>
-                    4 Appoval Confirmed {evaluate(transaction, 'acceptedBy')}
-                  </span>
-                  <span className={classes.odd}>
-                    5. Converting to Stellar SGDR {evaluate(transaction, 'approved')}
-                  </span>
-                </div>
-              </>
-              :
-              <>
-                {stellarProgress === 100 ?
+        {transaction.error ?
+          <Box>
+            <div className={classes.col}>
+              Error: {transaction.error}
+            </div>
+          </Box>
+        :
+          <Box>
+            <div className={classes.col}>
+              {
+                direction === Direction.E2S ?
+                <>
+                  {ethProgress === 100 ?
                   <span className={classes.finished}>Complete</span>
-                :
+                  :
                   <span className={classes.inProgress}>In Progress</span>
-                }
-                {stellarProgress === 0 &&
-                  <span className={classes.inProgress}>
-                    Submitting Your Transaction. Please Do Not Close this Tab.
-                  </span>
-                }
-                {stellarProgress === 33 &&
-                  <span className={classes.inProgress}>
-                    Your Request has been submitted. You can now switch to Issuer and Approve
-                    this Swap.
-                  </span>
-                }
-                <ProgressBar
-                  progress={stellarProgress}
-                />
-                <div className={classes.listContainer}>
-                  <span className={classes.odd}>
-                    1. Submitted on Stellar Network {evaluate(transaction, 'hash')}
-                  </span>
-                  <span className={classes.even}>
-                    2. Appoval Submitted {evaluate(transaction, 'unlockHash')}
-                  </span>
-                  <span className={classes.odd}>
-                    3. Appoval Confirmed {evaluate(transaction, 'approved')}
-                  </span>
-                </div>
-              </>
-            }
-          </div>
-        </Box>
+                  }
+                  <ProgressBar progress={ethProgress} />
+                  <div className={classes.listContainer}>
+                    <span className={classes.odd}>
+                      1. Submitted {evaluate(transaction, 'hash')}
+                    </span>
+                    <span className={classes.even}>
+                      2. Network Confirmed {evaluate(transaction, 'indexID')}
+                    </span>
+                    <span className={classes.odd}>
+                      3. Appoval Submitted {evaluate(transaction, 'aceeptHash')}
+                    </span>
+                    <span className={classes.even}>
+                      4 Appoval Confirmed {evaluate(transaction, 'acceptedBy')}
+                    </span>
+                    <span className={classes.odd}>
+                      5. Converting to Stellar SGDR {evaluate(transaction, 'approved')}
+                    </span>
+                  </div>
+                </>
+                :
+                <>
+                  {stellarProgress === 100 ?
+                    <span className={classes.finished}>Complete</span>
+                  :
+                    <span className={classes.inProgress}>In Progress</span>
+                  }
+                  {stellarProgress === 0 &&
+                    <span className={classes.inProgress}>
+                      Submitting Your Transaction. Please Do Not Close this Tab.
+                    </span>
+                  }
+                  {stellarProgress === 33 &&
+                    <span className={classes.inProgress}>
+                      Your Request has been submitted. You can now switch to Issuer and Approve
+                      this Swap.
+                    </span>
+                  }
+                  <ProgressBar
+                    progress={stellarProgress}
+                  />
+                  <div className={classes.listContainer}>
+                    <span className={classes.odd}>
+                      1. Submitted on Stellar Network {evaluate(transaction, 'hash')}
+                    </span>
+                    <span className={classes.even}>
+                      2. Appoval Submitted {evaluate(transaction, 'unlockHash')}
+                    </span>
+                    <span className={classes.odd}>
+                      3. Appoval Confirmed {evaluate(transaction, 'approved')}
+                    </span>
+                  </div>
+                </>
+              }
+            </div>
+          </Box>
+        }
       </PageContainer>
     );
   }

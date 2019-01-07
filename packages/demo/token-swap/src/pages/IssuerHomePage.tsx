@@ -187,7 +187,7 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
         <SwapDetailsPage
           value={amount}
           direction={direction}
-          goBack={this.goBack}
+          goBack={this.goHome}
           next={this.next}
           pendingTxMap={this.props.pendingTxMap}
           selectedTx={this.props.selectedTx}

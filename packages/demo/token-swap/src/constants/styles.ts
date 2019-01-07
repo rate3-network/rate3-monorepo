@@ -3,7 +3,7 @@ interface IStyles {
   [key: string]: any;
 }
 export const basicLayout: IStyles = {
-  width: 'calc(100% - 7rem)',
+  width: 'calc(100% - 6rem)',
   minHeight: 'calc(100vh - 4rem)',
   padding: '3.5rem 3rem',
   display: 'flex',

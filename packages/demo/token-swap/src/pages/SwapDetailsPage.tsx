@@ -59,7 +59,7 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     console.log(selectedRequest);
     return (
       <PageBox>
-        <PageTitle withBackButton={true} backName="Direct" backAction={this.props.goBack}>
+        <PageTitle withBackButton={true} backName="BACK" backAction={this.props.goBack}>
           SWAP DETAILS
         </PageTitle>
         {

@@ -25,6 +25,7 @@ import {
   STELLAR_MEMO_PREPEND,
   STELLAR_USER_SECRET,
   STELLAR_USER,
+  HORIZON,
 } from '../constants/defaults';
 
 type TransactionType = IE2SRequest | IS2ERequest;
@@ -32,6 +33,11 @@ localforage.config(localForageConfig);
 function* fetchE2S() {
   try {
     const resultList: any[] = [];
+    // const res = yield axios.get(
+    //   `${HORIZON}/accounts/${STELLAR_USER}/payments?limit=10&order=desc`);
+    // res.data._embedded.records.forEach((item) => {
+    //   resultList.push(item);
+    // });
     const result = yield localforage.iterate((value: any, key, iterationNumber) => {
       if (value.type === 'E2S') {
         resultList.push(value);
@@ -95,17 +101,17 @@ function* distributeToUser(r3, asset, value: string | number) {
   }
   yield retryCall(getTxDetail, 300, 5);
   console.log('able to distribute asset to user', distributeRes, txDetail.data.created_at);
-  return txDetail.data.created_at;
+  return {
+    created_at: txDetail.data.created_at,
+    stellarTokenMintHash: distributeRes.hash,
+  };
 }
 
 function* approveE2S(tx: IE2SRequest) {
   const getR3 = state => state.network.r3;
   const r3 = yield select(getR3);
   console.log(r3);
-  const asset = new r3.Stellar.Asset('TestAsset', STELLAR_ISSUER);
-  const issuerKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_ISSUER_SECRET);
-  const distributorKeyPair = r3.Stellar.Keypair.fromSecret(STELLAR_DISTRIBUTOR_SECRET);
-  const userKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_USER_SECRET);
+
   const { indexID } = tx;
   const getContract = state => state.network.contract;
   const contract = yield select(getContract);
@@ -164,6 +170,7 @@ function* approveS2E(tx: IS2ERequest) {
 
 function* approve(action: IAction) {
   const tx: TransactionType = action.payload;
+  console.log('going tru approve');
   if (tx.approved) {
     console.log('dun mess with me');
     return;
@@ -238,11 +245,12 @@ function* onE2sReceipt(action: IAction) {
   }
 
   yield mintAssetToDistributor(r3, asset, amount);
-  const timestamp = yield distributeToUser(r3, asset, amount);
+  const finalRes = yield distributeToUser(r3, asset, amount);
   const finishedRequest = {
     ...updatedRequest,
     approved: true,
-    stellarTokenMintTimestamp: timestamp,
+    stellarTokenMintHash: finalRes.stellarTokenMintHash,
+    stellarTokenMintTimestamp: finalRes.created_at,
   };
   yield put({ type: networkActions.ADD_TO_MAP, payload: finishedRequest });
   try {
@@ -257,6 +265,13 @@ function* onE2sReceipt(action: IAction) {
 
 function* onE2sError(action: IAction) {
   console.log(action);
+  const { message, tx } = action.payload;
+  console.log(action);
+  const updatedRequest = {
+    ...tx,
+    error: message,
+  };
+  yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
 }
 
 function* onS2eReceipt(action: IAction) {

@@ -1,5 +1,4 @@
 import { take, call, put, takeLatest, select } from 'redux-saga/effects';
-import { delay } from 'redux-saga';
 import { userActions } from '../actions/user';
 import { networkActions } from '../actions/network';
 import axios from 'axios';
@@ -16,12 +15,8 @@ import {
 } from '../utils/general';
 import localforage from 'localforage'; // tslint:disable-line:import-name
 import {
-  ETH_ISSUER,
   ETH_USER,
   localForageConfig,
-  STELLAR_DISTRIBUTOR_SECRET,
-  STELLAR_DISTRIBUTOR,
-  STELLAR_ISSUER_SECRET,
   STELLAR_ISSUER,
   STELLAR_MEMO_PREPEND,
   STELLAR_USER_SECRET,
@@ -29,33 +24,7 @@ import {
  } from '../constants/defaults';
 
 localforage.config(localForageConfig);
-function* mintAssetToDistributor(r3, asset, value: string | number, issuerKeypair) {
-  const mintAssetToDistributorTx = yield r3.assetContracts.mintAsset({
-    asset,
-    amount: value,
-    issuingAccountPublicKey: STELLAR_ISSUER,
-    distributionAccountPublicKey: STELLAR_DISTRIBUTOR,
-  });
-  const mintAssetToDistributorTxDetail = mintAssetToDistributorTx.tx;
-  mintAssetToDistributorTxDetail.sign(issuerKeypair);
 
-  const resSend = yield r3.stellar.submitTransaction(mintAssetToDistributorTxDetail);
-  console.log('able to issue asset to distributor', resSend);
-}
-
-function* distributeToUser(r3, asset, value: string | number, distributorKeyPair) {
-  const distributeToUserTx = yield r3.assetContracts.distributeAsset({
-    asset,
-    amount: value,
-    distributionAccountPublicKey: STELLAR_DISTRIBUTOR,
-    destinationAccountPublicKey: STELLAR_USER,
-  });
-  const distributeTxDetail = distributeToUserTx.tx;
-  distributeTxDetail.sign(distributorKeyPair);
-
-  const distributeRes = yield r3.stellar.submitTransaction(distributeTxDetail);
-  console.log('able to distribute asset to user', distributeRes);
-}
 function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
   const convertToEth = yield r3.assetContracts.convertAssetToEthereumToken({
     asset,

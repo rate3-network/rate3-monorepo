@@ -131,9 +131,7 @@ class DirectSwapPage extends React.Component<IProps> {
       selectedHistory: null,
     };
   }
-  componentDidMount() {
-    // console.log(this.props.history.location);
-  }
+
   validateAmount = () => {
     const parsed = parseFloat(this.state.cardValue);
     console.log(parsed);
