@@ -1,12 +1,13 @@
 import { all, call, put, takeLatest, select } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { networkActions, resetSelectedTx } from '../actions/network';
+import { issuerActions } from '../actions/issuer';
 import axios from 'axios';
 import extrapolateFromXdr from '../utils/extrapolateFromXdr';
 import { base64toHEX, IAction } from '../utils/general';
 import localforage from 'localforage'; // tslint:disable-line:import-name
 import { ETH_USER } from '../constants/defaults';
-
+import moment from 'moment';
 const HORIZON = 'https://horizon-testnet.stellar.org';
 
 const STELLAR_USER = 'GAOBZE4CZZOQEB6A43R4L36ESZXCAGDVU7V5ECM5LE4KTLDZ6A4S6CTY';
@@ -115,6 +116,75 @@ function* getIssuerStellarBalance(action: any) {
   }
 }
 
+function* fetchE2SFromStellar() {
+  yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: true });
+  const stellarHistory: any[] = [];
+  let req = axios.get(
+    `${HORIZON}/accounts/${STELLAR_USER}/payments?limit=200&order=desc`);
+  let res = yield req;
+
+  res.data._embedded.records.forEach((item) => {
+    const newItem = {
+      ...item,
+      key: item.transaction_hash,
+      timestamp: moment(item.created_at).format('X'),
+      sortingTimestamp: moment(item.created_at).format('X'),
+      type: 'E2S',
+      fromBlockchain: true,
+    };
+    stellarHistory.push(newItem);
+  });
+
+  console.log(res.data);
+  while (res.data._embedded.records.length > 0) {
+    yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: true });
+    req = axios.get(res.data._links.next.href);
+    res = yield req;
+
+    res.data._embedded.records.forEach((item) => {
+      const newItem = {
+        ...item,
+        key: item.transaction_hash,
+        timestamp: moment(item.created_at).format('X'),
+        sortingTimestamp: moment(item.created_at).format('X'),
+        type: 'E2S',
+        fromBlockchain: true,
+      };
+      stellarHistory.push(newItem);
+    });
+
+    console.log(res.data);
+  }
+  yield put({ type: networkActions.FETCH_S2E_FROM_STELLAR, payload: stellarHistory });
+  yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: false });
+}
+
+function* fetchS2EFromEth() {
+  yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: true });
+  const ethHistory: any[] = [];
+  const getContract = state => state.network.contract;
+  const contract = yield select(getContract);
+  const options = { fromBlock: 0, toBlock: 'latest' };
+  const eventReq = contract.getPastEvents('ConversionUnlocked', options);
+  const result = yield eventReq;
+  result.forEach((item) => {
+    const newItem = {
+      ...item,
+      key: item.transactionHash,
+      approveHash: item.transactionHash,
+      ethAddress: item.returnValues.ethAddress,
+      stellarAddress: item.returnValues.stellarAddress,
+      amount: item.returnValues.amount,
+      unlockTimestamp: item.returnValues.unlockTimestamp,
+      sortingTimestamp: item.returnValues.unlockTimestamp,
+      type: 'S2E',
+      fromBlockchain: true,
+    };
+    ethHistory.push(newItem);
+  });
+  yield put({ type: networkActions.FETCH_E2S_FROM_ETH, payload: ethHistory });
+  yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: false });
+}
 export default function* network() {
   yield takeLatest(networkActions.INIT_USER, getUserEthBalance);
   yield takeLatest(networkActions.INIT_USER, setR3);
@@ -123,5 +193,8 @@ export default function* network() {
 
   yield takeLatest(networkActions.INIT_ISSUER, getIssuerEthBalance);
   yield takeLatest(networkActions.INIT_ISSUER, setR3);
+
+  yield takeLatest(issuerActions.FETCH_ETH_TO_STELLAR, fetchE2SFromStellar);
+  yield takeLatest(issuerActions.FETCH_STELLAR_TO_ETH, fetchS2EFromEth);
   // yield takeLatest(networkActions.INIT_ISSUER, setUp);
 }

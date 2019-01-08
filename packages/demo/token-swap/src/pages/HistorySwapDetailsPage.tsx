@@ -93,7 +93,7 @@ class HistorySwapDetailsPage extends React.Component<IPropsFinal> {
     let direction = Direction.S2E;
     if (currentSelectedHistory) {
       amount = currentSelectedHistory.amount;
-      if ('indexID' in currentSelectedHistory) {
+      if (currentSelectedHistory.type === 'E2S') {
         direction = Direction.E2S;
       }
     }

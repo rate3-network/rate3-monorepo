@@ -73,7 +73,6 @@ class SwapDetailsPage extends React.PureComponent<IPropsFinal> {
     noPadding: false,
   };
   render() {
-    console.log('swap page rendered');
     const { classes, type, value, noPadding } = this.props;
     return (
       <div

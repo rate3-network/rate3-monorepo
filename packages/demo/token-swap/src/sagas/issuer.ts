@@ -30,6 +30,8 @@ import {
 
 type TransactionType = IE2SRequest | IS2ERequest;
 localforage.config(localForageConfig);
+
+
 function* fetchE2S() {
   try {
     const resultList: any[] = [];
@@ -315,6 +317,7 @@ function* onS2eError(action: IAction) {
 }
 export default function* network() {
   yield takeLatest(issuerActions.FETCH_ETH_TO_STELLAR, fetchE2S);
+
   yield takeLatest(issuerActions.FETCH_STELLAR_TO_ETH, fetchS2E);
   yield takeLatest(issuerActions.APPROVE, approve);
 

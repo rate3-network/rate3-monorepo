@@ -127,9 +127,9 @@ function* requestE2S(action: IAction) {
 }
 
 function* onE2sReceipt(action: IAction) {
-  console.log('on receipt');
   const STELLAR_ADDRESS = Ed25519PublicKeyToHex(STELLAR_USER);
   const { receipt } = action.payload;
+  console.log('on receipt', receipt);
 
   const ev = receipt.events.ConversionRequested;
   const { transactionHash } = receipt.events.ConversionRequested;

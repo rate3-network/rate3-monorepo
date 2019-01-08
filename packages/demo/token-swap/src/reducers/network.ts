@@ -32,6 +32,9 @@ export interface IStoreState {
   issuerStellarBalance: string;
   selectedTx: string;
   pendingTxMap: {} | Map<string, IS2ERequest | IE2SRequest>;
+  stellarHistory: any[];
+  ethHistory: any[];
+  loadingHistory: boolean;
 }
 
 export const initialState = {
@@ -41,6 +44,7 @@ export const initialState = {
   contract: null,
   tokenContract: null,
   web3Obj: null,
+  loadingHistory: true,
   userEthBalance: 'loading...',
   userStellarBalance: 'loading...',
   userStellarSgdrBalance: 'loading...',
@@ -49,6 +53,8 @@ export const initialState = {
   issuerStellarBalance: 'loading...',
   selectedTx: '',
   pendingTxMap: {},
+  stellarHistory: [],
+  ethHistory: [],
 };
 // const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
 const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
@@ -138,6 +144,24 @@ IStoreState {
       return {
         ...state,
         pendingTxMap: newMap,
+      };
+    case networkActions.FETCH_S2E_FROM_STELLAR:
+      const paymentsFromStellar = action.payload;
+      return {
+        ...state,
+        stellarHistory: paymentsFromStellar,
+      };
+    case networkActions.FETCH_E2S_FROM_ETH:
+      const eventsFromEth = action.payload;
+      return {
+        ...state,
+        ethHistory: eventsFromEth,
+      };
+    case networkActions.SET_HISTORY_LOADING_STATE:
+      const bool = action.payload;
+      return {
+        ...state,
+        loadingHistory: bool,
       };
   }
   return state;

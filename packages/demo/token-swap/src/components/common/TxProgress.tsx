@@ -119,6 +119,8 @@ const greyTick = () => {
   return <img src={greyTickSvg} alt="disabledTick"/>;
 };
 const evaluate = (stuff: any, field: string) => {
+  if (stuff.fromBlockchain) return tick();
+
   if (!stuff) return greyTick();
 
   try {
@@ -150,6 +152,7 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
       && day.unix(transaction.unlockTimestamp).format(FORMAT);
 
     const calProgress = (tran, ...fields) => {
+      if (tran.fromBlockchain) return 100;
       const total = fields.length;
       let prog = 0;
       fields.forEach((field) => {
@@ -195,6 +198,12 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
               <div className={classes.summaryBox}>
                 <span className={classes.cardTitle}>Transaction Hash</span>
                 <span className={classes.cardText}>
+                  {(transaction.fromBlockchain && transaction.type === 'S2E')
+                  && truncateAddress(transaction.approveHash, 20)}
+
+                  {(transaction.fromBlockchain && transaction.type === 'E2S')
+                  && truncateAddress(transaction.transaction_hash, 20)}
+
                   {transaction.hash && truncateAddress(transaction.hash, 20)}
                 </span>
                 <img className={classes.img} src={lineSvg} alt="line"/>

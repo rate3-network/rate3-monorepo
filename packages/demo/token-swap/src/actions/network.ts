@@ -13,6 +13,9 @@ export const networkActions = keyMirror(
     ADD_TO_MAP: null,
     SELECT_TX: null,
     RESET_SELECTED_TX: null,
+    FETCH_S2E_FROM_STELLAR: null,
+    FETCH_E2S_FROM_ETH: null,
+    SET_HISTORY_LOADING_STATE: null,
   },
   'NETWORK'
 );
@@ -36,3 +39,9 @@ export const selectTx =
   createAction<string, void>(networkActions.SELECT_TX);
 export const resetSelectedTx =
   createAction<void, void>(networkActions.RESET_SELECTED_TX);
+export const fetchE2SFromStellar =
+  createAction<any, void>(networkActions.FETCH_S2E_FROM_STELLAR);
+export const fetchS2EFromEth =
+  createAction<void, void>(networkActions.FETCH_E2S_FROM_ETH);
+export const setLoadingHistory =
+  createAction<boolean, void>(networkActions.SET_HISTORY_LOADING_STATE);
