@@ -89,7 +89,7 @@ export function* retryCall(action, delayTime = 300, maxRetry = 5) {
   }
   throw new Error('Max retries reached');
 }
-export const fromTokenAmount = (amount, dp) => {
+export const fromTokenAmount = (amount, dp = 4) => {
   if (amount === 'loading...') return amount;
   return (
     (new Decimal(amount))

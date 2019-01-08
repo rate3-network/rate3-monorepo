@@ -106,10 +106,6 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
     this.props.fetchE2S();
     this.props.fetchS2E();
   }
-  // componentWillReceiveProps() {
-  //   this.props.fetchE2S();
-  //   this.props.fetchS2E();
-  // }
 
   render() {
     const {
@@ -133,7 +129,7 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
       combinedList = orderBy(stellarHistory.concat(ethHistory), ['sortingTimestamp'], ['desc']);
     }
     const listLen = combinedList.length;
-    // let currPage: any = [];
+
     const { page, noPerPage } = this.state;
 
     const currPage = listLen <= noPerPage ?

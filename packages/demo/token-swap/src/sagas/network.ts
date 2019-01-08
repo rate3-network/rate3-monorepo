@@ -4,7 +4,7 @@ import { networkActions, resetSelectedTx } from '../actions/network';
 import { issuerActions } from '../actions/issuer';
 import axios from 'axios';
 import extrapolateFromXdr from '../utils/extrapolateFromXdr';
-import { base64toHEX, IAction } from '../utils/general';
+import { fromTokenAmount, IAction } from '../utils/general';
 import localforage from 'localforage'; // tslint:disable-line:import-name
 import { ETH_USER } from '../constants/defaults';
 import moment from 'moment';
@@ -126,6 +126,7 @@ function* fetchE2SFromStellar() {
   res.data._embedded.records.forEach((item) => {
     const newItem = {
       ...item,
+      amount: parseFloat(item.amount).toFixed(4),
       key: item.transaction_hash,
       timestamp: moment(item.created_at).format('X'),
       sortingTimestamp: moment(item.created_at).format('X'),
@@ -144,6 +145,7 @@ function* fetchE2SFromStellar() {
     res.data._embedded.records.forEach((item) => {
       const newItem = {
         ...item,
+        amount: parseFloat(item.amount).toFixed(4),
         key: item.transaction_hash,
         timestamp: moment(item.created_at).format('X'),
         sortingTimestamp: moment(item.created_at).format('X'),
@@ -174,7 +176,7 @@ function* fetchS2EFromEth() {
       approveHash: item.transactionHash,
       ethAddress: item.returnValues.ethAddress,
       stellarAddress: item.returnValues.stellarAddress,
-      amount: item.returnValues.amount,
+      amount: fromTokenAmount(item.returnValues.amount),
       unlockTimestamp: item.returnValues.unlockTimestamp,
       sortingTimestamp: item.returnValues.unlockTimestamp,
       type: 'S2E',

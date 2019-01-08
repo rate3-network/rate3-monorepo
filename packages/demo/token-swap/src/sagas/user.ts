@@ -57,8 +57,8 @@ function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
   const updatedRequest = {
     ethAddress,
     stellarAddress,
-    amount,
     created_at,
+    amount: parseFloat(amount).toFixed(4),
     hash: transaction_hash,
     type: 'S2E',
     approved: false,
@@ -135,7 +135,7 @@ function* onE2sReceipt(action: IAction) {
   const { transactionHash } = receipt.events.ConversionRequested;
   const { ethAddress, indexID, requestTimestamp } = ev.returnValues;
   const stellarAddressConverted = hexToEd25519PublicKey(STELLAR_ADDRESS);
-  const conversionAmount = fromTokenAmount(ev.returnValues.amount, 2);
+  const conversionAmount = fromTokenAmount(ev.returnValues.amount, 4);
   const updatedRequest = {
     ethAddress,
     indexID,
