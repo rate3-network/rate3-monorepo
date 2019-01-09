@@ -12,6 +12,7 @@ import { IStoreState as INetoworkState } from '../../reducers/network';
 import { IAction } from '../../utils/general';
 import SummaryCard from '../common/SummaryCard';
 import Progress from '@material-ui/core/CircularProgress';
+import classnames from 'classnames';
 
 const styles = createStyles({
   row: {
@@ -68,7 +69,13 @@ const styles = createStyles({
     cursor: 'pointer',
   },
   spinner: {
-    padding: '2em',
+    padding: '1em',
+    height: 50,
+    transition: 'height 0.5s ease-in-out',
+  },
+  hiddenSpinner: {
+    height: 0,
+    transition: 'height 0.5s ease-in-out',
   },
 });
 
@@ -140,8 +147,16 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
     const renderHistory = () => {
       return (
         <>
-          {this.props.loadingHistory &&
-            <div className={classes.spinner}><Progress /></div>}
+          <div
+            className={classnames(
+              { [classes.spinner]: this.props.loadingHistory },
+              { [classes.hiddenSpinner]: !this.props.loadingHistory }
+            )}
+          >
+            {this.props.loadingHistory &&
+              <Progress />
+            }
+          </div>
           {currPage.map(request => (
             <div className={classes.fullLength} key={request.key}>
               <div className={classes.divider} />

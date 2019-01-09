@@ -100,11 +100,12 @@ function* requestE2S(action: IAction) {
   console.log(contract);
   try {
     const STELLAR_ADDRESS = Ed25519PublicKeyToHex(STELLAR_USER);
-
+    console.log('STELLAR_ADDRESS', STELLAR_ADDRESS);
     const tx = contract.methods.requestConversion(toTokenAmount(amount), STELLAR_ADDRESS);
     const options = {
       from: ETH_USER,
-      gasLimit: '200000',
+      gas: '5000000',
+      gasPrice: '50000000000',
     };
     const txSent = tx.send(options);
     const chan = yield call(

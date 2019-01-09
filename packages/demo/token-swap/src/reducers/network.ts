@@ -56,8 +56,8 @@ export const initialState = {
   stellarHistory: [],
   ethHistory: [],
 };
-// const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
-const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
+const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
+// const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
 
 export function network(state: IStoreState = initialState, action: IAction):
 IStoreState {
