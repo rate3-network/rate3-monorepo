@@ -1,7 +1,7 @@
 // tslint:disable:object-shorthand-properties-first
 // tslint:disable:no-empty
 
-import { all, take, call, put, takeLatest, select } from 'redux-saga/effects';
+import { all, take, call, put, takeEvery, select } from 'redux-saga/effects';
 import { issuerActions } from '../actions/issuer';
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import localforage from 'localforage'; // tslint:disable-line:import-name
@@ -316,17 +316,17 @@ function* onS2eError(action: IAction) {
   console.log(action);
 }
 export default function* network() {
-  yield takeLatest(issuerActions.FETCH_ETH_TO_STELLAR, fetchE2S);
+  yield takeEvery(issuerActions.FETCH_ETH_TO_STELLAR, fetchE2S);
 
-  yield takeLatest(issuerActions.FETCH_STELLAR_TO_ETH, fetchS2E);
-  yield takeLatest(issuerActions.APPROVE, approve);
+  yield takeEvery(issuerActions.FETCH_STELLAR_TO_ETH, fetchS2E);
+  yield takeEvery(issuerActions.APPROVE, approve);
 
-  yield takeLatest('APPROVE_E2S_HASH', onE2sHash);
-  yield takeLatest('APPROVE_E2S_RECEIPT', onE2sReceipt);
-  yield takeLatest('APPROVE_E2S_ERROR', onE2sError);
+  yield takeEvery('APPROVE_E2S_HASH', onE2sHash);
+  yield takeEvery('APPROVE_E2S_RECEIPT', onE2sReceipt);
+  yield takeEvery('APPROVE_E2S_ERROR', onE2sError);
 
-  yield takeLatest('APPROVE_S2E_HASH', onS2eHash);
-  yield takeLatest('APPROVE_S2E_RECEIPT', onS2eReceipt);
-  yield takeLatest('APPROVE_S2E_ERROR', onS2eError);
-  // yield takeLatest(networkActions.INIT_ISSUER, setUp);
+  yield takeEvery('APPROVE_S2E_HASH', onS2eHash);
+  yield takeEvery('APPROVE_S2E_RECEIPT', onS2eReceipt);
+  yield takeEvery('APPROVE_S2E_ERROR', onS2eError);
+  // yield takeEvery(networkActions.INIT_ISSUER, setUp);
 }

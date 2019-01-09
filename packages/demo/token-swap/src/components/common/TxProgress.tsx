@@ -146,8 +146,11 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     const stellarTime = transaction.created_at && day(transaction.created_at).format(FORMAT);
     const ethTime = transaction.requestTimestamp
       && day.unix(transaction.requestTimestamp).format(FORMAT);
-    const stellarApprovalTime = transaction.stellarTokenMintTimestamp &&
-      day(transaction.stellarTokenMintTimestamp).format(FORMAT);
+    const stellarApprovalTime = transaction.fromBlockchain ?
+      (transaction.timestamp
+      && day.unix(transaction.timestamp).format(FORMAT))
+      : (transaction.stellarTokenMintTimestamp &&
+      day(transaction.stellarTokenMintTimestamp).format(FORMAT));
     const ethApprovalTime = transaction.unlockTimestamp
       && day.unix(transaction.unlockTimestamp).format(FORMAT);
 
@@ -208,19 +211,23 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                 </span>
                 <img className={classes.img} src={lineSvg} alt="line"/>
                 <div className={classes.timestampRow}>
-                <div className={classes.timestampCol}>
-                  <span className={classes.cardTitle}>Date/Time of Request</span>
-                  <span className={classes.cardText}>
-                    {stellarTime || ethTime}
-                  </span>
-                </div>
-                <div className={classes.gap} />
-                <div className={classes.timestampCol}>
-                  <span className={classes.cardTitle}>Date/Time of Approval</span>
-                  <span className={classes.cardText}>
-                    {stellarApprovalTime || ethApprovalTime}
-                  </span>
-                </div>
+                  {!transaction.fromBlockchain &&
+                    <>
+                      <div className={classes.timestampCol}>
+                        <span className={classes.cardTitle}>Date/Time of Request</span>
+                        <span className={classes.cardText}>
+                          {stellarTime || ethTime}
+                        </span>
+                      </div>
+                      <div className={classes.gap} />
+                    </>
+                  }
+                  <div className={classes.timestampCol}>
+                    <span className={classes.cardTitle}>Date/Time of Approval</span>
+                    <span className={classes.cardText}>
+                      {stellarApprovalTime || ethApprovalTime}
+                    </span>
+                  </div>
                 </div>
               </div>
             </Box>
