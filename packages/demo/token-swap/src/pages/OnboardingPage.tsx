@@ -9,8 +9,7 @@ import { ONBOARDING, SIDEBAR } from '../constants/colors';
 import userLogo from '../assets/user_rate3_logo.svg';
 import { ONBOARDING_TEXTS } from '../constants/defaults';
 import coin from '../assets/coin_fly.svg';
-import imgLeft from '../assets/img_left.svg';
-import imgRight from '../assets/img_right.svg';
+import page2 from '../assets/page2.svg';
 import p2p1 from '../assets/p2p.svg';
 import p2p2 from '../assets/p2p_2.svg';
 import direct1 from '../assets/direct_1.svg';
@@ -18,7 +17,7 @@ import direct2 from '../assets/direct_2.svg';
 // export interface IProps {
 //   classes: any;
 // }
-const imgArray = [coin, imgLeft, p2p1, p2p2, direct1, direct2];
+const imgArray = [coin, page2, p2p1, p2p2, direct1, direct2];
 const styles = createStyles({
   page: {
     backgroundColor: 'white',
@@ -79,24 +78,26 @@ const styles = createStyles({
     fontSize: '2.5rem',
     fontWeight: 700,
     margin: '2rem 0',
+    textAlign: 'center',
   },
   mainText: {
     fontSize: '1.1rem',
     margin: '2rem 0',
+    textAlign: 'center',
   },
   titleThin: {
     fontSize: '2rem',
     fontWeight: 300,
     margin: '2rem 0',
+    textAlign: 'center',
   },
   titleMedium: {
     fontSize: '2rem',
     fontWeight: 700,
     margin: '2rem 0',
+    textAlign: 'center',
   },
   imgGrp: {
-    display: 'flex',
-    justifyContent: 'space-between',
     width: '100%',
   },
 });
@@ -141,10 +142,9 @@ class OnboardingPage extends React.PureComponent<IProps> {
                 <div className={classes.titleThin}>
                   {ONBOARDING_TEXTS[1].title}
                 </div>
-                <div className={classes.imgGrp}>
-                  <img src={imgLeft} alt=""/>
-                  <img src={imgRight} alt=""/>
-                </div>
+                {/* <div className={classes.imgGrp}> */}
+                  <img src={page2} alt=""/>
+                {/* </div> */}
               </div>
             }
             {page > 1 &&
