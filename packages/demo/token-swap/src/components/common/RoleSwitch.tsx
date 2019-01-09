@@ -91,10 +91,12 @@ const styles = createStyles({
 interface IProps {
   initUser: () => void;
   initIssuer: () => void;
+  resetSelectedTx: () => void;
 }
 class RoleSwitch extends React.Component<IProps & WithStyles<typeof styles> & RouteComponentProps> {
   static contextType = RoleContext;
   toggle = () => {
+    this.props.resetSelectedTx();
     if (this.context.theme === ROLES.ISSUER) {
       this.props.initUser();
     } else {
@@ -152,6 +154,7 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   return {
     initUser: () => dispatch(actions.initUser()),
     initIssuer: () => dispatch(actions.initIssuer()),
+    resetSelectedTx: () => dispatch(actions.resetSelectedTx()),
   };
 }
 export default connect(null, mapDispatchToProps)(withRouter(withStyles(styles)(RoleSwitch)));

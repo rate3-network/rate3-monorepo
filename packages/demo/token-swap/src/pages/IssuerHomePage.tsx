@@ -3,8 +3,10 @@ import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 import { IStoreState, initialState } from '../reducers/network';
-import { Direction } from '../utils/general';
+import { Direction, IAction } from '../utils/general';
+import * as networkActions from '../actions/network';
 
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import { RouteComponentProps } from 'react-router-dom';
@@ -63,6 +65,7 @@ const styles = createStyles({
 interface IProps {
   pendingTxMap: typeof initialState.pendingTxMap;
   selectedTx: string;
+  resetSelectedTx: () => void;
 }
 interface IState {
   page: number;
@@ -100,6 +103,7 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
     this.setState({
       page: this.state.page - 1 < 0 ? 0 : this.state.page - 1,
     });
+    this.props.resetSelectedTx();
   }
   goHome = () => {
     this.goTo(1);
@@ -108,6 +112,7 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
     this.setState({
       page: pg,
     });
+    this.props.resetSelectedTx();
   }
   next = () => {
     this.setState({
@@ -163,7 +168,13 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
               </Box>
               <span className={classes.boxLabel}>In Progress</span>
               <Box>
-                table
+                <HistoryList
+                  inProgressForIssuer
+                  next={this.next}
+                  goBack={this.goBack}
+                  goTo={this.goTo}
+                  setSelectedHistory={this.setSelectedHistory}
+                />
               </Box>
               <span className={classes.boxLabel}>History</span>
               <Box>
@@ -208,6 +219,10 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
     selectedTx: network.selectedTx,
   };
 }
-
+export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
+  return {
+    resetSelectedTx: () => dispatch(networkActions.resetSelectedTx()),
+  };
+}
 export default connect(
-  mapStateToProps, null)(withStyles(styles)(withRouter(IssuerHomePage)));
+  mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(IssuerHomePage)));

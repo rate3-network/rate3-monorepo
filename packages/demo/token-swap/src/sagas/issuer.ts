@@ -1,7 +1,8 @@
 // tslint:disable:object-shorthand-properties-first
 // tslint:disable:no-empty
 
-import { all, take, call, put, takeEvery, select } from 'redux-saga/effects';
+import { take, call, put, takeEvery, select } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 import { issuerActions } from '../actions/issuer';
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import localforage from 'localforage'; // tslint:disable-line:import-name
@@ -188,9 +189,11 @@ function* onE2sHash(action: IAction) {
   console.log(action);
   const updatedRequest = {
     ...tx,
+    inProgress: true,
     aceeptHash: hash,
   };
   yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
+  yield fetchE2S();
   try {
     yield localforage.setItem(
       tx.hash,
@@ -205,9 +208,11 @@ function* onS2eHash(action: IAction) {
   console.log(action);
   const updatedRequest = {
     ...tx,
+    inProgress: true,
     unlockHash: hash,
   };
   yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
+  yield fetchS2E();
 
   try {
     yield localforage.setItem(
@@ -263,6 +268,9 @@ function* onE2sReceipt(action: IAction) {
   } catch (err) {
     console.log(err);
   }
+  yield fetchE2S();
+  yield put({ type: issuerActions.FETCH_ETH_TO_STELLAR });
+
 }
 
 function* onE2sError(action: IAction) {
@@ -311,6 +319,10 @@ function* onS2eReceipt(action: IAction) {
   } catch (err) {
     console.log(err);
   }
+  // yield fetchS2E();
+  // yield call(delay, 500);
+  yield put({ type: issuerActions.FETCH_STELLAR_TO_ETH });
+
 }
 function* onS2eError(action: IAction) {
   console.log(action);

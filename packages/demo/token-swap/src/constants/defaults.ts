@@ -31,3 +31,32 @@ export const localForageConfig = {
   storeName   : 'keyvaluepairs', // Should be alphanumeric, with underscores.
   description : 'stores the approval list',
 };
+
+export const ONBOARDING_TEXTS = [
+  {
+    title: 'Token Swap Demo',
+    text: 'These swaps involves only you and someone on the other blockchain looking to swap',
+  },
+  {
+    title: 'There are two ways to swap tokens between blockchains',
+    text: '',
+  },
+  {
+    title: '1) Peer-to-Peer Swaps',
+    text: 'These swaps involves only you and someone on the other blockchain looking to swap',
+  },
+  {
+    title: '1) Peer-to-Peer Swaps',
+    text: `They are based on hashed timelock smart contracts so you can be sure each swap is
+      completely safe`,
+  },
+  {
+    title: '2) Direct Swaps',
+    text: `On the other hand, direct swaps involves a trusted issuer`,
+  },
+  {
+    title: '2) Direct Swaps',
+    text: `They will need to be approved and finalized before the tokens are issued
+      on the other blockchain`,
+  },
+];

@@ -14,6 +14,8 @@ import IssuerSidebarMenu from './issuer/IssuerSidebarMenu';
 import UserSidebarMenu from './user/UserSidebarMenu';
 import EthBalanceCard from '../components/common/EthBalanceCard';
 import StellarBalanceCard from '../components/common/StellarBalanceCard';
+import issuerLogo from '../assets/issuer_rate3_logo.svg';
+import userLogo from '../assets/user_rate3_logo.svg';
 
 const styles = createStyles({
   root: {
@@ -90,8 +92,8 @@ class Sidebar extends React.Component<IFinalProps> {
               )
             }
           >
-            <span>Rate3</span>
-            <span>Toekn Swap Demo</span>
+            <img src={this.context.theme === ROLES.ISSUER ? issuerLogo : userLogo} alt="logo"/>
+            <span>Token Swap Demo</span>
           </div>
           <RoleSwitch />
           <EthBalanceCard />

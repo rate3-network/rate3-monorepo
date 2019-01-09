@@ -1,5 +1,7 @@
+import Progress from '@material-ui/core/CircularProgress';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import classnames from 'classnames';
 import { isEmpty, orderBy } from 'lodash';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -11,8 +13,6 @@ import { IE2SRequest, IS2ERequest, IStoreState } from '../../reducers/issuer';
 import { IStoreState as INetoworkState } from '../../reducers/network';
 import { IAction } from '../../utils/general';
 import SummaryCard from '../common/SummaryCard';
-import Progress from '@material-ui/core/CircularProgress';
-import classnames from 'classnames';
 
 const styles = createStyles({
   row: {
@@ -85,6 +85,7 @@ interface IProps {
   ethHistory: any[];
   stellarHistory: any[];
   inProgress?: boolean;
+  inProgressForIssuer?: boolean;
   loadingHistory: boolean;
   fetchE2S(): void;
   fetchS2E(): void;
@@ -102,6 +103,7 @@ interface IState {
 class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IState> {
   static defaultProps = {
     inProgress: false,
+    inProgressForIssuer: false,
   };
   state = {
     page: 0,
@@ -119,20 +121,27 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
       e2sApprovalList,
       s2eApprovalList,
       inProgress,
+      inProgressForIssuer,
       stellarHistory,
       ethHistory,
       classes,
     } = this.props;
 
     const filteredE2sList = e2sApprovalList && e2sApprovalList.filter((item) => {
+      if (inProgressForIssuer) {
+        return item.inProgress === inProgressForIssuer;
+      }
       return item.approved !== inProgress;
     });
     const filteredS2eList = s2eApprovalList && s2eApprovalList.filter((item) => {
+      if (inProgressForIssuer) {
+        return item.inProgress === inProgressForIssuer;
+      }
       return item.approved !== inProgress;
     });
 
     let combinedList: any = [];
-    if (!inProgress) {
+    if (!inProgress && !inProgressForIssuer) {
       combinedList = orderBy(stellarHistory.concat(ethHistory), ['sortingTimestamp'], ['desc']);
     }
     const listLen = combinedList.length;
@@ -157,44 +166,52 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
               <Progress />
             }
           </div>
-          {currPage.map(request => (
-            <div className={classes.fullLength} key={request.key}>
-              <div className={classes.divider} />
-              <div className={classes.row}>
-                <span className={classes.centered}>Direct</span>
-                <span className={classes.centered}>
-                  {request.type === 'E2S' ?
-                  <SummaryCard type="eth" value={request.amount} />
-                  :
-                  <SummaryCard type="stellar" value={request.amount} />
-                  }
-                </span>
-                <span className={classes.centered}>
-                  <img className={classes.centered} src={arrowSvg} alt="arrow"/>
-                </span>
-                <span className={classes.centered}>
-                {request.type === 'E2S' ?
-                  <SummaryCard type="stellar" value={request.amount} />
-                  :
-                  <SummaryCard type="eth" value={request.amount} />
-                  }
-                </span>
-                <span
-                  className={classes.details}
-                  onClick={() => {
-                    this.props.setSelectedHistory(request);
-                    this.props.goTo(4);
-                  }}
-                >
-                  Details <b>></b>
-                </span>
-              </div>
-            </div>
-          ))}
+          {currPage.map(
+            (request) => {
+              if (!request) {
+                return null;
+              }
+              return (
+                <div className={classes.fullLength} key={request.key}>
+                  <div className={classes.divider} />
+                  <div className={classes.row}>
+                    <span className={classes.centered}>Direct</span>
+                    <span className={classes.centered}>
+                      {request.type === 'E2S' ?
+                      <SummaryCard type="eth" value={request.amount} />
+                      :
+                      <SummaryCard type="stellar" value={request.amount} />
+                      }
+                    </span>
+                    <span className={classes.centered}>
+                      <img className={classes.centered} src={arrowSvg} alt="arrow"/>
+                    </span>
+                    <span className={classes.centered}>
+                    {request.type === 'E2S' ?
+                      <SummaryCard type="stellar" value={request.amount} />
+                      :
+                      <SummaryCard type="eth" value={request.amount} />
+                      }
+                    </span>
+                    <span
+                      className={classes.details}
+                      onClick={() => {
+                        this.props.setSelectedHistory(request);
+                        this.props.goTo(4);
+                      }}
+                    >
+                      Details <b>></b>
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+            )}
         </>
       );
     };
-    if (inProgress) {
+
+    if (inProgress || inProgressForIssuer) {
       if (isEmpty(filteredE2sList) && isEmpty(filteredS2eList)) {
         return (
           <>
@@ -303,7 +320,7 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
               }
             }}
           >
-            {'< Most Recent'}
+            {'< More Recent'}
           </span>
           <span
             className={classes.pager}

@@ -75,10 +75,10 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
   render() {
     const { e2sApprovalList, s2eApprovalList, fetchE2S, fetchS2E, classes } = this.props;
     const filteredE2sList = e2sApprovalList && e2sApprovalList.filter((item) => {
-      return !item.approved;
+      return !item.approved && !item.inProgress;
     });
     const filteredS2eList = s2eApprovalList && s2eApprovalList.filter((item) => {
-      return !item.approved;
+      return !item.approved && !item.inProgress;
     });
     if (isEmpty(filteredE2sList) && isEmpty(filteredS2eList)) {
       return (
@@ -93,7 +93,7 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
             </div>
           </div>
           <div className={classes.noEntry}>
-            You don't any swaps to approve.
+            You don't have any swaps to approve.
           </div>
         </>
       );

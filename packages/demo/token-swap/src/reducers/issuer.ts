@@ -15,6 +15,7 @@ export interface IE2SRequest {
   stellarAddress: string;
   type: 'E2S';
   approved: boolean;
+  inProgress?: boolean;
   indexID: string;
   aceeptHash: string;
   acceptedBy: string;
@@ -27,6 +28,7 @@ export interface IS2ERequest {
   ethAddress: string;
   stellarAddress: string;
   type: 'S2E';
+  inProgress?: boolean;
   approved: boolean;
   created_at: string;
 }

@@ -48,15 +48,7 @@ interface IProps {
   // requestS2E(): void;
   // requestE2S(): void;
 }
-const evaluate = (stuff: any, field: string) => {
-  if (!stuff) return '❌';
 
-  try {
-    return !!stuff[field] ? '✔️' : '❌';
-  } catch (err) {
-    return '❌';
-  }
-};
 type IPropsFinal = WithStyles<typeof styles> & RouteComponentProps<{ role: string }> & IProps;
 class HistorySwapDetailsPage extends React.Component<IPropsFinal> {
   // state: IState;
