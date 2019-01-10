@@ -21,7 +21,6 @@ import HistorySwapDetailsPage from './HistorySwapDetailsPage';
 import SwapApprovalPage from './SwapApprovalPage';
 import SwapDetailsPage from './SwapDetailsPage';
 
-
 // export interface IProps {
 //   classes: any;
 // }

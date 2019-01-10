@@ -135,7 +135,7 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
     });
     const filteredS2eList = s2eApprovalList && s2eApprovalList.filter((item) => {
       if (inProgressForIssuer) {
-        return item.inProgress === inProgressForIssuer;
+        return item.inProgress === inProgressForIssuer && !item.approved;
       }
       return item.approved !== inProgress;
     });

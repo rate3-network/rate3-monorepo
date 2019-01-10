@@ -12,6 +12,8 @@ import { withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
 import { SIDEBAR } from '../../constants/colors';
 import classnames from 'classnames';
+import userIcon from '../../assets/user_icon.svg';
+import issuerIcon from '../../assets/issuer_icon.svg';
 
 const styles = createStyles({
   root: {
@@ -120,7 +122,14 @@ class RoleSwitch extends React.Component<IProps & WithStyles<typeof styles> & Ro
           { [classes.rootIssuer]: theme === ROLES.ISSUER }
         )}
       >
-        {this.context.theme === ROLES.ISSUER ? 'Issuer' : 'User'}
+        <div>
+          {this.context.theme === ROLES.ISSUER ?
+            <img style={{ paddingRight: '0.2em', height: '30px', }} src={issuerIcon} alt=""/>
+            :
+            <img style={{ paddingRight: '0.2em', height: '30px', }} src={userIcon} alt=""/>
+          }
+          {this.context.theme === ROLES.ISSUER ? 'Issuer' : 'User'}
+        </div>
           <div
             className={classnames(
               classes.switchBox,

@@ -71,9 +71,9 @@ class Main extends React.Component<IProps> {
     const Routes = () => {
       return (
         <Switch>
-          <Route exact path="/" render={() => <Redirect to="/onboarding/1" />} />
+          <Route exact path="/" render={() => <Redirect to="/onboarding/0" />} />
           <Route exact path="/home" render={() => <Redirect to="/user/home" />} />
-          <Route exact path="/onboarding" render={() => <Redirect to="/onboarding/1" />} />
+          <Route exact path="/onboarding" render={() => <Redirect to="/onboarding/0" />} />
           {routes.map(route =>
             <Route exact key={route.path} path={route.path} component={route.component} />
           )}

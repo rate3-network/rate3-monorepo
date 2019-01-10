@@ -6,6 +6,8 @@ import Main from './Main';
 import Counter from './components/Counter';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { store } from './store';
+import MobileFallback from './pages/MobileFallback';
+import { mobileAndTabletcheck } from './utils/mobileCheck';
 
 const theme = createMuiTheme({
   typography: {
@@ -27,6 +29,6 @@ class Wrapper extends React.Component {
 }
 
 ReactDOM.render(
-  <Wrapper /> ,
+  mobileAndTabletcheck() ? <MobileFallback /> : <Wrapper /> ,
   document.getElementById('root') as HTMLElement
 );

@@ -1,21 +1,21 @@
-import { COLORS } from '../constants/colors';
 import { createStyles } from '@material-ui/core/styles';
-import { RouteComponentProps } from 'react-router-dom';
-import { withRouter } from 'react-router';
-import * as React from 'react';
-import Box from '../components/layout/Box';
-import HistoryList from '../components/issuer/HistoryList';
-import PageBox from '../components/layout/PageBox';
-import { ROLES } from '../constants/general';
-import PageContainer from '../components/layout/PageContainer';
-import PageTitle from '../components/layout/PageTitle';
-import RoleContext from '../components/common/RoleContext';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import HistorySwapDetailsPage from './HistorySwapDetailsPage';
+import * as React from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch } from 'redux';
 import * as actions from '../actions/network';
+import RoleContext from '../components/common/RoleContext';
+import HistoryList from '../components/issuer/HistoryList';
+import Box from '../components/layout/Box';
+import PageBox from '../components/layout/PageBox';
+import PageContainer from '../components/layout/PageContainer';
+import PageTitle from '../components/layout/PageTitle';
+import { COLORS } from '../constants/colors';
+import { ROLES } from '../constants/general';
 import { IAction } from '../utils/general';
+import HistorySwapDetailsPage from './HistorySwapDetailsPage';
 
 const styles = createStyles({
   row: {

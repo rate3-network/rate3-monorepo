@@ -18,7 +18,7 @@ const styles = createStyles({
   root: {
     display: 'grid',
     gridTemplateColumns: '2fr 1fr',
-    minWidth: '15em',
+    minWidth: '16em',
     margin: '3em 2em 1em 2em',
     padding: '1em',
     backgroundColor: SIDEBAR.ETH_CARD.bg,
