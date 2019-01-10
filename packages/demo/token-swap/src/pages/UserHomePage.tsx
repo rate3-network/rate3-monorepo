@@ -6,11 +6,16 @@ import * as React from 'react';
 import Box from '../components/layout/Box';
 import HistoryList from '../components/issuer/HistoryList';
 import PageBox from '../components/layout/PageBox';
+import { ROLES } from '../constants/general';
 import PageContainer from '../components/layout/PageContainer';
 import PageTitle from '../components/layout/PageTitle';
 import RoleContext from '../components/common/RoleContext';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import HistorySwapDetailsPage from './HistorySwapDetailsPage';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import * as actions from '../actions/network';
+import { IAction } from '../utils/general';
 
 const styles = createStyles({
   row: {
@@ -27,6 +32,13 @@ const styles = createStyles({
     fontSize: '1.5rem',
     fontWeight: 100,
     margin: '1rem 0 2rem 0',
+  },
+  thinSmallText: {
+    color: COLORS.blue,
+    fontSize: '1rem',
+    fontWeight: 100,
+    margin: '0.5rem 0 2rem 0',
+    cursor: 'pointer',
   },
   swapNumber: {
     color: COLORS.black,
@@ -49,15 +61,35 @@ const styles = createStyles({
     margin: '2.5rem 0 1rem 0',
   },
 });
-
-type IProps = WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
-class UserHomePage extends React.Component<IProps> {
+interface IProps {
+  initUser: () => void;
+  initIssuer: () => void;
+  resetSelectedTx: () => void;
+}
+type IPropsFinal = IProps & WithStyles<typeof styles> & RouteComponentProps<{ role: string }>;
+class UserHomePage extends React.Component<IPropsFinal> {
   static contextType = RoleContext;
   state = {
     page: 1,
     selectedHistory: null,
   };
-
+  switchTo = (role: ROLES) => {
+    this.props.resetSelectedTx();
+    if (this.context.theme === ROLES.ISSUER) {
+      this.props.initUser();
+    } else {
+      this.props.initIssuer();
+    }
+    if (role === ROLES.USER) {
+      this.context.setRole(ROLES.USER);
+      this.props.history.push('/user/direct-swap');
+      sessionStorage.setItem('role', 'user');
+    } else {
+      this.context.setRole(ROLES.ISSUER);
+      this.props.history.push('/issuer/home');
+      sessionStorage.setItem('role', 'issuer');
+    }
+  }
   setSelectedHistory = (value) => {
     this.setState({
       selectedHistory: value,
@@ -113,6 +145,22 @@ class UserHomePage extends React.Component<IProps> {
                     <div className={classes.thinText}>
                       Demo Exploration
                     </div>
+                    <div
+                      className={classes.thinSmallText}
+                      onClick={() => {
+                        this.switchTo(ROLES.USER);
+                      }}
+                    >
+                      Make a Direct Swap >
+                    </div>
+                    <div
+                      className={classes.thinSmallText}
+                      onClick={() => {
+                        this.switchTo(ROLES.ISSUER);
+                      }}
+                    >
+                      Approve a Direct Swap >
+                    </div>
                   </Box>
                 </div>
               </div>
@@ -142,5 +190,13 @@ class UserHomePage extends React.Component<IProps> {
     );
   }
 }
+export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
+  return {
+    initUser: () => dispatch(actions.initUser()),
+    initIssuer: () => dispatch(actions.initIssuer()),
+    resetSelectedTx: () => dispatch(actions.resetSelectedTx()),
+  };
+}
+export default connect(null, mapDispatchToProps)(withRouter(withStyles(styles)(UserHomePage)));
 
-export default withRouter(withStyles(styles)(UserHomePage));
+// export default withRouter(withStyles(styles)(UserHomePage));

@@ -1,25 +1,26 @@
-import * as React from 'react';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { withRouter } from 'react-router';
+import * as React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { IStoreState, initialState } from '../reducers/network';
-import { Direction, IAction } from '../utils/general';
-import * as networkActions from '../actions/network';
-
-import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
+import { withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
-import PageBox from '../components/layout/PageBox';
-import PageTitle from '../components/layout/PageTitle';
-import SwapDetailsPage from './SwapDetailsPage';
-import PageContainer from '../components/layout/PageContainer';
-import Box from '../components/layout/Box';
+import { Dispatch } from 'redux';
+import * as networkActions from '../actions/network';
 import AwaitingApprovalList from '../components/issuer/AwaitingApprovalList';
 import HistoryList from '../components/issuer/HistoryList';
+import Box from '../components/layout/Box';
+import PageBox from '../components/layout/PageBox';
+import PageContainer from '../components/layout/PageContainer';
+import PageTitle from '../components/layout/PageTitle';
 import { COLORS } from '../constants/colors';
-import SwapApprovalPage from './SwapApprovalPage';
+import { ROLES } from '../constants/general';
+import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
+import { initialState, IStoreState } from '../reducers/network';
+import { Direction, IAction } from '../utils/general';
 import HistorySwapDetailsPage from './HistorySwapDetailsPage';
+import SwapApprovalPage from './SwapApprovalPage';
+import SwapDetailsPage from './SwapDetailsPage';
+
 
 // export interface IProps {
 //   classes: any;
@@ -34,6 +35,13 @@ const styles = createStyles({
   },
   boxConstraint: {
     width: '40%',
+  },
+  thinSmallText: {
+    color: COLORS.blue,
+    fontSize: '1rem',
+    fontWeight: 100,
+    margin: '0.5rem 0 2rem 0',
+    cursor: 'pointer',
   },
   thinText: {
     color: COLORS.grey,
@@ -66,6 +74,8 @@ interface IProps {
   pendingTxMap: typeof initialState.pendingTxMap;
   selectedTx: string;
   resetSelectedTx: () => void;
+  initUser: () => void;
+  initIssuer: () => void;
 }
 interface IState {
   page: number;
@@ -86,8 +96,23 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
       selectedHistory: null,
     };
   }
-  componentDidMount() {
-    // console.log(this.props.history.location);
+
+  switchTo = (role: ROLES) => {
+    this.props.resetSelectedTx();
+    if (this.context.theme === ROLES.ISSUER) {
+      this.props.initUser();
+    } else {
+      this.props.initIssuer();
+    }
+    if (role === ROLES.USER) {
+      this.context.setRole(ROLES.USER);
+      this.props.history.push('/user/direct-swap');
+      sessionStorage.setItem('role', 'user');
+    } else {
+      this.context.setRole(ROLES.ISSUER);
+      this.props.history.push('/issuer/home');
+      sessionStorage.setItem('role', 'issuer');
+    }
   }
   setCurrentApproval = (value) => {
     this.setState({
@@ -154,6 +179,22 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
                   <Box fullHeight>
                     <div className={classes.thinText}>
                       Demo Exploration
+                    </div>
+                    <div
+                      className={classes.thinSmallText}
+                      onClick={() => {
+                        this.switchTo(ROLES.USER);
+                      }}
+                    >
+                      Make a Direct Swap >
+                    </div>
+                    <div
+                      className={classes.thinSmallText}
+                      onClick={() => {
+                        this.switchTo(ROLES.ISSUER);
+                      }}
+                    >
+                      Approve a Direct Swap >
                     </div>
                   </Box>
                 </div>
@@ -222,6 +263,8 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
 export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   return {
     resetSelectedTx: () => dispatch(networkActions.resetSelectedTx()),
+    initUser: () => dispatch(networkActions.initUser()),
+    initIssuer: () => dispatch(networkActions.initIssuer()),
   };
 }
 export default connect(

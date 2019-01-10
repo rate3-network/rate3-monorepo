@@ -8,7 +8,7 @@ class NotFound extends React.Component<RouteComponentProps> {
     const shouldRenderSidebarFromHistory = !history.location.pathname.includes('onboarding');
     if (shouldRenderSidebarFromHistory) {
       return (
-        <h1>Not Found</h1>
+        <h1 style={{ margin: '2em', width: '100%', textAlign: 'center', }}>Coming Soon!</h1>
       );
     }
     return null;

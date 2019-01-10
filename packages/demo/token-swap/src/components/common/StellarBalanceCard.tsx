@@ -18,6 +18,7 @@ const styles = createStyles({
   root: {
     display: 'grid',
     gridTemplateColumns: '2fr 1fr',
+    minWidth: '15em',
 
     margin: '1em 2em 3em 2em',
     padding: '1em',
