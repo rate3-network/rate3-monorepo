@@ -2,8 +2,11 @@ import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import day from 'dayjs';
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
+import { Dispatch } from 'redux';
+import * as networkActions from '../../actions/network';
 import greyTickSvg from '../../assets/greyTick.svg';
 import lineSvg from '../../assets/line.svg';
 import tickSvg from '../../assets/tick.svg';
@@ -12,9 +15,11 @@ import Box from '../../components/layout/Box';
 import PageContainer from '../../components/layout/PageContainer';
 import { COLORS } from '../../constants/colors';
 import { ETH_USER, STELLAR_USER } from '../../constants/defaults';
-import { Direction, truncateAddress } from '../../utils/general';
-import ProgressBar from './ProgressBar';
+import { ROLES } from '../../constants/general';
+import { Direction, IAction, truncateAddress } from '../../utils/general';
 import Pop from './Pop';
+import ProgressBar from './ProgressBar';
+import RoleContext from './RoleContext';
 
 const styles = createStyles({
   row: {
@@ -65,6 +70,12 @@ const styles = createStyles({
     fontWeight: 700,
     color: COLORS.grey,
   },
+  warning: {
+    margin: '0.5em 0',
+    fontSize: '1em',
+    fontWeight: 700,
+    color: COLORS.grey,
+  },
   finished: {
     margin: '1em 0',
     fontSize: '1.1em',
@@ -90,12 +101,19 @@ const styles = createStyles({
     padding: '0.5em 1.5em',
   },
   timestampRow: {
+    width: '100%',
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
   },
   timestampCol: {
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'center',
+  },
+  link: {
+    textDecoration: 'underline',
+    color: COLORS.blue,
+    whiteSpace: 'pre',
   },
 });
 
@@ -104,6 +122,9 @@ interface IProps {
   tx: any;
   userSetValue: string;
   direction: Direction;
+  resetSelectedTx: () => void;
+  initUser: () => void;
+  initIssuer: () => void;
 }
 const evaluateToBool = (stuff: any, field: string) => {
   if (!stuff) return false;
@@ -132,6 +153,7 @@ const evaluate = (stuff: any, field: string) => {
 };
 type IPropsFinal = WithStyles<typeof styles> & RouteComponentProps<{ role: string }> & IProps;
 class SwapDetailsPage extends React.Component<IPropsFinal> {
+  static contextType = RoleContext;
   // state: IState;
   constructor(props: any) {
     super(props);
@@ -139,7 +161,17 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
       progress: 0,
     };
   }
-
+  switch = () => {
+    this.props.resetSelectedTx();
+    if (this.context.theme === ROLES.ISSUER) {
+      this.props.initUser();
+    } else {
+      this.props.initIssuer();
+    }
+    this.context.setRole(ROLES.ISSUER);
+    this.props.history.push('/issuer/home');
+    sessionStorage.setItem('role', 'issuer');
+  }
   render() {
     const { classes, tx, direction, userSetValue } = this.props;
     const amount = userSetValue;
@@ -200,23 +232,49 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
         <div className={classes.row}>
             <Box>
               <div className={classes.summaryBox}>
+                {transaction.fromBlockchain ?
+                  <>
+                    <span className={classes.cardTitle}>Transaction Hash</span>
+                    <span className={classes.cardText}>
+                      {transaction.type === 'S2E'
+                        && <Pop popoverText={transaction.approveHash}>
+                            <span>{truncateAddress(transaction.approveHash, 20)}</span>
+                          </Pop>}
+                      {transaction.type === 'E2S'
+                      && <Pop popoverText={transaction.transaction_hash}>
+                            <span>{truncateAddress(transaction.transaction_hash, 20)}</span>
+                          </Pop>}
+                    </span>
+                  </>
+                :
+                  <div className={classes.timestampRow}>
+                    <div className={classes.timestampCol}>
+                      <span className={classes.cardTitle}>Deposit Hash</span>
+                      <span className={classes.cardText}>
+                        {transaction.hash ?
+                          <Pop popoverText={transaction.hash}>
+                            <span>{truncateAddress(transaction.hash, 10)}</span>
+                          </Pop>
+                        :
+                          '-'
+                        }
+                      </span>
+                    </div>
+                    <div className={classes.timestampCol}>
+                      <span className={classes.cardTitle}>Withdrawal Hash</span>
+                        <span className={classes.cardText}>
+                          {transaction.withdrawalHash ?
+                            <Pop popoverText={transaction.withdrawalHash}>
+                              <span>{truncateAddress(transaction.withdrawalHash, 10)}</span>
+                            </Pop>
+                          :
+                            '-'
+                          }
+                      </span>
+                    </div>
+                  </div>
+                }
 
-                <span className={classes.cardTitle}>Transaction Hash</span>
-                <span className={classes.cardText}>
-                  {(transaction.fromBlockchain && transaction.type === 'S2E')
-                  && <Pop popoverText={transaction.approveHash}>
-                      <span>{truncateAddress(transaction.approveHash, 20)}</span>
-                    </Pop>}
-
-                  {(transaction.fromBlockchain && transaction.type === 'E2S')
-                  && <Pop popoverText={transaction.transaction_hash}>
-                       <span>{truncateAddress(transaction.transaction_hash, 20)}</span>
-                     </Pop>}
-
-                  {transaction.hash && <Pop popoverText={transaction.hash}>
-                                         <span>{truncateAddress(transaction.hash, 20)}</span>
-                                       </Pop>}
-                </span>
                 <img className={classes.img} src={lineSvg} alt="line"/>
                 <div className={classes.timestampRow}>
                   {!transaction.fromBlockchain &&
@@ -243,14 +301,19 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
             <Box>
               <div className={classes.summaryBox}>
                 <span className={classes.cardTitle}>User Ethereum Address</span>
-                <Pop isAddress popoverText={ETH_USER}>
-                  <span className={classes.cardText}>{truncateAddress(ETH_USER, 20)}</span>
-                </Pop>
+                <span className={classes.cardText}>
+                  <Pop isAddress popoverText={ETH_USER}>
+                    <span>{truncateAddress(ETH_USER, 20)}</span>
+                  </Pop>
+                </span>
                 <img className={classes.img} src={lineSvg} alt="line"/>
                 <span className={classes.cardTitle}>User Stellar Address</span>
-                <Pop isAddress popoverText={STELLAR_USER}>
-                  <span className={classes.cardText}>{truncateAddress(STELLAR_USER, 20)}</span>
-                </Pop>
+                <span className={classes.cardText}>
+                  <Pop isAddress popoverText={STELLAR_USER}>
+                    <span>{truncateAddress(STELLAR_USER, 20)}</span>
+                  </Pop>
+                </span>
+
               </div>
             </Box>
           </div>
@@ -271,6 +334,18 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                   :
                   <span className={classes.inProgress}>In Progress</span>
                   }
+                  {ethProgress < 40 &&
+                    <span className={classes.warning}>
+                      Submitting Your Transaction. Please Do Not Close this Window or Tab .
+                    </span>
+                  }
+                  {ethProgress === 40 &&
+                    <span className={classes.warning}>
+                      Your Request has been submitted. You can now
+                      <span className={classes.link} onClick={this.switch}> switch to Issuer </span>
+                      and Approve this Swap.
+                    </span>
+                  }
                   <ProgressBar progress={ethProgress} />
                   <div className={classes.listContainer}>
                     <span className={classes.odd}>
@@ -278,6 +353,12 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                     </span>
                     <span className={classes.even}>
                       2. Network Confirmed {evaluate(transaction, 'indexID')}
+                      {ethProgress === 40 &&
+                      <>
+                      <span className={classes.link} onClick={this.switch}> Switch to Issuer </span>
+                      and Approve this Swap.
+                      </>
+                      }
                     </span>
                     <span className={classes.odd}>
                       3. Appoval Submitted {evaluate(transaction, 'aceeptHash')}
@@ -297,15 +378,16 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                   :
                     <span className={classes.inProgress}>In Progress</span>
                   }
-                  {stellarProgress === 0 &&
-                    <span className={classes.inProgress}>
-                      Submitting Your Transaction. Please Do Not Close this Tab.
+                  {stellarProgress === 33 &&
+                    <span className={classes.warning}>
+                      Your Request has been submitted. You can now
+                      <span className={classes.link} onClick={this.switch}> switch to Issuer </span>
+                      and Approve this Swap.
                     </span>
                   }
-                  {stellarProgress === 33 &&
-                    <span className={classes.inProgress}>
-                      Your Request has been submitted. You can now switch to Issuer and Approve
-                      this Swap.
+                  {stellarProgress === 66 &&
+                    <span className={classes.warning}>
+                      Submitting Your Transaction. Please Do Not Close this Window or Tab.
                     </span>
                   }
                   <ProgressBar
@@ -314,6 +396,12 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                   <div className={classes.listContainer}>
                     <span className={classes.odd}>
                       1. Submitted on Stellar Network {evaluate(transaction, 'hash')}
+                      {stellarProgress === 33 &&
+                      <>
+                      <span className={classes.link} onClick={this.switch}> switch to Issuer </span>
+                      and Approve this Swap.
+                      </>
+                      }
                     </span>
                     <span className={classes.even}>
                       2. Appoval Submitted {evaluate(transaction, 'unlockHash')}
@@ -331,5 +419,12 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
     );
   }
 }
-
-export default withStyles(styles)(withRouter(SwapDetailsPage));
+export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
+  return {
+    resetSelectedTx: () => dispatch(networkActions.resetSelectedTx()),
+    initUser: () => dispatch(networkActions.initUser()),
+    initIssuer: () => dispatch(networkActions.initIssuer()),
+  };
+}
+export default connect(
+  null, mapDispatchToProps)(withStyles(styles)(withRouter(SwapDetailsPage)));

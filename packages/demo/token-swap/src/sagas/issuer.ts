@@ -210,6 +210,7 @@ function* onS2eHash(action: IAction) {
     ...tx,
     inProgress: true,
     unlockHash: hash,
+    withdrawalHash: hash,
   };
   yield put({ type: networkActions.ADD_TO_MAP, payload: updatedRequest });
   yield fetchS2E();
@@ -258,6 +259,7 @@ function* onE2sReceipt(action: IAction) {
     approved: true,
     stellarTokenMintHash: finalRes.stellarTokenMintHash,
     stellarTokenMintTimestamp: finalRes.created_at,
+    withdrawalHash: finalRes.stellarTokenMintHash,
   };
   yield put({ type: networkActions.ADD_TO_MAP, payload: finishedRequest });
   try {
@@ -288,7 +290,6 @@ function* onS2eReceipt(action: IAction) {
   const getR3 = state => state.network.r3;
   const r3 = yield select(getR3);
 
-  const asset = new r3.Stellar.Asset('TestAsset', STELLAR_ISSUER);
   const { receipt } = action.payload;
   const { tx } = action.payload;
   let updatedTx;
@@ -306,6 +307,7 @@ function* onS2eReceipt(action: IAction) {
     ...updatedTx,
     unlockTimestamp,
     approvalHash: transactionHash,
+    withdrawalHash: transactionHash,
     approvedBy: ETH_ISSUER,
     approved: true,
   };
