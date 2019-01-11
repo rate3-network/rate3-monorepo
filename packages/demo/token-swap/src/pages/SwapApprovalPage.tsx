@@ -17,6 +17,7 @@ import { CONVERSION_CONTRACT_ADDR, ETH_USER, STELLAR_USER } from '../constants/d
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import { Direction, IAction, truncateAddress } from '../utils/general';
 import day from 'dayjs';
+import Pop from '../components/common/Pop';
 
 const FORMAT = 'DD-MM-YYYY H:mm';
 const styles = createStyles({
@@ -118,7 +119,9 @@ class SwapApprovalPage extends React.Component<IPropsFinal> {
                 <div className={classes.col}>
                   <span className={classes.cardTitle}>Transaction Hash</span>
                   <span className={classes.cardText}>
-                    {currentApproval && truncateAddress(currentApproval.hash)}
+                    {currentApproval && <Pop popoverText={currentApproval.hash}>
+                      <span>{truncateAddress(currentApproval.hash, 20)}</span>
+                    </Pop>}
                   </span>
                 </div>
                 <span>
@@ -148,10 +151,14 @@ class SwapApprovalPage extends React.Component<IPropsFinal> {
             <Box>
               <div className={classes.summaryBox}>
                 <span className={classes.cardTitle}>User Ethereum Address</span>
-                <span className={classes.cardText}>{truncateAddress(ETH_USER)}</span>
+                <Pop isAddress popoverText={ETH_USER}>
+                  <span className={classes.cardText}>{truncateAddress(ETH_USER, 20)}</span>
+                </Pop>
                 <img className={classes.img} src={lineSvg} alt="line"/>
                 <span className={classes.cardTitle}>User Stellar Address</span>
-                <span className={classes.cardText}>{truncateAddress(STELLAR_USER)}</span>
+                <Pop isAddress popoverText={STELLAR_USER}>
+                  <span className={classes.cardText}>{truncateAddress(STELLAR_USER, 20)}</span>
+                </Pop>
               </div>
             </Box>
             <div className={classes.gap} />

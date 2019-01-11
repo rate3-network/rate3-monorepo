@@ -60,3 +60,6 @@ export const ONBOARDING_TEXTS = [
       on the other blockchain`,
   },
 ];
+
+export const STEEXP = 'https://testnet.steexp.com';
+export const ETHERSCAN = 'https://ropsten.etherscan.io';

@@ -172,3 +172,17 @@ export enum Direction {
   E2S, // eth to stellar
   S2E, // stellar to eth
 }
+
+export const copyToClipboard = (val: string) => {
+  const selBox = window.document.createElement('textarea');
+  selBox.style.position = 'fixed';
+  selBox.style.left = '0';
+  selBox.style.top = '0';
+  selBox.style.opacity = '0';
+  selBox.value = val;
+  window.document.body.appendChild(selBox);
+  selBox.focus();
+  selBox.select();
+  window.document.execCommand('copy');
+  window.document.body.removeChild(selBox);
+};

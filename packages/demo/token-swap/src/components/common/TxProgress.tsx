@@ -14,6 +14,7 @@ import { COLORS } from '../../constants/colors';
 import { ETH_USER, STELLAR_USER } from '../../constants/defaults';
 import { Direction, truncateAddress } from '../../utils/general';
 import ProgressBar from './ProgressBar';
+import Pop from './Pop';
 
 const styles = createStyles({
   row: {
@@ -199,15 +200,22 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
         <div className={classes.row}>
             <Box>
               <div className={classes.summaryBox}>
+
                 <span className={classes.cardTitle}>Transaction Hash</span>
                 <span className={classes.cardText}>
                   {(transaction.fromBlockchain && transaction.type === 'S2E')
-                  && truncateAddress(transaction.approveHash, 20)}
+                  && <Pop popoverText={transaction.approveHash}>
+                      <span>{truncateAddress(transaction.approveHash, 20)}</span>
+                    </Pop>}
 
                   {(transaction.fromBlockchain && transaction.type === 'E2S')
-                  && truncateAddress(transaction.transaction_hash, 20)}
+                  && <Pop popoverText={transaction.transaction_hash}>
+                       <span>{truncateAddress(transaction.transaction_hash, 20)}</span>
+                     </Pop>}
 
-                  {transaction.hash && truncateAddress(transaction.hash, 20)}
+                  {transaction.hash && <Pop popoverText={transaction.hash}>
+                                         <span>{truncateAddress(transaction.hash, 20)}</span>
+                                       </Pop>}
                 </span>
                 <img className={classes.img} src={lineSvg} alt="line"/>
                 <div className={classes.timestampRow}>
@@ -234,11 +242,15 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
             <div className={classes.gap} />
             <Box>
               <div className={classes.summaryBox}>
-              <span className={classes.cardTitle}>User Ethereum Address</span>
-                <span className={classes.cardText}>{truncateAddress(ETH_USER)}</span>
+                <span className={classes.cardTitle}>User Ethereum Address</span>
+                <Pop isAddress popoverText={ETH_USER}>
+                  <span className={classes.cardText}>{truncateAddress(ETH_USER, 20)}</span>
+                </Pop>
                 <img className={classes.img} src={lineSvg} alt="line"/>
                 <span className={classes.cardTitle}>User Stellar Address</span>
-                <span className={classes.cardText}>{truncateAddress(STELLAR_USER)}</span>
+                <Pop isAddress popoverText={STELLAR_USER}>
+                  <span className={classes.cardText}>{truncateAddress(STELLAR_USER, 20)}</span>
+                </Pop>
               </div>
             </Box>
           </div>
