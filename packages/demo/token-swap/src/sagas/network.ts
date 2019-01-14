@@ -34,6 +34,7 @@ function* getBalance() {
     const balance = yield web3.eth.getBalance(address);
     return balance;
   } catch (e) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
     throw e;
   }
 }
@@ -50,6 +51,7 @@ function* getTokenBalance() {
     console.log('sgdr balance', balance);
     return balance;
   } catch (e) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
     throw e;
   }
 }
@@ -62,6 +64,7 @@ function* constructR3() {
     console.log(r3);
     return r3;
   } catch (e) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
     throw e;
   }
 }
@@ -71,6 +74,7 @@ function* getUserEthBalance(action: any) {
     const sgdrBalance = yield getTokenBalance();
     yield put({ type: networkActions.SET_USER_ETH_BALANCE, payload: { balance, sgdrBalance } });
   } catch (e) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
     console.error(e);
   }
 }
@@ -79,6 +83,7 @@ function* getIssuerEthBalance(action: any) {
     const balance = yield getBalance();
     yield put({ type: networkActions.SET_ISSUER_ETH_BALANCE, payload: { balance } });
   } catch (e) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
     console.error(e);
   }
 }
@@ -90,6 +95,7 @@ function* setR3(action: any) {
     (window as any).r3 = r3;
     yield put({ type: networkActions.SET_R3_INSTANCE, payload: { r3 } });
   } catch (e) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
     console.error(e);
   }
 }
@@ -101,6 +107,7 @@ function* getUserStellarBalance(action: any) {
     const balance = res.data.balances;
     yield put({ type: networkActions.SET_USER_STELLAR_BALANCE, payload: { balance } });
   } catch (e) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
     console.error(e);
   }
 }
@@ -112,6 +119,7 @@ function* getIssuerStellarBalance(action: any) {
     const balance = res.data.balances;
     yield put({ type: networkActions.SET_ISSUER_STELLAR_BALANCE, payload: { balance } });
   } catch (e) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
     console.error(e);
   }
 }

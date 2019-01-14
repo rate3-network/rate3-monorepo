@@ -8,6 +8,7 @@ export const COLORS = {
   veryLightGrey: '#DEDEDE',
   superLightGrey: '#FCFCFC',
   green: '#6CBE92',
+  errorRed: '#CC133F',
 };
 export const PAGE = {
   user: {

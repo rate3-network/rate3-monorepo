@@ -5,7 +5,6 @@ import { HashRouter, Redirect, Route, RouteComponentProps, Switch } from 'react-
 import { Dispatch } from 'redux';
 
 import { Hidden } from '@material-ui/core';
-
 import * as actions from './actions/network';
 import RoleContext from './components/common/RoleContext';
 import Counter from './components/Counter';
@@ -18,7 +17,7 @@ import UserHomePage from './pages/UserHomePage';
 import { IStoreState } from './reducers/network';
 import { IAction } from './utils/general';
 import extrapolateFromXdr from './utils/extrapolateFromXdr';
-
+import ErrorModal from './components/common/ErrorModal';
 const OnboardingPage = React.lazy(() => import('./pages/OnboardingPage'));
 
 interface IRoute {
@@ -85,7 +84,7 @@ class Main extends React.Component<IProps> {
       <HashRouter basename="/">
         <RoleContext.Provider value={this.state} >
             <Sidebar />
-
+            <ErrorModal />
             <Hidden mdUp>
               <div style={{ width: '100vw', marginLeft: 0 }}>
                 <Routes />

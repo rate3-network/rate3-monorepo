@@ -35,6 +35,7 @@ export interface IStoreState {
   stellarHistory: any[];
   ethHistory: any[];
   loadingHistory: boolean;
+  error: null | string;
 }
 
 export const initialState = {
@@ -55,8 +56,10 @@ export const initialState = {
   pendingTxMap: {},
   stellarHistory: [],
   ethHistory: [],
+  error: null,
 };
 const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
+
 // const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
 
 export function network(state: IStoreState = initialState, action: IAction):
@@ -162,6 +165,12 @@ IStoreState {
       return {
         ...state,
         loadingHistory: bool,
+      };
+    case networkActions.SET_ERROR:
+      const error = action.payload;
+      return {
+        ...state,
+        error,
       };
   }
   return state;

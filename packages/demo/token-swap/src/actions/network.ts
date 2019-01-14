@@ -16,6 +16,7 @@ export const networkActions = keyMirror(
     FETCH_S2E_FROM_STELLAR: null,
     FETCH_E2S_FROM_ETH: null,
     SET_HISTORY_LOADING_STATE: null,
+    SET_ERROR: null,
   },
   'NETWORK'
 );
@@ -45,3 +46,5 @@ export const fetchS2EFromEth =
   createAction<void, void>(networkActions.FETCH_E2S_FROM_ETH);
 export const setLoadingHistory =
   createAction<boolean, void>(networkActions.SET_HISTORY_LOADING_STATE);
+export const setError =
+  createAction<string, void>(networkActions.SET_ERROR);

@@ -126,8 +126,8 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
               <span
                 className={classes.approve}
                 onClick={() => {
-                  this.props.setCurrentApproval(request);
                   this.props.selectTx(request.hash);
+                  this.props.setCurrentApproval(request);
                   this.props.next();
                 }}
               >
