@@ -1,8 +1,4 @@
-const rstorage = require('../libjs/storage.js');
-const rBlockChain = require('../libjs/blockchain.js');
-const storage = new rstorage();
-const BlockChain = new rBlockChain();
-
+"use strict";
 class BaseToken
 {   
     // Execute everytime the contract class is called.
@@ -61,5 +57,5 @@ class BaseToken
 
     can_update(data) {
     }
-};
+}
 module.exports = BaseToken;
