@@ -10,10 +10,11 @@ class BaseToken
       storage.put('deployed', 'f');
     }
 
+    // One-time deploy token.
+    // No effect if deploy has been called before.
     deploy(name, symbol, decimals, issuer) {
       // Check if token is deployed already.
       if (storage.get('deployed') === 'f') {
-        // One-time deploy token.
         storage.put('deployed', 't');
         storage.put('name', name);
         storage.put('symbol', symbol);
@@ -25,7 +26,7 @@ class BaseToken
           { name, symbol, decimals, issuer }
         ));
       } else {
-        blockchain.receipt('already deployed');
+        blockchain.receipt('ALREADY_DEPLOYED');
       }
     }
 
@@ -58,7 +59,29 @@ class BaseToken
     }
 
     issue(to, amount) {
-    
+      if (!blockchain.requireAuth(tx.publisher, "active")) {
+        throw 'PERMISSION_DENIED';
+      }
+
+      let currentAmount = storage.mapGet('balances', to);
+
+      if (currentAmount === null) {
+        currentAmount = new BigNumber(0);
+      } else {
+        currentAmount = new BigNumber(currentAmount);
+      }
+
+      let issueAmount = new BigNumber(amount);
+
+      if (!issueAmount.isInteger()) {
+        throw 'INTEGER_VALUE_REQUIRED';
+      }
+
+      let newAmount = currentAmount.plus(issueAmount);
+
+      storage.mapPut('balances', to, newAmount.toString());
+
+      blockchain.receipt(JSON.stringify({ to, amount }));
     }
 
     transfer(from, to, amount, memo) {

@@ -32,7 +32,7 @@ class BaseToken
           { name, symbol, decimals, issuer }
         ));
       } else {
-        blockchain.receipt('already deployed');
+        blockchain.receipt('ALREADY_DEPLOYED');
       }
     }
 
@@ -65,7 +65,29 @@ class BaseToken
     }
 
     issue(to, amount) {
-    
+      if (!blockchain.requireAuth(tx.publisher, "active")) {
+        throw 'PERMISSION_DENIED';
+      }
+
+      let issueAmount = new BigNumber(amount);
+
+      if (!issueAmount.isInteger()) {
+        throw 'INTEGER_VALUE_REQUIRED';
+      }
+
+      let currentAmount = storage.mapGet('balances', to);
+
+      if (currentAmount === null) {
+        currentAmount = new BigNumber(0);
+      } else {
+        currentAmount = new BigNumber(currentAmount);
+      }
+
+      let newAmount = currentAmount.plus(issueAmount);
+
+      storage.mapPut('balances', to, newAmount.toString());
+
+      blockchain.receipt(JSON.stringify({ to, amount }));
     }
 
     transfer(from, to, amount, memo) {
