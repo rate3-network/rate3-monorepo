@@ -12,33 +12,46 @@ class BaseToken
 
     deploy(name, symbol, decimals, issuer) {
       // Check if token is deployed already.
+      if (storage.get('deployed') === 'f') {
+        // One-time deploy token.
+        storage.put('deployed', 't');
+        storage.put('name', name);
+        storage.put('symbol', symbol);
+        storage.put('issuer', issuer);
 
-      // One-tiem deploy token.
-      storage.put('deployed', 't');
-      storage.put('name', name);
-      storage.put('symbol', symbol);
-      storage.put('issuer', issuer);
+        storage.mapPut('balances', issuer, '0');
 
-      storage.mapPut('balances', issuer, '0');
+        blockchain.receipt(JSON.stringify(
+          { name, symbol, decimals, issuer }
+        ));
+      } else {
+        blockchain.receipt('already deployed');
+      }
     }
 
     name() {
-      return storage.get('name');
+      let value = storage.get('name');
+      return value;
     }
 
     symbol() {
-      return storage.get('symbol');
+      let value = storage.get('symbol');
+      return value;
     }
 
     issuer() {
-      return storage.get('issuer');
+      let value = storage.get('issuer');
+      return value;
     }
 
     deployed() {
-      return storage.get('deployed');
+      let value = storage.get('deployed');
+      return value;
     }
 
     balanceOf(from) {
+      let value = storage.mapGet('balances', from);
+      return value;
     }
 
     totalSupply() {
