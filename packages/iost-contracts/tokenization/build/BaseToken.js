@@ -63,18 +63,18 @@ class BaseToken
         throw 'PERMISSION_DENIED';
       }
 
+      let issueAmount = new BigNumber(amount);
+
+      if (!issueAmount.isInteger()) {
+        throw 'INTEGER_VALUE_REQUIRED';
+      }
+
       let currentAmount = storage.mapGet('balances', to);
 
       if (currentAmount === null) {
         currentAmount = new BigNumber(0);
       } else {
         currentAmount = new BigNumber(currentAmount);
-      }
-
-      let issueAmount = new BigNumber(amount);
-
-      if (!issueAmount.isInteger()) {
-        throw 'INTEGER_VALUE_REQUIRED';
       }
 
       let newAmount = currentAmount.plus(issueAmount);
