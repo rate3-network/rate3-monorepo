@@ -120,7 +120,7 @@ class OnboardingPage extends React.PureComponent<IProps> {
           <Toolbar>
             <div className={classes.row}>
               <img src={userLogo} alt="logo"/>
-              <span className={classes.swapText}>Token Swap Demo</span>
+              <span className={classes.swapText}>Cross Chain Demo</span>
             </div>
           </Toolbar>
         </AppBar>

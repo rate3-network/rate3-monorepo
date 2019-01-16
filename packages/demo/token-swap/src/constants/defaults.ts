@@ -34,7 +34,7 @@ export const localForageConfig = {
 
 export const ONBOARDING_TEXTS = [
   {
-    title: 'Token Swap Demo',
+    title: 'Cross Chain Demo',
     text: 'These swaps involves only you and someone on the other blockchain looking to swap',
   },
   {

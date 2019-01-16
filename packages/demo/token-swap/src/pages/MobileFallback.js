@@ -24,7 +24,7 @@ const MobileFallback = () => {
       <Container>
         <div style={{ paddingTop: '10vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
           <img src={Rate3Logo} style={{ height: '5vh' }} alt="rate3 logo" />
-          <p style={{ textAlign: 'center', fontWeight: 200, fontSize: '5vh', color: 'white' }}>CROSS-CHAIN TOKEN SWAP DEMO</p>
+          <p style={{ textAlign: 'center', fontWeight: 200, fontSize: '5vh', color: 'white' }}>Cross Chain Demo</p>
         </div>
       </Container>
       <Container><img style={{ height: '22vh' }} src={coin} alt="rate3 logo" /></Container>

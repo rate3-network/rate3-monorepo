@@ -261,7 +261,7 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                       </span>
                     </div>
                     <div className={classes.timestampCol}>
-                      <span className={classes.cardTitle}>Withdrawal Hash</span>
+                      <span className={classes.cardTitle}>Receipt Hash</span>
                         <span className={classes.cardText}>
                           {transaction.withdrawalHash ?
                             <Pop popoverText={transaction.withdrawalHash}>

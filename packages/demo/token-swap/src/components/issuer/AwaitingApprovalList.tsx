@@ -88,7 +88,7 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
               <span className={classes.greyTitle}>Type</span>
               <span className={classes.greyTitle}>Deposit</span>
               <span className={classes.greyTitle} />
-              <span className={classes.greyTitle}>Withdraw</span>
+              <span className={classes.greyTitle}>Receive</span>
               <span className={classes.greyTitle} />
             </div>
           </div>
@@ -105,7 +105,7 @@ class AwaitingApprovalList extends React.Component<IProps & WithStyles<typeof st
             <span className={classes.greyTitle}>Type</span>
             <span className={classes.greyTitle}>Deposit</span>
             <span className={classes.greyTitle} />
-            <span className={classes.greyTitle}>Withdraw</span>
+            <span className={classes.greyTitle}>Receive</span>
             <span className={classes.greyTitle} />
           </div>
         </div>

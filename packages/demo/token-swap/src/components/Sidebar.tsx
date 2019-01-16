@@ -93,7 +93,7 @@ class Sidebar extends React.Component<IFinalProps> {
             }
           >
             <img src={this.context.theme === ROLES.ISSUER ? issuerLogo : userLogo} alt="logo"/>
-            <span>Token Swap Demo</span>
+            <span>Cross Chain Demo</span>
           </div>
           <RoleSwitch />
           <EthBalanceCard />

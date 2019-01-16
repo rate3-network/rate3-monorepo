@@ -1,4 +1,6 @@
 import * as React from 'react';
+import RoleContext from './RoleContext';
+import { ROLES } from '../../constants/general';
 import { createStyles } from '@material-ui/core/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import Box from '../../components/layout/Box';
@@ -37,21 +39,25 @@ interface IProps {
 type IPropsFinal = WithStyles<typeof styles> & IProps;
 
 class SwapInfoBox extends React.Component<IPropsFinal> {
+  static contextType = RoleContext;
   static defaultProps = {
     forApproval: false,
   };
 
   render() {
     const { classes, value, direction, forApproval } = this.props;
-    const name = forApproval ? 'User' : 'You';
+    const isIssuer = this.context.theme === ROLES.ISSUER
+    const name = isIssuer ? 'User' : 'You';
+    const deposit = isIssuer ? 'Deposits' : 'Deposit';
+    const receive = isIssuer ? 'Receives' : 'Receive';
     if (direction === null) {
       return null;
     }
     return (
       <Box>
         <div className={classes.titleRow}>
-          <span className={classes.greyTitle}>{name} Deposit</span>
-          <span className={classes.greyTitle}>{name} Withdraw</span>
+          <span className={classes.greyTitle}>{name} {deposit}</span>
+          <span className={classes.greyTitle}>{name} {receive}</span>
         </div>
         <div className={classes.cardRow}>
           {direction === Direction.E2S ?

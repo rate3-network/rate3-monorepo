@@ -220,12 +220,12 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
                 <span className={classes.greyTitle}>Type</span>
                 <span className={classes.greyTitle}>Deposit</span>
                 <span className={classes.greyTitle} />
-                <span className={classes.greyTitle}>Withdraw</span>
+                <span className={classes.greyTitle}>Receive</span>
                 <span className={classes.greyTitle} />
               </div>
             </div>
             <div className={classes.noEntry}>
-              You don't any swaps in this section.
+              You don't any swaps in progress.
             </div>
           </>
         );
@@ -237,7 +237,7 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
               <span className={classes.greyTitle}>Type</span>
               <span className={classes.greyTitle}>Deposit</span>
               <span className={classes.greyTitle} />
-              <span className={classes.greyTitle}>Withdraw</span>
+              <span className={classes.greyTitle}>Receive</span>
               <span className={classes.greyTitle} />
             </div>
           </div>
@@ -304,7 +304,7 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
             <span className={classes.greyTitle}>Type</span>
             <span className={classes.greyTitle}>Deposit</span>
             <span className={classes.greyTitle} />
-            <span className={classes.greyTitle}>Withdraw</span>
+            <span className={classes.greyTitle}>Receive</span>
             <span className={classes.greyTitle} />
           </div>
         </div>

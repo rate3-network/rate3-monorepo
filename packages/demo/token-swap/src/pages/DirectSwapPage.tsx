@@ -189,7 +189,7 @@ class DirectSwapPage extends React.Component<IProps> {
       >
         <div className={classes.cardItemsContainer}>
           <span className={classes.title}>
-            You {onLeft ? 'Deposit' : 'Withdraw'}
+            You {onLeft ? 'Deposit' : 'Receive'}
           </span>
           <Input
             id="uncontrolled"

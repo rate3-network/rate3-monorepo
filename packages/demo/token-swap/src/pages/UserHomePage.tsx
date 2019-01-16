@@ -143,7 +143,7 @@ class UserHomePage extends React.Component<IPropsFinal> {
                 <div className={classes.boxConstraint}>
                   <Box fullHeight>
                     <div className={classes.thinText}>
-                      Demo Exploration
+                      Navigation
                     </div>
                     <div
                       className={classes.thinSmallText}
