@@ -61,7 +61,8 @@ class BaseToken
     }
 
     issue(to, amount) {
-      if (!blockchain.requireAuth(tx.publisher, "active")) {
+      let issuer = storage.get('issuer');
+      if (!(tx.publisher === issuer)) {
         throw 'PERMISSION_DENIED';
       }
 
@@ -117,9 +118,9 @@ class BaseToken
         currentToAmount = new BigNumber(currentToAmount);
       }
 
-      // if (sendAmount.isGreaterThan(currentFromAmount)) {
-      //   throw 'INSUFFICIENT_FUNDS';
-      // }
+      if (sendAmount.isGreaterThan(currentFromAmount)) {
+        throw 'INSUFFICIENT_FUNDS';
+      }
 
       let newFromAmount = currentFromAmount.minus(sendAmount);
       let newToAmount = currentToAmount.plus(sendAmount);
