@@ -19,7 +19,7 @@ class BaseToken
         storage.put('name', name);
         storage.put('symbol', symbol);
         storage.put('issuer', issuer);
-
+        storage.put('totalSupply', '0');
         storage.mapPut('balances', issuer, '0');
 
         blockchain.receipt(JSON.stringify(
@@ -56,6 +56,8 @@ class BaseToken
     }
 
     totalSupply() {
+      let value = storage.get('totalSupply');
+      return value;
     }
 
     issue(to, amount) {
@@ -64,31 +66,72 @@ class BaseToken
       }
 
       let issueAmount = new BigNumber(amount);
-
       if (!issueAmount.isInteger()) {
         throw 'INTEGER_VALUE_REQUIRED';
       }
 
       let currentAmount = storage.mapGet('balances', to);
-
       if (currentAmount === null) {
         currentAmount = new BigNumber(0);
       } else {
         currentAmount = new BigNumber(currentAmount);
       }
 
+      let currentSupply = storage.get('totalSupply');
+      if (currentSupply === null) {
+        throw 'NULL_TOTAL_SUPPLY';
+      } else {
+        currentSupply = new BigNumber(currentSupply);
+      }
+
       let newAmount = currentAmount.plus(issueAmount);
+      let newSupply = currentSupply.plus(issueAmount);
 
       storage.mapPut('balances', to, newAmount.toString());
+      storage.put('totalSupply', newSupply.toString());
 
-      blockchain.receipt(JSON.stringify({ to, amount }));
+      return JSON.stringify({ to, amount });
     }
 
     transfer(from, to, amount, memo) {
+      if (!blockchain.requireAuth(tx.publisher, "active")) {
+        throw 'PERMISSION_DENIED';
+      }
 
+      let sendAmount = new BigNumber(amount);
+      if (!sendAmount.isInteger()) {
+        throw 'INTEGER_VALUE_REQUIRED';
+      }
+
+      let currentFromAmount = storage.mapGet('balances', from);
+      if (currentFromAmount === null) {
+        currentFromAmount = new BigNumber(0);
+      } else {
+        currentFromAmount = new BigNumber(currentFromAmount);
+      }
+
+      let currentToAmount = storage.mapGet('balances', to);
+      if (currentToAmount === null) {
+        currentToAmount = new BigNumber(0);
+      } else {
+        currentToAmount = new BigNumber(currentToAmount);
+      }
+
+      // if (sendAmount.isGreaterThan(currentFromAmount)) {
+      //   throw 'INSUFFICIENT_FUNDS';
+      // }
+
+      let newFromAmount = currentFromAmount.minus(sendAmount);
+      let newToAmount = currentToAmount.plus(sendAmount);
+
+      storage.mapPut('balances', from, newFromAmount.toString());
+      storage.mapPut('balances', to, newToAmount.toString());
+
+      return JSON.stringify({ from, to, amount });
     }
 
     burn(from, amount) {
+
     }
 
     can_update(data) {
