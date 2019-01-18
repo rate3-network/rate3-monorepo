@@ -99,7 +99,7 @@ class BaseToken
     }
 
     transfer(from, to, amount, memo) {
-      if (!blockchain.requireAuth(tx.publisher, "active")) {
+      if (!(tx.publisher === from)) {
         throw 'PERMISSION_DENIED';
       }
 
