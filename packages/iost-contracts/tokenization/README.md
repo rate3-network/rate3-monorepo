@@ -5,7 +5,7 @@
     ./iwallet --expiration 10000 --gas_limit 1000000 --gas_ratio 1 --server localhost:30002 --account admin --amount_limit '*:unlimited' publish build/BaseToken.js build/BaseToken.json
 
 ## Call Transaction
-    ./iwallet --expiration 10000 --gas_limit 100000 --gas_ratio 1 --server localhost:30002 --account admin --amount_limit '*:unlimited' call "Contract4oAbEGrKAXZD42TnzNqAre8Mfu8wjkEh4mpsMas3Noo8" "deploy" '["rate3","RTE","18","admin"]'
+    ./iwallet --expiration 10000 --gas_limit 100000 --gas_ratio 1 --server localhost:30002 --account admin --amount_limit '*:unlimited' call "Contract4oAbEGrKAXZD42TnzNqAre8Mfu8wjkEh4mpsMas3Noo8" "deploy" '["rate3","RTE","18"]'
 
 ## Issue token
     ./iwallet --expiration 10000 --gas_limit 100000 --gas_ratio 1 --server localhost:30002 --account admin --amount_limit '*:unlimited' call "Contract4oAbEGrKAXZD42TnzNqAre8Mfu8wjkEh4mpsMas3Noo8" "issue" '["admin","100000000000000000000000"]'
