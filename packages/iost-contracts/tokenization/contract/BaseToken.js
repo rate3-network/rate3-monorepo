@@ -12,17 +12,22 @@ class BaseToken
     // Execute once when contract is packed into a block.
     init() {
       storage.put('deployed', 'f');
+      storage.put('issuer', tx.publisher);
     }
 
     // One-time deploy token.
     // No effect if deploy has been called before.
-    deploy(name, symbol, decimals, issuer) {
+    deploy(name, symbol, decimals) {
+      let issuer = storage.get('issuer');
+      if (!blockchain.requireAuth(issuer, "active")) {
+        throw 'PERMISSION_DENIED';
+      }
+
       // Check if token is deployed already.
       if (storage.get('deployed') === 'f') {
         storage.put('deployed', 't');
         storage.put('name', name);
         storage.put('symbol', symbol);
-        storage.put('issuer', issuer);
         storage.put('totalSupply', '0');
         storage.mapPut('balances', issuer, '0');
 
@@ -66,7 +71,7 @@ class BaseToken
 
     issue(to, amount) {
       let issuer = storage.get('issuer');
-      if (!(tx.publisher === issuer)) {
+      if (!blockchain.requireAuth(issuer, "active")) {
         throw 'PERMISSION_DENIED';
       }
 
@@ -99,7 +104,7 @@ class BaseToken
     }
 
     transfer(from, to, amount, memo) {
-      if (!(tx.publisher === from)) {
+      if (!blockchain.requireAuth(from, "active")) {
         throw 'PERMISSION_DENIED';
       }
 
@@ -136,7 +141,40 @@ class BaseToken
     }
 
     burn(from, amount) {
+      if (!blockchain.requireAuth(from, "active")) {
+        throw 'PERMISSION_DENIED';
+      }
 
+      let burnAmount = new BigNumber(amount);
+      if (!burnAmount.isInteger()) {
+        throw 'INTEGER_VALUE_REQUIRED';
+      }
+
+      let currentFromAmount = storage.mapGet('balances', from);
+      if (currentFromAmount === null) {
+        currentFromAmount = new BigNumber(0);
+      } else {
+        currentFromAmount = new BigNumber(currentFromAmount);
+      }
+
+      let currentSupply = storage.get('totalSupply');
+      if (currentSupply === null) {
+        throw 'NULL_TOTAL_SUPPLY';
+      } else {
+        currentSupply = new BigNumber(currentSupply);
+      }
+
+      if (burnAmount.isGreaterThan(currentFromAmount)) {
+        throw 'INSUFFICIENT_FUNDS';
+      }
+
+      let newFromAmount = currentFromAmount.minus(amount);
+      let newSupply = currentSupply.minus(amount);
+
+      storage.mapPut('balances', from, newFromAmount.toString());
+      storage.put('totalSupply', newSupply.toString());
+
+      return JSON.stringify({ from, amount });
     }
 
     can_update(data) {

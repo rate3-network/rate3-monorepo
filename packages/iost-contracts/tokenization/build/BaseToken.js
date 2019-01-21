@@ -62,7 +62,7 @@ class BaseToken
 
     issue(to, amount) {
       let issuer = storage.get('issuer');
-      if (!(tx.publisher === issuer)) {
+      if (!blockchain.requireAuth(issuer, "active")) {
         throw 'PERMISSION_DENIED';
       }
 
@@ -95,7 +95,7 @@ class BaseToken
     }
 
     transfer(from, to, amount, memo) {
-      if (!(tx.publisher === from)) {
+      if (!blockchain.requireAuth(from, "active")) {
         throw 'PERMISSION_DENIED';
       }
 
@@ -132,7 +132,40 @@ class BaseToken
     }
 
     burn(from, amount) {
+      if (!blockchain.requireAuth(from, "active")) {
+        throw 'PERMISSION_DENIED';
+      }
 
+      let burnAmount = new BigNumber(amount);
+      if (!burnAmount.isInteger()) {
+        throw 'INTEGER_VALUE_REQUIRED';
+      }
+
+      let currentFromAmount = storage.mapGet('balances', from);
+      if (currentFromAmount === null) {
+        currentFromAmount = new BigNumber(0);
+      } else {
+        currentFromAmount = new BigNumber(currentFromAmount);
+      }
+
+      let currentSupply = storage.get('totalSupply');
+      if (currentSupply === null) {
+        throw 'NULL_TOTAL_SUPPLY';
+      } else {
+        currentSupply = new BigNumber(currentSupply);
+      }
+
+      if (burnAmount.isGreaterThan(currentFromAmount)) {
+        throw 'INSUFFICIENT_FUNDS';
+      }
+
+      let newFromAmount = currentFromAmount.minus(amount);
+      let newSupply = currentSupply.minus(amount);
+
+      storage.mapPut('balances', from, newFromAmount.toString());
+      storage.put('totalSupply', newSupply.toString());
+
+      return JSON.stringify({ from, amount });
     }
 
     can_update(data) {
