@@ -197,6 +197,8 @@ class BaseToken {
   }
 
   can_update(data) {
+    let issuer = storage.get('issuer');
+    return blockchain.requireAuth(issuer, "active");
   }
 };
 module.exports = BaseToken;
