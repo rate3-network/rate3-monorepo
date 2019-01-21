@@ -20,6 +20,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.0.0",
     "chai-bignumber": "^2.0.0",
+    "chai-bn": "^0.1.1",
     "eslint": "^5.6.1",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.14.0",
