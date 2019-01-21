@@ -19,24 +19,32 @@ module.exports = {
             gas: 6700000,
             gasPrice: 3000000000,
             network_id: 3,
+            timeoutBlocks: 100,
         },
         rinkeby: {
             provider: () => new HDWalletProvider(secrets.MNEMONIC, `https://rinkeby.infura.io/${secrets.INFURA_KEY}`),
             gas: 6700000,
             gasPrice: 3000000000,
             network_id: 4,
+            timeoutBlocks: 100,
         },
         kovan: {
             provider: () => new HDWalletProvider(secrets.MNEMONIC, `https://kovan.infura.io/${secrets.INFURA_KEY}`),
             gas: 6700000,
             gasPrice: 3000000000,
             network_id: 42,
+            timeoutBlocks: 100,
         },
     },
-    solc: {
-        optimizer: {
-            enabled: true,
-            runs: 200,
+    compilers: {
+        solc: {
+          version: "0.4.24",
+          settings: {
+                optimizer: {
+                    enabled: true,
+                    runs: 200,
+                },
+            },
         },
     },
 };
