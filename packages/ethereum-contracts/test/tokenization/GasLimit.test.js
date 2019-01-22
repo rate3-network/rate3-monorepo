@@ -1,6 +1,4 @@
-import { increaseTimeTo, duration } from '../helpers/increaseTime';
-import latestTime from '../helpers/latestTime';
-import { advanceBlock } from '../helpers/advanceToBlock';
+import { BN, constants, expectEvent, time, shouldFail } from 'openzeppelin-test-helpers';
 
 const BaseInteractor = artifacts.require("./tokenization/interactors/BaseInteractor.sol");
 const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
@@ -11,14 +9,14 @@ const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.
 
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(web3.BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 contract('Gas Limit Tests', function(accounts) {
 
     before(async function () {
         // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
-        await advanceBlock();
+        await time.advanceBlock();
     });
 
     const [owner, ...rest] = accounts;

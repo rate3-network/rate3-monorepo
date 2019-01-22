@@ -27,11 +27,6 @@ contract ConversionReceiver is Claimable {
     event ConversionAccepted(uint256 indexID, address indexed ethAddress, bytes32 stellarAddress, uint256 amount, uint256 acceptTimestamp);
     event ConversionUnlocked(address indexed ethAddress, bytes32 stellarAddress, uint256 amount, uint256 unlockTimestamp);
 
-    modifier onlyInvalidConversions(uint256 _index) {
-        require(conversions[_index].state == States.INVALID, "Conversion should be invalid");
-        _;
-    }
-
     modifier onlyOpenConversions(uint256 _index) {
         require(conversions[_index].state == States.OPEN, "Conversion should be open");
         _;

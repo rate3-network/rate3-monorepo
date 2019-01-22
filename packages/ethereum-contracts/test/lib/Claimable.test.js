@@ -1,4 +1,4 @@
-const { assertRevert } = require('../helpers/assertRevert');
+import { BN, constants, expectEvent, time, shouldFail } from 'openzeppelin-test-helpers';
 
 const Claimable = artifacts.require('./lib/ownership/Claimable');
 
@@ -23,7 +23,7 @@ contract('Claimable', function (accounts) {
   });
 
   it('should prevent to claimOwnership from no pendingOwner', async function () {
-    await assertRevert(claimable.claimOwnership({ from: accounts[2] }));
+    await shouldFail.reverting(claimable.claimOwnership({ from: accounts[2] }));
   });
 
   it('should prevent non-owners from transfering', async function () {
@@ -31,7 +31,7 @@ contract('Claimable', function (accounts) {
     const owner = await claimable.owner.call();
 
     assert.isTrue(owner !== other);
-    await assertRevert(claimable.transferOwnership(other, { from: other }));
+    await shouldFail.reverting(claimable.transferOwnership(other, { from: other }));
   });
 
   describe('after initiating a transfer', function () {

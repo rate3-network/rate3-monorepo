@@ -1,8 +1,4 @@
-import { increaseTimeTo, duration } from '../helpers/increaseTime';
-import latestTime from '../helpers/latestTime';
-import { advanceBlock } from '../helpers/advanceToBlock';
-import expectEvent from '../helpers/expectEvent';
-import { assertRevert } from '../helpers/assertRevert';
+import { BN, constants, expectEvent, time, shouldFail } from 'openzeppelin-test-helpers';
 
 const BaseToken = artifacts.require("./tokenization/tokens/BaseToken.sol");
 const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
@@ -12,7 +8,7 @@ const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.
 
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(web3.BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 // Proxy contract tests are in ERC20ProxyTest
@@ -20,11 +16,11 @@ contract('ProxySupported ERC20 Token Tests', function(accounts) {
 
     before(async function () {
         // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
-        await advanceBlock();
+        await time.advanceBlock();
     });
 
     const [_, owner, actualSender, ...rest] = accounts;
-    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
     const WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
 
     beforeEach(async function () {
@@ -47,7 +43,7 @@ contract('ProxySupported ERC20 Token Tests', function(accounts) {
             WHITELISTED_FOR_MINT,
             0,
             "",
-            ZERO_ADDRESS,
+            constants.ZERO_ADDRESS,
             true,
             owner,
             { from: owner }
@@ -57,15 +53,15 @@ contract('ProxySupported ERC20 Token Tests', function(accounts) {
             WHITELISTED_FOR_MINT,
             0,
             "",
-            ZERO_ADDRESS,
+            constants.ZERO_ADDRESS,
             true,
             owner,
             { from: owner }
         );
 
         // Mint some tokens for actualSender and rest[0]
-        await this.token.mint(actualSender, 100, { from: owner });
-        await this.token.mint(rest[0], 100, { from: owner });
+        await this.token.mint(actualSender, new BN(100), { from: owner });
+        await this.token.mint(rest[0], new BN(100), { from: owner });
 
         // Set proxy
         await this.token.setProxy(this.proxy.address, { from: owner });
@@ -73,41 +69,41 @@ contract('ProxySupported ERC20 Token Tests', function(accounts) {
 
     describe('setProxy', function () {
         it('only owner can call', async function() {
-            await assertRevert(this.token.setProxy(this.proxy.address, { from: rest[0] }));
-            await assertRevert(this.token.setProxy(this.proxy.address, { from: actualSender }));
+            await shouldFail.reverting(this.token.setProxy(this.proxy.address, { from: rest[0] }));
+            await shouldFail.reverting(this.token.setProxy(this.proxy.address, { from: actualSender }));
             this.token.setProxy(this.proxy.address, { from: owner });
         });
     });
 
     describe('transfer with sender', function () {
         it('owner cannot call', async function() {
-            await assertRevert(this.token.transferWithSender(actualSender, rest[0], 100, { from: owner }));
+            await shouldFail.reverting(this.token.transferWithSender(actualSender, rest[0], new BN(100), { from: owner }));
         });
     });
 
     describe('approve with sender', function () {
         it('owner cannot call', async function() {
-            await assertRevert(this.token.approveWithSender(actualSender, rest[0], 100, { from: owner }));
+            await shouldFail.reverting(this.token.approveWithSender(actualSender, rest[0], new BN(100), { from: owner }));
         });
     });
 
     describe('transferFrom with sender', function () {
         it('owner cannot call', async function() {
-            await this.token.approve(actualSender, 100, { from: rest[0] });
-            await assertRevert(this.token.transferFromWithSender(actualSender, rest[0], rest[1], 100, { from: owner }));
+            await this.token.approve(actualSender, new BN(100), { from: rest[0] });
+            await shouldFail.reverting(this.token.transferFromWithSender(actualSender, rest[0], rest[1], new BN(100), { from: owner }));
         });
     });
 
     describe('increaseApproval with sender', function () {
         it('owner cannot call', async function() {
-            await assertRevert(this.token.increaseApprovalWithSender(actualSender, rest[0], 100, { from: owner }));
+            await shouldFail.reverting(this.token.increaseApprovalWithSender(actualSender, rest[0], new BN(100), { from: owner }));
         });
     });
 
     describe('decreaseApproval with sender', function () {
         it('owner cannot call', async function() {
-            await this.token.approve(rest[0], 100, { from: actualSender });
-            await assertRevert(this.token.decreaseApprovalWithSender(actualSender, rest[0], 100, { from: owner }));
+            await this.token.approve(rest[0], new BN(100), { from: actualSender });
+            await shouldFail.reverting(this.token.decreaseApprovalWithSender(actualSender, rest[0], new BN(100), { from: owner }));
         });
     });
 });
