@@ -1,8 +1,4 @@
-import { increaseTimeTo, duration } from '../helpers/increaseTime';
-import latestTime from '../helpers/latestTime';
-import { advanceBlock } from '../helpers/advanceToBlock';
-import expectEvent from '../helpers/expectEvent';
-import { assertRevert } from '../helpers/assertRevert';
+import { BN, constants, expectEvent, time, shouldFail } from 'openzeppelin-test-helpers';
 
 const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
 const BaseToken = artifacts.require("./tokenization/tokens/BaseToken.sol");
@@ -12,7 +8,7 @@ const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.
 
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(web3.BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 // ERC20 tests referenced from:
@@ -22,11 +18,11 @@ contract('ERC20 Proxy Tests', function(accounts) {
 
     before(async function () {
         // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
-        await advanceBlock();
+        await time.advanceBlock();
     });
 
     const [_, owner, recipient, anotherAccount, ...rest] = accounts;
-    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
     const WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
 
     beforeEach(async function () {
@@ -52,7 +48,7 @@ contract('ERC20 Proxy Tests', function(accounts) {
             WHITELISTED_FOR_MINT,
             0,
             "",
-            ZERO_ADDRESS,
+            constants.ZERO_ADDRESS,
             true,
             owner,
             { from: owner }
@@ -64,19 +60,19 @@ contract('ERC20 Proxy Tests', function(accounts) {
 
     describe('total supply', function () {
         it('returns the total amount of tokens', async function () {
-            (await this.proxy.totalSupply()).should.be.bignumber.equal(100);
+            (await this.proxy.totalSupply()).should.be.a.bignumber.equals(new BN(100));
         });
     });
     
     describe('balanceOf', function () {
         describe('when the requested account has no tokens', function () {
             it('returns zero', async function () {
-                (await this.proxy.balanceOf(anotherAccount)).should.be.bignumber.equal(0);
+                (await this.proxy.balanceOf(anotherAccount)).should.be.a.bignumber.equals(new BN(0));
             });
         });
         describe('when the requested account has some tokens', function () {
             it('returns the total amount of tokens', async function () {
-                (await this.proxy.balanceOf(owner)).should.be.bignumber.equal(100);
+                (await this.proxy.balanceOf(owner)).should.be.a.bignumber.equals(new BN(100));
             });
         });
     });
@@ -86,22 +82,22 @@ contract('ERC20 Proxy Tests', function(accounts) {
             const to = recipient;
 
             describe('when the sender does not have enough balance', function () {
-                const amount = 101;
+                const amount = new BN(101);
 
                 it('reverts', async function () {
-                    await assertRevert(this.proxy.transfer(to, amount, { from: owner }));
+                    await shouldFail.reverting(this.proxy.transfer(to, amount, { from: owner }));
                 });
             });
     
             describe('when the sender has enough balance', function () {
-                const amount = 100;
+                const amount = new BN(100);
 
                 it('transfers the requested amount', async function () {
                     await this.proxy.transfer(to, amount, { from: owner });
 
-                    (await this.proxy.balanceOf(owner)).should.be.bignumber.equal(0);
+                    (await this.proxy.balanceOf(owner)).should.be.a.bignumber.equals(new BN(0));
 
-                    (await this.proxy.balanceOf(to)).should.be.bignumber.equal(amount);
+                    (await this.proxy.balanceOf(to)).should.be.a.bignumber.equals(amount);
                 });
 
                 it('emits a transfer event', async function () {
@@ -112,16 +108,16 @@ contract('ERC20 Proxy Tests', function(accounts) {
                         to: to,
                     });
 
-                    event.args.value.should.be.bignumber.equal(amount);
+                    event.args.value.should.be.a.bignumber.equals(amount);
                 });
             });
         });
     
         describe('when the recipient is the zero address', function () {
-            const to = ZERO_ADDRESS;
+            const to = constants.ZERO_ADDRESS;
 
             it('reverts', async function () {
-                await assertRevert(this.proxy.transfer(to, 100, { from: owner }));
+                await shouldFail.reverting(this.proxy.transfer(to, new BN(100), { from: owner }));
             });
         });
     });
@@ -131,7 +127,7 @@ contract('ERC20 Proxy Tests', function(accounts) {
             const spender = recipient;
 
             describe('when the sender has enough balance', function () {
-                const amount = 100;
+                const amount = new BN(100);
 
                 it('emits an approval event', async function () {
                     const { logs } = await this.proxy.approve(spender, amount, { from: owner });
@@ -140,32 +136,32 @@ contract('ERC20 Proxy Tests', function(accounts) {
                     logs[0].event.should.equal('Approval');
                     logs[0].args.owner.should.equal(owner);
                     logs[0].args.spender.should.equal(spender);
-                    logs[0].args.value.should.be.bignumber.equal(amount);
+                    logs[0].args.value.should.be.a.bignumber.equals(amount);
                 });
 
                 describe('when there was no approved amount before', function () {
                     it('approves the requested amount', async function () {
                         await this.proxy.approve(spender, amount, { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(amount);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(amount);
                     });
                 });
 
                 describe('when the spender had an approved amount', function () {
                     beforeEach(async function () {
-                        await this.proxy.approve(spender, 1, { from: owner });
+                        await this.proxy.approve(spender, new BN(1), { from: owner });
                     });
 
                     it('approves the requested amount and replaces the previous one', async function () {
                         await this.proxy.approve(spender, amount, { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(amount);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(amount);
                     });
                 });
             });
 
             describe('when the sender does not have enough balance', function () {
-                const amount = 101;
+                const amount = new BN(101);
 
                 it('emits an approval event', async function () {
                     const { logs } = await this.proxy.approve(spender, amount, { from: owner });
@@ -174,37 +170,37 @@ contract('ERC20 Proxy Tests', function(accounts) {
                     logs[0].event.should.equal('Approval');
                     logs[0].args.owner.should.equal(owner);
                     logs[0].args.spender.should.equal(spender);
-                    logs[0].args.value.should.be.bignumber.equal(amount);
+                    logs[0].args.value.should.be.a.bignumber.equals(amount);
                 });
 
                 describe('when there was no approved amount before', function () {
                     it('approves the requested amount', async function () {
                         await this.proxy.approve(spender, amount, { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(amount);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(amount);
                     });
                 });
 
                 describe('when the spender had an approved amount', function () {
                     beforeEach(async function () {
-                        await this.proxy.approve(spender, 1, { from: owner });
+                        await this.proxy.approve(spender, new BN(1), { from: owner });
                     });
 
                     it('approves the requested amount and replaces the previous one', async function () {
                         await this.proxy.approve(spender, amount, { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(amount);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(amount);
                     });
                 });
             });
         });
 
         describe('when the spender is the zero address', function () {
-            const amount = 100;
-            const spender = ZERO_ADDRESS;
+            const amount = new BN(100);
+            const spender = constants.ZERO_ADDRESS;
 
             it('reverts', async function () {
-                await assertRevert(this.proxy.approve(spender, amount, { from: owner }));
+                await shouldFail.reverting(this.proxy.approve(spender, amount, { from: owner }));
             });
         });
     });
@@ -217,24 +213,24 @@ contract('ERC20 Proxy Tests', function(accounts) {
 
             describe('when the spender has enough approved balance', function () {
                 beforeEach(async function () {
-                    await this.proxy.approve(spender, 100, { from: owner });
+                    await this.proxy.approve(spender, new BN(100), { from: owner });
                 });
 
                 describe('when the owner has enough balance', function () {
-                    const amount = 100;
+                    const amount = new BN(100);
 
                     it('transfers the requested amount', async function () {
                         await this.proxy.transferFrom(owner, to, amount, { from: spender });
 
-                        (await this.proxy.balanceOf(owner)).should.be.bignumber.equal(0);
+                        (await this.proxy.balanceOf(owner)).should.be.a.bignumber.equals(new BN(0));
 
-                        (await this.proxy.balanceOf(to)).should.be.bignumber.equal(amount);
+                        (await this.proxy.balanceOf(to)).should.be.a.bignumber.equals(amount);
                     });
 
                     it('decreases the spender allowance', async function () {
                         await this.proxy.transferFrom(owner, to, amount, { from: spender });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(0);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(new BN(0));
                     });
 
                     it('emits a transfer event', async function () {
@@ -244,52 +240,52 @@ contract('ERC20 Proxy Tests', function(accounts) {
                         logs[0].event.should.equal('Transfer');
                         logs[0].args.from.should.equal(owner);
                         logs[0].args.to.should.equal(to);
-                        logs[0].args.value.should.be.bignumber.equal(amount);
+                        logs[0].args.value.should.be.a.bignumber.equals(amount);
                     });
                 });
 
                 describe('when the owner does not have enough balance', function () {
-                    const amount = 101;
+                    const amount = new BN(101);
 
                     it('reverts', async function () {
-                        await assertRevert(this.proxy.transferFrom(owner, to, amount, { from: spender }));
+                        await shouldFail.reverting(this.proxy.transferFrom(owner, to, amount, { from: spender }));
                     });
                 });
             });
 
             describe('when the spender does not have enough approved balance', function () {
                 beforeEach(async function () {
-                    await this.proxy.approve(spender, 99, { from: owner });
+                    await this.proxy.approve(spender, new BN(99), { from: owner });
                 });
 
                 describe('when the owner has enough balance', function () {
-                    const amount = 100;
+                    const amount = new BN(100);
 
                     it('reverts', async function () {
-                        await assertRevert(this.proxy.transferFrom(owner, to, amount, { from: spender }));
+                        await shouldFail.reverting(this.proxy.transferFrom(owner, to, amount, { from: spender }));
                     });
                 });
 
                 describe('when the owner does not have enough balance', function () {
-                    const amount = 101;
+                    const amount = new BN(101);
 
                     it('reverts', async function () {
-                        await assertRevert(this.proxy.transferFrom(owner, to, amount, { from: spender }));
+                        await shouldFail.reverting(this.proxy.transferFrom(owner, to, amount, { from: spender }));
                     });
                 });
             });
         });
     
         describe('when the recipient is the zero address', function () {
-            const amount = 100;
-            const to = ZERO_ADDRESS;
+            const amount = new BN(100);
+            const to = constants.ZERO_ADDRESS;
 
             beforeEach(async function () {
                 await this.proxy.approve(spender, amount, { from: owner });
             });
 
             it('reverts', async function () {
-                await assertRevert(this.proxy.transferFrom(owner, to, amount, { from: spender }));
+                await shouldFail.reverting(this.proxy.transferFrom(owner, to, amount, { from: spender }));
             });
         });
     });
@@ -313,47 +309,47 @@ contract('ERC20 Proxy Tests', function(accounts) {
                         logs[0].event.should.equal('Approval');
                         logs[0].args.owner.should.equal(owner);
                         logs[0].args.spender.should.equal(spender);
-                        logs[0].args.value.should.be.bignumber.equal(0);
+                        logs[0].args.value.should.be.a.bignumber.equals(new BN(0));
                     });
 
                     it('decreases the spender allowance subtracting the requested amount', async function () {
-                        await this.proxy.decreaseApproval(spender, approvedAmount - 1, { from: owner });
+                        await this.proxy.decreaseApproval(spender, approvedAmount.sub(new BN(1)), { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(1);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(new BN(1));
                     });
 
                     it('sets the allowance to zero when all allowance is removed', async function () {
                         await this.proxy.decreaseApproval(spender, approvedAmount, { from: owner });
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(0);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(new BN(0));
                     });
                 });
             }
 
             describe('when the sender has enough balance', function () {
-                const amount = 100;
+                const amount = new BN(100);
 
                 shouldDecreaseApproval(amount);
             });
 
             describe('when the sender does not have enough balance', function () {
-                const amount = 101;
+                const amount = new BN(101);
 
                 shouldDecreaseApproval(amount);
             });
         });
 
         describe('when the spender is the zero address', function () {
-            const amount = 100;
-            const spender = ZERO_ADDRESS;
+            const amount = new BN(100);
+            const spender = constants.ZERO_ADDRESS;
 
             it('reverts', async function () {
-                await assertRevert(this.proxy.decreaseApproval(spender, amount, { from: owner }));
+                await shouldFail.reverting(this.proxy.decreaseApproval(spender, amount, { from: owner }));
             });
         });
     });
     
     describe('increase approval', function () {
-        const amount = 100;
+        const amount = new BN(100);
     
         describe('when the spender is not the zero address', function () {
             const spender = recipient;
@@ -366,32 +362,32 @@ contract('ERC20 Proxy Tests', function(accounts) {
                     logs[0].event.should.equal('Approval');
                     logs[0].args.owner.should.equal(owner);
                     logs[0].args.spender.should.equal(spender);
-                    logs[0].args.value.should.be.bignumber.equal(amount);
+                    logs[0].args.value.should.be.a.bignumber.equals(amount);
                 });
 
                 describe('when there was no approved amount before', function () {
                     it('approves the requested amount', async function () {
                         await this.proxy.increaseApproval(spender, amount, { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(amount);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(amount);
                     });
                 });
 
                 describe('when the spender had an approved amount', function () {
                     beforeEach(async function () {
-                        await this.proxy.approve(spender, 1, { from: owner });
+                        await this.proxy.approve(spender, new BN(1), { from: owner });
                     });
 
                     it('increases the spender allowance adding the requested amount', async function () {
                         await this.proxy.increaseApproval(spender, amount, { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(amount + 1);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(amount.add(new BN(1)));
                     });
                 });
             });
 
             describe('when the sender does not have enough balance', function () {
-                const amount = 101;
+                const amount = new BN(101);
 
                 it('emits an approval event', async function () {
                     const { logs } = await this.proxy.increaseApproval(spender, amount, { from: owner });
@@ -400,36 +396,36 @@ contract('ERC20 Proxy Tests', function(accounts) {
                     logs[0].event.should.equal('Approval');
                     logs[0].args.owner.should.equal(owner);
                     logs[0].args.spender.should.equal(spender);
-                    logs[0].args.value.should.be.bignumber.equal(amount);
+                    logs[0].args.value.should.be.a.bignumber.equals(amount);
                 });
 
                 describe('when there was no approved amount before', function () {
                     it('approves the requested amount', async function () {
                         await this.proxy.increaseApproval(spender, amount, { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(amount);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(amount);
                     });
                 });
 
                 describe('when the spender had an approved amount', function () {
                     beforeEach(async function () {
-                        await this.proxy.approve(spender, 1, { from: owner });
+                        await this.proxy.approve(spender, new BN(1), { from: owner });
                     });
 
                     it('increases the spender allowance adding the requested amount', async function () {
                         await this.proxy.increaseApproval(spender, amount, { from: owner });
 
-                        (await this.proxy.allowance(owner, spender)).should.be.bignumber.equal(amount + 1);
+                        (await this.proxy.allowance(owner, spender)).should.be.a.bignumber.equals(amount.add(new BN(1)));
                     });
                 });
             });
         });
     
         describe('when the spender is the zero address', function () {
-            const spender = ZERO_ADDRESS;
+            const spender = constants.ZERO_ADDRESS;
 
             it('reverts', async function () {
-                await assertRevert(this.proxy.increaseApproval(spender, amount, { from: owner }));
+                await shouldFail.reverting(this.proxy.increaseApproval(spender, amount, { from: owner }));
             });
         });
     });    
