@@ -1,8 +1,4 @@
-import { increaseTimeTo, duration } from '../helpers/increaseTime';
-import latestTime from '../helpers/latestTime';
-import { advanceBlock } from '../helpers/advanceToBlock';
-import expectEvent from '../helpers/expectEvent';
-import { assertRevert } from '../helpers/assertRevert';
+import { BN, constants, expectEvent, time, shouldFail } from 'openzeppelin-test-helpers';
 
 const BaseToken = artifacts.require("./tokenization/tokens/BaseToken.sol");
 const BalanceModule = artifacts.require("./tokenization/modules/BalanceModule.sol");
@@ -11,18 +7,18 @@ const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.
 
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(web3.BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 contract('CompliantToken Tests', function(accounts) {
 
     before(async function () {
         // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
-        await advanceBlock();
+        await time.advanceBlock();
     });
 
     const [_, owner, ...rest] = accounts;
-    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
     const WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
     const WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
     const BLACKLISTED = "BLACKLISTED";
@@ -44,14 +40,14 @@ contract('CompliantToken Tests', function(accounts) {
         });
 
         it('only whitelisted address can be minted tokens', async function() {
-            await assertRevert(this.token.mint(rest[0], 100, { from: owner }));
+            await shouldFail.reverting.withMessage(this.token.mint(rest[0], 100, { from: owner }), 'Not whitelisted for mint');
 
             await this.token.setKeyDataRecord(
                 rest[0],
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -64,13 +60,13 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.token.mint(rest[0], 100, { from: owner }));
+            await shouldFail.reverting.withMessage(this.token.mint(rest[0], 100, { from: owner }), 'Not whitelisted for mint');
         });
 
         it('blacklisted address cannot be minted tokens', async function() {
@@ -79,7 +75,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -90,19 +86,19 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
-            await assertRevert(this.token.mint(rest[0], 100, { from: owner }));
+            await shouldFail.reverting.withMessage(this.token.mint(rest[0], 100, { from: owner }), 'Address is blacklisted');
 
             await this.token.setKeyDataRecord(
                 rest[0],
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -117,21 +113,21 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
             // Mint tokens first
             await this.token.mint(rest[0], 100, { from: owner });
-            await assertRevert(this.token.burn(rest[0], 100, { from: owner }));
+            await shouldFail.reverting.withMessage(this.token.burn(rest[0], 100, { from: owner }), 'Not whitelisted for burn');
 
             await this.token.setKeyDataRecord(
                 rest[0],
                 WHITELISTED_FOR_BURN,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -144,13 +140,13 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_BURN,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.token.burn(rest[0], 50, { from: owner }));
+            await shouldFail.reverting.withMessage(this.token.burn(rest[0], 50, { from: owner }), 'Not whitelisted for burn');
         });
 
         it('blacklisted address cannot burn tokens', async function() {
@@ -159,21 +155,20 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
             // Mint tokens first
             await this.token.mint(rest[0], 100, { from: owner });
-            await assertRevert(this.token.burn(rest[0], 100, { from: owner }));
 
             await this.token.setKeyDataRecord(
                 rest[0],
                 WHITELISTED_FOR_BURN,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -186,20 +181,20 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.token.burn(rest[0], 50, { from: owner }));
+            await shouldFail.reverting.withMessage(this.token.burn(rest[0], 50, { from: owner }), 'Address is blacklisted');
 
             await this.token.setKeyDataRecord(
                 rest[0],
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -214,7 +209,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -230,13 +225,13 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.token.transfer(rest[1], 50, { from: rest[0] }));
+            await shouldFail.reverting.withMessage(this.token.transfer(rest[1], 50, { from: rest[0] }), 'Address is blacklisted');
 
             // Unblacklist rest[0]
             await this.token.setKeyDataRecord(
@@ -244,7 +239,7 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -259,7 +254,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -275,13 +270,13 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.token.transfer(rest[1], 50, { from: rest[0] }));
+            await shouldFail.reverting.withMessage(this.token.transfer(rest[1], 50, { from: rest[0] }), 'Address is blacklisted');
 
             // Unblacklist rest[1]
             await this.token.setKeyDataRecord(
@@ -289,7 +284,7 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -304,7 +299,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -322,13 +317,13 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+            await shouldFail.reverting.withMessage(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }), 'Address is blacklisted');
 
             // Unblacklist rest[1]
             await this.token.setKeyDataRecord(
@@ -336,7 +331,7 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -351,7 +346,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -369,13 +364,13 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+            await shouldFail.reverting.withMessage(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }), 'Address is blacklisted');
 
             // Unblacklist rest[2]
             await this.token.setKeyDataRecord(
@@ -383,7 +378,7 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -398,7 +393,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -416,13 +411,13 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+            await shouldFail.reverting.withMessage(this.token.transferFrom(rest[0], rest[2], 50, { from: rest[1] }), 'Address is blacklisted');
 
             // Unblacklist rest[0]
             await this.token.setKeyDataRecord(
@@ -430,7 +425,7 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -464,7 +459,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -477,7 +472,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -494,7 +489,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_BURN,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -507,7 +502,7 @@ contract('CompliantToken Tests', function(accounts) {
                 WHITELISTED_FOR_BURN,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -524,7 +519,7 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -537,7 +532,7 @@ contract('CompliantToken Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
