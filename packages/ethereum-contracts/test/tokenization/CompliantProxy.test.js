@@ -1,8 +1,4 @@
-import { increaseTimeTo, duration } from '../helpers/increaseTime';
-import latestTime from '../helpers/latestTime';
-import { advanceBlock } from '../helpers/advanceToBlock';
-import expectEvent from '../helpers/expectEvent';
-import { assertRevert } from '../helpers/assertRevert';
+import { BN, constants, expectEvent, time, shouldFail } from 'openzeppelin-test-helpers';
 
 const BaseToken = artifacts.require("./tokenization/BaseToken.sol");
 const BaseProxy = artifacts.require("./tokenization/BaseProxy.sol");
@@ -12,7 +8,7 @@ const RegistryModule = artifacts.require("./tokenization/modules/RegistryModule.
 
 require('chai')
   .use(require('chai-as-promised'))
-  .use(require('chai-bignumber')(web3.BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 // Tests whether proxy is still subject to CompliantToken
@@ -21,11 +17,11 @@ contract('Compliant Proxy Tests', function(accounts) {
 
     before(async function () {
         // Advance to the next block to correctly read time in the solidity "now" function interpreted by testrpc
-        await advanceBlock();
+        await time.advanceBlock();
     });
 
     const [_, owner, ...rest] = accounts;
-    const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
     const WHITELISTED_FOR_MINT = "WHITELISTED_FOR_MINT";
     const WHITELISTED_FOR_BURN = "WHITELISTED_FOR_BURN";
     const BLACKLISTED = "BLACKLISTED";
@@ -55,7 +51,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -71,13 +67,13 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.proxy.transfer(rest[1], 50, { from: rest[0] }));
+            await shouldFail.reverting.withMessage(this.proxy.transfer(rest[1], 50, { from: rest[0] }), 'Address is blacklisted');
 
             // Unblacklist rest[0]
             await this.token.setKeyDataRecord(
@@ -85,7 +81,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -100,7 +96,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -116,13 +112,13 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.proxy.transfer(rest[1], 50, { from: rest[0] }));
+            await shouldFail.reverting.withMessage(this.proxy.transfer(rest[1], 50, { from: rest[0] }), 'Address is blacklisted');
 
             // Unblacklist rest[1]
             await this.token.setKeyDataRecord(
@@ -130,7 +126,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -145,7 +141,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -163,13 +159,13 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.proxy.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+            await shouldFail.reverting.withMessage(this.proxy.transferFrom(rest[0], rest[2], 50, { from: rest[1] }), 'Address is blacklisted');
 
             // Unblacklist rest[1]
             await this.token.setKeyDataRecord(
@@ -177,7 +173,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -192,7 +188,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -210,13 +206,13 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.proxy.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+            await shouldFail.reverting.withMessage(this.proxy.transferFrom(rest[0], rest[2], 50, { from: rest[1] }), 'Address is blacklisted');
 
             // Unblacklist rest[2]
             await this.token.setKeyDataRecord(
@@ -224,7 +220,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
@@ -239,7 +235,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 WHITELISTED_FOR_MINT,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
@@ -257,13 +253,13 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 true,
                 owner,
                 { from: owner }
             );
 
-            await assertRevert(this.proxy.transferFrom(rest[0], rest[2], 50, { from: rest[1] }));
+            await shouldFail.reverting.withMessage(this.proxy.transferFrom(rest[0], rest[2], 50, { from: rest[1] }), 'Address is blacklisted');
 
             // Unblacklist rest[0]
             await this.token.setKeyDataRecord(
@@ -271,7 +267,7 @@ contract('Compliant Proxy Tests', function(accounts) {
                 BLACKLISTED,
                 0,
                 "",
-                ZERO_ADDRESS,
+                constants.ZERO_ADDRESS,
                 false,
                 owner,
                 { from: owner }
