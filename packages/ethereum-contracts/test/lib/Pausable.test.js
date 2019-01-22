@@ -1,11 +1,9 @@
-const { assertRevert } = require('../helpers/assertRevert');
-const expectEvent = require('../helpers/expectEvent');
+import { BN, constants, expectEvent, time, shouldFail } from 'openzeppelin-test-helpers';
+
 const PausableMock = artifacts.require('./lib/lifecycle/PausableMock');
 
-const BigNumber = web3.BigNumber;
-
 require('chai')
-  .use(require('chai-bignumber')(BigNumber))
+  .use(require('chai-bn')(BN))
   .should();
 
 contract('Pausable', function () {
@@ -14,22 +12,22 @@ contract('Pausable', function () {
   });
 
   it('can perform normal process in non-pause', async function () {
-    (await this.Pausable.count()).should.be.bignumber.equal(0);
+    (await this.Pausable.count()).should.be.a.bignumber.equals(new BN(0));
 
     await this.Pausable.normalProcess();
-    (await this.Pausable.count()).should.be.bignumber.equal(1);
+    (await this.Pausable.count()).should.be.a.bignumber.equals(new BN(1));
   });
 
   it('can not perform normal process in pause', async function () {
     await this.Pausable.pause();
-    (await this.Pausable.count()).should.be.bignumber.equal(0);
+    (await this.Pausable.count()).should.be.bignumber.equals(new BN(0));
 
-    await assertRevert(this.Pausable.normalProcess());
-    (await this.Pausable.count()).should.be.bignumber.equal(0);
+    await shouldFail.reverting(this.Pausable.normalProcess());
+    (await this.Pausable.count()).should.be.bignumber.equals(new BN(0));
   });
 
   it('can not take drastic measure in non-pause', async function () {
-    await assertRevert(this.Pausable.drasticMeasure());
+    await shouldFail.reverting(this.Pausable.drasticMeasure());
     (await this.Pausable.drasticMeasureTaken()).should.equal(false);
   });
 
@@ -43,14 +41,14 @@ contract('Pausable', function () {
     await this.Pausable.pause();
     await this.Pausable.unpause();
     await this.Pausable.normalProcess();
-    (await this.Pausable.count()).should.be.bignumber.equal(1);
+    (await this.Pausable.count()).should.be.a.bignumber.equals(new BN(1));
   });
 
   it('should prevent drastic measure after pause is over', async function () {
     await this.Pausable.pause();
     await this.Pausable.unpause();
 
-    await assertRevert(this.Pausable.drasticMeasure());
+    await shouldFail.reverting(this.Pausable.drasticMeasure());
 
     (await this.Pausable.drasticMeasureTaken()).should.equal(false);
   });
