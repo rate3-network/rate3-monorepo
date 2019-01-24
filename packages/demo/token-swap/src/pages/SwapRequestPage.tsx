@@ -77,7 +77,6 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
   }
 
   render() {
-    console.log('swap page rendered');
     const { classes, value, direction, requestE2S, requestS2E } = this.props;
     return (
       <PageBox>

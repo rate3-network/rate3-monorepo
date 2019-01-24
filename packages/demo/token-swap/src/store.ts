@@ -6,6 +6,7 @@ import { counter } from './reducers/counter';
 import { network } from './reducers/network';
 import { user } from './reducers/user';
 import { issuer } from './reducers/issuer';
+import { INFURA } from './constants/defaults';
 
 import rootSaga from './sagas/rootSaga'; // tslint:disable-line:import-name
 const rootReducer = combineReducers({
@@ -18,7 +19,7 @@ const sagaMiddleware = createSagaMiddleware();
 
 const composeEnhancers = (<any>window).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 // const web3: W3.default =
-//   new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws'));
+//   new Web3(new Web3.providers.WebsocketProvider(INFURA));
 
 export const store = createStore(
   rootReducer,

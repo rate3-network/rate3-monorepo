@@ -48,7 +48,6 @@ function* getTokenBalance() {
 
     const address = ETH_USER;
     const balance = yield tokenContract.methods.balanceOf(address).call();
-    console.log('sgdr balance', balance);
     return balance;
   } catch (e) {
     yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
@@ -61,7 +60,6 @@ function* constructR3() {
     const r3Stellar = yield select(getR3Stellar);
     const r3 = yield r3Stellar('TESTNET', HORIZON);
     r3.Stellar.Config.setDefault();
-    console.log(r3);
     return r3;
   } catch (e) {
     yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
@@ -103,7 +101,6 @@ function* setR3(action: any) {
 function* getUserStellarBalance(action: any) {
   try {
     const res = yield axios.get(`${HORIZON}/accounts/${STELLAR_USER}`);
-    console.log(res.data.balances);
     const balance = res.data.balances;
     yield put({ type: networkActions.SET_USER_STELLAR_BALANCE, payload: { balance } });
   } catch (e) {
@@ -115,7 +112,6 @@ function* getUserStellarBalance(action: any) {
 function* getIssuerStellarBalance(action: any) {
   try {
     const res = yield axios.get(`${HORIZON}/accounts/${STELLAR_ISSUER}`);
-    console.log(res.data.balances);
     const balance = res.data.balances;
     yield put({ type: networkActions.SET_ISSUER_STELLAR_BALANCE, payload: { balance } });
   } catch (e) {
@@ -144,7 +140,6 @@ function* fetchE2SFromStellar() {
     stellarHistory.push(newItem);
   });
 
-  console.log(res.data);
   while (res.data._embedded.records.length > 0) {
     yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: true });
     req = axios.get(res.data._links.next.href);
@@ -163,7 +158,6 @@ function* fetchE2SFromStellar() {
       stellarHistory.push(newItem);
     });
 
-    console.log(res.data);
   }
   yield put({ type: networkActions.FETCH_S2E_FROM_STELLAR, payload: stellarHistory });
   yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: false });

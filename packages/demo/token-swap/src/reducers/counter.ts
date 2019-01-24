@@ -31,7 +31,6 @@ export function counter(
   action: IAction): IStoreState {
   switch (action.type) {
     case counterActions.INCREMENT:
-      console.log(state.value);
       return { ...state, value: state.value + 1 };
     case counterActions.INCREMENT_ASYNC:
       return { ...state };
@@ -42,7 +41,6 @@ export function counter(
     case counterActions.REQUEST_CONTENT:
       return { ...state, id: action.payload.id, isFetching: true };
     case counterActions.RECEIVE_CONTENT:
-      console.log(action);
       return { ...state, responseBody: action.payload.responseBody,
         content: action.payload.responseBody.title, isFetching: false };
     case counterActions.CONTENT_FAILED:

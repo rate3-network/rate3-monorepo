@@ -5,7 +5,8 @@ import { networkActions } from '../actions/network';
 import { CONVERSION_CONTRACT_ADDR,
   ISSUER_ETH_PRIV,
   TOKEN_CONTRACT_ADDR,
-  USER_ETH_PRIV
+  USER_ETH_PRIV,
+  INFURA
 } from '../constants/defaults';
 import { ROLES } from '../constants/general';
 // import * as Stellar from 'stellar-sdk';
@@ -58,7 +59,7 @@ export const initialState = {
   ethHistory: [],
   error: null,
 };
-const wsProvider = new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws');
+const wsProvider = new Web3.providers.WebsocketProvider(INFURA);
 
 // const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
 

@@ -111,7 +111,6 @@ class UserHomePage extends React.Component<IPropsFinal> {
     });
   }
   render() {
-    console.log('home page rendered');
     const { classes, match } = this.props;
     // const { role } = match.params;
     return (

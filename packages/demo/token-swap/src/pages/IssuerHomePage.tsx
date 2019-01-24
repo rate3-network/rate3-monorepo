@@ -146,7 +146,6 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
     });
   }
   render() {
-    console.log('home page rendered');
     const { classes } = this.props;
     let amount = '';
     let direction = Direction.S2E;

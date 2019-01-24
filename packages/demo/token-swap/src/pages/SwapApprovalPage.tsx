@@ -91,11 +91,9 @@ class SwapApprovalPage extends React.Component<IPropsFinal> {
     };
   }
   componentDidMount() {
-    console.log(this.props.currentApproval);
   }
 
   render() {
-    console.log('swap page rendered');
     const { classes, currentApproval } = this.props;
 
     const value = currentApproval ? currentApproval.amount : '0';

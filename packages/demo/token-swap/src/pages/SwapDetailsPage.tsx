@@ -49,14 +49,11 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
   }
 
   componentDidMount() {
-    console.log(this.props.pendingTxMap);
-    console.log(this.props.selectedTx);
   }
 
   render() {
     const { classes, selectedTx, direction, pendingTxMap } = this.props;
     const selectedRequest = pendingTxMap[selectedTx];
-    console.log(selectedRequest);
     return (
       <PageBox>
         <PageTitle withBackButton={true} backName="BACK" backAction={this.props.goBack}>

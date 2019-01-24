@@ -113,7 +113,6 @@ class OnboardingPage extends React.PureComponent<IProps> {
     const { classes, match } = this.props;
     const { pageNumber } = match.params;
     const page = parseInt(pageNumber, 10);
-    console.log((page > 0 && page < 5));
     return (
       <div className={classes.page}>
         <AppBar className={classes.appBar} position="static" color="default">

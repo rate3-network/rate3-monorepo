@@ -67,7 +67,6 @@ class Sidebar extends React.Component<IFinalProps> {
     });
     this.setState({ unlisten });
     const { pathname } = this.props.history.location;
-    console.log(pathname);
     if (sessionStorage.getItem('role') === 'issuer' && !pathname.includes('issuer')) {
       this.props.history.push('/issuer/home');
     }

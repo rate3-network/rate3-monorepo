@@ -111,7 +111,6 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
     noPerPage: 10,
   };
   componentDidMount() {
-    console.log('list page');
     this.props.fetchE2S();
     this.props.fetchS2E();
   }

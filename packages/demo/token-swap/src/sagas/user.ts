@@ -36,7 +36,7 @@ function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
   const convertToEthTxDetail = convertToEth.tx;
   convertToEthTxDetail.sign(userKeypair);
   const convertToEthRes = yield r3.stellar.submitTransaction(convertToEthTxDetail);
-  console.log('able to convert asset to ethereum token from user', convertToEthRes);
+  // console.log('able to convert asset to ethereum token from user', convertToEthRes);
   yield put({ type: networkActions.SELECT_TX, payload: convertToEthRes.hash });
   let txDetail;
   function* getTxDetail() {
@@ -79,7 +79,7 @@ function* requestS2E(action: IAction) {
     const getR3 = state => state.network.r3;
     const r3 = yield select(getR3);
     const asset = new r3.Stellar.Asset('TestAsset', STELLAR_ISSUER);
-    console.log('asset', asset);
+    // console.log('asset', asset);
     // const issuerKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_ISSUER_SECRET);
     // const distributorKeyPair = r3.Stellar.Keypair.fromSecret(STELLAR_DISTRIBUTOR_SECRET);
     const userKeypair = r3.Stellar.Keypair.fromSecret(STELLAR_USER_SECRET);
@@ -89,7 +89,7 @@ function* requestS2E(action: IAction) {
     yield convertToEthereum(r3, asset, value, userKeypair);
 
   } catch (e) {
-    console.error(e);
+    // console.error(e);
   }
 }
 
@@ -97,10 +97,10 @@ function* requestE2S(action: IAction) {
   const amount = action.payload;
   const getContract = state => state.network.contract;
   const contract = yield select(getContract);
-  console.log(contract);
+  // console.log(contract);
   try {
     const STELLAR_ADDRESS = Ed25519PublicKeyToHex(STELLAR_USER);
-    console.log('STELLAR_ADDRESS', STELLAR_ADDRESS);
+    // console.log('STELLAR_ADDRESS', STELLAR_ADDRESS);
     const tx = contract.methods.requestConversion(toTokenAmount(amount), STELLAR_ADDRESS);
     const options = {
       from: ETH_USER,
@@ -130,7 +130,7 @@ function* requestE2S(action: IAction) {
 function* onE2sReceipt(action: IAction) {
   const STELLAR_ADDRESS = Ed25519PublicKeyToHex(STELLAR_USER);
   const { receipt } = action.payload;
-  console.log('on receipt', receipt);
+  // console.log('on receipt', receipt);
 
   const ev = receipt.events.ConversionRequested;
   const { transactionHash } = receipt.events.ConversionRequested;
@@ -159,7 +159,7 @@ function* onE2sReceipt(action: IAction) {
 }
 
 function* onE2sHash(action: IAction) {
-  console.log('on hjash');
+  // console.log('on hjash');
   const { hash } = action.payload;
   const updatedRequest = {
     hash,
@@ -177,7 +177,7 @@ function* onE2sHash(action: IAction) {
 }
 
 function* onE2sError(action: IAction) {
-  console.log(action);
+  // console.log(action);
 }
 
 export default function* user() {

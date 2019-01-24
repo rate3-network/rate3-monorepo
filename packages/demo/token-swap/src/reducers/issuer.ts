@@ -52,7 +52,6 @@ IStoreState {
     case issuerActions.APPROVE_ETH_TO_STELLAR:
       return state;
     case issuerActions.APPROVE_STELLAR_TO_ETH:
-      console.log('rer');
       return state;
     case issuerActions.SET_E2S_APPROVAL_LIST:
       return { ...state, e2sApprovalList: action.payload };

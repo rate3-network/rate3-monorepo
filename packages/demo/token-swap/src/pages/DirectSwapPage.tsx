@@ -134,9 +134,7 @@ class DirectSwapPage extends React.Component<IProps> {
 
   validateAmount = () => {
     const parsed = parseFloat(this.state.cardValue);
-    console.log(parsed);
     if (isNaN(parsed) || parsed < 0) {
-      console.log('skipped');
       this.setState({
         cardValue: '',
       });
@@ -152,7 +150,6 @@ class DirectSwapPage extends React.Component<IProps> {
     });
   }
   toggleDirection = () => {
-    console.log(this.state.direction);
     this.setState({
       direction: this.state.direction === Direction.E2S ? Direction.S2E : Direction.E2S,
     });
@@ -213,7 +210,6 @@ class DirectSwapPage extends React.Component<IProps> {
   }
 
   render() {
-    console.log('swap page rendered');
     const { classes, match } = this.props;
     const { role } = match.params;
     return (

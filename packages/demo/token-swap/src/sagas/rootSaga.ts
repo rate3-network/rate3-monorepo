@@ -10,7 +10,6 @@ function* fetchApi(action: any) {
       fetch, `https://jsonplaceholder.typicode.com/todos/${action.payload.id}`);
     const data = yield call([response, response.json]);
     yield put({ type: counterActions.RECEIVE_CONTENT, payload: { responseBody: data } });
-    console.log(data);
     return data;
   } catch (e) {
     yield put({ type: counterActions.CONTENT_FAILED, error:

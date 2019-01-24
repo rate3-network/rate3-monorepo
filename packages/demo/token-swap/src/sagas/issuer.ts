@@ -46,7 +46,6 @@ function* fetchE2S() {
         resultList.push(value);
       }
     });
-    console.log(resultList);
     yield put({ type: issuerActions.SET_E2S_APPROVAL_LIST, payload: resultList });
     return resultList;
   } catch (err) {
@@ -54,7 +53,6 @@ function* fetchE2S() {
   }
 }
 function* fetchS2E() {
-  console.log(123);
   try {
     const resultList: any[] = [];
     const result = yield localforage.iterate((value: any, key, iterationNumber) => {
@@ -62,7 +60,7 @@ function* fetchS2E() {
         resultList.push(value);
       }
     });
-    console.log(resultList);
+    // console.log(resultList);
     yield put({ type: issuerActions.SET_S2E_APPROVAL_LIST, payload: resultList });
     return resultList;
   } catch (err) {
@@ -82,7 +80,7 @@ async function mintAssetToDistributor(r3, asset, value: string | number) {
   mintAssetToDistributorTxDetail.sign(issuerKeypair);
 
   const resSend = await r3.stellar.submitTransaction(mintAssetToDistributorTxDetail);
-  console.log('able to issue asset to distributor', resSend);
+  // console.log('able to issue asset to distributor', resSend);
 }
 
 function* distributeToUser(r3, asset, value: string | number) {
@@ -103,7 +101,7 @@ function* distributeToUser(r3, asset, value: string | number) {
     txDetail = yield axios.get(link);
   }
   yield retryCall(getTxDetail, 300, 5);
-  console.log('able to distribute asset to user', distributeRes, txDetail.data.created_at);
+  // console.log('able to distribute asset to user', distributeRes, txDetail.data.created_at);
   return {
     created_at: txDetail.data.created_at,
     stellarTokenMintHash: distributeRes.hash,
@@ -113,7 +111,7 @@ function* distributeToUser(r3, asset, value: string | number) {
 function* approveE2S(tx: IE2SRequest) {
   const getR3 = state => state.network.r3;
   const r3 = yield select(getR3);
-  console.log(r3);
+  // console.log(r3);
 
   const { indexID } = tx;
   const getContract = state => state.network.contract;
@@ -173,9 +171,9 @@ function* approveS2E(tx: IS2ERequest) {
 
 function* approve(action: IAction) {
   const tx: TransactionType = action.payload;
-  console.log('going tru approve');
+  // console.log('going tru approve');
   if (tx.approved) {
-    console.log('dun mess with me');
+    // console.log('dun mess with me');
     return;
   }
   if (tx.type === 'E2S') {
@@ -186,7 +184,7 @@ function* approve(action: IAction) {
 }
 function* onE2sHash(action: IAction) {
   const { hash, tx } = action.payload;
-  console.log(action);
+  // console.log(action);
   const updatedRequest = {
     ...tx,
     inProgress: true,
@@ -200,12 +198,12 @@ function* onE2sHash(action: IAction) {
       updatedRequest
     );
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 }
 function* onS2eHash(action: IAction) {
   const { hash, tx } = action.payload;
-  console.log(action);
+  // console.log(action);
   const updatedRequest = {
     ...tx,
     inProgress: true,
@@ -221,7 +219,7 @@ function* onS2eHash(action: IAction) {
       updatedRequest
     );
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 }
 function* onE2sReceipt(action: IAction) {
@@ -233,7 +231,7 @@ function* onE2sReceipt(action: IAction) {
   const { tx } = action.payload;
   const { amount } = tx;
 
-  console.log(receipt);
+  // console.log(receipt);
   const ev = receipt.events.ConversionAccepted;
   const { transactionHash } = ev;
   const { acceptTimestamp } = ev.returnValues;
@@ -249,7 +247,7 @@ function* onE2sReceipt(action: IAction) {
       updatedRequest
     );
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 
   yield mintAssetToDistributor(r3, asset, amount);
@@ -268,7 +266,7 @@ function* onE2sReceipt(action: IAction) {
       finishedRequest
     );
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
   yield fetchE2S();
   yield put({ type: issuerActions.FETCH_ETH_TO_STELLAR });
@@ -276,9 +274,9 @@ function* onE2sReceipt(action: IAction) {
 }
 
 function* onE2sError(action: IAction) {
-  console.log(action);
+  // console.log(action);
   const { message, tx } = action.payload;
-  console.log(action);
+  // console.log(action);
   const updatedRequest = {
     ...tx,
     error: message,
@@ -296,10 +294,10 @@ function* onS2eReceipt(action: IAction) {
   try {
     updatedTx = yield localforage.getItem(tx.hash);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 
-  console.log(receipt);
+  // console.log(receipt);
   const ev = receipt.events.ConversionUnlocked;
   const { transactionHash } = ev;
   const { unlockTimestamp } = ev.returnValues;
@@ -319,7 +317,7 @@ function* onS2eReceipt(action: IAction) {
       updatedRequest
     );
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
   // yield fetchS2E();
   // yield call(delay, 500);
@@ -327,7 +325,7 @@ function* onS2eReceipt(action: IAction) {
 
 }
 function* onS2eError(action: IAction) {
-  console.log(action);
+  // console.log(action);
 }
 export default function* network() {
   yield takeEvery(issuerActions.FETCH_ETH_TO_STELLAR, fetchE2S);

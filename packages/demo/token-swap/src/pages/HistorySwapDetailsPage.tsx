@@ -89,7 +89,6 @@ class HistorySwapDetailsPage extends React.Component<IPropsFinal> {
         direction = Direction.E2S;
       }
     }
-    console.log(currentSelectedHistory);
     return (
       <PageBox>
         <PageTitle withBackButton={true} backName="Direct" backAction={this.props.goBack}>

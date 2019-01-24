@@ -63,3 +63,5 @@ export const ONBOARDING_TEXTS = [
 
 export const STEEXP = 'https://testnet.steexp.com';
 export const ETHERSCAN = 'https://ropsten.etherscan.io';
+
+export const INFURA = 'wss://ropsten.infura.io/ws/v3/81cc2101ca344ef8a8fe5742a70249f0';

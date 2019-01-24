@@ -196,7 +196,6 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
           prog += 1;
         }
       });
-      console.log(prog / total * 100);
       return Math.round(prog / total * 100);
     };
 
@@ -225,7 +224,6 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
       });
       return currentAction;
     };
-    console.log(transaction);
     return (
       <PageContainer>
         <SwapInfoBox value={amount} direction={direction} />
@@ -361,10 +359,10 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                       }
                     </span>
                     <span className={classes.odd}>
-                      3. Appoval Submitted {evaluate(transaction, 'aceeptHash')}
+                      3. Approval Submitted {evaluate(transaction, 'aceeptHash')}
                     </span>
                     <span className={classes.even}>
-                      4 Appoval Confirmed {evaluate(transaction, 'acceptedBy')}
+                      4 Approval Confirmed {evaluate(transaction, 'acceptedBy')}
                     </span>
                     <span className={classes.odd}>
                       5. Converting to Stellar SGDR {evaluate(transaction, 'approved')}
@@ -404,10 +402,10 @@ class SwapDetailsPage extends React.Component<IPropsFinal> {
                       }
                     </span>
                     <span className={classes.even}>
-                      2. Appoval Submitted {evaluate(transaction, 'unlockHash')}
+                      2. Approval Submitted {evaluate(transaction, 'unlockHash')}
                     </span>
                     <span className={classes.odd}>
-                      3. Appoval Confirmed {evaluate(transaction, 'approved')}
+                      3. Approval Confirmed {evaluate(transaction, 'approved')}
                     </span>
                   </div>
                 </>
