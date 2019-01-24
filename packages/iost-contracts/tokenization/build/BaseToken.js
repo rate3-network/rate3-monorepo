@@ -65,6 +65,8 @@ class BaseToken {
   }
 
   issue(to, amount) {
+    this._checkIdValid(to);
+
     let issuer = storage.get('issuer');
     if (!blockchain.requireAuth(issuer, "active")) {
       throw 'PERMISSION_DENIED';
@@ -107,6 +109,9 @@ class BaseToken {
   }
 
   transfer(from, to, amount, memo) {
+    this._checkIdValid(from);
+    this._checkIdValid(to);
+
     if (!blockchain.requireAuth(from, "active")) {
       throw 'PERMISSION_DENIED';
     }
@@ -152,6 +157,8 @@ class BaseToken {
   }
 
   burn(from, amount) {
+    this._checkIdValid(from);
+    
     if (!blockchain.requireAuth(from, "active")) {
       throw 'PERMISSION_DENIED';
     }
@@ -193,6 +200,26 @@ class BaseToken {
   }
 
   can_update(data) {
+    let issuer = storage.get('issuer');
+    return blockchain.requireAuth(issuer, "active");
+  }
+
+  _checkIdValid(id) {
+    if (block.number === 0) {
+        return
+    }
+    if (id.length < 5 || id.length > 11) {
+        throw new Error("id invalid. id length should be between 5,11 > " + id)
+    }
+    if (id.startsWith("Contract")) {
+        throw new Error("id invalid. id shouldn't start with 'Contract'.");
+    }
+    for (let i in id) {
+      let ch = id[i];
+      if (!(ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9' || ch === '_')) {
+        throw new Error("id invalid. id contains invalid character > " + ch);
+      }
+    }
   }
 }
 module.exports = BaseToken;
