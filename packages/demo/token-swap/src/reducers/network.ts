@@ -59,15 +59,16 @@ export const initialState = {
   ethHistory: [],
   error: null,
 };
-const wsProvider = new Web3.providers.WebsocketProvider(INFURA);
+const provider = INFURA;
+// const provider = new Web3.providers.HttpProvider(INFURA);
 
-// const wsProvider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
+// const provider = new Web3.providers.WebsocketProvider('ws://localhost:8545');
 
 export function network(state: IStoreState = initialState, action: IAction):
 IStoreState {
   switch (action.type) {
     case networkActions.INIT_USER:
-      const web3User = new Web3(wsProvider);
+      const web3User = new Web3(provider);
       web3User.eth.accounts.wallet.add(USER_ETH_PRIV);
       (window as any).web3 = web3User;
       const contractUser  = new web3User.eth.Contract(
@@ -84,7 +85,7 @@ IStoreState {
         tokenContract: tokenContractUser, web3Obj: web3User };
 
     case networkActions.INIT_ISSUER:
-      const web3Issuer = new Web3(wsProvider);
+      const web3Issuer = new Web3(provider);
       web3Issuer.eth.accounts.wallet.add(ISSUER_ETH_PRIV);
       (window as any).web3 = web3Issuer;
       const contract  = new web3Issuer.eth.Contract(

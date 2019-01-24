@@ -22,7 +22,7 @@
     "redux": "^4.0.1",
     "stellar-base": "^0.10.0",
     "stellar-sdk": "^0.11.0",
-    "web3": "^1.0.0-beta.36"
+    "web3": "^1.0.0-beta.37"
   },
   "scripts": {
     "start": "react-scripts start",
