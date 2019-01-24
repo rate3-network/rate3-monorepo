@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 import "../lib/ownership/Claimable.sol";
 import "../tokenization/interfaces/ERC20.sol";
 
-contract ConversionReceiver is Claimable {
+contract IOSTConversionReceiver is Claimable {
 
     ERC20 public token;
     Conversion[] public conversions;
@@ -25,7 +25,13 @@ contract ConversionReceiver is Claimable {
     event ConversionRequested(uint256 indexID, address indexed ethAddress, string iostAccount, uint256 amount, uint256 requestTimestamp);
     event ConversionRejected(uint256 indexID, address indexed ethAddress, string iostAccount, uint256 amount, uint256 rejectTimestamp);
     event ConversionAccepted(uint256 indexID, address indexed ethAddress, string iostAccount, uint256 amount, uint256 acceptTimestamp);
-    event ConversionUnlocked(address indexed ethAddress, string iostAccount, uint256 amount, uint256 unlockTimestamp);
+    event ConversionUnlocked(
+        address indexed ethAddress,
+        string iostAccount,
+        uint256 amount,
+        uint256 unlockTimestamp,
+        string iostMirrorTransactionHash
+    );
 
     modifier onlyOpenConversions(uint256 _index) {
         require(conversions[_index].state == States.OPEN, "Conversion should be open");
@@ -57,13 +63,13 @@ contract ConversionReceiver is Claimable {
         require(token.transfer(conversion.ethAddress, conversion.amount), "Token transfer failed");
         conversion.state = States.REJECTED;
 
-        emit ConversionRejected(_index, conversion.ethAddress, conversion.stellarAddress, conversion.amount, block.timestamp);
+        emit ConversionRejected(_index, conversion.ethAddress, conversion.iostAccount, conversion.amount, block.timestamp);
     }
 
     function acceptConversion(uint256 _index) public onlyOwner onlyOpenConversions(_index) {
         Conversion storage conversion = conversions[_index];
         conversion.state = States.ACCEPTED;
-        emit ConversionAccepted(_index, conversion.ethAddress, conversion.stellarAddress, conversion.amount, block.timestamp);
+        emit ConversionAccepted(_index, conversion.ethAddress, conversion.iostAccount, conversion.amount, block.timestamp);
     }
 
     function unlockConversion(
