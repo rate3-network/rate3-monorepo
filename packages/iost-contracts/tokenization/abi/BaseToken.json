@@ -60,6 +60,14 @@
             ]
         },
         {
+            "name": "convertToERC20",
+            "args": [
+                "string",
+                "string",
+                "string"
+            ]
+        },
+        {
             "name": "can_update",
             "args": [
                 "string"

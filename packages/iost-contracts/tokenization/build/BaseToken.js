@@ -14,8 +14,8 @@ class BaseToken {
   // No effect if deploy has been called before.
   deploy(name, symbol, decimals) {
     let issuer = storage.get('issuer');
-    if (!blockchain.requireAuth(issuer, "active")) {
-      throw 'PERMISSION_DENIED';
+    if (!blockchain.requireAuth(issuer, 'active')) {
+      throw new Error('PERMISSION_DENIED');
     }
 
     // Check if token is deployed already.
@@ -68,17 +68,17 @@ class BaseToken {
     this._checkIdValid(to);
 
     let issuer = storage.get('issuer');
-    if (!blockchain.requireAuth(issuer, "active")) {
-      throw 'PERMISSION_DENIED';
+    if (!blockchain.requireAuth(issuer, 'active')) {
+      throw new Error('PERMISSION_DENIED');
     }
 
     let issueAmount = new BigNumber(amount);
     if (!issueAmount.isInteger()) {
-      throw 'INTEGER_VALUE_REQUIRED';
+      throw new Error('INTEGER_VALUE_REQUIRED');
     }
 
     if (issueAmount.isNegative()) {
-      throw 'NON_NEGATIVE_VALUE_REQUIRED';
+      throw new Error('NON_NEGATIVE_VALUE_REQUIRED');
     }
 
     let currentAmount = storage.mapGet('balances', to);
@@ -90,7 +90,7 @@ class BaseToken {
 
     let currentSupply = storage.get('totalSupply');
     if (currentSupply === null) {
-      throw 'NULL_TOTAL_SUPPLY';
+      throw new Error('NULL_TOTAL_SUPPLY');
     } else {
       currentSupply = new BigNumber(currentSupply);
     }
@@ -99,7 +99,7 @@ class BaseToken {
     let newSupply = currentSupply.plus(issueAmount);
 
     if (newSupply.isGreaterThan(new BigNumber(2).exponentiatedBy(256).minus(1))) {
-      throw 'UINT256_OVERFLOW';
+      throw new Error('UINT256_OVERFLOW');
     }
 
     storage.mapPut('balances', to, newAmount.toString());
@@ -112,17 +112,17 @@ class BaseToken {
     this._checkIdValid(from);
     this._checkIdValid(to);
 
-    if (!blockchain.requireAuth(from, "active")) {
-      throw 'PERMISSION_DENIED';
+    if (!blockchain.requireAuth(from, 'active')) {
+      throw new Error('PERMISSION_DENIED');
     }
 
     let sendAmount = new BigNumber(amount);
     if (!sendAmount.isInteger()) {
-      throw 'INTEGER_VALUE_REQUIRED';
+      throw new Error('INTEGER_VALUE_REQUIRED');
     }
 
     if (sendAmount.isNegative()) {
-      throw 'NON_NEGATIVE_VALUE_REQUIRED';
+      throw new Error('NON_NEGATIVE_VALUE_REQUIRED');
     }
 
     let currentFromAmount = storage.mapGet('balances', from);
@@ -140,14 +140,14 @@ class BaseToken {
     }
 
     if (sendAmount.isGreaterThan(currentFromAmount)) {
-      throw 'INSUFFICIENT_FUNDS';
+      throw new Error('INSUFFICIENT_FUNDS');
     }
 
     let newFromAmount = currentFromAmount.minus(sendAmount);
     let newToAmount = currentToAmount.plus(sendAmount);
 
     if (newToAmount.isGreaterThan(new BigNumber(2).exponentiatedBy(256).minus(1))) {
-      throw 'UINT256_OVERFLOW';
+      throw new Error('UINT256_OVERFLOW');
     }
 
     storage.mapPut('balances', from, newFromAmount.toString());
@@ -158,18 +158,18 @@ class BaseToken {
 
   burn(from, amount) {
     this._checkIdValid(from);
-    
-    if (!blockchain.requireAuth(from, "active")) {
-      throw 'PERMISSION_DENIED';
+
+    if (!blockchain.requireAuth(from, 'active')) {
+      throw new Error('PERMISSION_DENIED');
     }
 
     let burnAmount = new BigNumber(amount);
     if (!burnAmount.isInteger()) {
-      throw 'INTEGER_VALUE_REQUIRED';
+      throw new Error('INTEGER_VALUE_REQUIRED');
     }
 
     if (burnAmount.isNegative()) {
-      throw 'NON_NEGATIVE_VALUE_REQUIRED';
+      throw new Error('NON_NEGATIVE_VALUE_REQUIRED');
     }
 
     let currentFromAmount = storage.mapGet('balances', from);
@@ -181,13 +181,13 @@ class BaseToken {
 
     let currentSupply = storage.get('totalSupply');
     if (currentSupply === null) {
-      throw 'NULL_TOTAL_SUPPLY';
+      throw new Error('NULL_TOTAL_SUPPLY');
     } else {
       currentSupply = new BigNumber(currentSupply);
     }
 
     if (burnAmount.isGreaterThan(currentFromAmount)) {
-      throw 'INSUFFICIENT_FUNDS';
+      throw new Error('INSUFFICIENT_FUNDS');
     }
 
     let newFromAmount = currentFromAmount.minus(amount);
@@ -199,27 +199,57 @@ class BaseToken {
     return JSON.stringify({ from, amount });
   }
 
-  can_update(data) {
-    let issuer = storage.get('issuer');
-    return blockchain.requireAuth(issuer, "active");
+  convertToERC20(from, amount, ethAddress) {
+    if (!this._checkEthAddressValid(ethAddress)) {
+      throw new Error('INVALID ETH ADDRESS');
+    }
+    this.burn(from, amount);
+    return JSON.stringify({ from, amount, ethAddress });
   }
 
   _checkIdValid(id) {
     if (block.number === 0) {
-        return
+      return;
     }
     if (id.length < 5 || id.length > 11) {
-        throw new Error("id invalid. id length should be between 5,11 > " + id)
+      throw new Error('INVALID_ID_LENGTH');
     }
-    if (id.startsWith("Contract")) {
-        throw new Error("id invalid. id shouldn't start with 'Contract'.");
+    if (id.startsWith('Contract')) {
+      throw new Error('ID_IS_CONTRACT');
     }
     for (let i in id) {
       let ch = id[i];
       if (!(ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9' || ch === '_')) {
-        throw new Error("id invalid. id contains invalid character > " + ch);
+        throw new Error('INVALID_ID_CHAR');
       }
     }
   }
+
+  can_update(data) {
+    let issuer = storage.get('issuer');
+    return blockchain.requireAuth(issuer, 'active');
+  }
+
+
+  _checkEthAddressValid(address) {
+    if (address.length != 42) {
+      throw new Error('INVALID_ETH_ADDRESS_LENGTH');
+    }
+
+    if (!address.startsWith('0x')) {
+      throw new Error('INVALID_ETH_ADDRESS_PREFIX');
+    }
+
+    address = address.replace('0x','');
+    address.toLowerCase();
+
+    for (let i in address) {
+      let ch = address[i];
+      if (!(ch >= 'a' && ch <= 'f' || ch >= '0' && ch <= '9')) {
+        throw new Error('INVALID_ETH_ADDRESS_CHAR');
+      }
+    }
+    return true;
+  };
 }
 module.exports = BaseToken;
