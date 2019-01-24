@@ -4,7 +4,7 @@ const BaseToken = artifacts.require('./tokenization/ModularToken.sol');
 const BalanceModule = artifacts.require('./tokenization/modules/BalanceModule.sol');
 const AllowanceModule = artifacts.require('./tokenization/modules/AllowanceModule.sol');
 const RegistryModule = artifacts.require('./tokenization/modules/RegistryModule.sol');
-const ConversionReceiver = artifacts.require('./bridge/ConversionReceiver.sol');
+const ConversionReceiver = artifacts.require('./bridge/IOSTConversionReceiver.sol');
 
 module.exports = function deployment(deployer, network, accounts) {
     // eslint-disable-next-line no-unused-vars
