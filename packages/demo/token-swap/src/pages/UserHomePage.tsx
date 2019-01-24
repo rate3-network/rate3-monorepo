@@ -14,8 +14,9 @@ import PageContainer from '../components/layout/PageContainer';
 import PageTitle from '../components/layout/PageTitle';
 import { COLORS } from '../constants/colors';
 import { ROLES } from '../constants/general';
-import { IAction } from '../utils/general';
+import { IAction, calStellarTodaySwapNo, calEthTodaySwapNo } from '../utils/general';
 import HistorySwapDetailsPage from './HistorySwapDetailsPage';
+import { initialState, IStoreState } from '../reducers/network';
 
 const styles = createStyles({
   row: {
@@ -62,6 +63,8 @@ const styles = createStyles({
   },
 });
 interface IProps {
+  stellarHistory: any[];
+  ethHistory: any[];
   initUser: () => void;
   initIssuer: () => void;
   resetSelectedTx: () => void;
@@ -111,8 +114,11 @@ class UserHomePage extends React.Component<IPropsFinal> {
     });
   }
   render() {
-    const { classes, match } = this.props;
+    const { classes,
+      stellarHistory,
+      ethHistory } = this.props;
     // const { role } = match.params;
+    const swapNo = calStellarTodaySwapNo(stellarHistory) + calEthTodaySwapNo(ethHistory);
     return (
       <>
         {this.state.page === 4 ?
@@ -132,10 +138,10 @@ class UserHomePage extends React.Component<IPropsFinal> {
                 <div className={classes.boxConstraint}>
                   <Box fullHeight>
                     <div className={classes.swapNumber}>
-                      5
+                      {swapNo}
                     </div>
                     <div className={classes.thinText}>
-                      Swaps today
+                      Swaps Today
                     </div>
                   </Box>
                 </div>
@@ -189,6 +195,14 @@ class UserHomePage extends React.Component<IPropsFinal> {
     );
   }
 }
+export function mapStateToProps({ network }: { network: IStoreState; }) {
+  return {
+    pendingTxMap: network.pendingTxMap,
+    selectedTx: network.selectedTx,
+    stellarHistory: network.stellarHistory,
+    ethHistory: network.ethHistory,
+  };
+}
 export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   return {
     initUser: () => dispatch(actions.initUser()),
@@ -196,6 +210,7 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
     resetSelectedTx: () => dispatch(actions.resetSelectedTx()),
   };
 }
-export default connect(null, mapDispatchToProps)(withRouter(withStyles(styles)(UserHomePage)));
+export default connect(
+  mapStateToProps, mapDispatchToProps)(withRouter(withStyles(styles)(UserHomePage)));
 
 // export default withRouter(withStyles(styles)(UserHomePage));

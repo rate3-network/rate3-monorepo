@@ -90,24 +90,30 @@ function* requestS2E(action: IAction) {
 
   } catch (e) {
     // console.error(e);
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(e) });
+
   }
 }
 
 function* requestE2S(action: IAction) {
-  const amount = action.payload;
-  const getContract = state => state.network.contract;
-  const contract = yield select(getContract);
-  // console.log(contract);
   try {
+    console.log('start submission');
+    const amount = action.payload;
+    const getContract = state => state.network.contract;
+    const contract = yield select(getContract);
+    console.log('got contract');
+    // console.log(contract);
     const STELLAR_ADDRESS = Ed25519PublicKeyToHex(STELLAR_USER);
     // console.log('STELLAR_ADDRESS', STELLAR_ADDRESS);
     const tx = contract.methods.requestConversion(toTokenAmount(amount), STELLAR_ADDRESS);
+    console.log('tx created');
     const options = {
       from: ETH_USER,
       gas: '5000000',
       gasPrice: '50000000000',
     };
     const txSent = tx.send(options);
+    console.log('tx sent');
     const chan = yield call(
       handleContractCall,
       txSent,
@@ -123,6 +129,7 @@ function* requestE2S(action: IAction) {
       chan.close();
     }
   } catch (e) {
+    console.log(e);
     throw e;
   }
 }
@@ -177,6 +184,7 @@ function* onE2sHash(action: IAction) {
 }
 
 function* onE2sError(action: IAction) {
+  yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(action.payload.message) });
   // console.log(action);
 }
 

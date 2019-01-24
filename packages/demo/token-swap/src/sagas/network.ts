@@ -126,26 +126,10 @@ function* fetchE2SFromStellar() {
   let req = axios.get(
     `${HORIZON}/accounts/${STELLAR_USER}/payments?limit=200&order=desc`);
   let res = yield req;
+  // if (item.from === STELLAR_USER && item.to === STELLAR_DISTRIBUTOR) {
 
   res.data._embedded.records.forEach((item) => {
-    const newItem = {
-      ...item,
-      amount: parseFloat(item.amount).toFixed(4),
-      key: item.transaction_hash,
-      timestamp: moment(item.created_at).format('X'),
-      sortingTimestamp: moment(item.created_at).format('X'),
-      type: 'E2S',
-      fromBlockchain: true,
-    };
-    stellarHistory.push(newItem);
-  });
-
-  while (res.data._embedded.records.length > 0) {
-    yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: true });
-    req = axios.get(res.data._links.next.href);
-    res = yield req;
-
-    res.data._embedded.records.forEach((item) => {
+    if (item.to === STELLAR_USER) {
       const newItem = {
         ...item,
         amount: parseFloat(item.amount).toFixed(4),
@@ -156,38 +140,65 @@ function* fetchE2SFromStellar() {
         fromBlockchain: true,
       };
       stellarHistory.push(newItem);
+    }
+  });
+
+  while (res.data._embedded.records.length > 0) {
+    yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: true });
+    req = axios.get(res.data._links.next.href);
+    res = yield req;
+
+    res.data._embedded.records.forEach((item) => {
+      if (item.to === STELLAR_USER) {
+        const newItem = {
+          ...item,
+          amount: parseFloat(item.amount).toFixed(4),
+          key: item.transaction_hash,
+          timestamp: moment(item.created_at).format('X'),
+          sortingTimestamp: moment(item.created_at).format('X'),
+          type: 'E2S',
+          fromBlockchain: true,
+        };
+        stellarHistory.push(newItem);
+      }
     });
 
   }
-  yield put({ type: networkActions.FETCH_S2E_FROM_STELLAR, payload: stellarHistory });
+    console.log(stellarHistory);
+    yield put({ type: networkActions.FETCH_S2E_FROM_STELLAR, payload: stellarHistory });
   yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: false });
 }
 
 function* fetchS2EFromEth() {
-  yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: true });
-  const ethHistory: any[] = [];
-  const getContract = state => state.network.contract;
-  const contract = yield select(getContract);
-  const options = { fromBlock: 0, toBlock: 'latest' };
-  const eventReq = contract.getPastEvents('ConversionUnlocked', options);
-  const result = yield eventReq;
-  result.forEach((item) => {
-    const newItem = {
-      ...item,
-      key: item.transactionHash,
-      approveHash: item.transactionHash,
-      ethAddress: item.returnValues.ethAddress,
-      stellarAddress: item.returnValues.stellarAddress,
-      amount: fromTokenAmount(item.returnValues.amount),
-      unlockTimestamp: item.returnValues.unlockTimestamp,
-      sortingTimestamp: item.returnValues.unlockTimestamp,
-      type: 'S2E',
-      fromBlockchain: true,
-    };
-    ethHistory.push(newItem);
-  });
-  yield put({ type: networkActions.FETCH_E2S_FROM_ETH, payload: ethHistory });
-  yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: false });
+  try {
+    yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: true });
+    const ethHistory: any[] = [];
+    const getContract = state => state.network.contract;
+    const contract = yield select(getContract);
+    const options = { fromBlock: 0, toBlock: 'latest' };
+    const eventReq = contract.getPastEvents('ConversionUnlocked', options);
+    const result = yield eventReq;
+    result.forEach((item) => {
+      const newItem = {
+        ...item,
+        key: item.transactionHash,
+        approveHash: item.transactionHash,
+        ethAddress: item.returnValues.ethAddress,
+        stellarAddress: item.returnValues.stellarAddress,
+        amount: fromTokenAmount(item.returnValues.amount),
+        unlockTimestamp: item.returnValues.unlockTimestamp,
+        sortingTimestamp: item.returnValues.unlockTimestamp,
+        type: 'S2E',
+        fromBlockchain: true,
+      };
+      ethHistory.push(newItem);
+    });
+    console.log(ethHistory);
+    yield put({ type: networkActions.FETCH_E2S_FROM_ETH, payload: ethHistory });
+    yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: false });
+  } catch (err) {
+    yield put({ type: networkActions.SET_ERROR, payload: JSON.stringify(err) });
+  }
 }
 export default function* network() {
   yield takeLatest(networkActions.INIT_USER, getUserEthBalance);

@@ -186,3 +186,28 @@ export const copyToClipboard = (val: string) => {
   window.document.execCommand('copy');
   window.document.body.removeChild(selBox);
 };
+
+export const calStellarTodaySwapNo = (arr) => {
+  const today = new Date();
+  const filtered = arr.filter((item) => {
+    const thatDay = new Date(item.created_at);
+    return (
+      thatDay.getFullYear() === today.getFullYear() &&
+      thatDay.getMonth() === today.getMonth() &&
+      thatDay.getDate() === today.getDate()
+    );
+  });
+  return filtered.length;
+};
+export const calEthTodaySwapNo = (arr) => {
+  const today = new Date();
+  const filtered = arr.filter((item) => {
+    const thatDay = new Date(parseInt(item.unlockTimestamp, 10) * 1000);
+    return (
+      thatDay.getFullYear() === today.getFullYear() &&
+      thatDay.getMonth() === today.getMonth() &&
+      thatDay.getDate() === today.getDate()
+    );
+  });
+  return filtered.length;
+};

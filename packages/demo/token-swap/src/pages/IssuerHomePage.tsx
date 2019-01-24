@@ -17,7 +17,7 @@ import { COLORS } from '../constants/colors';
 import { ROLES } from '../constants/general';
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import { initialState, IStoreState } from '../reducers/network';
-import { Direction, IAction } from '../utils/general';
+import { Direction, IAction, calStellarTodaySwapNo, calEthTodaySwapNo } from '../utils/general';
 import HistorySwapDetailsPage from './HistorySwapDetailsPage';
 import SwapApprovalPage from './SwapApprovalPage';
 import SwapDetailsPage from './SwapDetailsPage';
@@ -73,6 +73,8 @@ const styles = createStyles({
 interface IProps {
   pendingTxMap: typeof initialState.pendingTxMap;
   selectedTx: string;
+  stellarHistory: any[];
+  ethHistory: any[];
   resetSelectedTx: () => void;
   initUser: () => void;
   initIssuer: () => void;
@@ -146,7 +148,10 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
     });
   }
   render() {
-    const { classes } = this.props;
+    const { classes,
+      stellarHistory,
+      ethHistory } = this.props;
+    const swapNo = calStellarTodaySwapNo(stellarHistory) + calEthTodaySwapNo(ethHistory);
     let amount = '';
     let direction = Direction.S2E;
     if (this.state.currentApproval) {
@@ -168,10 +173,10 @@ class IssuerHomePage extends React.Component<IPropsFinal> {
                 <div className={classes.boxConstraint}>
                   <Box fullHeight>
                     <div className={classes.swapNumber}>
-                      5
+                      {swapNo}
                     </div>
                     <div className={classes.thinText}>
-                      Swaps today
+                      Swaps Today
                     </div>
                   </Box>
                 </div>
@@ -258,6 +263,8 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
   return {
     pendingTxMap: network.pendingTxMap,
     selectedTx: network.selectedTx,
+    stellarHistory: network.stellarHistory,
+    ethHistory: network.ethHistory,
   };
 }
 export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
