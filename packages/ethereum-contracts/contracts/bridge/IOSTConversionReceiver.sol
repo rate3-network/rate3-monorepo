@@ -32,6 +32,8 @@ contract IOSTConversionReceiver is Claimable {
         uint256 unlockTimestamp,
         string iostMirrorTransactionHash
     );
+    event SentTokensToColdStorage(address coldStorageAddress, uint256 amount);
+    
 
     modifier onlyOpenConversions(uint256 _index) {
         require(conversions[_index].state == States.OPEN, "Conversion should be open");
@@ -85,5 +87,10 @@ contract IOSTConversionReceiver is Claimable {
         require(token.transfer(_ethAddress, _amount), "Token transfer failed");
 
         emit ConversionUnlocked(_ethAddress, _iostAccount, _amount, block.timestamp, _iostMirrorTransactionHash);
+    }
+
+    function sendTokensToColdStorage(address _coldStorageAddress, uint256 _amount) public onlyOwner {
+        require(token.transfer(_coldStorageAddress, _amount), "Token transfer failed");
+        emit SentTokensToColdStorage(_coldStorageAddress, _amount);
     }
 }
