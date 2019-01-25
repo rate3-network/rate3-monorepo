@@ -1,0 +1,37 @@
+{
+  "extends": [
+    "tslint:latest",
+    "tslint-react",
+    "tslint-config-airbnb"
+  ],
+  // "rulesDirectory": ["node_modules/tslint-microsoft-contrib"],
+  "rules": {
+    "no-implicit-dependencies": false,
+    "no-submodule-imports": false,
+    "no-console": false,
+    "member-ordering": [true, { "order": "fields-first" }],
+    "jsx-no-multiline-js": false,
+    "no-var-requires": false,
+    "quotemark": [true, "single", "jsx-double"],
+    "variable-name": false,
+    "ordered-imports": false,
+    "jsx-boolean-value": false,
+    "jsx-no-lambda": false,
+    "object-literal-sort-keys": false,
+    "member-access": [true, "no-public"],
+    "prefer-array-literal": [true, { "allow-type-parameters": true }],
+    "import-name": false,
+    "trailing-comma": [
+      true,
+      {
+        "multiline": {
+          "objects": "always",
+          "arrays": "always",
+          "functions": "never",
+          "typeLiterals": "ignore"
+        },
+        "esSpecCompliant": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "name": "token-swap",
+  "version": "0.1.0",
+  "homepage": ".",
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^3.6.0",
+    "axios": "^0.18.0",
+    "classnames": "^2.2.6",
+    "dayjs": "^1.7.8",
+    "decimal.js-light": "^2.5.0",
+    "immer": "^1.8.2",
+    "localforage": "^1.7.3",
+    "lodash": "^4.17.11",
+    "moment": "^2.23.0",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-redux": "^5.1.1",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "react-scripts": "^2.1.1",
+    "redux": "^4.0.1",
+    "stellar-base": "^0.10.0",
+    "stellar-sdk": "^0.11.0",
+    "web3": "^1.0.0-beta.37"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.2.6",
+    "@types/jest": "^23.3.10",
+    "@types/lodash": "^4.14.119",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^10.12.12",
+    "@types/react": "^16.7.13",
+    "@types/react-dom": "^16.0.11",
+    "@types/react-redux": "^6.0.10",
+    "@types/react-router-dom": "^4.3.1",
+    "@types/stellar-sdk": "^0.10.4",
+    "@types/web3": "^1.0.12",
+    "eslint-config-airbnb": "^17.1.0",
+    "ipfs-api": "^26.1.2",
+    "redux-saga": "^0.16.2",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-microsoft-contrib": "^5.2.1",
+    "tslint-react": "^3.6.0",
+    "typescript": "^3.2.2"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
