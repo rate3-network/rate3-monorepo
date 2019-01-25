@@ -36,7 +36,6 @@ function* convertToEthereum(r3, asset, value: string | number, userKeypair) {
   const convertToEthTxDetail = convertToEth.tx;
   convertToEthTxDetail.sign(userKeypair);
   const convertToEthRes = yield r3.stellar.submitTransaction(convertToEthTxDetail);
-  // console.log('able to convert asset to ethereum token from user', convertToEthRes);
   yield put({ type: networkActions.SELECT_TX, payload: convertToEthRes.hash });
   let txDetail;
   function* getTxDetail() {
@@ -97,23 +96,19 @@ function* requestS2E(action: IAction) {
 
 function* requestE2S(action: IAction) {
   try {
-    console.log('start submission');
     const amount = action.payload;
     const getContract = state => state.network.contract;
     const contract = yield select(getContract);
-    console.log('got contract');
     // console.log(contract);
     const STELLAR_ADDRESS = Ed25519PublicKeyToHex(STELLAR_USER);
     // console.log('STELLAR_ADDRESS', STELLAR_ADDRESS);
     const tx = contract.methods.requestConversion(toTokenAmount(amount), STELLAR_ADDRESS);
-    console.log('tx created');
     const options = {
       from: ETH_USER,
       gas: '5000000',
       gasPrice: '50000000000',
     };
     const txSent = tx.send(options);
-    console.log('tx sent');
     const chan = yield call(
       handleContractCall,
       txSent,
@@ -136,7 +131,6 @@ function* requestE2S(action: IAction) {
 
 function* requestE2SWithRetry(action: IAction) {
   // const request = requestE2S(action);
-  console.log('start sending');
   function* requestWithParam() {
     yield requestE2S(action);
   }
@@ -174,7 +168,6 @@ function* onE2sReceipt(action: IAction) {
 }
 
 function* onE2sHash(action: IAction) {
-  // console.log('on hjash');
   const { hash } = action.payload;
   const updatedRequest = {
     hash,
