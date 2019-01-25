@@ -60,11 +60,12 @@ class RoleSwitch extends React.Component<IProps & WithStyles<typeof styles>> {
             ERROR
           </div>
           <div className={classes.message}>
-            An Unexpected Error Has Occurred. Please Try to Refresh the Page.
+          Sorry! We were temporarily distracted by fake rumours of Satoshi being found.
+          Please refresh and try again!
           </div>
-          <div className={classes.errorBox}>
+          {/* <div className={classes.errorBox}>
             Error Message: {JSON.stringify(this.props.error)}
-          </div>
+          </div> */}
           <Button onClick={() => { location.reload(); }}>Refresh</Button>
         </div>
       </Modal>

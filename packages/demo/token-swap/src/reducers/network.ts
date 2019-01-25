@@ -37,6 +37,7 @@ export interface IStoreState {
   ethHistory: any[];
   loadingHistory: boolean;
   error: null | string;
+  userSetupProgress: boolean[];
 }
 
 export const initialState = {
@@ -58,6 +59,7 @@ export const initialState = {
   stellarHistory: [],
   ethHistory: [],
   error: null,
+  userSetupProgress: [false, false, false, false], // [contracts, eth balance, r3, stellar balance]
 };
 const provider = INFURA;
 // const provider = new Web3.providers.HttpProvider(INFURA);
@@ -81,8 +83,16 @@ IStoreState {
       );
       (window as any).ConversionReceiver = contractUser;
       (window as any).tokenContract = tokenContractUser;
-      return { ...state, role: ROLES.USER, contract: contractUser,
-        tokenContract: tokenContractUser, web3Obj: web3User };
+      const contractProgress = state.userSetupProgress.slice();
+      contractProgress[0] = true;
+      return {
+        ...state,
+        userSetupProgress: contractProgress,
+        role: ROLES.USER,
+        contract: contractUser,
+        tokenContract: tokenContractUser,
+        web3Obj: web3User,
+      };
 
     case networkActions.INIT_ISSUER:
       const web3Issuer = new Web3(provider);
@@ -107,8 +117,11 @@ IStoreState {
       };
 
     case networkActions.SET_USER_ETH_BALANCE:
+      const ethBalanceProgress = state.userSetupProgress.slice();
+      ethBalanceProgress[1] = true;
       return {
         ...state,
+        userSetupProgress: ethBalanceProgress,
         userEthSgdrBalance: action.payload.sgdrBalance,
         userEthBalance: action.payload.balance,
       };
@@ -117,11 +130,16 @@ IStoreState {
       return { ...state, issuerEthBalance: action.payload.balance };
 
     case networkActions.SET_R3_INSTANCE:
-      return { ...state, r3: action.payload.r3 };
+      const r3Progress = state.userSetupProgress.slice();
+      r3Progress[2] = true;
+      return { ...state, userSetupProgress: r3Progress, r3: action.payload.r3 };
 
     case networkActions.SET_USER_STELLAR_BALANCE:
+      const stellarBalanceProgress = state.userSetupProgress.slice();
+      stellarBalanceProgress[3] = true;
       return {
         ...state,
+        userSetupProgress: stellarBalanceProgress,
         userStellarSgdrBalance: action.payload.balance[0].balance,
         userStellarBalance: action.payload.balance[1].balance,
       };

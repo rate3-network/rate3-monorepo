@@ -134,6 +134,14 @@ function* requestE2S(action: IAction) {
   }
 }
 
+function* requestE2SWithRetry(action: IAction) {
+  // const request = requestE2S(action);
+  console.log('start sending');
+  function* requestWithParam() {
+    yield requestE2S(action);
+  }
+  yield retryCall(requestWithParam, 300, 5);
+}
 function* onE2sReceipt(action: IAction) {
   const STELLAR_ADDRESS = Ed25519PublicKeyToHex(STELLAR_USER);
   const { receipt } = action.payload;
@@ -189,7 +197,7 @@ function* onE2sError(action: IAction) {
 }
 
 export default function* user() {
-  yield takeLatest(userActions.REQUEST_ETH_TO_STELLAR, requestE2S);
+  yield takeLatest(userActions.REQUEST_ETH_TO_STELLAR, requestE2SWithRetry);
   yield takeLatest(userActions.REQUEST_STELLAR_TO_ETH, requestS2E);
 
   yield takeLatest('REQUEST_E2S_HASH', onE2sHash);

@@ -60,6 +60,7 @@ const styles = createStyles({
 interface IProps {
   direction: Direction;
   value: string;
+  userSetupProgress: boolean[];
   goBack(): void;
   next(): void;
   requestS2E(): void;
@@ -77,7 +78,7 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
   }
 
   render() {
-    const { classes, value, direction, requestE2S, requestS2E } = this.props;
+    const { classes, value, direction, requestE2S, requestS2E, userSetupProgress } = this.props;
     return (
       <PageBox>
         <PageTitle withBackButton={true} backName="Direct" backAction={this.props.goBack}>
@@ -130,6 +131,7 @@ class SwapRequestPage extends React.Component<IPropsFinal> {
                 direction === Direction.E2S ? requestE2S() : requestS2E();
                 this.props.next();
               }}
+              disabled={!userSetupProgress.reduce((a, b) => a && b)}
             >
               Send Request
             </BlueButton>

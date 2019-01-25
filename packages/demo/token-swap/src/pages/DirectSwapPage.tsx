@@ -112,6 +112,7 @@ interface IReduxProps {
   requestE2S: (value: string) => void;
   requestS2E: (value: string) => void;
   resetSelectedTx: () => void;
+  userSetupProgress: boolean[];
   pendingTxMap: typeof initialState.pendingTxMap;
   selectedTx: string;
 }
@@ -210,7 +211,7 @@ class DirectSwapPage extends React.Component<IProps> {
   }
 
   render() {
-    const { classes, match } = this.props;
+    const { classes, match, userSetupProgress } = this.props;
     const { role } = match.params;
     return (
       <React.Fragment>
@@ -256,6 +257,7 @@ class DirectSwapPage extends React.Component<IProps> {
         }
         {this.state.page === 2 &&
           <SwapRequestPage
+            userSetupProgress={userSetupProgress}
             value={this.state.cardValue}
             direction={this.state.direction}
             goBack={this.goBack}
@@ -290,6 +292,7 @@ export function mapStateToProps({ network }: { network: IStoreState; }) {
   return {
     pendingTxMap: network.pendingTxMap,
     selectedTx: network.selectedTx,
+    userSetupProgress: network.userSetupProgress,
   };
 }
 export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
