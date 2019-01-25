@@ -70,6 +70,7 @@ class BaseToken {
 
   issue(to, amount) {
     this._checkIdValid(to);
+    this._checkBlacklist(to);
 
     let issuer = storage.get('issuer');
     if (!blockchain.requireAuth(issuer, 'active')) {
@@ -115,6 +116,7 @@ class BaseToken {
   transfer(from, to, amount, memo) {
     this._checkIdValid(from);
     this._checkIdValid(to);
+    this._checkBlacklist(from);
 
     if (!blockchain.requireAuth(from, 'active')) {
       throw new Error('PERMISSION_DENIED');
@@ -162,6 +164,7 @@ class BaseToken {
 
   burn(from, amount) {
     this._checkIdValid(from);
+    this._checkBlacklist(from);
 
     if (!blockchain.requireAuth(from, 'active')) {
       throw new Error('PERMISSION_DENIED');
@@ -207,8 +210,37 @@ class BaseToken {
     if (!this._checkEthAddressValid(ethAddress)) {
       throw new Error('INVALID ETH ADDRESS');
     }
+
     this.burn(from, amount);
+
     return JSON.stringify({ from, amount, ethAddress });
+  }
+
+  blacklist(id, bool) {
+    this._checkIdValid(id);
+
+    let issuer = storage.get('issuer');
+    if (!blockchain.requireAuth(issuer, 'active')) {
+      throw new Error('PERMISSION_DENIED');
+    }
+
+    if (bool) {
+      storage.mapPut('blacklist', id, 't');
+    } else {
+      storage.mapPut('blacklist', id, 'f');
+    }
+  }
+
+  can_update(data) {
+    let issuer = storage.get('issuer');
+    return blockchain.requireAuth(issuer, 'active');
+  }
+
+  _checkBlacklist(id) {
+    let blacklisted = storage.mapGet('blacklist', id);
+    if (blacklisted === 't') {
+      throw new Error('ID_BLACKLISTED');
+    }
   }
 
   _checkIdValid(id) {
@@ -228,12 +260,6 @@ class BaseToken {
       }
     }
   }
-
-  can_update(data) {
-    let issuer = storage.get('issuer');
-    return blockchain.requireAuth(issuer, 'active');
-  }
-
 
   _checkEthAddressValid(address) {
     if (address.length != 42) {

@@ -68,6 +68,13 @@
             ]
         },
         {
+            "name": "blacklist",
+            "args": [
+                "string",
+                "bool"
+            ]
+        },
+        {
             "name": "can_update",
             "args": [
                 "string"
