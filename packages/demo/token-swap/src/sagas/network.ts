@@ -164,8 +164,7 @@ function* fetchE2SFromStellar() {
     });
 
   }
-    console.log(stellarHistory);
-    yield put({ type: networkActions.FETCH_S2E_FROM_STELLAR, payload: stellarHistory });
+  yield put({ type: networkActions.FETCH_S2E_FROM_STELLAR, payload: stellarHistory });
   yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: false });
 }
 
@@ -193,7 +192,6 @@ function* fetchS2EFromEth() {
       };
       ethHistory.push(newItem);
     });
-    console.log(ethHistory);
     yield put({ type: networkActions.FETCH_E2S_FROM_ETH, payload: ethHistory });
     yield put({ type: networkActions.SET_HISTORY_LOADING_STATE, payload: false });
   } catch (err) {

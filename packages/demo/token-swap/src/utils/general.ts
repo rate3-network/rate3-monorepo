@@ -77,14 +77,11 @@ export const Ed25519PublicKeyToHex = (input) => {
 import { delay, eventChannel, END } from 'redux-saga';
 
 export function* retryCall(action, delayTime = 300, maxRetry = 5) {
-  console.log('satrt calling with retry ');
   for (let i = 0; i < maxRetry; i += 1) {
     try {
-      console.log('trying to send request, no. ', i);
       const order = yield action();
       return order;
     } catch (err) {
-      console.log('fail to send request, no. ', i);
       if (i < maxRetry - 1) {
         yield delay(delayTime);
       }
