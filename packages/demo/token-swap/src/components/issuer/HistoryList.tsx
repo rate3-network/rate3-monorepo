@@ -224,7 +224,7 @@ class HistoryList extends React.Component<IProps & WithStyles<typeof styles>, IS
               </div>
             </div>
             <div className={classes.noEntry}>
-              You don't any swaps in progress.
+              You don't have any swaps in progress.
             </div>
           </>
         );
