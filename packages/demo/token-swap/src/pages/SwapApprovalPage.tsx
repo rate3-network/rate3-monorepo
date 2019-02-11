@@ -1,23 +1,26 @@
-import { createStyles } from '@material-ui/core/styles';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import day from 'dayjs';
 import * as React from 'react';
+import ReactGa from 'react-ga';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch } from 'redux';
+
+import { createStyles } from '@material-ui/core/styles';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+
 import * as actions from '../actions/issuer';
 import lineSvg from '../assets/line.svg';
 import BlueButton from '../components/common/BlueButton';
+import Pop from '../components/common/Pop';
 import SwapInfoBox from '../components/common/SwapInfoBox';
 import Box from '../components/layout/Box';
 import PageBox from '../components/layout/PageBox';
 import PageContainer from '../components/layout/PageContainer';
 import PageTitle from '../components/layout/PageTitle';
 import { COLORS } from '../constants/colors';
-import { CONVERSION_CONTRACT_ADDR, ETH_USER, STELLAR_USER } from '../constants/defaults';
+import { CONVERSION_CONTRACT_ADDR, ETH_USER, STELLAR_USER, TRACKING_ID } from '../constants/defaults';
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import { Direction, IAction, truncateAddress } from '../utils/general';
-import day from 'dayjs';
-import Pop from '../components/common/Pop';
 
 const FORMAT = 'DD-MM-YYYY H:mm';
 const styles = createStyles({
@@ -91,6 +94,8 @@ class SwapApprovalPage extends React.Component<IPropsFinal> {
     };
   }
   componentDidMount() {
+    ReactGa.initialize(TRACKING_ID);
+    ReactGa.pageview('/issuer/approve');
   }
 
   render() {

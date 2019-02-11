@@ -1,10 +1,12 @@
-import { createStyles } from '@material-ui/core/styles';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch } from 'redux';
+
+import { createStyles } from '@material-ui/core/styles';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+
 import * as actions from '../actions/network';
 import RoleContext from '../components/common/RoleContext';
 import HistoryList from '../components/issuer/HistoryList';
@@ -12,11 +14,12 @@ import Box from '../components/layout/Box';
 import PageBox from '../components/layout/PageBox';
 import PageContainer from '../components/layout/PageContainer';
 import PageTitle from '../components/layout/PageTitle';
+import withTracker from '../components/WithTracker';
 import { COLORS } from '../constants/colors';
 import { ROLES } from '../constants/general';
-import { IAction, calStellarTodaySwapNo, calEthTodaySwapNo } from '../utils/general';
-import HistorySwapDetailsPage from './HistorySwapDetailsPage';
 import { initialState, IStoreState } from '../reducers/network';
+import { calEthTodaySwapNo, calStellarTodaySwapNo, IAction } from '../utils/general';
+import HistorySwapDetailsPage from './HistorySwapDetailsPage';
 
 const styles = createStyles({
   row: {
@@ -211,6 +214,6 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   };
 }
 export default connect(
-  mapStateToProps, mapDispatchToProps)(withRouter(withStyles(styles)(UserHomePage)));
+  mapStateToProps, mapDispatchToProps)(withRouter(withTracker(withStyles(styles)(UserHomePage))));
 
 // export default withRouter(withStyles(styles)(UserHomePage));

@@ -66,3 +66,5 @@ export const ETHERSCAN = 'https://ropsten.etherscan.io';
 
 // export const INFURA = 'https://ropsten.infura.io';
 export const INFURA = 'https://ropsten.infura.io/v3/81cc2101ca344ef8a8fe5742a70249f0';
+
+export const TRACKING_ID = 'UA-114112342-6';
