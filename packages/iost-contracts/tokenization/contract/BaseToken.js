@@ -175,10 +175,7 @@ class BaseToken {
   convertToERC20(from, amount, ethAddress) {
     this._checkIdValid(from);
     this._checkEthAddressValid(ethAddress);
-    
-    if (!blockchain.requireAuth(from, 'active')) {
-      throw new Error('PERMISSION_DENIED');
-    }
+
     this.burn(from, amount);
 
     return JSON.stringify({ from, amount, ethAddress });
@@ -240,7 +237,7 @@ class BaseToken {
     }
 
     address = address.replace('0x','');
-    address.toLowerCase();
+    address = address.toLowerCase();
 
     for (let i in address) {
       let ch = address[i];
