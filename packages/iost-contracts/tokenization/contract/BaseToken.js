@@ -4,10 +4,6 @@ const storage = new rstorage();
 const blockchain = new rBlockChain();
 
 class BaseToken {
-  // Execute everytime the contract class is called.
-  constructor() {
-  }
-
   // Execute once when contract is packed into a block.
   init() {
     storage.put('deployed', 'f');
@@ -36,36 +32,6 @@ class BaseToken {
     } else {
       blockchain.receipt('ALREADY_DEPLOYED');
     }
-  }
-
-  name() {
-    let value = storage.get('name');
-    return value;
-  }
-
-  symbol() {
-    let value = storage.get('symbol');
-    return value;
-  }
-
-  issuer() {
-    let value = storage.get('issuer');
-    return value;
-  }
-
-  deployed() {
-    let value = storage.get('deployed');
-    return value;
-  }
-
-  balanceOf(from) {
-    let value = storage.mapGet('balances', from);
-    return value;
-  }
-
-  totalSupply() {
-    let value = storage.get('totalSupply');
-    return value;
   }
 
   issue(to, amount) {
@@ -207,10 +173,12 @@ class BaseToken {
   }
 
   convertToERC20(from, amount, ethAddress) {
-    if (!this._checkEthAddressValid(ethAddress)) {
-      throw new Error('INVALID ETH ADDRESS');
+    this._checkIdValid(from);
+    this._checkEthAddressValid(ethAddress);
+    
+    if (!blockchain.requireAuth(from, 'active')) {
+      throw new Error('PERMISSION_DENIED');
     }
-
     this.burn(from, amount);
 
     return JSON.stringify({ from, amount, ethAddress });
@@ -242,6 +210,7 @@ class BaseToken {
       throw new Error('ID_BLACKLISTED');
     }
   }
+
 
   _checkIdValid(id) {
     if (block.number === 0) {

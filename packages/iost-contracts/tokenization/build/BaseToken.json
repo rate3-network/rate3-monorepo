@@ -11,32 +11,6 @@
             ]
         },
         {
-            "name": "name",
-            "args": []
-        },
-        {
-            "name": "symbol",
-            "args": []
-        },
-        {
-            "name": "issuer",
-            "args": []
-        },
-        {
-            "name": "deployed",
-            "args": []
-        },
-        {
-            "name": "balanceOf",
-            "args": [
-                "string"
-            ]
-        },
-        {
-            "name": "totalSupply",
-            "args": []
-        },
-        {
             "name": "issue",
             "args": [
                 "string",
