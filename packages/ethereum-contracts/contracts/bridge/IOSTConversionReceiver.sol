@@ -1,0 +1,96 @@
+pragma solidity 0.4.24;
+
+import "../lib/ownership/Claimable.sol";
+import "../tokenization/interfaces/ERC20.sol";
+
+contract IOSTConversionReceiver is Claimable {
+
+    ERC20 public token;
+    Conversion[] public conversions;
+
+    struct Conversion {
+        address ethAddress;
+        string iostAccount;
+        uint256 amount;
+        States state;
+    }
+
+    enum States {
+        INVALID,
+        OPEN,
+        ACCEPTED,
+        REJECTED
+    }
+
+    event ConversionRequested(uint256 indexID, address indexed ethAddress, string iostAccount, uint256 amount, uint256 requestTimestamp);
+    event ConversionRejected(uint256 indexID, address indexed ethAddress, string iostAccount, uint256 amount, uint256 rejectTimestamp);
+    event ConversionAccepted(uint256 indexID, address indexed ethAddress, string iostAccount, uint256 amount, uint256 acceptTimestamp);
+    event ConversionUnlocked(
+        address indexed ethAddress,
+        string iostAccount,
+        uint256 amount,
+        uint256 unlockTimestamp,
+        string iostMirrorTransactionHash
+    );
+    event SentTokensToColdStorage(address coldStorageAddress, uint256 amount);
+    
+
+    modifier onlyOpenConversions(uint256 _index) {
+        require(conversions[_index].state == States.OPEN, "Conversion should be open");
+        _;
+    }
+
+    constructor(ERC20 _token) public {
+        token = _token;
+    }
+
+    function requestConversion(
+        uint256 _amount,
+        string _iostAccount
+    )
+        public
+    {
+        uint256 index = conversions.length;
+
+        require(_amount <= token.allowance(msg.sender, address(this)), "Allowance should be set");
+        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");
+
+        conversions.push(Conversion(msg.sender, _iostAccount, _amount, States.OPEN));
+
+        emit ConversionRequested(index, msg.sender, _iostAccount, _amount, block.timestamp);
+    }
+
+    function rejectConversion(uint256 _index) public onlyOwner onlyOpenConversions(_index) {
+        Conversion storage conversion = conversions[_index];
+        require(token.transfer(conversion.ethAddress, conversion.amount), "Token transfer failed");
+        conversion.state = States.REJECTED;
+
+        emit ConversionRejected(_index, conversion.ethAddress, conversion.iostAccount, conversion.amount, block.timestamp);
+    }
+
+    function acceptConversion(uint256 _index) public onlyOwner onlyOpenConversions(_index) {
+        Conversion storage conversion = conversions[_index];
+        conversion.state = States.ACCEPTED;
+        emit ConversionAccepted(_index, conversion.ethAddress, conversion.iostAccount, conversion.amount, block.timestamp);
+    }
+
+    function unlockConversion(
+        uint256 _amount,
+        address _ethAddress,
+        string _iostAccount,
+        string _iostMirrorTransactionHash
+    )
+        public
+        onlyOwner
+    {
+        require(_amount <= token.balanceOf(address(this)), "Not enough tokens to convert");
+        require(token.transfer(_ethAddress, _amount), "Token transfer failed");
+
+        emit ConversionUnlocked(_ethAddress, _iostAccount, _amount, block.timestamp, _iostMirrorTransactionHash);
+    }
+
+    function sendTokensToColdStorage(address _coldStorageAddress, uint256 _amount) public onlyOwner {
+        require(token.transfer(_coldStorageAddress, _amount), "Token transfer failed");
+        emit SentTokensToColdStorage(_coldStorageAddress, _amount);
+    }
+}
