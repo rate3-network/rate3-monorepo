@@ -239,7 +239,8 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         onlyOwner
         whenNotPaused
     {
-        require(_amount <= token.balanceOf(address(this)), "Not enough tokens to convert");
+        require(_amount >= minimumConversionAmount, "Should be above minimum conversion amount");
+        require(_amount <= totalLockedTokens, "Not enough tokens to convert");
 
         uint256 fee = 0;
         bool discounted = (discountToken.balanceOf(_ethAddress) >= discountThreshold);
