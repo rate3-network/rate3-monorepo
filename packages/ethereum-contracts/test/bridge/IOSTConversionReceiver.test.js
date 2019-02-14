@@ -75,6 +75,149 @@ contract('IOSTConversionReceiver Tests', function(accounts) {
         );
     });
 
+    describe('Test - owner functions', function() {
+        beforeEach(async function () {
+            await this.receiver.pause({ from: owner });
+        });
+
+        it('only owner can call admin functions', async function() {
+            await shouldFail.reverting(this.receiver.setDiscountToken(constants.ZERO_ADDRESS, { from: alice }));
+            await shouldFail.reverting(this.receiver.setDiscountThreshold(MINIMUM_THRESHOLD_TOKENS, { from: alice }));
+            await shouldFail.reverting(this.receiver.setConversionFeeBasisPoints(0, { from: alice }));
+            await shouldFail.reverting(this.receiver.setUnlockFeeBasisPoints(0, { from: alice }));
+            await shouldFail.reverting(this.receiver.setDiscountedConversionFeeBasisPoints(0, { from: alice }));
+            await shouldFail.reverting(this.receiver.setDiscountedUnlockFeeBasisPoints(0, { from: alice }));
+            await shouldFail.reverting(this.receiver.setMinimumConversionAmount(MINIMUM_TOKENS, { from: alice }));
+            await shouldFail.reverting(this.receiver.setFeeCollectionWallet(feeWallet, { from: alice }));
+            await shouldFail.reverting(this.receiver.setColdStorageWallet(coldWallet, { from: alice }));
+        });
+
+        it('only callable when paused', async function() {
+            await this.receiver.unpause({ from: owner });
+            await shouldFail.reverting(this.receiver.setDiscountToken(constants.ZERO_ADDRESS, { from: owner }));
+            await shouldFail.reverting(this.receiver.setDiscountThreshold(MINIMUM_THRESHOLD_TOKENS, { from: owner }));
+            await shouldFail.reverting(this.receiver.setConversionFeeBasisPoints(0, { from: owner }));
+            await shouldFail.reverting(this.receiver.setUnlockFeeBasisPoints(0, { from: owner }));
+            await shouldFail.reverting(this.receiver.setDiscountedConversionFeeBasisPoints(0, { from: owner }));
+            await shouldFail.reverting(this.receiver.setDiscountedUnlockFeeBasisPoints(0, { from: owner }));
+            await shouldFail.reverting(this.receiver.setMinimumConversionAmount(MINIMUM_TOKENS, { from: owner }));
+            await shouldFail.reverting(this.receiver.setFeeCollectionWallet(feeWallet, { from: owner }));
+            await shouldFail.reverting(this.receiver.setColdStorageWallet(coldWallet, { from: owner }));
+        });
+
+        it('check fields updated correctly', async function() {
+            await this.receiver.setDiscountToken(constants.ZERO_ADDRESS, { from: owner });
+            await this.receiver.setDiscountThreshold(1, { from: owner });
+            await this.receiver.setConversionFeeBasisPoints(3, { from: owner });
+            await this.receiver.setUnlockFeeBasisPoints(4, { from: owner });
+            await this.receiver.setDiscountedConversionFeeBasisPoints(1, { from: owner });
+            await this.receiver.setDiscountedUnlockFeeBasisPoints(2, { from: owner });
+            await this.receiver.setMinimumConversionAmount(1, { from: owner });
+            await this.receiver.setFeeCollectionWallet(constants.ZERO_ADDRESS, { from: owner });
+            await this.receiver.setColdStorageWallet(constants.ZERO_ADDRESS, { from: owner });
+
+            (await this.receiver.discountToken()).should.be.equal(constants.ZERO_ADDRESS);
+            (await this.receiver.discountThreshold()).should.be.a.bignumber.equals(new BN(1));
+            (await this.receiver.conversionFeeBasisPoints()).should.be.a.bignumber.equals(new BN(3));
+            (await this.receiver.unlockFeeBasisPoints()).should.be.a.bignumber.equals(new BN(4));
+            (await this.receiver.discountedConversionFeeBasisPoints()).should.be.a.bignumber.equals(new BN(1));
+            (await this.receiver.discountedUnlockFeeBasisPoints()).should.be.a.bignumber.equals(new BN(2));
+            (await this.receiver.minimumConversionAmount()).should.be.a.bignumber.equals(new BN(1));
+            (await this.receiver.feeCollectionWallet()).should.be.equal(constants.ZERO_ADDRESS);
+            (await this.receiver.coldStorageWallet()).should.be.equal(constants.ZERO_ADDRESS);
+        });
+    });
+
+    describe('Test - collect fees', function() {
+        beforeEach(async function () {
+            await this.token.approve(this.receiver.address, new BN('1500000000000000000000'), { from: alice });
+            // Split 500 tokens into 2 conversion requests
+            await this.receiver.requestConversion(new BN('500000000000000000000'), IOST_ACCOUNT, { from: alice });
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
+            await this.receiver.requestConversion(new BN('500000000000000000000'), IOST_ACCOUNT, { from: alice });
+
+            await this.receiver.acceptConversion(0, { from: owner });
+            await this.receiver.acceptConversion(1, { from: owner });
+        });
+
+        it('only owner can collect fees', async function() {
+            await shouldFail.reverting(this.receiver.collectFees({ from: alice }));
+            await this.receiver.collectFees({ from: owner });
+        });
+
+        it('check fees updated correctly', async function() {
+            await this.receiver.collectFees({ from: owner });
+            let amount1 = await this.receiver.fees();            
+
+            amount1.should.be.a.bignumber.equals(new BN(0));
+        });
+
+        it('check fees transferred', async function() {
+            let amount1 = await this.receiver.fees();         
+            await this.receiver.collectFees({ from: owner });
+            let amount2 = await this.token.balanceOf(feeWallet);
+
+            amount2.should.be.a.bignumber.equals(amount1);
+        });
+
+        it('collected fees event emitted', async function() {
+            let amount1 = await this.receiver.fees();         
+            let { logs } = await this.receiver.collectFees({ from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'CollectedFees', {
+                feeCollectionWallet: feeWallet,
+                amount: amount1,
+            });
+        })
+    });
+
+    describe('Test - send to cold storage', function() {
+        beforeEach(async function () {
+            await this.token.approve(this.receiver.address, new BN('1500000000000000000000'), { from: alice });
+            // Split 500 tokens into 2 conversion requests
+            await this.receiver.requestConversion(new BN('500000000000000000000'), IOST_ACCOUNT, { from: alice });
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
+            await this.receiver.requestConversion(new BN('500000000000000000000'), IOST_ACCOUNT, { from: alice });
+
+            await this.receiver.acceptConversion(0, { from: owner });
+            await this.receiver.acceptConversion(1, { from: owner });
+
+            await this.receiver.pause({ from: owner });
+        });
+
+        it('only callable when paused', async function() {
+            await this.receiver.unpause({ from: owner });
+            await shouldFail.reverting(this.receiver.sendTokensToColdStorage(new BN('500000000000000000000'), { from: owner }));
+            await this.receiver.pause({ from: owner });
+            await this.receiver.sendTokensToColdStorage(new BN('500000000000000000000'), { from: owner });
+        });
+
+        it('only owner send tokens to cold storage', async function() {
+            await shouldFail.reverting(this.receiver.sendTokensToColdStorage(new BN('500000000000000000000'), { from: alice }));
+            await this.receiver.sendTokensToColdStorage(new BN('500000000000000000000'), { from: owner });
+        });
+
+        it('check tokens transferred', async function() {
+            let amount1 = await this.token.balanceOf(this.receiver.address);        
+            await this.receiver.sendTokensToColdStorage(new BN('300000000000000000000'), { from: owner });
+            let amount2 = await this.token.balanceOf(this.receiver.address);
+            let amount3 = await this.token.balanceOf(coldWallet);
+
+            amount1.should.be.a.bignumber.equals(new BN('1000000000000000000000'));
+            amount2.should.be.a.bignumber.equals(new BN('700000000000000000000'));
+            amount3.should.be.a.bignumber.equals(new BN('300000000000000000000'));
+        });
+
+        it('cold storage event emitted', async function() {
+            const { logs } = await this.receiver.sendTokensToColdStorage(new BN('300000000000000000000'), { from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'SentTokensToColdStorage', {
+                coldStorageWallet: coldWallet,
+                amount: new BN('300000000000000000000'),
+            });
+        })
+    });
+
     describe('Test - request conversion', function() {
         beforeEach(async function () {
             await this.token.approve(this.receiver.address, new BN('1500000000000000000000'), { from: alice });
