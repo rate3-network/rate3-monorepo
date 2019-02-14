@@ -80,7 +80,7 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         uint256 unlockTimestamp
     );
     event CollectedFees(address feeCollectionWallet, uint256 amount, uint256 collectionTimestamp);
-    event SentTokensToColdStorage(address coldStorageAddress, uint256 amount, uint256 storageTimestamp);
+    event SentTokensToColdStorage(address coldStorageWallet, uint256 amount, uint256 storageTimestamp);
     
     modifier onlyOpenConversions(uint256 _index) {
         require(conversions[_index].state == States.OPEN, "Conversion should be open");
