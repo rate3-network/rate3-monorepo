@@ -30,7 +30,7 @@ class BaseToken {
         { name, symbol, decimals, issuer }
       ));
     } else {
-      blockchain.receipt('ALREADY_DEPLOYED');
+      throw new Error('ALREADY_DEPLOYED');
     }
   }
 
