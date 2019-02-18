@@ -1,26 +1,30 @@
-import Input from '@material-ui/core/Input';
-import { createStyles } from '@material-ui/core/styles';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import classnames from 'classnames';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch } from 'redux';
+
+import Input from '@material-ui/core/Input';
+import { createStyles } from '@material-ui/core/styles';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+
 import * as networkActions from '../actions/network';
 import * as actions from '../actions/user';
+import exchangeSvg from '../assets/exchange.svg';
 import BlueButton from '../components/common/BlueButton';
 import SummaryCard from '../components/common/SummaryCard';
 import PageBox from '../components/layout/PageBox';
 import PageContainer from '../components/layout/PageContainer';
 import PageTitle from '../components/layout/PageTitle';
+import withTracker from '../components/WithTracker';
 import { SIDEBAR } from '../constants/colors';
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import { initialState, IStoreState } from '../reducers/network';
 import { Direction, IAction } from '../utils/general';
 import SwapDetailsPage from './SwapDetailsPage';
 import SwapRequestPage from './SwapRequestPage';
-import exchangeSvg from '../assets/exchange.svg';
+
 const styles = createStyles({
   toggleBtn: {
     position: 'relative',
@@ -303,4 +307,4 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   };
 }
 export default connect(
-  mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(DirectSwapPage)));
+  mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(withTracker(DirectSwapPage))));

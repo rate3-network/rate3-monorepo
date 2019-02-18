@@ -1,23 +1,26 @@
-import { createStyles } from '@material-ui/core/styles';
-import RoleContext from '../components/common/RoleContext';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { RouteComponentProps } from 'react-router-dom';
 import { Dispatch } from 'redux';
+
+import { createStyles } from '@material-ui/core/styles';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+
 import * as networkActions from '../actions/network';
+import RoleContext from '../components/common/RoleContext';
 import AwaitingApprovalList from '../components/issuer/AwaitingApprovalList';
 import HistoryList from '../components/issuer/HistoryList';
 import Box from '../components/layout/Box';
 import PageBox from '../components/layout/PageBox';
 import PageContainer from '../components/layout/PageContainer';
 import PageTitle from '../components/layout/PageTitle';
+import withTracker from '../components/WithTracker';
 import { COLORS } from '../constants/colors';
 import { ROLES } from '../constants/general';
 import { IE2SRequest, IS2ERequest } from '../reducers/issuer';
 import { initialState, IStoreState } from '../reducers/network';
-import { Direction, IAction, calStellarTodaySwapNo, calEthTodaySwapNo } from '../utils/general';
+import { calEthTodaySwapNo, calStellarTodaySwapNo, Direction, IAction } from '../utils/general';
 import HistorySwapDetailsPage from './HistorySwapDetailsPage';
 import SwapApprovalPage from './SwapApprovalPage';
 import SwapDetailsPage from './SwapDetailsPage';
@@ -275,4 +278,4 @@ export function mapDispatchToProps(dispatch: Dispatch<IAction>) {
   };
 }
 export default connect(
-  mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(IssuerHomePage)));
+  mapStateToProps, mapDispatchToProps)(withStyles(styles)(withRouter(withTracker(IssuerHomePage))));

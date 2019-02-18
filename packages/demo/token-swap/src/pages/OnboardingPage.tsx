@@ -1,19 +1,23 @@
-import { AppBar, Toolbar } from '@material-ui/core';
-import { createStyles } from '@material-ui/core/styles';
-import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import * as React from 'react';
 import { withRouter } from 'react-router';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import BlueButton from '../components/common/BlueButton';
-import { ONBOARDING, SIDEBAR } from '../constants/colors';
-import userLogo from '../assets/user_rate3_logo.svg';
-import { ONBOARDING_TEXTS } from '../constants/defaults';
+
+import { AppBar, Toolbar } from '@material-ui/core';
+import { createStyles } from '@material-ui/core/styles';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+
 import coin from '../assets/coin_fly.svg';
-import page2 from '../assets/page2.svg';
-import p2p1 from '../assets/p2p.svg';
-import p2p2 from '../assets/p2p_2.svg';
 import direct1 from '../assets/direct_1.svg';
 import direct2 from '../assets/direct_2.svg';
+import p2p1 from '../assets/p2p.svg';
+import p2p2 from '../assets/p2p_2.svg';
+import page2 from '../assets/page2.svg';
+import userLogo from '../assets/user_rate3_logo.svg';
+import BlueButton from '../components/common/BlueButton';
+import { ONBOARDING, SIDEBAR } from '../constants/colors';
+import { ONBOARDING_TEXTS } from '../constants/defaults';
+import withTracker from '../components/WithTracker';
+
 // export interface IProps {
 //   classes: any;
 // }
@@ -229,4 +233,4 @@ class OnboardingPage extends React.PureComponent<IProps> {
   }
 }
 
-export default withStyles(styles)(withRouter(OnboardingPage));
+export default withStyles(styles)(withRouter(withTracker(OnboardingPage)));
