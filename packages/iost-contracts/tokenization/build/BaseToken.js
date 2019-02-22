@@ -30,7 +30,7 @@ class BaseToken {
     }
   }
 
-  issue(to, amount) {
+  issue(to, amount, ethConversionId) {
     this._checkIdValid(to);
     this._checkBlacklist(to);
 
@@ -72,7 +72,7 @@ class BaseToken {
     storage.mapPut('balances', to, newAmount.toString());
     storage.put('totalSupply', newSupply.toString());
 
-    return JSON.stringify({ to, amount });
+    return JSON.stringify({ to, amount, ethConversionId });
   }
 
   transfer(from, to, amount, memo) {
