@@ -19,7 +19,7 @@ module.exports = function deployment(deployer, network, accounts) {
         const registry = await RegistryModule.new({ from: owner });
 
         console.log('\nDeploying BaseToken');
-        const token = await BaseToken.new('Test SGD', 'TESTSGD', 18, { from: owner });
+        const token = await BaseToken.new('Circle USD', 'USDC', 18, { from: owner });
 
         console.log('\nTransfer ownership of BalanceModule to Token');
         await balance.transferOwnership(token.address, { from: owner });
@@ -83,6 +83,9 @@ module.exports = function deployment(deployer, network, accounts) {
             admin2,
             { from: owner }
         );
+
+        // mint 1 million tokens for testing
+        token.mint(owner, new web3.utils.BN('1000000000000000000000000'), { from: owner });
 
         console.log('\n===== Addresses ======');
         console.log('AllowanceModule:    ', allowance.address);
