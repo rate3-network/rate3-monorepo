@@ -19,12 +19,24 @@ contract IOSTConversionReceiver is Claimable, Pausable {
     address public feeCollectionWallet;
     address public coldStorageWallet;
     Conversion[] public conversions;
+    ConversionUnlock[] public conversionUnlocks;
     uint256 public totalLockedTokens;
     uint256 public fees;
 
     struct Conversion {
         address ethAddress;
         string iostAccount;
+        uint256 amount;
+        uint256 fee;
+        uint256 netAmount;
+        bool discounted;
+        States state;
+    }
+
+    struct ConversionUnlock {
+        address ethAddress;
+        string iostAccount;
+        string iostMirrorTransactionHash;
         uint256 amount;
         uint256 fee;
         uint256 netAmount;
@@ -69,7 +81,8 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         bool discounted,
         uint256 acceptTimestamp
     );
-    event ConversionUnlocked(
+    event ConversionUnlockRequested(
+        uint256 indexID,
         address indexed ethAddress,
         string iostAccount,
         string iostMirrorTransactionHash,
@@ -77,13 +90,40 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         uint256 fee,
         uint256 netAmount,
         bool discounted,
-        uint256 unlockTimestamp
+        uint256 requestTimestamp
+    );
+    event ConversionUnlockAccepted(
+        uint256 indexID,
+        address indexed ethAddress,
+        string iostAccount,
+        string iostMirrorTransactionHash,
+        uint256 amount,
+        uint256 fee,
+        uint256 netAmount,
+        bool discounted,
+        uint256 acceptTimestamp
+    );
+    event ConversionUnlockRejected(
+        uint256 indexID,
+        address indexed ethAddress,
+        string iostAccount,
+        string iostMirrorTransactionHash,
+        uint256 amount,
+        uint256 fee,
+        uint256 netAmount,
+        bool discounted,
+        uint256 rejectTimestamp
     );
     event CollectedFees(address feeCollectionWallet, uint256 amount, uint256 collectionTimestamp);
     event SentTokensToColdStorage(address coldStorageWallet, uint256 amount, uint256 storageTimestamp);
     
     modifier onlyOpenConversions(uint256 _index) {
         require(conversions[_index].state == States.OPEN, "Conversion should be open");
+        _;
+    }
+
+    modifier onlyOpenConversionUnlocks(uint256 _index) {
+        require(conversionUnlocks[_index].state == States.OPEN, "ConversionUnlock should be open");
         _;
     }
 
@@ -229,21 +269,21 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         );
     }
 
-    function unlockConversion(
+    function requestConversionUnlock(
         uint256 _amount,
-        address _ethAddress,
         string _iostAccount,
         string _iostMirrorTransactionHash
     )
         public
-        onlyOwner
         whenNotPaused
     {
         require(_amount >= minimumConversionAmount, "Should be above minimum conversion amount");
         require(_amount <= totalLockedTokens, "Not enough tokens to convert");
+        
+        uint256 index = conversionUnlocks.length;
 
         uint256 fee = 0;
-        bool discounted = (discountToken.balanceOf(_ethAddress) >= discountThreshold);
+        bool discounted = (discountToken.balanceOf(msg.sender) >= discountThreshold);
         // Check whether discounted fee or normal fee.
         if (discounted) {
             fee = (_amount.mul(discountedUnlockFeeBasisPoints)).div(10000);
@@ -252,22 +292,71 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         }
 
         uint256 netAmount = _amount.sub(fee);
-        // Remove total amount from locked tokens.
-        totalLockedTokens = totalLockedTokens.sub(_amount);
-        // Add fee to total fees collected.
-        fees = fees.add(fee);
 
-        // Transfer (amount - fees) to destination address.
-        require(token.transfer(_ethAddress, netAmount), "Token transfer failed");
+        conversionUnlocks.push(
+            ConversionUnlock(
+                msg.sender,
+                _iostAccount,
+                _iostMirrorTransactionHash,
+                _amount,
+                fee,
+                netAmount,
+                discounted,
+                States.OPEN
+            )
+        );
 
-        emit ConversionUnlocked(
-            _ethAddress,
+        emit ConversionUnlockRequested(
+            index,
+            msg.sender,
             _iostAccount,
             _iostMirrorTransactionHash,
             _amount,
             fee,
             netAmount,
             discounted,
+            block.timestamp
+        );
+    }
+
+    function rejectConversionUnlock(uint256 _index) public onlyOwner whenNotPaused onlyOpenConversionUnlocks(_index) {
+        ConversionUnlock storage conversionUnlock = conversionUnlocks[_index];
+        conversionUnlock.state = States.REJECTED;
+
+        emit ConversionUnlockRejected(
+            _index,
+            conversionUnlock.ethAddress,
+            conversionUnlock.iostAccount,
+            conversionUnlock.iostMirrorTransactionHash,
+            conversionUnlock.amount,
+            conversionUnlock.fee,
+            conversionUnlock.netAmount,
+            conversionUnlock.discounted,
+            block.timestamp
+        );
+    }
+
+    function acceptConversionUnlock(uint256 _index) public onlyOwner whenNotPaused onlyOpenConversionUnlocks(_index) {
+        ConversionUnlock storage conversionUnlock = conversionUnlocks[_index];
+        conversionUnlock.state = States.ACCEPTED;
+
+        // Remove total amount from locked tokens.
+        totalLockedTokens = totalLockedTokens.sub(conversionUnlock.amount);
+        // Add fee to total fees collected.
+        fees = fees.add(conversionUnlock.fee);
+
+        // Transfer (amount - fees) to destination address.
+        require(token.transfer(conversionUnlock.ethAddress, conversionUnlock.netAmount), "Token transfer failed");
+
+        emit ConversionUnlockAccepted(
+            _index,
+            conversionUnlock.ethAddress,
+            conversionUnlock.iostAccount,
+            conversionUnlock.iostMirrorTransactionHash,
+            conversionUnlock.amount,
+            conversionUnlock.fee,
+            conversionUnlock.netAmount,
+            conversionUnlock.discounted,
             block.timestamp
         );
     }
