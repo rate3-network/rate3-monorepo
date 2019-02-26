@@ -338,6 +338,9 @@ contract IOSTConversionReceiver is Claimable, Pausable {
 
     function acceptConversionUnlock(uint256 _index) public onlyOwner whenNotPaused onlyOpenConversionUnlocks(_index) {
         ConversionUnlock storage conversionUnlock = conversionUnlocks[_index];
+
+        require(conversionUnlock.amount <= totalLockedTokens, "Not enough tokens to convert");
+
         conversionUnlock.state = States.ACCEPTED;
 
         // Remove total amount from locked tokens.

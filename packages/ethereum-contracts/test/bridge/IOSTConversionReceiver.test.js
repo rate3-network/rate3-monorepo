@@ -433,97 +433,258 @@ contract('IOSTConversionReceiver Tests', function(accounts) {
         })
     });
 
-    describe('Test - unlock conversion', function() {
+    describe('Test - request conversion unlock', function() {
         beforeEach(async function () {
-            await this.token.approve(this.receiver.address, new BN('1500000000000000000000'), { from: alice });
+            await this.token.approve(this.receiver.address, new BN('1000000000000000000000'), { from: alice });
+            // Split 500 tokens into 2 conversion requests
+            await this.receiver.requestConversion(new BN('400000000000000000000'), IOST_ACCOUNT, { from: alice });
+            await this.receiver.requestConversion(new BN('400000000000000000000'), IOST_ACCOUNT, { from: alice });
+
+            await this.receiver.acceptConversion(0, { from: owner });
+            await this.receiver.acceptConversion(1, { from: owner });
+        });
+
+        it('request conversion unlock exceeding token balance should fail', async function() {
+            await shouldFail.reverting.withMessage(
+                this.receiver.requestConversionUnlock(
+                    new BN('1000000000000000000000'),
+                    IOST_ACCOUNT,
+                    IOST_TX_HASH,
+                    { from: alice }
+                ),
+                'Not enough tokens to convert'
+            );
+        });
+
+        it('request conversion unlock should pass if balance is right', async function() {
+            await this.receiver.requestConversionUnlock(new BN('400000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
+        });
+
+        it('request conversion unlock must be higher than minimum amount', async function() {
+            await shouldFail.reverting.withMessage(
+                this.receiver.requestConversionUnlock(
+                    MINIMUM_TOKENS.sub(new BN('1')),
+                    IOST_ACCOUNT,
+                    IOST_TX_HASH,
+                    { from: alice }
+                ),
+                'Should be above minimum conversion amount'
+            );
+            await this.receiver.requestConversionUnlock(MINIMUM_TOKENS, IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
+        });
+
+        it('request conversion unlock event emitted', async function() {
+            let { logs } = await this.receiver.requestConversionUnlock(new BN('400000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
+
+            const event1 = expectEvent.inLogs(logs, 'ConversionUnlockRequested', {
+                indexID: new BN('0'),
+                ethAddress: alice,
+                iostAccount: IOST_ACCOUNT,
+                iostMirrorTransactionHash: IOST_TX_HASH,
+                amount: new BN('400000000000000000000'),
+                fee: new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000)),
+                netAmount: new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000))),
+                discounted: false,
+            });
+        });
+
+        it('request conversion no discount if user does not have minimum discount tokens', async function() {
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS.sub(new BN(1)), { from: owner });
+
+            let { logs } = await this.receiver.requestConversionUnlock(new BN('400000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
+
+            const event1 = expectEvent.inLogs(logs, 'ConversionUnlockRequested', {
+                indexID: new BN('0'),
+                ethAddress: alice,
+                iostAccount: IOST_ACCOUNT,
+                iostMirrorTransactionHash: IOST_TX_HASH,
+                amount: new BN('400000000000000000000'),
+                fee: new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000)),
+                netAmount: new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000))),
+                discounted: false,
+            });
+        });
+
+        it('request conversion discount if user have minimum discount tokens', async function() {
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
+
+            let { logs } = await this.receiver.requestConversionUnlock(new BN('400000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
+
+            const event1 = expectEvent.inLogs(logs, 'ConversionUnlockRequested', {
+                indexID: new BN('0'),
+                ethAddress: alice,
+                iostAccount: IOST_ACCOUNT,
+                amount: new BN('400000000000000000000'),
+                fee: new BN('400000000000000000000').mul(new BN(5)).div(new BN(10000)),
+                netAmount: new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(5)).div(new BN(10000))),
+                discounted: true,
+            });
+        });
+    });
+
+    describe('Test - reject conversion unlock', function() {
+        beforeEach(async function () {
+            await this.token.approve(this.receiver.address, new BN('1000000000000000000000'), { from: alice });
             // Split 500 tokens into 2 conversion requests
             await this.receiver.requestConversion(new BN('500000000000000000000'), IOST_ACCOUNT, { from: alice });
             await this.receiver.requestConversion(new BN('500000000000000000000'), IOST_ACCOUNT, { from: alice });
 
             await this.receiver.acceptConversion(0, { from: owner });
             await this.receiver.acceptConversion(1, { from: owner });
+
+            await this.receiver.requestConversionUnlock(new BN('400000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
+            await this.receiver.requestConversionUnlock(new BN('400000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
         });
 
-        it('only owner can unlock conversion', async function() {
-            await shouldFail.reverting(this.receiver.unlockConversion(new BN('500000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: alice }));
-            this.receiver.unlockConversion(new BN('500000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
+        it('only owner can reject conversion unlock', async function() {
+            await shouldFail.reverting(this.receiver.rejectConversionUnlock(0, { from: alice }));
+            this.receiver.rejectConversionUnlock(0, { from: owner });
+        });
+
+        it('only can reject open conversion unlock', async function() {
+            await this.receiver.rejectConversionUnlock(0, { from: owner });
+            await shouldFail.reverting.withMessage(this.receiver.rejectConversionUnlock(0, { from: owner }), 'ConversionUnlock should be open');
+
+            await this.receiver.acceptConversionUnlock(1, { from: owner });
+            await shouldFail.reverting.withMessage(this.receiver.rejectConversionUnlock(1, { from: owner }), 'ConversionUnlock should be open');
+        });
+
+        it('reject conversion unlock event emitted', async function() {
+            let { logs } = await this.receiver.rejectConversionUnlock(0, { from: owner });
+
+            const event1 = expectEvent.inLogs(logs, 'ConversionUnlockRejected', {
+                indexID: new BN('0'),
+                ethAddress: alice,
+                iostAccount: IOST_ACCOUNT,
+                iostMirrorTransactionHash: IOST_TX_HASH,
+                amount: new BN('400000000000000000000'),
+                fee: new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000)),
+                netAmount: new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000))),
+                discounted: false,
+            });
+
+            let { logs: logs2 } = await this.receiver.rejectConversionUnlock(1, { from: owner });
+
+            const event2 = expectEvent.inLogs(logs2, 'ConversionUnlockRejected', {
+                indexID: new BN('1'),
+                ethAddress: alice,
+                iostAccount: IOST_ACCOUNT,
+                iostMirrorTransactionHash: IOST_TX_HASH,
+                amount: new BN('400000000000000000000'),
+                fee: new BN('400000000000000000000').mul(new BN(5)).div(new BN(10000)),
+                netAmount: new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(5)).div(new BN(10000))),
+                discounted: true,
+            });
+        });
+    });
+
+
+    describe('Test - accept conversion unlock', function() {
+        beforeEach(async function () {
+            await this.token.approve(this.receiver.address, new BN('1000000000000000000000'), { from: alice });
+            // Split 500 tokens into 2 conversion requests
+            await this.receiver.requestConversion(new BN('500000000000000000000'), IOST_ACCOUNT, { from: alice });
+            await this.receiver.requestConversion(new BN('500000000000000000000'), IOST_ACCOUNT, { from: alice });
+
+            await this.receiver.acceptConversion(0, { from: owner });
+            await this.receiver.acceptConversion(1, { from: owner });
+
+            await this.receiver.requestConversionUnlock(new BN('400000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
+            await this.receiver.requestConversionUnlock(new BN('400000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: alice });
+        });
+
+        it('only owner can accept conversion unlock', async function() {
+            await shouldFail.reverting(this.receiver.acceptConversionUnlock(0, { from: alice }));
+            await this.receiver.acceptConversionUnlock(0, { from: owner });
+        });
+
+        it('only can accept open conversion', async function() {
+            await this.receiver.rejectConversionUnlock(0, { from: owner });
+            await shouldFail.reverting.withMessage(this.receiver.acceptConversionUnlock(0, { from: owner }), 'ConversionUnlock should be open');
+
+            await this.receiver.acceptConversionUnlock(1, { from: owner });
+            await shouldFail.reverting.withMessage(this.receiver.acceptConversionUnlock(1, { from: owner }), 'ConversionUnlock should be open');
         });
 
         it('only can unlock total converted tokens', async function() {
             // Unlock 900 out of 999 (some % is funneled into fees) tokens that were already converted before
-            await this.receiver.unlockConversion(new BN('700000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
-            await this.receiver.unlockConversion(new BN('200000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
-
+            await this.receiver.requestConversionUnlock(new BN('900000000000000000000'), IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
+            await this.receiver.acceptConversionUnlock(2, { from: owner });
+        
             // Only 1000 converted tokens in total, exceeded
-            await shouldFail.reverting.withMessage(this.receiver.unlockConversion(new BN('200000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: owner }), 'Not enough tokens to convert');
+            await shouldFail.reverting.withMessage(this.receiver.acceptConversionUnlock(0, { from: owner }), 'Not enough tokens to convert');
+            await shouldFail.reverting.withMessage(this.receiver.acceptConversionUnlock(1, { from: owner }), 'Not enough tokens to convert');
         });
-
+     
         it('check fees updated correctly', async function() {
             let amount1 = await this.receiver.fees();
-
-            await this.receiver.unlockConversion(new BN('700000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
+        
+            await this.receiver.acceptConversionUnlock(0, { from: owner });
             let amount2 = await this.receiver.fees();
-
-            await this.rteToken.mint(rest[0], MINIMUM_THRESHOLD_TOKENS, { from: owner });
-
-            await this.receiver.unlockConversion(new BN('200000000000000000000'), rest[0], IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
+        
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
+        
+            await this.receiver.acceptConversionUnlock(1, { from: owner });
             let amount3 = await this.receiver.fees();
-
-            amount2.should.be.a.bignumber.equals(amount1.add(new BN('700000000000000000000').mul(new BN(10)).div(new BN(10000))));
-            amount3.should.be.a.bignumber.equals(amount2.add(new BN('200000000000000000000').mul(new BN(5)).div(new BN(10000))));
+        
+            amount2.should.be.a.bignumber.equals(amount1.add(new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000))));
+            amount3.should.be.a.bignumber.equals(amount2.add(new BN('400000000000000000000').mul(new BN(5)).div(new BN(10000))));
         });
 
         it('total locked tokens updated correctly', async function() {
             let amount1 = await this.receiver.totalLockedTokens();
 
-            await this.receiver.unlockConversion(new BN('700000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
+            await this.receiver.acceptConversionUnlock(0, { from: owner });
             let amount2 = await this.receiver.totalLockedTokens();
 
-            await this.rteToken.mint(rest[0], MINIMUM_THRESHOLD_TOKENS, { from: owner });
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
 
-            await this.receiver.unlockConversion(new BN('200000000000000000000'), rest[0], IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
+            await this.receiver.acceptConversionUnlock(1, { from: owner });
             let amount3 = await this.receiver.totalLockedTokens();
 
-            amount2.should.be.a.bignumber.equals(amount1.sub(new BN('700000000000000000000')));
-            amount3.should.be.a.bignumber.equals(amount2.sub(new BN('200000000000000000000')));
+            amount2.should.be.a.bignumber.equals(amount1.sub(new BN('400000000000000000000')));
+            amount3.should.be.a.bignumber.equals(amount2.sub(new BN('400000000000000000000')));
         });
 
-        it('tokens should be transferred to destination on unlock', async function() {
-            await this.receiver.unlockConversion(new BN('700000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
+        it('tokens should be transferred to destination on accept', async function() {
             let amount1 = await this.token.balanceOf(alice);
-            amount1.should.be.a.bignumber.equals(new BN('700000000000000000000').sub(new BN('700000000000000000000').mul(new BN(10)).div(new BN(10000))));
-
-            await this.rteToken.mint(rest[0], MINIMUM_THRESHOLD_TOKENS, { from: owner });
-
-            await this.receiver.unlockConversion(new BN('200000000000000000000'), rest[0], IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
-            let amount2 = await this.token.balanceOf(rest[0]);
-            amount2.should.be.a.bignumber.equals(new BN('200000000000000000000').sub(new BN('200000000000000000000').mul(new BN(5)).div(new BN(10000))));
+            await this.receiver.acceptConversionUnlock(0, { from: owner });
+            let amount2 = await this.token.balanceOf(alice);
+            amount2.should.be.a.bignumber.equals(amount1.add(new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000)))));
+        
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
+        
+            await this.receiver.acceptConversionUnlock(1, { from: owner });
+            let amount3 = await this.token.balanceOf(alice);
+            amount3.should.be.a.bignumber.equals(amount2.add( new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(5)).div(new BN(10000)))));
         });
-
+        
         it('unlock conversion event emitted', async function() {
-            let { logs } = await this.receiver.unlockConversion(new BN('700000000000000000000'), alice, IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
-
-            const event1 = expectEvent.inLogs(logs, 'ConversionUnlocked', {
+            let { logs } = await this.receiver.acceptConversionUnlock(0, { from: owner });
+        
+            const event1 = expectEvent.inLogs(logs, 'ConversionUnlockAccepted', {
                 ethAddress: alice,
                 iostAccount: IOST_ACCOUNT,
                 iostMirrorTransactionHash: IOST_TX_HASH,
-                amount: new BN('700000000000000000000'),
-                fee: new BN('700000000000000000000').mul(new BN(10)).div(new BN(10000)),
-                netAmount: new BN('700000000000000000000').sub(new BN('700000000000000000000').mul(new BN(10)).div(new BN(10000))),
+                amount: new BN('400000000000000000000'),
+                fee: new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000)),
+                netAmount: new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(10)).div(new BN(10000))),
                 discounted: false,
             });
-
-            await this.rteToken.mint(rest[0], MINIMUM_THRESHOLD_TOKENS, { from: owner });
-
-            let { logs: logs2 } = await this.receiver.unlockConversion(new BN('200000000000000000000'), rest[0], IOST_ACCOUNT, IOST_TX_HASH, { from: owner });
-
-            const event2 = expectEvent.inLogs(logs2, 'ConversionUnlocked', {
-                ethAddress: rest[0],
+        
+            await this.rteToken.mint(alice, MINIMUM_THRESHOLD_TOKENS, { from: owner });
+        
+            let { logs: logs2 } = await this.receiver.acceptConversionUnlock(1, { from: owner });
+        
+            const event2 = expectEvent.inLogs(logs2, 'ConversionUnlockAccepted', {
+                ethAddress: alice,
                 iostAccount: IOST_ACCOUNT,
                 iostMirrorTransactionHash: IOST_TX_HASH,
-                amount: new BN('200000000000000000000'),
-                fee: new BN('200000000000000000000').mul(new BN(5)).div(new BN(10000)),
-                netAmount: new BN('200000000000000000000').sub(new BN('200000000000000000000').mul(new BN(5)).div(new BN(10000))),
+                amount: new BN('400000000000000000000'),
+                fee: new BN('400000000000000000000').mul(new BN(5)).div(new BN(10000)),
+                netAmount: new BN('400000000000000000000').sub(new BN('400000000000000000000').mul(new BN(5)).div(new BN(10000))),
                 discounted: true,
             });
         })
