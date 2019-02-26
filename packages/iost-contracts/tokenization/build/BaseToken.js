@@ -79,6 +79,7 @@ class BaseToken {
     this._checkIdValid(from);
     this._checkIdValid(to);
     this._checkBlacklist(from);
+    this._checkBlacklist(to);
 
     if (!blockchain.requireAuth(from, 'active')) {
       throw new Error('PERMISSION_DENIED');
