@@ -11,6 +11,14 @@
             ]
         },
         {
+            "name": "pause",
+            "args": []
+        },
+        {
+            "name": "unpause",
+            "args": []
+        },
+        {
             "name": "issue",
             "args": [
                 "string",
