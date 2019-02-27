@@ -17,6 +17,8 @@ class BaseToken {
     this._checkIssuer();
     // Check if token is deployed already.
     if (storage.get('deployed') === 'f') {
+      let issuer = storage.get('issuer');
+      
       storage.put('deployed', 't');
       storage.put('name', name);
       storage.put('symbol', symbol);
@@ -144,7 +146,7 @@ class BaseToken {
     if (!blockchain.requireAuth(from, 'active')) {
       throw new Error('PERMISSION_DENIED');
     }
-    
+
     this._checkPause();
     this._checkIdValid(from);
     this._checkBlacklist(from);
