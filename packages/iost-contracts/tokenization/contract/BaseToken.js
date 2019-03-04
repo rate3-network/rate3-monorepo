@@ -39,6 +39,9 @@ class BaseToken {
       throw new Error('ALREADY_PAUSED');
     }
     storage.put('paused', 't');
+    blockchain.receipt(JSON.stringify(
+      { action: 'pause' }
+    ));
   }
 
   unpause() {
@@ -47,6 +50,9 @@ class BaseToken {
       throw new Error('ALREADY_NOT_PAUSED');
     }
     storage.put('paused', 'f');
+    blockchain.receipt(JSON.stringify(
+      { action: 'unpause' }
+    ));
   }
 
 
@@ -89,6 +95,9 @@ class BaseToken {
     storage.mapPut('balances', to, newAmount.toString());
     storage.put('totalSupply', newSupply.toString());
 
+    blockchain.receipt(JSON.stringify(
+      { action: 'issue', to, amount, ethConversionId }
+    ));
     return JSON.stringify({ to, amount, ethConversionId });
   }
 
@@ -139,6 +148,9 @@ class BaseToken {
     storage.mapPut('balances', from, newFromAmount.toString());
     storage.mapPut('balances', to, newToAmount.toString());
 
+    blockchain.receipt(JSON.stringify(
+      { action: 'transfer', from, to, amount, memo }
+    ));
     return JSON.stringify({ from, to, amount, memo });
   }
 
@@ -184,6 +196,9 @@ class BaseToken {
     storage.mapPut('balances', from, newFromAmount.toString());
     storage.put('totalSupply', newSupply.toString());
 
+    blockchain.receipt(JSON.stringify(
+      { action: 'burn', from, amount }
+    ));
     return JSON.stringify({ from, amount });
   }
 
@@ -194,6 +209,9 @@ class BaseToken {
 
     this.burn(from, amount);
 
+    blockchain.receipt(JSON.stringify(
+      { action: 'convert', from, amount, ethAddress }
+    ));
     return JSON.stringify({ from, amount, ethAddress });
   }
 
@@ -207,6 +225,10 @@ class BaseToken {
     } else {
       storage.mapPut('blacklist', id, 'f');
     }
+
+    blockchain.receipt(JSON.stringify(
+      { action: 'blacklist', id, bool }
+    ));
   }
 
   can_update(data) {
