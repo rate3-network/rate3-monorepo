@@ -3,19 +3,18 @@ class BaseToken {
   // Execute once when contract is packed into a block.
   init() {
     storage.put('deployed', 'f');
+    storage.put('paused', 't');
     storage.put('issuer', tx.publisher);
   }
 
   // One-time deploy token.
   // No effect if deploy has been called before.
   deploy(name, symbol, decimals) {
-    let issuer = storage.get('issuer');
-    if (!blockchain.requireAuth(issuer, 'active')) {
-      throw new Error('PERMISSION_DENIED');
-    }
-
+    this._checkIssuer();
     // Check if token is deployed already.
     if (storage.get('deployed') === 'f') {
+      let issuer = storage.get('issuer');
+      
       storage.put('deployed', 't');
       storage.put('name', name);
       storage.put('symbol', symbol);
@@ -26,18 +25,32 @@ class BaseToken {
         { name, symbol, decimals, issuer }
       ));
     } else {
-      blockchain.receipt('ALREADY_DEPLOYED');
+      throw new Error('ALREADY_DEPLOYED');
     }
   }
 
-  issue(to, amount) {
+  pause() {
+    this._checkIssuer();
+    if (storage.get('paused') === 't') {
+      throw new Error('ALREADY_PAUSED');
+    }
+    storage.put('paused', 't');
+  }
+
+  unpause() {
+    this._checkIssuer();
+    if (storage.get('paused') === 'f') {
+      throw new Error('ALREADY_NOT_PAUSED');
+    }
+    storage.put('paused', 'f');
+  }
+
+
+  issue(to, amount, ethConversionId) {
+    this._checkIssuer();
+    this._checkPause();
     this._checkIdValid(to);
     this._checkBlacklist(to);
-
-    let issuer = storage.get('issuer');
-    if (!blockchain.requireAuth(issuer, 'active')) {
-      throw new Error('PERMISSION_DENIED');
-    }
 
     let issueAmount = new BigNumber(amount);
     if (!issueAmount.isInteger()) {
@@ -72,17 +85,18 @@ class BaseToken {
     storage.mapPut('balances', to, newAmount.toString());
     storage.put('totalSupply', newSupply.toString());
 
-    return JSON.stringify({ to, amount });
+    return JSON.stringify({ to, amount, ethConversionId });
   }
 
   transfer(from, to, amount, memo) {
-    this._checkIdValid(from);
-    this._checkIdValid(to);
-    this._checkBlacklist(from);
-
     if (!blockchain.requireAuth(from, 'active')) {
       throw new Error('PERMISSION_DENIED');
     }
+
+    this._checkPause();
+    this._checkIdValid(from);
+    this._checkIdValid(to);
+    this._checkBlacklist(from);
 
     let sendAmount = new BigNumber(amount);
     if (!sendAmount.isInteger()) {
@@ -125,12 +139,13 @@ class BaseToken {
   }
 
   burn(from, amount) {
-    this._checkIdValid(from);
-    this._checkBlacklist(from);
-
     if (!blockchain.requireAuth(from, 'active')) {
       throw new Error('PERMISSION_DENIED');
     }
+
+    this._checkPause();
+    this._checkIdValid(from);
+    this._checkBlacklist(from);
 
     let burnAmount = new BigNumber(amount);
     if (!burnAmount.isInteger()) {
@@ -169,6 +184,7 @@ class BaseToken {
   }
 
   convertToERC20(from, amount, ethAddress) {
+    this._checkPause();
     this._checkIdValid(from);
     this._checkEthAddressValid(ethAddress);
 
@@ -178,12 +194,9 @@ class BaseToken {
   }
 
   blacklist(id, bool) {
+    this._checkPause();
+    this._checkIssuer();
     this._checkIdValid(id);
-
-    let issuer = storage.get('issuer');
-    if (!blockchain.requireAuth(issuer, 'active')) {
-      throw new Error('PERMISSION_DENIED');
-    }
 
     if (bool) {
       storage.mapPut('blacklist', id, 't');
@@ -197,13 +210,26 @@ class BaseToken {
     return blockchain.requireAuth(issuer, 'active');
   }
 
+  _checkIssuer() {
+    let issuer = storage.get('issuer');
+    if (!blockchain.requireAuth(issuer, 'active')) {
+      throw new Error('PERMISSION_DENIED');
+    }
+  }
+
+  _checkPause() {
+    let paused = storage.get('paused');
+    if (paused === 't') {
+      throw new Error('CONTRACT_PAUSED');
+    }
+  }
+
   _checkBlacklist(id) {
     let blacklisted = storage.mapGet('blacklist', id);
     if (blacklisted === 't') {
       throw new Error('ID_BLACKLISTED');
     }
   }
-
 
   _checkIdValid(id) {
     if (block.number === 0) {
@@ -220,6 +246,10 @@ class BaseToken {
       if (!(ch >= 'a' && ch <= 'z' || ch >= '0' && ch <= '9' || ch === '_')) {
         throw new Error('INVALID_ID_CHAR');
       }
+    }
+    let account = storage.globalMapGet('auth.iost', 'auth', id);
+    if (account === null) {
+      throw new Error('ACCOUNT_DOES_NOT_EXIST');
     }
   }
 
