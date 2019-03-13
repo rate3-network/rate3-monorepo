@@ -22,7 +22,7 @@
 ### IOST (IUSDC) -> ERC20 (USDC)
 1. User calls convertToERC20 on IOST (IUSDC) contract, burns tokens while specifying ethAddress.
 2. User will also call the Ethereum IOSTConversionReceiver contract requestConversionUnlock method and supply the IOST transaction hash and corresponding Etheruem address for the conversion. (The UI will take care of it)
-3.If user at this point has certain amount of RTE ERC20 tokens in their balance, they get discounted fees, else normal fees.
+3. If user at this point has certain amount of RTE ERC20 tokens in their balance, they get discounted fees, else normal fees.
 4. ADMIN will approve/reject on the ConversionUnlock, by checking whether the transaction hash on IOST blockchain receipt that indeed tokens have been burned, and that the Ethereum address match the request.
 
 5. If ADMIN approves, netAmount (conversion amount minus fees) of the USDC ERC20 token will be released to the Ethereum address.
