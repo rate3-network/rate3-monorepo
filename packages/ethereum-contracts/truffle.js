@@ -2,12 +2,29 @@ require('@babel/register');
 require('@babel/polyfill');
 
 const HDWalletProvider = require('truffle-hdwallet-provider');
+const LedgerWalletProvider = require('truffle-ledger-provider');
 const secrets = require('./secrets');
+
+const ledgerOptions = {
+  networkId: 1, // mainnet
+  path: "44'/60'/0'/0", // ledger default derivation path
+  askConfirm: false,
+  accountsLength: 1,
+  accountsOffset: 0
+};
 
 module.exports = {
     // See <http://truffleframework.com/docs/advanced/configuration>
     // to customize your Truffle configuration!
     networks: {
+        mainnet: {
+            provider: () => new LedgerWalletProvider(ledgerOptions, 'mainnet.infura.io/v3/e49eab7ebf6b47688265ad5e5c0aacd0'),
+            gas: 6700000,
+            gasPrice: 15000000000,
+            network_id: 1,
+            timeoutBlocks: 100,
+            skipDryRun: true,
+        },
         development: {
             host: '127.0.0.1',
             port: 8545,
