@@ -15,11 +15,12 @@ module.exports = {
             gasLimit: 5000000,
         },
         ropsten: {
-            provider: () => new HDWalletProvider(secrets.MNEMONIC, `https://ropsten.infura.io/${secrets.INFURA_KEY}`),
+            provider: () => new HDWalletProvider(secrets.MNEMONIC, `https://ropsten.infura.io/v3/3a08337e8be544bcac0fb03456e4b72f`, 0, 10),
             gas: 6700000,
             gasPrice: 3000000000,
             network_id: 3,
             timeoutBlocks: 100,
+            skipDryRun: true,
         },
         rinkeby: {
             provider: () => new HDWalletProvider(secrets.MNEMONIC, `https://rinkeby.infura.io/${secrets.INFURA_KEY}`),
