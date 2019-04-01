@@ -30,6 +30,7 @@
   "dependencies": {
     "lodash.filter": "^4.6.0",
     "stellar-base": "^0.10.0",
-    "truffle-hdwallet-provider": "0.0.3"
+    "truffle-hdwallet-provider": "^1.0.5",
+    "truffle-ledger-provider": "^1.0.1"
   }
 }
