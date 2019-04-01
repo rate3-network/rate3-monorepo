@@ -7,8 +7,8 @@ const secrets = require('./secrets');
 
 const ledgerOptions = {
   networkId: 1, // mainnet
-  path: "44'/60'/0'/0", // ledger default derivation path
-  askConfirm: false,
+  path: "44'/60'/0'/0/0", // new ledger default derivation path
+  askConfirm: true,
   accountsLength: 1,
   accountsOffset: 0
 };
@@ -18,7 +18,12 @@ module.exports = {
     // to customize your Truffle configuration!
     networks: {
         mainnet: {
-            provider: () => new LedgerWalletProvider(ledgerOptions, 'mainnet.infura.io/v3/e49eab7ebf6b47688265ad5e5c0aacd0'),
+            // provider: () => new HDWalletProvider(secrets.MNEMONIC, 'https://mainnet.infura.io/v3/e49eab7ebf6b47688265ad5e5c0aacd0', 0),
+            provider: new LedgerWalletProvider(
+                ledgerOptions,
+                'https://mainnet.infura.io/v3/e49eab7ebf6b47688265ad5e5c0aacd0',
+                true,
+            ),
             gas: 6700000,
             gasPrice: 15000000000,
             network_id: 1,
