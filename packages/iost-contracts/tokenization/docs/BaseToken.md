@@ -1,5 +1,7 @@
+# BaseToken
+Customized IOST token to be backed by Ethereum-based ERC20 tokens.
+
 ## States
----
 Contract state can be assessed by contract storage using:
 
 ```blockchain.getContractStorage(id, key, field, by_longest_chain)```
@@ -45,7 +47,6 @@ Current token contract issuer.
 ```key=issuer```
 
 ## Methods
----
 ### deploy(name, symbol, decimals)
 **Permission required: issuer**
 
