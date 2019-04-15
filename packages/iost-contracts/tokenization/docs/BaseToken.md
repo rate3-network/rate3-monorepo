@@ -40,20 +40,20 @@ Current token contract issuer.
 ### deploy(name, symbol, decimals)
 **Permission required: issuer**
 Called at the start after contract deployment to set the details of the token.
-|param|type|description|
-|---|---|---|
-|name|string|Name of token|
-|symbol|string|Symbol of token|
-|decimals|string|Decimals of token|
+| param | type | description |
+| --- | --- | --- |
+| name | string | Name of token |
+| symbol | string | Symbol of token |
+| decimals |string | Decimals of token |
 
 ### issue(to, amount, ethConversionId)
 **Permission required: issuer**
 Issue an amount of tokens to an IOST account.
 |param|type|description|
-|---|---|---|
-|to|string|Tokens to be issued to|
-|amount|string|Token amount to be issued|
-|ethConversionId|string|Corresponding ethereum conversion id on conversion contract|
+| --- | --- | --- |
+| to | string | Tokens to be issued to |
+| amount | string | Token amount to be issued |
+| ethConversionId | string | Corresponding ethereum conversion id on conversion contract |
 
 ### transfer(from, to, amount, memo)
 **Permission required: from**
