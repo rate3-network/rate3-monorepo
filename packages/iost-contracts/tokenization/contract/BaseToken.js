@@ -8,7 +8,7 @@ class BaseToken {
   init() {
     storage.put('deployed', 'f');
     storage.put('paused', 't');
-    storage.put('issuer', blockchain.contractOwner());
+    storage.put('issuer', blockchain.publisher());
   }
 
   // One-time deploy token.
