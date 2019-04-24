@@ -3,6 +3,78 @@
     "version": "1.0.0",
     "abi": [
         {
+            "name": "issue",
+            "args": [
+                "string",
+                "string",
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "transfer",
+            "args": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "transferFreeze",
+            "args": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "number",
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "destroy",
+            "args": [
+                "string",
+                "string",
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "supply",
+            "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "totalSupply",
+            "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "balanceOf",
+            "args": [
+                "string",
+                "string"
+            ]
+        },
+        {
             "name": "deploy",
             "args": [
                 "string",
@@ -11,40 +83,9 @@
             ]
         },
         {
-            "name": "pause",
-            "args": []
-        },
-        {
-            "name": "unpause",
-            "args": []
-        },
-        {
-            "name": "issue",
-            "args": [
-                "string",
-                "string",
-                "string"
-            ]
-        },
-        {
-            "name": "transfer",
-            "args": [
-                "string",
-                "string",
-                "string",
-                "string"
-            ]
-        },
-        {
-            "name": "burn",
-            "args": [
-                "string",
-                "string"
-            ]
-        },
-        {
             "name": "convertToERC20",
             "args": [
+                "string",
                 "string",
                 "string",
                 "string"
@@ -55,6 +96,12 @@
             "args": [
                 "string",
                 "bool"
+            ]
+        },
+        {
+            "name": "changeIssuer",
+            "args": [
+                "string"
             ]
         },
         {
