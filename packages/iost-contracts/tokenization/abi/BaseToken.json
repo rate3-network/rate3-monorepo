@@ -89,7 +89,11 @@
                 "string",
                 "string",
                 "string"
-            ]
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
         },
         {
             "name": "blacklist",
