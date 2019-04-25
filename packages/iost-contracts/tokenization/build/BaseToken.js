@@ -3,7 +3,6 @@ class BaseToken {
   // Execute once when contract is packed into a block.
   init() {
     storage.put('deployed', 'f');
-    storage.put('paused', 't');
     storage.put('issuer', blockchain.publisher());
   }
 
@@ -20,12 +19,12 @@ class BaseToken {
       storage.put('decimals', decimals);
 
       blockchain.callWithAuth('token.iost', 'create', [
-        name,
+        symbol,
         blockchain.contractName(),
-        totalSupply,
+        90000000000000,
         {
-          symbol,
-          decimals,
+          fullName: name,
+          decimal: new BigNumber(decimals).toNumber(),
           canTransfer: true,
           onlyIssuerCanTransfer: true,
         }
@@ -131,7 +130,8 @@ class BaseToken {
   }
 
   _amount(amount) {
-    return new BigNumber(new BigNumber(amount).toFixed(decimals));
+    let decimals = storage.get('decimals');
+    return new BigNumber(new BigNumber(amount).toFixed(new BigNumber(decimals).toNumber()));
   }
 
   // Call abi and parse result as JSON string.
@@ -144,8 +144,8 @@ class BaseToken {
   }
 
   _checkToken(token_name) {
-    let name = storage.get('name');
-    if (token_name !== name) {
+    let symbol = storage.get('symbol');
+    if (token_name !== symbol) {
         throw new Error('TOKEN_DOES_NOT_MATCH');
     }
   }
