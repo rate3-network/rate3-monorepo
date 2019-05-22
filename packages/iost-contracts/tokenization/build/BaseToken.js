@@ -3,8 +3,7 @@ class BaseToken {
   // Execute once when contract is packed into a block.
   init() {
     storage.put('deployed', 'f');
-    storage.put('paused', 't');
-    storage.put('issuer', tx.publisher);
+    storage.put('issuer', blockchain.publisher());
   }
 
   // One-time deploy token.
@@ -14,12 +13,22 @@ class BaseToken {
     // Check if token is deployed already.
     if (storage.get('deployed') === 'f') {
       let issuer = storage.get('issuer');
-      
       storage.put('deployed', 't');
       storage.put('name', name);
       storage.put('symbol', symbol);
-      storage.put('totalSupply', '0');
-      storage.mapPut('balances', issuer, '0');
+      storage.put('decimals', decimals);
+
+      blockchain.callWithAuth('token.iost', 'create', [
+        symbol,
+        blockchain.contractName(),
+        90000000000000,
+        {
+          fullName: name,
+          decimal: new BigNumber(decimals).toNumber(),
+          canTransfer: true,
+          onlyIssuerCanTransfer: true,
+        }
+      ]);
 
       blockchain.receipt(JSON.stringify(
         { name, symbol, decimals, issuer }
@@ -29,190 +38,73 @@ class BaseToken {
     }
   }
 
-  pause() {
-    this._checkIssuer();
-    if (storage.get('paused') === 't') {
-      throw new Error('ALREADY_PAUSED');
-    }
-    storage.put('paused', 't');
-    blockchain.receipt(JSON.stringify(
-      { action: 'pause' }
-    ));
+  can_update(data) {
+    return blockchain.requireAuth(blockchain.contractOwner(), 'active');
   }
 
-  unpause() {
-    this._checkIssuer();
-    if (storage.get('paused') === 'f') {
-      throw new Error('ALREADY_NOT_PAUSED');
-    }
-    storage.put('paused', 'f');
-    blockchain.receipt(JSON.stringify(
-      { action: 'unpause' }
-    ));
+  balanceOf(token_name, owner) {
+    this._checkToken(token_name);
+    return this._call('token.iost', 'balanceOf', [token_name, owner]);
   }
 
+  supply(token_name) {
+    this._checkToken(token_name);
+    return this._call('token.iost', 'supply', [token_name]);
+  }
 
-  issue(to, amount, ethConversionId) {
+  totalSupply(token_name) {
+    this._checkToken(token_name);
+    return this._call('token.iost', 'totalSupply', [token_name]);
+  }
+
+  issue(token_name, to, amount) {
     this._checkIssuer();
-    this._checkPause();
-    this._checkIdValid(to);
+    this._checkToken(token_name);
     this._checkBlacklist(to);
 
-    let issueAmount = new BigNumber(amount);
-    if (!issueAmount.isInteger()) {
-      throw new Error('INTEGER_VALUE_REQUIRED');
-    }
-
-    if (issueAmount.isNegative()) {
-      throw new Error('NON_NEGATIVE_VALUE_REQUIRED');
-    }
-
-    let currentAmount = storage.mapGet('balances', to);
-    if (currentAmount === null) {
-      currentAmount = new BigNumber(0);
-    } else {
-      currentAmount = new BigNumber(currentAmount);
-    }
-
-    let currentSupply = storage.get('totalSupply');
-    if (currentSupply === null) {
-      throw new Error('NULL_TOTAL_SUPPLY');
-    } else {
-      currentSupply = new BigNumber(currentSupply);
-    }
-
-    let newAmount = currentAmount.plus(issueAmount);
-    let newSupply = currentSupply.plus(issueAmount);
-
-    if (newSupply.isGreaterThan(new BigNumber(2).exponentiatedBy(256).minus(1))) {
-      throw new Error('UINT256_OVERFLOW');
-    }
-
-    storage.mapPut('balances', to, newAmount.toString());
-    storage.put('totalSupply', newSupply.toString());
-
-    blockchain.receipt(JSON.stringify(
-      { action: 'issue', to, amount, ethConversionId }
-    ));
-    return JSON.stringify({ to, amount, ethConversionId });
+    amount = this._amount(amount);
+    blockchain.callWithAuth('token.iost', 'issue', [token_name, to, amount]);
   }
 
-  transfer(from, to, amount, memo) {
-    if (!blockchain.requireAuth(from, 'active')) {
-      throw new Error('PERMISSION_DENIED');
-    }
+  transfer(token_name, from, to, amount, memo) {
+    this._checkToken(token_name);
+    this._checkBlacklist(from);
+    this._checkBlacklist(to);
 
-    this._checkPause();
-    this._checkIdValid(from);
-    this._checkIdValid(to);
+    amount = this._amount(amount);
+    blockchain.callWithAuth('token.iost', 'transfer', [token_name, from, to, amount, memo])
+  }
+
+  transferFreeze(token_name, from, to, amount, timestamp, memo) {
+    this._checkToken(token_name);
+    this._checkBlacklist(from);
+    this._checkBlacklist(to);
+
+    amount = this._amount(amount);
+    blockchain.callWithAuth('token.iost', 'transferFreeze', [token_name, from, to, amount, timestamp, memo]);
+  }
+
+  destroy(token_name, from, amount) {
+    this._checkToken(token_name);
     this._checkBlacklist(from);
 
-    let sendAmount = new BigNumber(amount);
-    if (!sendAmount.isInteger()) {
-      throw new Error('INTEGER_VALUE_REQUIRED');
-    }
-
-    if (sendAmount.isNegative()) {
-      throw new Error('NON_NEGATIVE_VALUE_REQUIRED');
-    }
-
-    let currentFromAmount = storage.mapGet('balances', from);
-    if (currentFromAmount === null) {
-      currentFromAmount = new BigNumber(0);
-    } else {
-      currentFromAmount = new BigNumber(currentFromAmount);
-    }
-
-    let currentToAmount = storage.mapGet('balances', to);
-    if (currentToAmount === null) {
-      currentToAmount = new BigNumber(0);
-    } else {
-      currentToAmount = new BigNumber(currentToAmount);
-    }
-
-    if (sendAmount.isGreaterThan(currentFromAmount)) {
-      throw new Error('INSUFFICIENT_FUNDS');
-    }
-
-    let newFromAmount = currentFromAmount.minus(sendAmount);
-    let newToAmount = currentToAmount.plus(sendAmount);
-
-    if (newToAmount.isGreaterThan(new BigNumber(2).exponentiatedBy(256).minus(1))) {
-      throw new Error('UINT256_OVERFLOW');
-    }
-
-    storage.mapPut('balances', from, newFromAmount.toString());
-    storage.mapPut('balances', to, newToAmount.toString());
-
-    blockchain.receipt(JSON.stringify(
-      { action: 'transfer', from, to, amount, memo }
-    ));
-    return JSON.stringify({ from, to, amount, memo });
+    amount = this._amount(amount);
+    blockchain.callWithAuth('token.iost', 'destroy', [token_name, from, amount]);
   }
 
-  burn(from, amount) {
-    if (!blockchain.requireAuth(from, 'active')) {
-      throw new Error('PERMISSION_DENIED');
-    }
-
-    this._checkPause();
-    this._checkIdValid(from);
-    this._checkBlacklist(from);
-
-    let burnAmount = new BigNumber(amount);
-    if (!burnAmount.isInteger()) {
-      throw new Error('INTEGER_VALUE_REQUIRED');
-    }
-
-    if (burnAmount.isNegative()) {
-      throw new Error('NON_NEGATIVE_VALUE_REQUIRED');
-    }
-
-    let currentFromAmount = storage.mapGet('balances', from);
-    if (currentFromAmount === null) {
-      currentFromAmount = new BigNumber(0);
-    } else {
-      currentFromAmount = new BigNumber(currentFromAmount);
-    }
-
-    let currentSupply = storage.get('totalSupply');
-    if (currentSupply === null) {
-      throw new Error('NULL_TOTAL_SUPPLY');
-    } else {
-      currentSupply = new BigNumber(currentSupply);
-    }
-
-    if (burnAmount.isGreaterThan(currentFromAmount)) {
-      throw new Error('INSUFFICIENT_FUNDS');
-    }
-
-    let newFromAmount = currentFromAmount.minus(amount);
-    let newSupply = currentSupply.minus(amount);
-
-    storage.mapPut('balances', from, newFromAmount.toString());
-    storage.put('totalSupply', newSupply.toString());
-
-    blockchain.receipt(JSON.stringify(
-      { action: 'burn', from, amount }
-    ));
-    return JSON.stringify({ from, amount });
-  }
-
-  convertToERC20(from, amount, ethAddress) {
-    this._checkPause();
-    this._checkIdValid(from);
+  convertToERC20(token_name, from, amount, ethAddress) {
+    this._checkToken(token_name);
     this._checkEthAddressValid(ethAddress);
 
-    this.burn(from, amount);
+    this.destroy(token_name, from, amount);
 
     blockchain.receipt(JSON.stringify(
-      { action: 'convert', from, amount, ethAddress }
+      { action: 'convertToERC20', from, amount, ethAddress }
     ));
     return JSON.stringify({ from, amount, ethAddress });
   }
 
   blacklist(id, bool) {
-    this._checkPause();
     this._checkIssuer();
     this._checkIdValid(id);
 
@@ -227,22 +119,41 @@ class BaseToken {
     ));
   }
 
-  can_update(data) {
-    let issuer = storage.get('issuer');
-    return blockchain.requireAuth(issuer, 'active');
+  changeIssuer(issuer) {
+    this._checkIdValid(issuer);
+
+    // Must be owner.
+    if (!blockchain.requireAuth(blockchain.contractOwner(), 'active')) {
+      throw new Error('PERMISSION_DENIED');
+    }
+    storage.put('issuer', issuer);
+  }
+
+  _amount(amount) {
+    let decimals = storage.get('decimals');
+    return new BigNumber(new BigNumber(amount).toFixed(new BigNumber(decimals).toNumber()));
+  }
+
+  // Call abi and parse result as JSON string.
+  _call(contract, api, args) {
+    const ret = blockchain.callWithAuth(contract, api, args);
+    if (ret && Array.isArray(ret) && ret.length >= 1) {
+      return ret[0];
+    }
+    return null;
+  }
+
+  _checkToken(token_name) {
+    let symbol = storage.get('symbol');
+    if (token_name !== symbol) {
+        throw new Error('TOKEN_DOES_NOT_MATCH');
+    }
   }
 
   _checkIssuer() {
     let issuer = storage.get('issuer');
     if (!blockchain.requireAuth(issuer, 'active')) {
       throw new Error('PERMISSION_DENIED');
-    }
-  }
-
-  _checkPause() {
-    let paused = storage.get('paused');
-    if (paused === 't') {
-      throw new Error('CONTRACT_PAUSED');
     }
   }
 

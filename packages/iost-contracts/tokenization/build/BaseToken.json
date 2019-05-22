@@ -3,28 +3,16 @@
     "version": "1.0.0",
     "abi": [
         {
-            "name": "deploy",
-            "args": [
-                "string",
-                "string",
-                "string"
-            ]
-        },
-        {
-            "name": "pause",
-            "args": []
-        },
-        {
-            "name": "unpause",
-            "args": []
-        },
-        {
             "name": "issue",
             "args": [
                 "string",
                 "string",
                 "string"
-            ]
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
         },
         {
             "name": "transfer",
@@ -32,12 +20,64 @@
                 "string",
                 "string",
                 "string",
+                "string",
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "transferFreeze",
+            "args": [
+                "string",
+                "string",
+                "string",
+                "string",
+                "number",
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "destroy",
+            "args": [
+                "string",
+                "string",
+                "string"
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
+        },
+        {
+            "name": "supply",
+            "args": [
                 "string"
             ]
         },
         {
-            "name": "burn",
+            "name": "totalSupply",
             "args": [
+                "string"
+            ]
+        },
+        {
+            "name": "balanceOf",
+            "args": [
+                "string",
+                "string"
+            ]
+        },
+        {
+            "name": "deploy",
+            "args": [
+                "string",
                 "string",
                 "string"
             ]
@@ -47,14 +87,25 @@
             "args": [
                 "string",
                 "string",
+                "string",
                 "string"
-            ]
+            ],
+            "amountLimit": [{
+                "token": "*",
+                "val": "unlimited"
+            }]
         },
         {
             "name": "blacklist",
             "args": [
                 "string",
                 "bool"
+            ]
+        },
+        {
+            "name": "changeIssuer",
+            "args": [
+                "string"
             ]
         },
         {
