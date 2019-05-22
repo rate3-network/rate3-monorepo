@@ -24,7 +24,7 @@ module.exports = {
                 'https://mainnet.infura.io/v3/e49eab7ebf6b47688265ad5e5c0aacd0',
                 true,
             ),
-            gas: 6700000,
+            gas: 7000000,
             gasPrice: 15000000000,
             network_id: 1,
             timeoutBlocks: 100,
