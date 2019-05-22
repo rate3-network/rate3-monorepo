@@ -3,12 +3,10 @@ pragma solidity 0.4.24;
 import "../lib/ownership/Claimable.sol";
 import "../lib/lifecycle/Pausable.sol";
 import "../lib/math/SafeMath.sol";
-import "../lib/asm/ERC20AsmFn.sol";
 import "../tokenization/interfaces/ERC20.sol";
 
 contract IOSTConversionReceiver is Claimable, Pausable {
     using SafeMath for uint256;
-    using ERC20AsmFn for ERC20;
 
     ERC20 public token;
     ERC20 public discountToken;
@@ -228,14 +226,14 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         );
 
         // Transfer total amount to conversion contract.
-        require(token.asmTransferFrom(msg.sender, address(this), _amount), "Token transfer failed");
+        require(token.transferFrom(msg.sender, address(this), _amount), "Token transfer failed");
 
         emit ConversionRequested(index, msg.sender, _iostAccount, _amount, fee, netAmount, discounted, block.timestamp);
     }
 
     function rejectConversion(uint256 _index) public onlyOwner whenNotPaused onlyOpenConversions(_index) {
         Conversion storage conversion = conversions[_index];
-        require(token.asmTransfer(conversion.ethAddress, conversion.amount), "Token transfer failed");
+        require(token.transfer(conversion.ethAddress, conversion.amount), "Token transfer failed");
         conversion.state = States.REJECTED;
 
         emit ConversionRejected(
@@ -351,7 +349,7 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         fees = fees.add(conversionUnlock.fee);
 
         // Transfer (amount - fees) to destination address.
-        require(token.asmTransfer(conversionUnlock.ethAddress, conversionUnlock.netAmount), "Token transfer failed");
+        require(token.transfer(conversionUnlock.ethAddress, conversionUnlock.netAmount), "Token transfer failed");
 
         emit ConversionUnlockAccepted(
             _index,
@@ -370,12 +368,12 @@ contract IOSTConversionReceiver is Claimable, Pausable {
         uint256 amount = fees;
         // Clear fees first *important*;
         fees = 0;
-        require(token.asmTransfer(feeCollectionWallet, amount), "Token transfer failed");
+        require(token.transfer(feeCollectionWallet, amount), "Token transfer failed");
         emit CollectedFees(feeCollectionWallet, amount, block.timestamp);
     }
 
     function sendTokensToColdStorage(uint256 _amount) public onlyOwner whenPaused {
-        require(token.asmTransfer(coldStorageWallet, _amount), "Token transfer failed");
+        require(token.transfer(coldStorageWallet, _amount), "Token transfer failed");
         emit SentTokensToColdStorage(coldStorageWallet, _amount, block.timestamp);
     }
 }

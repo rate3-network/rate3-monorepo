@@ -229,7 +229,7 @@ contract('IOSTConversionReceiver Tests', function(accounts) {
         });
 
         it('request conversion exceeding token balance should fail', async function() {
-            await shouldFail.reverting.withMessage(this.receiver.requestConversion(new BN('1500000000000000000000'), IOST_ACCOUNT, { from: alice }), 'Insufficient balance');
+            await shouldFail.reverting(this.receiver.requestConversion(new BN('1500000000000000000000'), IOST_ACCOUNT, { from: alice }));
         });
 
         it('request conversion should pass if balance and allowance are right', async function() {

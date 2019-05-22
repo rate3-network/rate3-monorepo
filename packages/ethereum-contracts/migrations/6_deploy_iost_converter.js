@@ -27,17 +27,39 @@ module.exports = function deployment(deployer, network, accounts) {
     //     console.log('======================\n');
     // };
 
+    // const deployFn = async () => {
+    //     console.log('\nSetting converter of USDC');
+    //     const converterUSDC = await ConversionReceiver.new(
+    //         '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+    //         '0x436F0F3a982074c4a05084485D421466a994FE53',
+    //         new web3.utils.BN('1000000000000000000000'), // 1000 RTE tokens
+    //         0,
+    //         0,
+    //         0,
+    //         0,
+    //         new web3.utils.BN('50000000000000000000'), // 50 token
+    //         '0x40975D6758D955D997BD0016a66DB89dd1235566',
+    //         '0x40975D6758D955D997BD0016a66DB89dd1235566',
+    //         { from: owner }
+    //     );
+
+
+    //     console.log('\n===== Addresses ======');
+    //     console.log('USDC Converter:          ', converterUSDC.address);
+    //     console.log('======================\n');
+    // };
+
     const deployFn = async () => {
-        console.log('\nSetting converter of USDC');
-        const converterUSDC = await ConversionReceiver.new(
-            '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+        console.log('\nSetting converter of USDT');
+        const converterUSDT = await ConversionReceiver.new(
+            '0xdAC17F958D2ee523a2206206994597C13D831ec7',
             '0x436F0F3a982074c4a05084485D421466a994FE53',
             new web3.utils.BN('1000000000000000000000'), // 1000 RTE tokens
             0,
             0,
             0,
             0,
-            new web3.utils.BN('50000000000000000000'), // 50 token
+            new web3.utils.BN('50000000'), // 50 token
             '0x40975D6758D955D997BD0016a66DB89dd1235566',
             '0x40975D6758D955D997BD0016a66DB89dd1235566',
             { from: owner }
@@ -45,7 +67,7 @@ module.exports = function deployment(deployer, network, accounts) {
 
 
         console.log('\n===== Addresses ======');
-        console.log('USDC Converter:          ', converterUSDC.address);
+        console.log('USDT Converter:          ', converterUSDT.address);
         console.log('======================\n');
     };
 
