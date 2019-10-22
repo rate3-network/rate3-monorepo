@@ -1,0 +1,27 @@
+# npm modules
+node_modules/
+
+# old js files
+wallet_back_up/
+
+# vscode files
+.vscode/launch.json
+.vscode/
+
+# encrypted data
+*.enc
+ 
+# js files
+promiseTest.js
+sendTest.js
+hellonode.js
+demo.html
+Trezor.test.js
+test1.html
+
+coverage/
+.eslintrc
+
+# python test local server setup
+*.py
+__pycache__/
