@@ -9,7 +9,7 @@
     "classnames": "^2.2.6",
     "dayjs": "^1.7.8",
     "decimal.js-light": "^2.5.0",
-    "immer": "^1.8.2",
+    "immer": "^9.0.6",
     "localforage": "^1.7.3",
     "lodash": "^4.17.11",
     "moment": "^2.23.0",
